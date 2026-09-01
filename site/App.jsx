@@ -66,7 +66,28 @@ const DATA = {
     SHS:  { y2026: 1.37, y2025: 1.67, yoyPts: -0.30 }
   },
   hsiaFibreMonths: ["Jun 2025","Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026"],
-  hsiaFibrePct: [4.51,6.13,12.92,15.12,18.85,15.42,16.19,15.50,15.07,14.11,14.56,13.31]
+  hsiaFibrePct: [4.51,6.13,12.92,15.12,18.85,15.42,16.19,15.50,15.07,14.11,14.56,13.31],
+
+  // Ticket drivers by CCT Level 1 — from the Tableau DRD workbook,
+  // "Assure CCT Mapping" view (go/DRD2), July 2026, all products combined
+  // (the view has no product split). Top 12 categories + rollup of the rest.
+  cctMonth: "Jul 2026",
+  cctDrivers: [
+    { cat: "Connectivity", total: 33137, remote: 19416, dispatch: 13721 },
+    { cat: "Wireless", total: 11555, remote: 10311, dispatch: 1244 },
+    { cat: "Main Panel", total: 7063, remote: 6225, dispatch: 838 },
+    { cat: "Video Issues", total: 6266, remote: 5942, dispatch: 324 },
+    { cat: "STB No Boot", total: 5700, remote: 5301, dispatch: 399 },
+    { cat: "Outdoor Camera", total: 5058, remote: 4594, dispatch: 464 },
+    { cat: "No Dial Tone", total: 4948, remote: 2168, dispatch: 2780 },
+    { cat: "Recording Issues", total: 4264, remote: 4173, dispatch: 91 },
+    { cat: "Door/Window Sensor", total: 4022, remote: 3793, dispatch: 229 },
+    { cat: "Smoke Detector", total: 3685, remote: 3452, dispatch: 233 },
+    { cat: "Digital Box", total: 3605, remote: 3518, dispatch: 87 },
+    { cat: "Doorbell Camera", total: 3519, remote: 3129, dispatch: 390 },
+    { cat: "Other (127 categories)", total: 39470, remote: 34993, dispatch: 4477 }
+  ],
+  cctTotal: { total: 132292, remote: 107015, dispatch: 25277 }
 };
 
 // ---------------------------------------------------------------------------
@@ -528,7 +549,59 @@ export default function ReliabilityScorecards() {
             Calls are contacts offered, reported as an FFH rollup (HSIA + TV combined) — no product-level call split exists in the source. Churn rate is first reported for Feb 2025.
           </p>
         </Section>
+
+        <Section num="03" eyebrow="Ticket drivers" title={`Assure CCT mapping — ${DATA.cctMonth}`} T={T} collapsible>
+          <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+            Ticket volume by CCT Level-1 category, split into remote-resolved vs. dispatch-booked, from the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view. All products combined — that view carries no product split. Top 12 categories shown; the rest are rolled up.
+          </p>
+          <CctTable />
+        </Section>
       </>
+    );
+  }
+
+  function CctTable() {
+    const maxTotal = Math.max(...DATA.cctDrivers.map((r) => r.total));
+    const thBase = { padding: "10px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
+    const tdBase = { padding: "9px 12px", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", fontSize: 12.5 };
+    const gt = DATA.cctTotal;
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ ...thBase, textAlign: "left" }}>CCT Level 1</th>
+              <th style={{ ...thBase, textAlign: "right" }}>Total tickets</th>
+              <th style={{ ...thBase, textAlign: "left", width: 160 }}></th>
+              <th style={{ ...thBase, textAlign: "right" }}>Remote resolved</th>
+              <th style={{ ...thBase, textAlign: "right" }}>Dispatch booked</th>
+              <th style={{ ...thBase, textAlign: "right" }}>Dispatch rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DATA.cctDrivers.map((r) => (
+              <tr key={r.cat}>
+                <td style={{ ...tdBase, fontWeight: 600, color: T.textSecondary }}>{r.cat}</td>
+                <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.text }}>{r.total.toLocaleString()}</td>
+                <td style={{ ...tdBase, padding: "9px 6px" }}>
+                  <div style={{ width: `${(r.total / maxTotal) * 100}%`, minWidth: 2, height: 10, background: colors.HSIA, borderRadius: 3, opacity: 0.75 }} />
+                </td>
+                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.remote.toLocaleString()}</td>
+                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.dispatch.toLocaleString()}</td>
+                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{((r.dispatch / r.total) * 100).toFixed(1)}%</td>
+              </tr>
+            ))}
+            <tr>
+              <td style={{ ...tdBase, fontWeight: 800, color: T.heading, borderBottom: "none" }}>Total</td>
+              <td style={{ ...tdBase, textAlign: "right", fontWeight: 800, color: T.heading, borderBottom: "none" }}>{gt.total.toLocaleString()}</td>
+              <td style={{ ...tdBase, borderBottom: "none" }}></td>
+              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.remote.toLocaleString()}</td>
+              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.dispatch.toLocaleString()}</td>
+              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{((gt.dispatch / gt.total) * 100).toFixed(1)}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   }
 
