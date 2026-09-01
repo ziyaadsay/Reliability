@@ -1,15 +1,25 @@
 (function(){
   "use strict";
   const D = window.DASHBOARD_DATA;
-  const COLOR = { HSIA: "#7C53A5", TV: "#2B8000" };
-  const DASH = { HSIA: [], TV: [6,4] };
-  const LABEL = { HSIA: "HSIA", TV: "TV" };
+  // HSIA/TV are mode-invariant (validated to pass every adjacent-pair check in
+  // both themes); SHS uses the documented default palette's blue, stepped for
+  // light vs. dark per references/palette.md.
+  const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6" };
+  const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5" };
+  const DASH = { HSIA: [], TV: [6,4], SHS: [1,3] };
+  const DASH_CLASS = { HSIA: "", TV: "dashed", SHS: "dotted" };
+  const LABEL = { HSIA: "HSIA", TV: "TV", SHS: "SHS" };
 
   const state = {
-    active: { HSIA: true, TV: true },
+    active: { HSIA: true, TV: true, SHS: true },
     rangeMonths: 27,
     theme: localStorage.getItem("theme") || "system"
   };
+
+  function isDarkMode(){
+    return state.theme === "dark" || (state.theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  }
+  function seriesColor(key){ return (isDarkMode() ? DARK_COLOR : LIGHT_COLOR)[key]; }
 
   // ---------- theme ----------
   function applyTheme(){
@@ -17,10 +27,19 @@
     if (state.theme === "dark"){ root.setAttribute("data-theme","dark"); }
     else if (state.theme === "light"){ root.setAttribute("data-theme","light"); }
     else { root.removeAttribute("data-theme"); }
-    const isDark = state.theme === "dark" || (state.theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    const isDark = isDarkMode();
     document.getElementById("themeIcon").textContent = isDark ? "☀️" : "🌙";
     document.getElementById("themeLabel").textContent = isDark ? "Light" : "Dark";
+    applyChipColors();
     redrawAll();
+  }
+  function applyChipColors(){
+    document.querySelectorAll("#seriesChips .chip").forEach(function(chip){
+      const key = chip.getAttribute("data-series");
+      const color = seriesColor(key);
+      chip.querySelector(".dot").style.background = color;
+      chip.style.background = chip.getAttribute("data-active") === "true" ? color : "transparent";
+    });
   }
   document.getElementById("themeToggle").addEventListener("click", function(){
     const isDark = state.theme === "dark" || (state.theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
@@ -41,6 +60,7 @@
       if (!willBeActive && !otherActive) return; // keep at least one series on
       state.active[s] = willBeActive;
       chip.setAttribute("data-active", String(willBeActive));
+      applyChipColors();
       redrawAll();
     });
   });
@@ -137,8 +157,8 @@
     const datasets = seriesDefs.filter(s => state.active[s.key]).map(s => ({
       label: LABEL[s.key],
       data: s.data,
-      borderColor: COLOR[s.key],
-      backgroundColor: COLOR[s.key],
+      borderColor: seriesColor(s.key),
+      backgroundColor: seriesColor(s.key),
       borderDash: DASH[s.key],
       pointRadius: 0,
       pointHoverRadius: 4,
@@ -170,7 +190,7 @@
     const datasets = seriesDefs.filter(s => state.active[s.key]).map(s => ({
       label: LABEL[s.key],
       data: s.data,
-      backgroundColor: COLOR[s.key],
+      backgroundColor: seriesColor(s.key),
       borderRadius: 4,
       maxBarThickness: 42
     }));
@@ -202,14 +222,14 @@
 
   function statCard(key, label, valueStr, deltaHtml){
     return `<div class="stat-card">
-      <div class="label"><span class="dot" style="background:${COLOR[key]}"></span>${label}</div>
+      <div class="label"><span class="dot" style="background:${seriesColor(key)}"></span>${label}</div>
       <div class="value">${valueStr}</div>
       ${deltaHtml || ""}
     </div>`;
   }
 
   function legendRowHtml(keys){
-    return `<div class="legend-row">` + keys.map(k => `<div class="item"><span class="swatch${k==='TV'?' dashed':''}" style="border-color:${COLOR[k]}"></span>${LABEL[k]}</div>`).join("") + `</div>`;
+    return `<div class="legend-row">` + keys.map(k => `<div class="item"><span class="swatch ${DASH_CLASS[k]}" style="border-color:${seriesColor(k)}"></span>${LABEL[k]}</div>`).join("") + `</div>`;
   }
 
   // ---------- render sections ----------
@@ -283,7 +303,7 @@
         datasets: [{
           label: "% of HSIA repairs coded as severely degraded fibre line",
           data: D.hsiaFibreDegraded.pctOfHsiaRepairs,
-          borderColor: COLOR.HSIA, backgroundColor: COLOR.HSIA + "26",
+          borderColor: seriesColor("HSIA"), backgroundColor: seriesColor("HSIA") + "26",
           fill: true, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.25
         }]
       },
