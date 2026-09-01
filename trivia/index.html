@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier League Rondo</title>
+<style>
+  :root {
+    --cream: #f4efe4;
+    --navy: #1e2a45;
+    --navy-deep: #141d31;
+    --red: #d94f3d;
+    --teal: #2e8b8b;
+    --gold: #d9a13d;
+    --green: #3d8b5f;
+    --card: #fdfaf2;
+    --line: #d8d0bd;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--cream);
+    color: var(--navy);
+    font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .stripe {
+    width: 100%;
+    height: 10px;
+    background: repeating-linear-gradient(90deg,
+      var(--navy) 0 25%, var(--red) 25% 50%,
+      var(--teal) 50% 75%, var(--gold) 75% 100%);
+  }
+  header {
+    width: 100%;
+    max-width: 720px;
+    padding: 28px 20px 8px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2.4rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 900;
+  }
+  h1 .accent { color: var(--red); }
+  .tagline {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: bold;
+  }
+  main {
+    width: 100%;
+    max-width: 720px;
+    padding: 16px 20px 48px;
+    flex: 1;
+  }
+  .card {
+    background: var(--card);
+    border: 3px solid var(--navy);
+    box-shadow: 8px 8px 0 var(--navy);
+    padding: 28px 24px;
+    margin-top: 18px;
+  }
+  .hidden { display: none !important; }
+  label {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1.15rem;
+    border: 3px solid var(--navy);
+    background: #fff;
+    color: var(--navy);
+    outline: none;
+    font-family: inherit;
+  }
+  input[type="text"]:focus { border-color: var(--red); }
+  button {
+    margin-top: 16px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--navy);
+    color: var(--cream);
+    border: 3px solid var(--navy);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  button:hover { background: var(--red); border-color: var(--red); }
+  button.secondary { background: transparent; color: var(--navy); }
+  button.secondary:hover { background: var(--navy); color: var(--cream); }
+  .rules { list-style: none; margin: 18px 0 6px; }
+  .rules li {
+    padding: 8px 0 8px 30px;
+    position: relative;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .rules li::before {
+    content: "";
+    position: absolute;
+    left: 4px; top: 13px;
+    width: 12px; height: 12px;
+    background: var(--red);
+  }
+  .rules li:nth-child(2)::before { background: var(--teal); }
+  .rules li:nth-child(3)::before { background: var(--gold); }
+  .rules li:nth-child(4)::before { background: var(--green); }
+  .rules li:nth-child(5)::before { background: var(--navy); }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--teal);
+    color: var(--cream);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+  .qcount {
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+  .timer-track {
+    width: 100%;
+    height: 14px;
+    background: var(--line);
+    border: 2px solid var(--navy);
+    margin-bottom: 20px;
+  }
+  .timer-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--green);
+    transition: width 0.1s linear, background 0.3s;
+  }
+  .question-text {
+    font-size: 1.35rem;
+    line-height: 1.5;
+    font-weight: bold;
+    margin-bottom: 22px;
+    min-height: 90px;
+    white-space: pre-line;
+  }
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 3px solid var(--navy);
+  }
+  .feedback.good { background: var(--green); color: var(--cream); border-color: var(--green); }
+  .feedback.bad { background: var(--red); color: var(--cream); border-color: var(--red); }
+  .score-banner {
+    text-align: center;
+    padding: 10px 0 4px;
+  }
+  .score-banner .big {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+  }
+  .score-banner .of {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 2px solid var(--line);
+    font-size: 1rem;
+  }
+  th {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    color: var(--teal);
+    border-bottom: 3px solid var(--navy);
+  }
+  td.rank { font-weight: 900; width: 44px; }
+  tr.me td { background: #f7e9c8; }
+  tr:nth-child(1) td.rank { color: var(--gold); }
+  .note {
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: #6b6754;
+    line-height: 1.5;
+  }
+  h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+    border-bottom: 3px solid var(--red);
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+  footer {
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #8a8571;
+  }
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<header>
+  <h1>Premier League <span class="accent">Rondo</span></h1>
+  <div class="tagline">Five questions. Ten seconds each. No hiding.</div>
+</header>
+<main>
+
+  <!-- NAME / INTRO SCREEN -->
+  <section id="screen-intro" class="card">
+    <h2>Step into the circle</h2>
+    <ul class="rules">
+      <li>5 Premier League questions per day, same set for everyone</li>
+      <li>10 seconds on the clock for each answer</li>
+      <li>5 points per correct answer, 25 is a perfect round</li>
+      <li>Type your answer, surnames are accepted</li>
+      <li>One attempt per name per day, then back tomorrow</li>
+    </ul>
+    <form id="name-form">
+      <label for="player-name">Your name to enter today's Rondo</label>
+      <input type="text" id="player-name" maxlength="24" autocomplete="off" placeholder="e.g. Ziyaad" required>
+      <button type="submit">Start today's round</button>
+    </form>
+    <div id="already-played" class="feedback bad hidden"></div>
+    <button id="view-board-btn" class="secondary" type="button">View scoreboard</button>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="screen-quiz" class="card hidden">
+    <div class="meta-row">
+      <span class="badge" id="q-category">Career Path</span>
+      <span class="qcount" id="q-count">Q1 / 5</span>
+    </div>
+    <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+    <div class="question-text" id="q-text"></div>
+    <form id="answer-form">
+      <input type="text" id="answer-input" autocomplete="off" placeholder="Type your answer...">
+      <button type="submit">Lock it in</button>
+    </form>
+    <div id="q-feedback" class="feedback hidden"></div>
+  </section>
+
+  <!-- RESULTS / SCOREBOARD SCREEN -->
+  <section id="screen-results" class="card hidden">
+    <div class="score-banner" id="final-banner">
+      <div class="of" id="final-name"></div>
+      <div class="big" id="final-score">0</div>
+      <div class="of">points out of 25</div>
+    </div>
+    <h2>Top 10 scoreboard</h2>
+    <table>
+      <thead><tr><th>#</th><th>Player</th><th>Score</th><th>Date</th></tr></thead>
+      <tbody id="board-body"></tbody>
+    </table>
+    <p class="note">The scoreboard is stored in this browser. Best daily score per player counts. A new set of five questions drops every day at midnight.</p>
+    <button id="back-btn" class="secondary" type="button">Back to start</button>
+  </section>
+
+</main>
+<footer>Rondo-style trivia. Keep the ball moving.</footer>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ */
+/* Question bank, Rondo style. Each question has a unique answer so a  */
+/* daily draw never repeats an answer. Aliases are accepted answers.   */
+/* ------------------------------------------------------------------ */
+const BANK = [
+  // --- Career Path: name the player from the route ---
+  { cat: "Career Path", q: "Name the player from the career path:\nAS Cannes, AC Milan, Arsenal, Juventus, Inter Milan, Manchester City.", a: ["patrick vieira", "vieira"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nWest Ham, Leeds United, Manchester United, QPR.", a: ["rio ferdinand", "ferdinand", "rio"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nSouthampton, Blackburn Rovers, Newcastle United. He never left the Premier League.", a: ["alan shearer", "shearer"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nLe Mans, Guingamp, Marseille, Chelsea, Galatasaray... then Chelsea again.", a: ["didier drogba", "drogba"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nAjax, Inter Milan, Arsenal. A non-flying Dutchman.", a: ["dennis bergkamp", "bergkamp"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nMonaco, Juventus, Arsenal, Barcelona, New York Red Bulls.", a: ["thierry henry", "henry"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nSouthampton, Tottenham, Real Madrid, and a loan back to Tottenham in 2020.", a: ["gareth bale", "bale"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nLe Havre, Leicester City, Manchester City, Al-Ahli.", a: ["riyad mahrez", "mahrez"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nNacional, Groningen, Ajax, Liverpool, Barcelona, Atletico Madrid.", a: ["luis suarez", "suarez"] },
+  { cat: "Career Path", q: "Name the keeper from the career path:\nBrondby, Manchester United, Sporting Lisbon, Aston Villa, Manchester City.", a: ["peter schmeichel", "schmeichel"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nBoulogne, Caen, Leicester City, Chelsea, Al-Ittihad. Two league titles in his first two Premier League seasons.", a: ["ngolo kante", "kante", "n'golo kante"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nEl Mokawloon, Basel, Chelsea, Fiorentina, Roma, Liverpool.", a: ["mohamed salah", "salah", "mo salah"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nFeyenoord, Arsenal, Manchester United, Fenerbahce. Golden Boots in back-to-back seasons for two different clubs.", a: ["robin van persie", "van persie", "rvp"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nStocksbridge Park Steels, Halifax Town, Fleetwood Town, Leicester City.", a: ["jamie vardy", "vardy"] },
+  { cat: "Career Path", q: "Name the player from the career path:\nAnderlecht, Hamburg, Manchester City. He later managed Anderlecht and Burnley.", a: ["vincent kompany", "kompany"] },
+
+  // --- Numbers Game ---
+  { cat: "Numbers Game", q: "Arsenal's Invincibles went the whole 2003-04 league season unbeaten. How many league games is that?", a: ["38", "thirty eight", "thirty-eight"] },
+  { cat: "Numbers Game", q: "Alan Shearer holds the all-time Premier League goal record. To the exact goal, how many did he score?", a: ["260", "two hundred and sixty", "two hundred sixty"] },
+  { cat: "Numbers Game", q: "What were the famous bookmakers' odds on Leicester City winning the 2015-16 title? Format: number to one.", a: ["5000 to 1", "5000-1", "5000/1", "50001", "5000 1", "5000"] },
+  { cat: "Numbers Game", q: "Manchester City's Centurions set the record points total for a Premier League season in 2017-18. How many points?", a: ["100", "one hundred", "hundred"] },
+  { cat: "Numbers Game", q: "Erling Haaland broke the record for goals in a 38-game Premier League season in 2022-23. How many did he score?", a: ["36", "thirty six", "thirty-six"] },
+  { cat: "Numbers Game", q: "Derby County set the record low points total for a Premier League season in 2007-08. How many points did they finish with?", a: ["11", "eleven"] },
+  { cat: "Numbers Game", q: "How many Premier League titles did Ryan Giggs win, the most of any player?", a: ["13", "thirteen"] },
+
+  // --- What Links / Connections ---
+  { cat: "What Links", q: "Blackburn Rovers are one of only two champions from outside the traditional big six in the Premier League era. Name the other.", a: ["leicester city", "leicester", "lcfc"] },
+  { cat: "What Links", q: "Sergio Aguero, Andy Cole, Alan Shearer, Jermain Defoe and Dimitar Berbatov. What did they each do in a single Premier League match?", a: ["scored five goals", "score five goals", "scored 5 goals", "score 5 goals", "5 goals", "five goals", "scored five", "5 goals in a game", "five goals in one game"] },
+  { cat: "What Links", q: "Which goalkeeper holds the record for the most Premier League clean sheets, with 202?", a: ["petr cech", "cech"] },
+  { cat: "What Links", q: "Ryan Giggs tops the all-time Premier League chart for which creative statistic?", a: ["assists", "most assists", "assist"] },
+  { cat: "What Links", q: "Which midfielder holds the record for the most Premier League appearances, with 653?", a: ["gareth barry", "barry"] },
+
+  // --- Firsts and Lasts ---
+  { cat: "Firsts & Lasts", q: "Who scored the very first Premier League goal, for Sheffield United against Manchester United in August 1992?", a: ["brian deane", "deane"] },
+  { cat: "Firsts & Lasts", q: "Who scored the first ever Premier League hat-trick, for Leeds United in 1992? He later became a Manchester United legend.", a: ["eric cantona", "cantona"] },
+  { cat: "Firsts & Lasts", q: "Shane Long scored the fastest goal in Premier League history in 2019. Within one second, how fast was it?", a: ["7.69 seconds", "7.69", "7 seconds", "8 seconds", "7", "8"] },
+  { cat: "Firsts & Lasts", q: "Sadio Mane scored the fastest Premier League hat-trick, in 2 minutes 56 seconds. Which club was he playing for at the time?", a: ["southampton", "saints"] },
+  { cat: "Firsts & Lasts", q: "Teddy Sheringham became the oldest outfield Premier League goalscorer at 40. For which East London club did he score that goal?", a: ["west ham", "west ham united"] },
+
+  // --- Cult Heroes & Chaos ---
+  { cat: "Cult Heroes", q: "Which 'player' talked his way into a Southampton debut in 1996 after someone posing as George Weah phoned Graeme Souness?", a: ["ali dia", "dia"] },
+  { cat: "Cult Heroes", q: "'I will love it if we beat them. Love it.' Which manager delivered that rant during the 1995-96 title race?", a: ["kevin keegan", "keegan"] },
+  { cat: "Cult Heroes", q: "Sir Alex Ferguson dismissed which club as 'noisy neighbours' in 2009?", a: ["manchester city", "man city", "city"] },
+  { cat: "Cult Heroes", q: "Which Italian striker scored a debut hat-trick for Middlesbrough in 1996 and celebrated with his shirt over his head?", a: ["fabrizio ravanelli", "ravanelli"] },
+  { cat: "Cult Heroes", q: "Which goalkeeper rose for a corner and headed a 95th-minute winner for Liverpool at West Brom in May 2021?", a: ["alisson", "alisson becker", "becker"] },
+  { cat: "Cult Heroes", q: "Which teenager announced himself by scoring from the halfway line against Wimbledon on the opening day of 1996-97?", a: ["david beckham", "beckham"] },
+  { cat: "Cult Heroes", q: "Martin Tyler screamed his first name twice as he won the title with virtually the last kick of 2011-12. Who scored that goal against QPR?", a: ["sergio aguero", "aguero", "kun aguero", "aguerooo"] },
+];
+
+/* ------------------------------------------------------------------ */
+/* Config and storage                                                  */
+/* ------------------------------------------------------------------ */
+const QUESTIONS_PER_DAY = 5;
+const POINTS_PER_CORRECT = 5;
+const SECONDS_PER_QUESTION = 10;
+const LS_BOARD = "plRondo.board.v1";
+const LS_PLAYS = "plRondo.plays.v1";
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+function todayLabel() {
+  return new Date().toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+function loadJSON(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch (e) { return fallback; }
+}
+function saveJSON(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* private mode */ }
+}
+
+/* Deterministic daily draw: everyone gets the same 5 questions.       */
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function dailyQuestions() {
+  const rng = mulberry32(todayKey());
+  const idx = BANK.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, QUESTIONS_PER_DAY).map(i => BANK[i]);
+}
+
+/* Answer matching: case, accent and punctuation insensitive.          */
+function normalize(s) {
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/['\u2019]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+function isCorrect(guess, aliases) {
+  const g = normalize(guess);
+  if (!g) return false;
+  return aliases.some(a => normalize(a) === g);
+}
+
+/* ------------------------------------------------------------------ */
+/* Game state                                                          */
+/* ------------------------------------------------------------------ */
+let playerName = "";
+let questions = [];
+let current = 0;
+let score = 0;
+let timerId = null;
+let deadline = 0;
+let answering = false;
+
+const $ = id => document.getElementById(id);
+const screens = { intro: $("screen-intro"), quiz: $("screen-quiz"), results: $("screen-results") };
+
+function show(name) {
+  Object.entries(screens).forEach(([k, el]) => el.classList.toggle("hidden", k !== name));
+}
+
+/* --- Intro / name --- */
+$("name-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("player-name").value.trim();
+  if (!name) return;
+  const plays = loadJSON(LS_PLAYS, {});
+  const key = normalize(name);
+  if (plays[key] === todayKey()) {
+    const el = $("already-played");
+    el.textContent = name + " has already played today's Rondo. New questions at midnight!";
+    el.classList.remove("hidden");
+    return;
+  }
+  playerName = name;
+  startQuiz();
+});
+
+$("view-board-btn").addEventListener("click", () => {
+  $("final-banner").classList.add("hidden");
+  renderBoard(null);
+  show("results");
+});
+$("back-btn").addEventListener("click", () => {
+  $("already-played").classList.add("hidden");
+  $("final-banner").classList.remove("hidden");
+  show("intro");
+});
+
+/* --- Quiz flow --- */
+function startQuiz() {
+  questions = dailyQuestions();
+  current = 0;
+  score = 0;
+  show("quiz");
+  askQuestion();
+}
+
+function askQuestion() {
+  const q = questions[current];
+  answering = true;
+  $("q-category").textContent = q.cat;
+  $("q-count").textContent = "Q" + (current + 1) + " / " + QUESTIONS_PER_DAY;
+  $("q-text").textContent = q.q;
+  $("q-feedback").classList.add("hidden");
+  const input = $("answer-input");
+  input.value = "";
+  input.disabled = false;
+  input.focus();
+  startTimer();
+}
+
+function startTimer() {
+  stopTimer();
+  deadline = Date.now() + SECONDS_PER_QUESTION * 1000;
+  const fill = $("timer-fill");
+  fill.style.width = "100%";
+  fill.style.background = "var(--green)";
+  timerId = setInterval(() => {
+    const remaining = Math.max(0, deadline - Date.now());
+    const pct = remaining / (SECONDS_PER_QUESTION * 1000);
+    fill.style.width = (pct * 100) + "%";
+    if (pct < 0.5) fill.style.background = "var(--gold)";
+    if (pct < 0.25) fill.style.background = "var(--red)";
+    if (remaining <= 0) submitAnswer(true);
+  }, 100);
+}
+function stopTimer() {
+  if (timerId) { clearInterval(timerId); timerId = null; }
+}
+
+$("answer-form").addEventListener("submit", e => {
+  e.preventDefault();
+  submitAnswer(false);
+});
+
+function submitAnswer(timedOut) {
+  if (!answering) return;
+  answering = false;
+  stopTimer();
+  const q = questions[current];
+  const guess = $("answer-input").value;
+  $("answer-input").disabled = true;
+  const correct = !timedOut && isCorrect(guess, q.a);
+  const fb = $("q-feedback");
+  fb.classList.remove("hidden", "good", "bad");
+  if (correct) {
+    score += POINTS_PER_CORRECT;
+    fb.classList.add("good");
+    fb.textContent = "Correct! +" + POINTS_PER_CORRECT + " points";
+  } else {
+    fb.classList.add("bad");
+    const reveal = q.a[0].replace(/\b\w/g, c => c.toUpperCase());
+    fb.textContent = (timedOut ? "Time's up! " : "Not this time. ") + "Answer: " + reveal;
+  }
+  setTimeout(() => {
+    current++;
+    if (current < questions.length) askQuestion();
+    else finishQuiz();
+  }, 2200);
+}
+
+/* --- Results & scoreboard --- */
+function finishQuiz() {
+  const plays = loadJSON(LS_PLAYS, {});
+  plays[normalize(playerName)] = todayKey();
+  saveJSON(LS_PLAYS, plays);
+
+  const board = loadJSON(LS_BOARD, []);
+  const key = normalize(playerName);
+  const existing = board.find(e => e.key === key);
+  if (existing) {
+    if (score > existing.score) {
+      existing.score = score;
+      existing.date = todayLabel();
+    }
+    existing.name = playerName;
+  } else {
+    board.push({ key, name: playerName, score, date: todayLabel() });
+  }
+  board.sort((a, b) => b.score - a.score);
+  saveJSON(LS_BOARD, board.slice(0, 50));
+
+  $("final-banner").classList.remove("hidden");
+  $("final-name").textContent = playerName;
+  $("final-score").textContent = score;
+  renderBoard(key);
+  show("results");
+}
+
+function renderBoard(highlightKey) {
+  const board = loadJSON(LS_BOARD, []).slice(0, 10);
+  const body = $("board-body");
+  body.innerHTML = "";
+  if (board.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="4">No scores yet. Be the first in the circle.</td>';
+    body.appendChild(tr);
+    return;
+  }
+  board.forEach((e, i) => {
+    const tr = document.createElement("tr");
+    if (highlightKey && e.key === highlightKey) tr.className = "me";
+    const rank = document.createElement("td");
+    rank.className = "rank";
+    rank.textContent = i + 1;
+    const name = document.createElement("td");
+    name.textContent = e.name;
+    const sc = document.createElement("td");
+    sc.textContent = e.score;
+    const dt = document.createElement("td");
+    dt.textContent = e.date;
+    tr.append(rank, name, sc, dt);
+    body.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
