@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HSIA &amp; TV Reliability Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234B286D'/%3E%3Ccircle cx='11' cy='20' r='3.4' fill='%237C53A5'/%3E%3Ccircle cx='21' cy='14' r='3.4' fill='%232B8000'/%3E%3C/svg%3E" />
+<script src="vendor/chart.umd.js"></script>
+<style>
+:root{
+  --purple:#4B286D; --purple-dark:#371E4F; --purple-med:#613889; --purple-hi:#7733BB;
+  --purple-light:#7C53A5; --purple-lighter:#D8CBE5; --purple-lightest:#F2EFF4;
+  --green:#66CC02; --green-acc:#2B8000;
+  --bg:#F4F4F7; --surface:#FFFFFF; --border:#E3E6E8; --border-strong:#B2B9BF;
+  --text:#2C2E30; --text-secondary:#414547; --text-muted:#676E73; --text-faint:#8B959C;
+  --hsia:#7C53A5; --tv:#2B8000;
+  --good:#2B8000; --bad:#B3261E;
+  --radius:12px; --radius-sm:6px;
+  --shadow:0 1px 2px rgba(44,30,63,.06), 0 4px 16px rgba(44,30,63,.06);
+  color-scheme: light dark;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --bg:#1c1a20; --surface:#26232b; --border:#3a3542; --border-strong:#4d4757;
+    --text:#F1EEF5; --text-secondary:#D3CCDE; --text-muted:#A79EB6; --text-faint:#8B7FA0;
+    --purple-lightest:#2E2838; --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1c1a20; --surface:#26232b; --border:#3a3542; --border-strong:#4d4757;
+  --text:#F1EEF5; --text-secondary:#D3CCDE; --text-muted:#A79EB6; --text-faint:#8B7FA0;
+  --purple-lightest:#2E2838; --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica Neue,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--green-acc);}
+.wrap{max-width:1180px; margin:0 auto; padding:0 20px 64px;}
+
+header.top{
+  background:linear-gradient(135deg,var(--purple-dark) 0%, var(--purple) 55%, var(--purple-med) 100%);
+  color:#fff; padding:28px 0 26px; margin-bottom:28px;
+}
+header.top .wrap{display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap;}
+.brand{display:flex; align-items:center; gap:14px;}
+.brand .mark{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand .mark svg{width:22px;height:22px;}
+h1{font-size:22px; font-weight:700; margin:0 0 4px; letter-spacing:-.01em;}
+.subtitle{font-size:13px; color:rgba(255,255,255,.78); margin:0; max-width:560px; line-height:1.5;}
+.top-actions{display:flex; align-items:center; gap:10px;}
+.theme-btn{
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#fff;
+  border-radius:8px; padding:8px 12px; font-size:13px; font-weight:500; cursor:pointer; display:flex; gap:6px; align-items:center;
+}
+.theme-btn:hover{background:rgba(255,255,255,.2);}
+.source-pill{font-size:12px; color:rgba(255,255,255,.65); margin-top:12px;}
+.source-pill a{color:#fff; text-decoration:underline;}
+
+.controls{
+  display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 18px; margin-bottom:28px; box-shadow:var(--shadow);
+}
+.control-group{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.control-label{font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;}
+.chip-row{display:flex; gap:6px;}
+.chip{
+  border:1px solid var(--border-strong); background:transparent; color:var(--text-secondary);
+  border-radius:20px; padding:6px 14px; font-size:13px; font-weight:500; cursor:pointer;
+  display:flex; align-items:center; gap:6px; transition:all .15s;
+}
+.chip .dot{width:9px;height:9px;border-radius:50%;}
+.chip[data-active="true"]{border-color:transparent; color:#fff;}
+.chip[data-series="HSIA"][data-active="true"]{background:var(--hsia);}
+.chip[data-series="TV"][data-active="true"]{background:var(--tv);}
+.chip[data-active="false"]{opacity:.55;}
+.range-row{display:flex; gap:6px;}
+.range-btn{
+  border:1px solid var(--border-strong); background:transparent; color:var(--text-secondary);
+  border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer;
+}
+.range-btn[data-active="true"]{background:var(--purple); border-color:var(--purple); color:#fff;}
+
+section.metric{margin-bottom:40px;}
+.metric-head{display:flex; align-items:baseline; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.metric-head h2{font-size:19px; margin:0; color:var(--purple); font-weight:700;}
+:root[data-theme="dark"] .metric-head h2, :root:not([data-theme="light"]) .metric-head h2{ }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .metric-head h2{color:#C9A9E8;} }
+:root[data-theme="dark"] .metric-head h2{color:#C9A9E8;}
+.metric-head .desc{font-size:13px; color:var(--text-muted);}
+
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:16px;}
+.stat-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px 18px; box-shadow:var(--shadow);
+}
+.stat-card .label{font-size:12px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.03em; display:flex; align-items:center; gap:6px; margin-bottom:6px;}
+.stat-card .label .dot{width:9px;height:9px;border-radius:50%;}
+.stat-card .value{font-size:28px; font-weight:800; color:var(--text); line-height:1.1;}
+.stat-card .value .unit{font-size:15px; font-weight:600; color:var(--text-muted); margin-left:2px;}
+.stat-card .delta{font-size:12.5px; margin-top:6px; font-weight:600;}
+.delta.down{color:var(--good);}
+.delta.up{color:var(--bad);}
+.delta.flat{color:var(--text-muted);}
+
+.chart-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 20px 8px; box-shadow:var(--shadow);
+}
+.chart-card .chart-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:12px; flex-wrap:wrap;}
+.chart-card .chart-title{font-size:14px; font-weight:600; color:var(--text-secondary);}
+.table-toggle{
+  font-size:12px; border:1px solid var(--border-strong); background:transparent; color:var(--text-muted);
+  border-radius:6px; padding:4px 10px; cursor:pointer;
+}
+.chart-canvas-wrap{position:relative; height:260px;}
+.data-table-wrap{display:none; overflow-x:auto; margin-top:10px; border-top:1px solid var(--border); padding-top:10px;}
+.data-table-wrap.show{display:block;}
+table.data-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.data-table th, table.data-table td{padding:6px 10px; text-align:right; border-bottom:1px solid var(--border); white-space:nowrap;}
+table.data-table th:first-child, table.data-table td:first-child{text-align:left; color:var(--text-secondary); font-weight:600;}
+table.data-table thead th{color:var(--text-muted); font-weight:600; font-size:11.5px; text-transform:uppercase;}
+
+.note{font-size:12px; color:var(--text-faint); margin-top:10px; line-height:1.5;}
+.legend-row{display:flex; gap:18px; align-items:center; margin:10px 2px 4px; font-size:12.5px; color:var(--text-secondary); flex-wrap:wrap;}
+.legend-row .item{display:flex; align-items:center; gap:6px;}
+.legend-row .swatch{width:16px; height:0; border-top:3px solid; border-radius:2px;}
+.legend-row .swatch.dashed{border-top-style:dashed;}
+
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:840px){ .grid-2{grid-template-columns:1fr;} }
+
+.spotlight{
+  background:var(--purple-lightest); border:1px solid var(--purple-lighter);
+  border-radius:var(--radius); padding:18px 20px; margin-top:20px;
+}
+:root[data-theme="dark"] .spotlight, :root:not([data-theme="light"]) .spotlight{}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .spotlight{border-color:#4d4360;} }
+:root[data-theme="dark"] .spotlight{border-color:#4d4360;}
+.spotlight h3{margin:0 0 4px; font-size:15px; color:var(--purple);}
+:root[data-theme="dark"] .spotlight h3, :root:not([data-theme="light"]) .spotlight h3{}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .spotlight h3{color:#C9A9E8;} }
+:root[data-theme="dark"] .spotlight h3{color:#C9A9E8;}
+.spotlight p{margin:0 0 12px; font-size:13px; color:var(--text-muted); max-width:640px;}
+
+footer{text-align:center; font-size:12px; color:var(--text-faint); padding:20px 0;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="brand">
+        <div class="mark">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="16" r="3" fill="#7C53A5"/><circle cx="16" cy="8" r="3" fill="#2B8000"/><path d="M8 13V6M16 11v7" stroke="rgba(255,255,255,.5)" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h1>HSIA &amp; TV Reliability Dashboard</h1>
+          <p class="subtitle">Calls, tickets, repairs/dispatches &amp; churn — trended monthly, HSIA vs. TV.</p>
+        </div>
+      </div>
+      <div class="source-pill">Source: Reliability / Deact KPIs workbook · figures current through the latest reported month</div>
+    </div>
+    <div class="top-actions">
+      <button class="theme-btn" id="themeToggle" type="button">
+        <span id="themeIcon">🌙</span><span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="controls">
+    <div class="control-group">
+      <span class="control-label">Product</span>
+      <div class="chip-row" id="seriesChips">
+        <button class="chip" data-series="HSIA" data-active="true"><span class="dot" style="background:#7C53A5"></span>HSIA</button>
+        <button class="chip" data-series="TV" data-active="true"><span class="dot" style="background:#2B8000"></span>TV</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">Trend window</span>
+      <div class="range-row" id="rangeButtons">
+        <button class="range-btn" data-months="12">12 mo</button>
+        <button class="range-btn" data-months="24">24 mo</button>
+        <button class="range-btn" data-months="27" data-active="true">All (27 mo)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALLS -->
+  <section class="metric" id="section-calls">
+    <div class="metric-head">
+      <h2>📞 Calls</h2>
+      <span class="desc">Inbound call volume by product · Assure/CCAI, latest 3 reported months</span>
+    </div>
+    <div class="stat-grid" id="stats-calls"></div>
+    <div class="chart-card">
+      <div class="chart-toolbar">
+        <span class="chart-title">Monthly call volume</span>
+        <button class="table-toggle" data-target="table-calls">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-calls"></canvas></div>
+      <div class="legend-row" id="legend-calls"></div>
+      <div class="data-table-wrap" id="table-calls"></div>
+      <p class="note">Only three months of call-volume data exist in the source workbook (Dec 2025–Feb 2026, from the Assure Tickets looker / CCAI extract) — shown as a snapshot rather than a long trend.</p>
+    </div>
+  </section>
+
+  <!-- TICKETS -->
+  <section class="metric" id="section-tickets">
+    <div class="metric-head">
+      <h2>🎫 Tickets</h2>
+      <span class="desc">Trouble-ticket rate (% of subscriber base) · 27-month trend</span>
+    </div>
+    <div class="stat-grid" id="stats-tickets"></div>
+    <div class="chart-card">
+      <div class="chart-toolbar">
+        <span class="chart-title">Ticket rate, monthly</span>
+        <button class="table-toggle" data-target="table-tickets">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-tickets"></canvas></div>
+      <div class="legend-row" id="legend-tickets"></div>
+      <div class="data-table-wrap" id="table-tickets"></div>
+    </div>
+    <div class="chart-card" style="margin-top:16px;">
+      <div class="chart-toolbar">
+        <span class="chart-title">Ticket volume — latest 3 months</span>
+        <button class="table-toggle" data-target="table-ticketvol">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-ticketvol"></canvas></div>
+      <div class="legend-row" id="legend-ticketvol"></div>
+      <div class="data-table-wrap" id="table-ticketvol"></div>
+    </div>
+  </section>
+
+  <!-- REPAIRS -->
+  <section class="metric" id="section-repairs">
+    <div class="metric-head">
+      <h2>🛠️ Repairs / Dispatches</h2>
+      <span class="desc">Field-repair (truck-roll) rate · 27-month trend</span>
+    </div>
+    <div class="stat-grid" id="stats-repairs"></div>
+    <div class="chart-card">
+      <div class="chart-toolbar">
+        <span class="chart-title">Repair rate, monthly</span>
+        <button class="table-toggle" data-target="table-repairs">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-repairs"></canvas></div>
+      <div class="legend-row" id="legend-repairs"></div>
+      <div class="data-table-wrap" id="table-repairs"></div>
+    </div>
+    <div class="chart-card" style="margin-top:16px;">
+      <div class="chart-toolbar">
+        <span class="chart-title">Field-repair (dispatch) volume — latest 4 months</span>
+        <button class="table-toggle" data-target="table-repairvol">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-repairvol"></canvas></div>
+      <div class="legend-row" id="legend-repairvol"></div>
+      <div class="data-table-wrap" id="table-repairvol"></div>
+    </div>
+
+    <div class="spotlight">
+      <h3>HSIA spotlight — severely degraded fibre line</h3>
+      <p>No TV equivalent exists in the source data. Shown separately because it is currently the single largest identified driver of HSIA repairs.</p>
+      <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-fibre"></canvas></div>
+    </div>
+  </section>
+
+  <!-- CHURN -->
+  <section class="metric" id="section-churn">
+    <div class="metric-head">
+      <h2>📉 Churn</h2>
+      <span class="desc">Monthly churn rate (% of subscriber base) · 27-month trend</span>
+    </div>
+    <div class="stat-grid" id="stats-churn"></div>
+    <div class="chart-card">
+      <div class="chart-toolbar">
+        <span class="chart-title">Churn rate, monthly</span>
+        <button class="table-toggle" data-target="table-churn">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-churn"></canvas></div>
+      <div class="legend-row" id="legend-churn"></div>
+      <div class="data-table-wrap" id="table-churn"></div>
+    </div>
+    <div class="chart-card" style="margin-top:16px;">
+      <div class="chart-toolbar">
+        <span class="chart-title">Product/technical deact volume (thousands) — Jan 2025–Feb 2026</span>
+        <button class="table-toggle" data-target="table-deacts">View as table</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-deacts"></canvas></div>
+      <div class="legend-row" id="legend-deacts"></div>
+      <div class="data-table-wrap" id="table-deacts"></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Built from the Reliability / Deact KPIs workbook · figures reflect what was reported as of the source snapshot, not a live feed</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
