@@ -77,26 +77,68 @@ const DATA = {
   hsiaFibreMonths: ["Jun 2025","Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026"],
   hsiaFibrePct: [4.51,6.13,12.92,15.12,18.85,15.42,16.19,15.50,15.07,14.11,14.56,13.31],
 
-  // Ticket drivers by CCT Level 1 — from the Tableau DRD workbook,
-  // "Assure CCT Mapping" view (go/DRD2), July 2026, all products combined
-  // (pending re-pull with the Assure Roll Up Code product mapping).
-  cctMonth: "Jul 2026",
-  cctDrivers: [
-    { cat: "Connectivity", total: 33137, remote: 19416, dispatch: 13721 },
-    { cat: "Wireless", total: 11555, remote: 10311, dispatch: 1244 },
-    { cat: "Main Panel", total: 7063, remote: 6225, dispatch: 838 },
-    { cat: "Video Issues", total: 6266, remote: 5942, dispatch: 324 },
-    { cat: "STB No Boot", total: 5700, remote: 5301, dispatch: 399 },
-    { cat: "Outdoor Camera", total: 5058, remote: 4594, dispatch: 464 },
-    { cat: "No Dial Tone", total: 4948, remote: 2168, dispatch: 2780 },
-    { cat: "Recording Issues", total: 4264, remote: 4173, dispatch: 91 },
-    { cat: "Door/Window Sensor", total: 4022, remote: 3793, dispatch: 229 },
-    { cat: "Smoke Detector", total: 3685, remote: 3452, dispatch: 233 },
-    { cat: "Digital Box", total: 3605, remote: 3518, dispatch: 87 },
-    { cat: "Doorbell Camera", total: 3519, remote: 3129, dispatch: 390 },
-    { cat: "Other (127 categories)", total: 39470, remote: 34993, dispatch: 4477 }
-  ],
-  cctTotal: { total: 132292, remote: 107015, dispatch: 25277 }
+  // Ticket categories by CCT Level 1, grouped by product type — from the
+  // Tableau DRD workbook, "Assure CCT Mapping" view (go/DRD2), August 2026.
+  // The product ticket totals in the scorecard follow the Assure Roll Up Code
+  // mapping (High Speed + Wireless = HSIA; Optik TV (Legacy) + TV Evolution =
+  // TV; SmartHome Security = SHS). The CCT sheet itself exposes no roll-up
+  // dimension, so category rows are grouped by product type at the category
+  // level; Home Phone, self-serve and cross-product categories sit in Other.
+  cctMonth: "Aug 2026",
+  cctByProduct: {
+    HSIA: {
+      subtotal: { total: 52906, remote: 35508, dispatch: 17398 },
+      rows: [
+        { cat: "Connectivity", total: 37794, remote: 23191, dispatch: 14603 },
+        { cat: "Wireless", total: 12131, remote: 10644, dispatch: 1487 },
+        { cat: "Incompatible Equipment", total: 1834, remote: 526, dispatch: 1308 },
+        { cat: "Email", total: 1147, remote: 1147, dispatch: 0 }
+      ]
+    },
+    TV: {
+      subtotal: { total: 30804, remote: 29637, dispatch: 1167 },
+      rows: [
+        { cat: "Video Issues", total: 6624, remote: 6242, dispatch: 382 },
+        { cat: "STB No Boot", total: 6577, remote: 6086, dispatch: 491 },
+        { cat: "Digital Box", total: 4600, remote: 4509, dispatch: 91 },
+        { cat: "Recording Issues", total: 4553, remote: 4445, dispatch: 108 },
+        { cat: "Channel Issues", total: 3441, remote: 3413, dispatch: 28 },
+        { cat: "Remote", total: 1782, remote: 1766, dispatch: 16 },
+        { cat: "Legacy Equipment", total: 1416, remote: 1392, dispatch: 24 },
+        { cat: "Audio Issues", total: 765, remote: 753, dispatch: 12 },
+        { cat: "Other TV categories (2)", total: 1046, remote: 1031, dispatch: 15 }
+      ]
+    },
+    SHS: {
+      subtotal: { total: 28106, remote: 25461, dispatch: 2645 },
+      rows: [
+        { cat: "Main Panel", total: 6646, remote: 5695, dispatch: 951 },
+        { cat: "Outdoor Camera", total: 4625, remote: 4214, dispatch: 411 },
+        { cat: "Smoke Detector", total: 4384, remote: 4129, dispatch: 255 },
+        { cat: "Door/Window Sensor", total: 3996, remote: 3770, dispatch: 226 },
+        { cat: "Doorbell Camera", total: 3211, remote: 2887, dispatch: 324 },
+        { cat: "Motion Sensor", total: 1199, remote: 1143, dispatch: 56 },
+        { cat: "Doorlock", total: 1157, remote: 991, dispatch: 166 },
+        { cat: "Camera", total: 982, remote: 943, dispatch: 39 },
+        { cat: "Other SHS categories (4)", total: 1906, remote: 1689, dispatch: 217 }
+      ]
+    },
+    Other: {
+      subtotal: { total: 29309, remote: 23822, dispatch: 5487 },
+      rows: [
+        { cat: "No Dial Tone", total: 5290, remote: 2451, dispatch: 2839 },
+        { cat: "Calling Features", total: 2978, remote: 2922, dispatch: 56 },
+        { cat: "Mobile App Self-Serve", total: 2707, remote: 2699, dispatch: 8 },
+        { cat: "My TELUS", total: 2221, remote: 2218, dispatch: 3 },
+        { cat: "Abandon", total: 1916, remote: 1882, dispatch: 34 },
+        { cat: "CMS inquiry", total: 1596, remote: 1596, dispatch: 0 },
+        { cat: "Apps", total: 1137, remote: 1133, dispatch: 4 },
+        { cat: "Can't Be Called", total: 1061, remote: 709, dispatch: 352 },
+        { cat: "Remaining categories (106)", total: 10403, remote: 8212, dispatch: 2191 }
+      ]
+    }
+  },
+  cctTotal: { total: 141125, remote: 114428, dispatch: 26697 }
 };
 
 // Derived "All products" series: volumes summed; rates blended as total
@@ -614,55 +656,82 @@ export default function ReliabilityScorecards() {
           </p>
         </Section>
 
-        <Section num="03" eyebrow="Ticket drivers" title={`Assure CCT mapping — ${DATA.cctMonth}`} T={T} collapsible>
+        <Section num="03" eyebrow="Ticket drivers" title={`Assure CCT mapping by product — ${DATA.cctMonth}`} T={T} collapsible>
           <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
-            Ticket volume by CCT Level-1 category, split into remote-resolved vs. dispatch-booked, from the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view. All products combined — a product-mapped refresh (via Assure Roll Up Codes) is pending Tableau reconnection. Top 12 categories shown; the rest are rolled up.
+            Ticket volume by CCT Level-1 category grouped by product type, split into remote-resolved vs. dispatch-booked, from the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view.
+            Product ticket totals in the scorecard follow the Assure Roll Up Code mapping (High Speed + Wireless = HSIA · Optik TV Legacy + TV Evolution = TV · SmartHome Security = SHS); the CCT sheet itself carries no roll-up dimension, so category rows are grouped by product type at the category level. Home Phone, self-serve and cross-product categories sit under Other.
           </p>
-          <CctTable />
+          <CctTable groups={(scope === "All" ? ["HSIA", "TV", "SHS", "Other"] : [scope]).filter((g) => DATA.cctByProduct[g])} />
         </Section>
       </>
     );
   }
 
-  function CctTable() {
-    const maxTotal = Math.max(...DATA.cctDrivers.map((r) => r.total));
+  // Grouped CCT table. `groups` = product keys to render; each group gets a
+  // heading row with its subtotal; a grand-total row when more than one shows.
+  function CctTable({ groups }) {
+    const allRows = groups.flatMap((g) => DATA.cctByProduct[g].rows);
+    const maxTotal = Math.max(...allRows.map((r) => r.total));
     const thBase = { padding: "10px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
-    const tdBase = { padding: "9px 12px", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", fontSize: 12.5 };
+    const tdBase = { padding: "8px 12px", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", fontSize: 12.5 };
+    const dotColor = (g) => (g === "Other" ? T.textFaint : colors[g]);
     const gt = DATA.cctTotal;
     return (
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ ...thBase, textAlign: "left" }}>CCT Level 1</th>
+              <th style={{ ...thBase, textAlign: "left" }}>Product / CCT Level 1</th>
               <th style={{ ...thBase, textAlign: "right" }}>Total tickets</th>
-              <th style={{ ...thBase, textAlign: "left", width: 160 }}></th>
+              <th style={{ ...thBase, textAlign: "left", width: 150 }}></th>
               <th style={{ ...thBase, textAlign: "right" }}>Remote resolved</th>
               <th style={{ ...thBase, textAlign: "right" }}>Dispatch booked</th>
               <th style={{ ...thBase, textAlign: "right" }}>Dispatch rate</th>
             </tr>
           </thead>
           <tbody>
-            {DATA.cctDrivers.map((r) => (
-              <tr key={r.cat}>
-                <td style={{ ...tdBase, fontWeight: 600, color: T.textSecondary }}>{r.cat}</td>
-                <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.text }}>{r.total.toLocaleString()}</td>
-                <td style={{ ...tdBase, padding: "9px 6px" }}>
-                  <div style={{ width: `${(r.total / maxTotal) * 100}%`, minWidth: 2, height: 10, background: colors.HSIA, borderRadius: 3, opacity: 0.75 }} />
-                </td>
-                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.remote.toLocaleString()}</td>
-                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.dispatch.toLocaleString()}</td>
-                <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{((r.dispatch / r.total) * 100).toFixed(1)}%</td>
+            {groups.map((g) => {
+              const grp = DATA.cctByProduct[g];
+              return (
+                <React.Fragment key={g}>
+                  <tr style={{ background: T.panel }}>
+                    <td style={{ ...tdBase, fontWeight: 800, color: T.heading }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ width: 8, height: 8, borderRadius: "50%", background: dotColor(g) }} />
+                        {g === "Other" ? "Other / cross-product (incl. Home Phone)" : g}
+                      </span>
+                    </td>
+                    <td style={{ ...tdBase, textAlign: "right", fontWeight: 800, color: T.heading }}>{grp.subtotal.total.toLocaleString()}</td>
+                    <td style={{ ...tdBase }}></td>
+                    <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading }}>{grp.subtotal.remote.toLocaleString()}</td>
+                    <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading }}>{grp.subtotal.dispatch.toLocaleString()}</td>
+                    <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading }}>{((grp.subtotal.dispatch / grp.subtotal.total) * 100).toFixed(1)}%</td>
+                  </tr>
+                  {grp.rows.map((r) => (
+                    <tr key={g + r.cat}>
+                      <td style={{ ...tdBase, color: T.textSecondary, paddingLeft: 34 }}>{r.cat}</td>
+                      <td style={{ ...tdBase, textAlign: "right", fontWeight: 600, color: T.text }}>{r.total.toLocaleString()}</td>
+                      <td style={{ ...tdBase, padding: "8px 6px" }}>
+                        <div style={{ width: `${(r.total / maxTotal) * 100}%`, minWidth: 2, height: 9, background: dotColor(g), borderRadius: 3, opacity: 0.7 }} />
+                      </td>
+                      <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.remote.toLocaleString()}</td>
+                      <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{r.dispatch.toLocaleString()}</td>
+                      <td style={{ ...tdBase, textAlign: "right", color: T.textSecondary }}>{((r.dispatch / r.total) * 100).toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
+            {groups.length > 1 && (
+              <tr>
+                <td style={{ ...tdBase, fontWeight: 800, color: T.heading, borderBottom: "none" }}>Total (all categories)</td>
+                <td style={{ ...tdBase, textAlign: "right", fontWeight: 800, color: T.heading, borderBottom: "none" }}>{gt.total.toLocaleString()}</td>
+                <td style={{ ...tdBase, borderBottom: "none" }}></td>
+                <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.remote.toLocaleString()}</td>
+                <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.dispatch.toLocaleString()}</td>
+                <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{((gt.dispatch / gt.total) * 100).toFixed(1)}%</td>
               </tr>
-            ))}
-            <tr>
-              <td style={{ ...tdBase, fontWeight: 800, color: T.heading, borderBottom: "none" }}>Total</td>
-              <td style={{ ...tdBase, textAlign: "right", fontWeight: 800, color: T.heading, borderBottom: "none" }}>{gt.total.toLocaleString()}</td>
-              <td style={{ ...tdBase, borderBottom: "none" }}></td>
-              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.remote.toLocaleString()}</td>
-              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{gt.dispatch.toLocaleString()}</td>
-              <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.heading, borderBottom: "none" }}>{((gt.dispatch / gt.total) * 100).toFixed(1)}%</td>
-            </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -732,6 +801,17 @@ export default function ReliabilityScorecards() {
                 </ChartCard>
               );
             })}
+            {sec.num === "02" && (
+              <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 20px 12px", marginTop: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>
+                  Ticket categories — Assure CCT mapping, {DATA.cctMonth}
+                </div>
+                <CctTable groups={[product]} />
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+                  From the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view; CCT Level-1 categories grouped to {product} by product type. Product ticket totals above follow the Assure Roll Up Code mapping.
+                </p>
+              </div>
+            )}
             {sec.num === "03" && product === "HSIA" && (
               <div style={{ background: T.purpleLightest, border: `1px solid ${T.purpleLighter}`, borderRadius: 12, padding: "18px 20px", marginTop: 16 }}>
                 <h3 style={{ margin: "0 0 4px", fontSize: 15, color: T.heading }}>HSIA spotlight — severely degraded fibre line</h3>
