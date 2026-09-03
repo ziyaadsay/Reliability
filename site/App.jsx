@@ -7,13 +7,15 @@ import React, { useState, useEffect, useRef } from "react";
   numbered lavender section bands, months-as-columns scorecard table with
   the reviewing month highlighted. Left menu retained for navigation.
 
-  Source: "Reliability Deact KPIs" tab (main KPI table, columns B..DK),
-  Reliability & Deacts workbook. Reporting window: Jan 2025 – Jul 2026.
+  Source: "Reliability Deact KPIs" tab (main KPI table, columns B..DQ),
+  Reliability & Deacts workbook. Reporting window: Jan 2025 – Aug 2026.
   Churn (go/national RGU) is reported through Jun 2026.
 
   Calls (Contacts, offered/answered) are reported as an FFH rollup
   (HSIA + TV combined) — the source has no product-level call split.
-  SHS has its own contacts series.
+  SHS has its own contacts series. "All" figures are computed: volumes are
+  summed; rates are blended as total volume over total subscriber base
+  (churn: base-weighted mean of product rates).
 */
 
 // ---------------------------------------------------------------------------
@@ -23,42 +25,49 @@ import React, { useState, useEffect, useRef } from "react";
 const MONTHS = [
   "Jan 2025","Feb 2025","Mar 2025","Apr 2025","May 2025","Jun 2025",
   "Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025",
-  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"
+  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026"
 ];
 
 const DATA = {
   callsOffered: {
-    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785],
-    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285]
+    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179],
+    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978]
   },
   callsAnswered: {
-    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053],
-    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621]
+    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856],
+    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636]
   },
   ticketRate: {
-    HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99],
-    TV:   [3.71,3.68,4.02,4.10,4.05,3.54,3.57,3.44,3.35,4.05,4.03,3.77,3.81,3.36,3.78,3.53,3.04,3.10,3.22],
-    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29]
+    HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99,3.06],
+    TV:   [3.71,3.68,4.02,4.10,4.05,3.54,3.57,3.44,3.35,4.05,4.03,3.77,3.81,3.36,3.78,3.53,3.04,3.10,3.22,3.03],
+    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08]
   },
   ticketVolume: {
-    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173],
-    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369],
-    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651]
+    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789],
+    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,34055],
+    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724]
   },
   repairRate: {
-    HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91],
-    TV:   [0.21,0.17,0.22,0.20,0.18,0.15,0.16,0.15,0.16,0.19,0.18,0.17,0.16,0.15,0.17,0.20,0.18,0.13,0.16],
-    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41]
+    HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91,0.79],
+    TV:   [0.21,0.17,0.22,0.20,0.18,0.15,0.16,0.15,0.16,0.19,0.18,0.17,0.16,0.15,0.17,0.20,0.18,0.13,0.16,0.12],
+    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39]
   },
   repairVolume: {
-    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445],
-    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567],
-    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781]
+    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445,15082],
+    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390],
+    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653]
   },
   churnRate: {
-    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,null],
-    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,null],
-    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,null]
+    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,null,null],
+    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,null,null],
+    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,null,null]
+  },
+  // Subscriber base per product (2026 Redwood Scorecard; HSIA = HSIA West,
+  // TV = IPTV West + Opus)
+  subBase: {
+    HSIA: [1882545,1884654,1886869,1886034,1886940,1894103,1892708,1894469,1902829,1905345,1905574,1909753,1902859,1904760,1908112,1906873,1907916,1912608,1914753,1920616],
+    TV:   [1023254,1023001,1023592,1012348,1021021,1022003,1019316,1016784,1014448,1014746,1013761,1013837,1017435,1018970,1020171,1012595,1074046,1073827,1004848,1124369],
+    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508]
   },
   annualChurn: {
     HSIA: { y2026: 0.95, y2025: 1.13, yoyPts: -0.18 },
@@ -70,7 +79,7 @@ const DATA = {
 
   // Ticket drivers by CCT Level 1 — from the Tableau DRD workbook,
   // "Assure CCT Mapping" view (go/DRD2), July 2026, all products combined
-  // (the view has no product split). Top 12 categories + rollup of the rest.
+  // (pending re-pull with the Assure Roll Up Code product mapping).
   cctMonth: "Jul 2026",
   cctDrivers: [
     { cat: "Connectivity", total: 33137, remote: 19416, dispatch: 13721 },
@@ -90,14 +99,48 @@ const DATA = {
   cctTotal: { total: 132292, remote: 107015, dispatch: 25277 }
 };
 
+// Derived "All products" series: volumes summed; rates blended as total
+// volume / total base; churn as base-weighted mean of product rates.
+(function deriveAll() {
+  const n = MONTHS.length;
+  const P = ["HSIA", "TV", "SHS"];
+  const baseAll = [], callsOffAll = [], callsAnsAll = [], tickRateAll = [], tickVolAll = [], repRateAll = [], repVolAll = [], churnAll = [];
+  for (let i = 0; i < n; i++) {
+    const base = P.reduce((a, p) => a + DATA.subBase[p][i], 0);
+    baseAll.push(base);
+    callsOffAll.push(DATA.callsOffered.FFH[i] + DATA.callsOffered.SHS[i]);
+    callsAnsAll.push(DATA.callsAnswered.FFH[i] + DATA.callsAnswered.SHS[i]);
+    const tv = P.reduce((a, p) => a + DATA.ticketVolume[p][i], 0);
+    tickVolAll.push(tv);
+    tickRateAll.push(Math.round((tv / base) * 10000) / 100);
+    const rv = P.reduce((a, p) => a + DATA.repairVolume[p][i], 0);
+    repVolAll.push(rv);
+    repRateAll.push(Math.round((rv / base) * 10000) / 100);
+    if (P.every((p) => DATA.churnRate[p][i] != null)) {
+      const w = P.reduce((a, p) => a + DATA.churnRate[p][i] * DATA.subBase[p][i], 0);
+      churnAll.push(Math.round((w / base) * 100) / 100);
+    } else churnAll.push(null);
+  }
+  DATA.subBase.All = baseAll;
+  DATA.callsOffered.All = callsOffAll;
+  DATA.callsAnswered.All = callsAnsAll;
+  DATA.ticketRate.All = tickRateAll;
+  DATA.ticketVolume.All = tickVolAll;
+  DATA.repairRate.All = repRateAll;
+  DATA.repairVolume.All = repVolAll;
+  DATA.churnRate.All = churnAll;
+})();
+
 // ---------------------------------------------------------------------------
 // Palette — HSIA/TV mode-invariant, SHS blue stepped per mode; validated
 // against the dataviz accessibility gates on the adjacent pairlist in both
-// themes. FFH (rollup) never shares a chart with the products.
+// themes. FFH (rollup) never shares a chart with the products. "All" wears
+// the TELUS heading purple since it never sits beside the product series.
 // ---------------------------------------------------------------------------
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926" };
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
+const SCOPES = ["All", "HSIA", "TV", "SHS"];
 
 const LIGHT_THEME = {
   bg: "#FFFFFF", surface: "#FFFFFF", band: "#F6F2FA", panel: "#FAF9FB",
@@ -126,6 +169,12 @@ const TELUS_LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABP4AAAGfCAYAAA
 // ---------------------------------------------------------------------------
 function fmtNum(v) { return v == null ? "—" : v.toLocaleString(); }
 function fmtNumK(v) { return v == null ? "—" : v >= 10000 ? (v / 1000).toFixed(1) + "K" : v.toLocaleString(); }
+function fmtBig(v) {
+  if (v == null) return "—";
+  if (v >= 1e6) return (v / 1e6).toFixed(2) + "M";
+  if (v >= 1e4) return (v / 1000).toFixed(1) + "K";
+  return v.toLocaleString();
+}
 function fmtPct(v, d = 2) { return v == null ? "—" : v.toFixed(d) + "%"; }
 function lastIdxUpTo(arr, upTo) { for (let i = Math.min(upTo, arr.length - 1); i >= 0; i--) if (arr[i] != null) return i; return -1; }
 function shortMonth(m) { const [mo, y] = m.split(" "); return mo.toUpperCase() + "'" + y.slice(2); }
@@ -139,14 +188,16 @@ function niceCeil(v) {
   return nice * base;
 }
 
-// For these reliability metrics a decrease is always favourable
-function delta(curr, prev, unit, decimals) {
+// goodWhenDown: reliability metrics improve when they fall; subscriber base
+// improves when it grows.
+function delta(curr, prev, unit, decimals, goodWhenDown = true) {
   if (curr == null || prev == null) return null;
   const diff = curr - prev;
   const flat = Math.abs(diff) < 1e-9;
+  const good = goodWhenDown ? diff <= 0 : diff >= 0;
   const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
   const mag = Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  return { text: `${arrow} ${mag}${unit}`, tone: flat ? "flat" : diff <= 0 ? "good" : "bad" };
+  return { text: `${arrow} ${mag}${unit}`, tone: flat ? "flat" : good ? "good" : "bad" };
 }
 
 function useIsDark(mode) {
@@ -366,7 +417,7 @@ function Section({ num, eyebrow, title, T, children, collapsible, defaultOpen = 
 }
 
 // ---------------------------------------------------------------------------
-// Indicator metadata (drives the scorecard + product pages)
+// Indicator metadata (drives the scorecard table)
 // ---------------------------------------------------------------------------
 const INDICATORS = [
   {
@@ -404,7 +455,7 @@ export default function ReliabilityScorecards() {
   const [page, setPage] = useState("home");
   const [fromIdx, setFromIdx] = useState(12); // default view: 2026 months
   const [toIdx, setToIdx] = useState(MONTHS.length - 1);
-  const [activeProducts, setActiveProducts] = useState({ HSIA: true, TV: true, SHS: true });
+  const [scope, setScope] = useState("All"); // Overview product filter, defaults to All
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
 
@@ -428,25 +479,21 @@ export default function ReliabilityScorecards() {
   const sliceR = (arr) => arr.slice(fromIdx, toIdx + 1);
   const latestLabel = MONTHS[toIdx];
 
-  function toggleProduct(p) {
-    const willBe = !activeProducts[p];
-    if (!willBe && !PRODUCTS.some((k) => k !== p && activeProducts[k])) return;
-    setActiveProducts({ ...activeProducts, [p]: willBe });
-  }
   function toggleTable(id) { setOpenTables((o) => ({ ...o, [id]: !o[id] })); }
 
-  function rowFigures(data, decimals) {
+  function rowFigures(data, decimals, goodWhenDown = true) {
     const li = lastIdxUpTo(data, toIdx);
     if (li < 0) return { latest: null };
     return {
       latest: data[li], latestMonth: MONTHS[li],
-      mom: li >= 1 ? delta(data[li], data[li - 1], "", decimals) : null,
-      yoy: li >= 12 ? delta(data[li], data[li - 12], "", decimals) : null
+      mom: li >= 1 ? delta(data[li], data[li - 1], "", decimals, goodWhenDown) : null,
+      yoy: li >= 12 ? delta(data[li], data[li - 12], "", decimals, goodWhenDown) : null
     };
   }
 
+  // Which scorecard rows show under the current scope
   const rowVisible = (key) =>
-    key === "FFH" ? activeProducts.HSIA || activeProducts.TV : activeProducts[key];
+    scope === "All" ? true : key === "FFH" ? scope === "HSIA" || scope === "TV" : key === scope;
 
   const navItems = [
     { id: "home", label: "Overview", dot: T.heading },
@@ -459,6 +506,34 @@ export default function ReliabilityScorecards() {
     background: T.surface, color: T.text, border: `1px solid ${T.borderStrong}`,
     borderRadius: 8, padding: "6px 10px", fontSize: 13, cursor: "pointer", fontFamily: FONT
   };
+
+  // Executive-summary tiles for a scope ("All" or a product)
+  function scopeTiles(sc) {
+    const callsKey = sc === "All" ? "All" : sc === "SHS" ? "SHS" : "FFH";
+    const callsLabel = sc === "All" ? "Calls offered (all products)" : callsKey === "FFH" ? "Calls offered (FFH)" : "Calls offered (SHS)";
+    return [
+      { label: callsLabel, data: DATA.callsOffered[callsKey], fmt: fmtNum, dec: 0, color: colors[callsKey], goodDown: true },
+      { label: "Ticket rate", data: DATA.ticketRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
+      { label: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
+      { label: "Churn rate", data: DATA.churnRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
+      { label: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: false }
+    ];
+  }
+
+  function TileRow({ tiles }) {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+        {tiles.map((tile, i) => {
+          const f = rowFigures(tile.data, tile.dec, tile.goodDown);
+          return (
+            <StatCard key={i} T={T} color={tile.color}
+              label={tile.label} value={tile.fmt(f.latest)} sub={f.latestMonth}
+              deltaEl={<DeltaText d={f.mom} T={T} suffix="vs prior mo." />} />
+          );
+        })}
+      </div>
+    );
+  }
 
   // ------------------------------ pages ------------------------------
   function ScorecardTable() {
@@ -520,23 +595,12 @@ export default function ReliabilityScorecards() {
   function HomePage() {
     return (
       <>
-        <Section num="01" eyebrow="Executive summary" title="All indicators at a glance" T={T} collapsible>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(225px,1fr))", gap: 14 }}>
-            {INDICATORS.flatMap((ind) =>
-              ind.rows.filter((r) => rowVisible(r.key)).slice(0, 1).map((r) => {
-                const f = rowFigures(r.data, ind.decimals);
-                return (
-                  <StatCard key={ind.id} T={T} color={colors[r.key]}
-                    label={`${ind.name} · ${r.label}`}
-                    value={ind.fmt(f.latest)} sub={f.latestMonth}
-                    deltaEl={<DeltaText d={f.mom} T={T} suffix="vs prior mo." />} />
-                );
-              })
-            )}
-          </div>
+        <Section num="01" eyebrow="Executive summary" title={scope === "All" ? "All products at a glance" : `${scope} at a glance`} T={T} collapsible>
+          <TileRow tiles={scopeTiles(scope)} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
-            Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets and repairs. Churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b> and runs one month behind.
-            Annual churn: HSIA {DATA.annualChurn.HSIA.y2026.toFixed(2)}% 2026 YTD vs {DATA.annualChurn.HSIA.y2025.toFixed(2)}% 2025 · TV {DATA.annualChurn.TV.y2026.toFixed(2)}% vs {DATA.annualChurn.TV.y2025.toFixed(2)}% · SHS {DATA.annualChurn.SHS.y2026.toFixed(2)}% vs {DATA.annualChurn.SHS.y2025.toFixed(2)}%.
+            Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base. Churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
+            {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are FFH + SHS contacts offered."}
+            {" "}Annual churn: HSIA {DATA.annualChurn.HSIA.y2026.toFixed(2)}% 2026 YTD vs {DATA.annualChurn.HSIA.y2025.toFixed(2)}% 2025 · TV {DATA.annualChurn.TV.y2026.toFixed(2)}% vs {DATA.annualChurn.TV.y2025.toFixed(2)}% · SHS {DATA.annualChurn.SHS.y2026.toFixed(2)}% vs {DATA.annualChurn.SHS.y2025.toFixed(2)}%.
           </p>
         </Section>
 
@@ -552,7 +616,7 @@ export default function ReliabilityScorecards() {
 
         <Section num="03" eyebrow="Ticket drivers" title={`Assure CCT mapping — ${DATA.cctMonth}`} T={T} collapsible>
           <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
-            Ticket volume by CCT Level-1 category, split into remote-resolved vs. dispatch-booked, from the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view. All products combined — that view carries no product split. Top 12 categories shown; the rest are rolled up.
+            Ticket volume by CCT Level-1 category, split into remote-resolved vs. dispatch-booked, from the DRD (go/DRD2) Tableau workbook's Assure CCT Mapping view. All products combined — a product-mapped refresh (via Assure Roll Up Codes) is pending Tableau reconnection. Top 12 categories shown; the rest are rolled up.
           </p>
           <CctTable />
         </Section>
@@ -612,13 +676,6 @@ export default function ReliabilityScorecards() {
       : `Calls are only reported as an FFH rollup (HSIA + TV combined) — there is no ${product}-specific call series in the source.`;
     const yoyChurn = DATA.annualChurn[product];
 
-    const tiles = [
-      { label: `Calls offered (${callsKey})`, data: DATA.callsOffered[callsKey], fmt: fmtNum, dec: 0, color: colors[callsKey] },
-      { label: "Ticket rate", data: DATA.ticketRate[product], fmt: fmtPct, dec: 2, color: colors[product] },
-      { label: "Repair / dispatch rate", data: DATA.repairRate[product], fmt: fmtPct, dec: 2, color: colors[product] },
-      { label: "Churn rate", data: DATA.churnRate[product], fmt: fmtPct, dec: 2, color: colors[product] }
-    ];
-
     const sections = [
       {
         num: "01", title: "Calls", charts: [{
@@ -650,7 +707,7 @@ export default function ReliabilityScorecards() {
           {
             id: "churn", title: "Churn rate (go/national RGU)", fmt: (v) => fmtPct(v, 2),
             defs: [{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }],
-            note: "Churn runs one month behind the other indicators in the source (reported through Jun 2026; Jan 2025 was never reported)."
+            note: "Churn runs behind the other indicators in the source (reported through Jun 2026; Jan 2025 was never reported)."
           }
         ]
       }
@@ -658,16 +715,7 @@ export default function ReliabilityScorecards() {
 
     return (
       <>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 14 }}>
-          {tiles.map((tile, i) => {
-            const f = rowFigures(tile.data, tile.dec);
-            return (
-              <StatCard key={i} T={T} color={tile.color}
-                label={tile.label} value={tile.fmt(f.latest)} sub={f.latestMonth}
-                deltaEl={<DeltaText d={f.mom} T={T} suffix="vs prior mo." />} />
-            );
-          })}
-        </div>
+        <TileRow tiles={scopeTiles(product)} />
         <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
           Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)}pts YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
         </div>
@@ -747,7 +795,7 @@ export default function ReliabilityScorecards() {
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
-            <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "home" ? "FFH cross-product: calls, tickets, repairs/dispatches, churn" : `${page}: calls, tickets, repairs/dispatches, churn`}</span>
+            <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "home" ? (scope === "All" ? "All products: calls, tickets, repairs/dispatches, churn, base" : `${scope}: calls, tickets, repairs/dispatches, churn, base`) : `${page}: calls, tickets, repairs/dispatches, churn, base`}</span>
             <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
             <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: Jun 2026)</span>
           </div>
@@ -757,10 +805,10 @@ export default function ReliabilityScorecards() {
             {page === "home" && (
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>Products</span>
-                {PRODUCTS.map((p) => {
-                  const on = activeProducts[p];
+                {SCOPES.map((p) => {
+                  const on = scope === p;
                   return (
-                    <button key={p} onClick={() => toggleProduct(p)}
+                    <button key={p} onClick={() => setScope(p)}
                       style={{
                         border: `1px solid ${on ? "transparent" : T.borderStrong}`, background: on ? T.ink : "transparent",
                         color: on ? "#fff" : T.textSecondary, borderRadius: 999, padding: "5px 13px", fontSize: 12.5, fontWeight: 600,
