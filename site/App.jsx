@@ -692,6 +692,8 @@ function agg2025(data, mode) {
   return mode === "sum" ? sum : sum / vals.length;
 }
 
+const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
+
 // Initiatives covering a recurring-issue group, product-scoped
 function initiativesCovering(product, grp) {
   return INITIATIVES.filter((it) => it.p === product && it.issues.includes(grp));
@@ -707,6 +709,9 @@ export default function ReliabilityScorecards() {
   const [scope, setScope] = useState("All");
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
+  const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
+  const NO_INIT_FILTERS = { theme: "All", status: "All", timeline: "All", prime: "All" };
+  const [initFilters, setInitFilters] = useState(NO_INIT_FILTERS);
 
   const isDark = useIsDark(themeMode);
   const T = isDark ? DARK_THEME : LIGHT_THEME;
@@ -788,6 +793,33 @@ export default function ReliabilityScorecards() {
             <StatCard key={i} T={T} color={tile.color} icon={tile.icon}
               label={tile.label} value={tile.fmt(f.latest)} sub={f.latestMonth}
               deltas={deltas} />
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Top ticket issue per product, flagged in the executive summary
+  function TopIssueFlags({ prods }) {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 12, marginTop: 14 }}>
+        {prods.map((p) => {
+          const t = LOOKER[p].topIssues[0];
+          const worse = t.a25 != null && t.a26 > t.a25;
+          return (
+            <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, background: T.panel, border: `1px solid ${T.border}`, borderLeft: `3px solid ${colors[p]}`, borderRadius: 10, padding: "10px 14px" }}>
+              <span style={{ color: colors[p], display: "inline-flex", marginTop: 2 }}><Icon name={PRODUCT_ICON[p]} size={15} /></span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{p} · top ticket issue — Aug'26</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginTop: 2 }}>{t.issue}</div>
+                <div style={{ fontSize: 12, color: T.textMuted, marginTop: 2 }}>
+                  {t.a26.toLocaleString()} tickets
+                  {t.a25 != null && (
+                    <> · <span style={{ color: worse ? T.bad : T.good, fontWeight: 700 }}>{worse ? "▲" : "▼"} {yoyPctText(t.a26, t.a25)} YoY</span></>
+                  )}
+                </div>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -933,6 +965,34 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  function InitiativeFilterBar({ items }) {
+    const uniq = (k) => Array.from(new Set(items.map((it) => it[k] || "—"))).sort();
+    const active = INIT_FILTER_KEYS.some((k) => initFilters[k] !== "All");
+    const count = items.filter((it) => INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])).length;
+    return (
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", gap: 12, marginBottom: 14 }}>
+        {INIT_FILTER_KEYS.map((k) => (
+          <label key={k} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{k}</span>
+            <select value={initFilters[k]} onChange={(e) => setInitFilters((f) => ({ ...f, [k]: e.target.value }))} style={selectStyle}>
+              <option value="All">All</option>
+              {uniq(k).map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </label>
+        ))}
+        {active && (
+          <button onClick={() => setInitFilters(NO_INIT_FILTERS)}
+            style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "6px 14px", fontSize: 12, cursor: "pointer", fontFamily: FONT }}>
+            Clear filters
+          </button>
+        )}
+        <span style={{ marginLeft: "auto", fontSize: 12, color: T.textFaint, alignSelf: "center" }}>
+          {count} of {items.length} initiative{items.length > 1 ? "s" : ""}
+        </span>
+      </div>
+    );
+  }
+
   function PillarInitiatives() {
     const prods = scope === "All" ? ["HSIA", "TV"] : scope === "SHS" ? [] : [scope];
     return (
@@ -940,17 +1000,21 @@ export default function ReliabilityScorecards() {
         {PILLARS.map((pl) => {
           const items = INITIATIVES.filter((it) => it.pillar === pl.n && prods.includes(it.p));
           if (!items.length) return null;
+          const open = !!openPillars[pl.n];
           return (
-            <div key={pl.n} style={{ marginBottom: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, marginBottom: 8 }}>
+            <div key={pl.n} style={{ marginBottom: open ? 18 : 8 }}>
+              <div
+                onClick={() => setOpenPillars((o) => ({ ...o, [pl.n]: !o[pl.n] }))}
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, marginBottom: open ? 8 : 0, cursor: "pointer", userSelect: "none" }}>
                 <span style={{ color: T.heading, display: "inline-flex" }}><Icon name={"pillar" + pl.n} size={16} /></span>
                 <div>
                   <span style={{ fontWeight: 800, color: T.heading, fontSize: 13.5 }}>{pl.n} · {pl.name}</span>
                   <span style={{ color: T.textFaint, fontSize: 12, marginLeft: 8 }}>{pl.sub}</span>
                 </div>
                 <span style={{ marginLeft: "auto", color: T.textMuted, fontSize: 12, fontWeight: 700 }}>{items.length} initiative{items.length > 1 ? "s" : ""}</span>
+                <span style={{ color: T.textMuted, fontSize: 13, transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>
               </div>
-              <InitiativeRows items={items} />
+              {open && <InitiativeRows items={items} />}
             </div>
           );
         })}
@@ -1044,6 +1108,7 @@ export default function ReliabilityScorecards() {
       <>
         <Section num="01" eyebrow="Executive summary" title={scope === "All" ? "All products at a glance" : `${scope} at a glance`} icon="overview" T={T} collapsible>
           <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" />
+          <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
             {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are FFH + SHS contacts offered."}
@@ -1070,7 +1135,7 @@ export default function ReliabilityScorecards() {
 
         <Section num="04" eyebrow="Reliability program" title="Initiatives by pillar" icon="initiatives" T={T} collapsible>
           <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
-            Every initiative from the workbook's Initiatives tab, grouped under the reliability program's four pillars. SHS initiatives will be added to the source later.
+            Every initiative from the workbook's Initiatives tab, grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives. SHS initiatives will be added to the source later.
           </p>
           <PillarInitiatives />
         </Section>
@@ -1175,9 +1240,19 @@ export default function ReliabilityScorecards() {
           {prodInits.length ? (
             <>
               <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
-                {product} initiatives from the workbook's Initiatives tab, with status, timeline and prime.
+                {product} initiatives from the workbook's Initiatives tab, with status, timeline and prime. Use the filters to narrow the list.
               </p>
-              <InitiativeRows items={prodInits} />
+              <InitiativeFilterBar items={prodInits} />
+              {(() => {
+                const filtered = prodInits.filter((it) =>
+                  INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])
+                );
+                return filtered.length ? (
+                  <InitiativeRows items={filtered} />
+                ) : (
+                  <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 0 0" }}>No initiatives match the selected filters.</p>
+                );
+              })()}
             </>
           ) : (
             <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>SHS initiatives have not been added to the source workbook yet — this section will populate once they are.</p>
@@ -1203,7 +1278,7 @@ export default function ReliabilityScorecards() {
           {navItems.map((item) => {
             const active = page === item.id;
             return (
-              <button key={item.id} onClick={() => setPage(item.id)}
+              <button key={item.id} onClick={() => { setPage(item.id); setInitFilters(NO_INIT_FILTERS); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
                   background: active ? T.navActiveBg : "transparent", color: active ? T.navActiveText : T.textSecondary,
