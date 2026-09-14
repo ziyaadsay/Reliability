@@ -301,8 +301,46 @@ const INITIATIVES = [
 // the adjacent pairlist in both themes). FFH never shares a chart with the
 // products; "All" wears the heading purple.
 // ---------------------------------------------------------------------------
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8" };
+// ---------------------------------------------------------------------------
+// Self-serve customer workflows (Sweepr) — HSIA West Scorecard workbook, rows 49-55.
+// Arrays align with MONTHS (Jan 2025 – Aug 2026). a = actuals; t = 2026 monthly targets
+// (the source sets targets for 2026 only; churn impact and deacts saved carry no target).
+// Rates are percentages; cxEasy is a score (target 4.0); cxSent is comment sentiment
+// (negative scale, target -0.50, less negative is better).
+// ---------------------------------------------------------------------------
+const SWEEPR = {
+  resolved: {
+    a: [40266, 39898, 43490, 46000, 44336, 47147, 43423, 44346, 51674, 56387, 52820, 50953, 50356, 42781, 53889, 41283, 43179, 45867, 45891, 49069],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, 47551, 47439, 47595, 46384, 45971, 45988, 45989, 45987]
+  },
+  webAppRate: {
+    a: [58.1, 59.5, 59.2, 59.1, 58.7, 59.9, 56.3, 61.3, 52.9, 54.4, 56.8, 54.0, 59.6, 61.3, 64.2, 61.1, 64.2, 63.8, 63.5, 64.1],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, 59.4, 59.7, 60.1, 60.4, 60.7, 61.0, 61.4, 61.7]
+  },
+  ivrRate: {
+    a: [null, null, null, null, null, null, null, null, null, null, null, null, 13.9, 12.7, 12.5, 12.4, null, null, null, null],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0]
+  },
+  cxEasy: {
+    a: [null, null, null, null, null, null, null, null, null, 3.29, 3.35, 3.43, 3.43, 3.49, 3.45, 3.51, 3.45, 3.49, 3.48, 3.44],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]
+  },
+  cxSent: {
+    a: [null, null, null, null, null, null, null, null, null, -0.68, -0.66, -0.55, -0.61, -0.57, -0.63, -0.64, -0.61, -0.58, -0.64, -0.67],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5]
+  },
+  churn: {
+    a: [null, null, null, null, null, null, null, null, null, null, null, null, 2.25, 2.34, 1.93, 1.96, 1.89, 1.81, 1.81, 1.81],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+  },
+  deacts: {
+    a: [null, null, null, null, null, null, null, null, null, null, null, null, 749, 742, 691, 879, 716, 845, 881, 899],
+    t: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+  }
+};
+
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
 const SCOPES = ["All", "HSIA", "TV", "SHS"];
 
@@ -350,7 +388,10 @@ const ICON_PATHS = {
   pillar1: "M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 12l6-6M7 17a7 7 0 0 1 0-10M17 17a7 7 0 0 0 2-5",
   pillar2: "M12 3 3 8l9 5 9-5zM3 13l9 5 9-5",
   pillar3: "M21 3 10 14M21 3l-7 18-3-8-8-3z",
-  pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3"
+  pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
+  selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
+  cx: "M8 10h.01M16 10h.01M8.5 15a4.5 4.5 0 0 0 7 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z",
+  saved: "M12 21C7 17 3 13.5 3 9.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 9 3.5c0 4-4 7.5-9 11.5zM9 12l2 2 4-4"
 };
 function Icon({ name, size = 15, style }) {
   return (
@@ -461,10 +502,14 @@ function LineChart({ labels, seriesDefs, height = 240, yFmt, colors, T }) {
   const plotH = height - top - bottom;
 
   const allVals = seriesDefs.flatMap((s) => s.data.filter((v) => v != null));
-  const max = allVals.length ? niceCeil(Math.max(...allVals) * 1.15) : 1;
+  const posVals = allVals.filter((v) => v > 0);
+  const negVals = allVals.filter((v) => v < 0);
+  const max = posVals.length ? niceCeil(Math.max(...posVals) * 1.15) : negVals.length ? 0 : 1;
+  const min = negVals.length ? -niceCeil(Math.abs(Math.min(...negVals)) * 1.15) : 0;
+  const span = max - min || 1;
 
   const xScale = (i) => (labels.length <= 1 ? left + plotW / 2 : left + (i * plotW) / (labels.length - 1));
-  const yScale = (v) => top + (1 - v / max) * plotH;
+  const yScale = (v) => top + ((max - v) / span) * plotH;
   const seriesColor = (s) => s.color || colors[s.key];
 
   function handleMove(e) {
@@ -487,7 +532,7 @@ function LineChart({ labels, seriesDefs, height = 240, yFmt, colors, T }) {
     <div ref={wrapRef} style={{ position: "relative", width: "100%", aspectRatio: `${VIEW_W} / ${height}` }} onMouseMove={handleMove} onMouseLeave={() => setHoverI(null)}>
       <svg width="100%" height="100%" viewBox={`0 0 ${VIEW_W} ${height}`}>
         {Array.from({ length: 5 }).map((_, t) => {
-          const v = (max * t) / 4;
+          const v = min + (span * t) / 4;
           const y = yScale(v);
           return (
             <g key={t}>
@@ -506,22 +551,27 @@ function LineChart({ labels, seriesDefs, height = 240, yFmt, colors, T }) {
         {hoverI != null && (
           <line x1={xScale(hoverI)} x2={xScale(hoverI)} y1={top} y2={height - bottom} stroke={T.borderStrong} strokeWidth="1" strokeDasharray="3 3" />
         )}
-        {seriesDefs.map((s, si) => {
+        {(() => { const placedLabelYs = []; return seriesDefs.map((s, si) => {
           const pts = s.data.map((v, i) => (v == null ? null : { x: xScale(i), y: yScale(v), v })).filter(Boolean);
           if (!pts.length) return null;
           const d = "M " + pts.map((p) => `${p.x},${p.y}`).join(" L ");
           const last = pts[pts.length - 1];
           const col = seriesColor(s);
+          let labelY = last.y;
+          for (const py of placedLabelYs) {
+            if (Math.abs(labelY - py) < 13) labelY = py + (labelY >= py ? 13 : -13);
+          }
+          placedLabelYs.push(labelY);
           return (
             <g key={si}>
               <path d={d} fill="none" stroke={col} strokeWidth="2.5" strokeDasharray={s.dash || undefined} />
-              <text x={last.x + 5} y={last.y} fontSize="11.5" fontWeight="600" fill={col} dominantBaseline="middle">{yFmt(last.v)}</text>
+              <text x={last.x + 5} y={labelY} fontSize="11.5" fontWeight="600" fill={col} dominantBaseline="middle">{yFmt(last.v)}</text>
               {hoverI != null && s.data[hoverI] != null && (
                 <circle cx={xScale(hoverI)} cy={yScale(s.data[hoverI])} r="3.5" fill={col} stroke={T.surface} strokeWidth="1.5" />
               )}
             </g>
           );
-        })}
+        }); })()}
       </svg>
       {hoverI != null && (
         <div style={{
@@ -751,7 +801,8 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
-    { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS }
+    { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
+    { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR }
   ];
 
   const selectStyle = {
@@ -1102,12 +1153,154 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ self-serve (Sweepr) ------------------------------
+  // goodDown=false: self-serve metrics improve when they rise (churn impact is the exception)
+  function sweeprFig(key, dec, goodDown = false) {
+    const s = SWEEPR[key];
+    const li = lastIdxUpTo(s.a, toIdx);
+    if (li < 0) return { latest: null };
+    return {
+      latest: s.a[li], latestMonth: MONTHS[li], target: s.t[li],
+      vsTarget: s.t[li] != null ? delta(s.a[li], s.t[li], "", dec, goodDown) : null,
+      mom: li >= 1 ? delta(s.a[li], s.a[li - 1], "", dec, goodDown) : null,
+      yoy: li >= 12 ? delta(s.a[li], s.a[li - 12], "", dec, goodDown) : null
+    };
+  }
+
+  function SelfServePage() {
+    const col = colors.SWEEPR;
+    const res = sweeprFig("resolved", 0);
+    const web = sweeprFig("webAppRate", 1);
+    const easy = sweeprFig("cxEasy", 2);
+    const chn = sweeprFig("churn", 2, true);
+    const dea = sweeprFig("deacts", 0);
+    const targetSeries = (key, label) => [
+      { key: "SWEEPR", label, data: sliceR(SWEEPR[key].a) },
+      { key: "SWEEPR", label: "2026 target", data: sliceR(SWEEPR[key].t), dash: "7 5" }
+    ];
+    const targetLegend = (label) => (
+      <Legend items={[{ label, color: col }, { label: "2026 target", color: col, dash: true }]} T={T} />
+    );
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtNum(res.latest)}
+            sub={`${res.latestMonth} · target ${fmtNum(res.target)}`}
+            deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="vs prior yr." />]} />
+          <StatCard T={T} color={col} icon="tickets" label="Web/App resolution rate" value={fmtPct(web.latest, 1)}
+            sub={`${web.latestMonth} · target ${fmtPct(web.target, 1)}`}
+            deltas={[<DeltaText key="t" d={web.vsTarget} T={T} suffix="pts vs target" />, <DeltaText key="y" d={web.yoy} T={T} suffix="pts vs prior yr." />]} />
+          <StatCard T={T} color={col} icon="cx" label="CX 'Easy to follow'" value={easy.latest == null ? "—" : easy.latest.toFixed(2)}
+            sub={easy.latest == null ? undefined : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`}
+            deltas={[<DeltaText key="t" d={easy.vsTarget} T={T} suffix="vs target" />]} />
+          <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn" value={fmtPct(chn.latest, 2)}
+            sub={chn.latestMonth}
+            deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="pts vs prior mo." />]} />
+          <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
+            sub={dea.latestMonth}
+            deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
+        </p>
+
+        <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T}>
+          <ChartCard title="Blended (v2) resolved sessions" T={T}
+            tableOpen={!!openTables["ss-res"]} onToggleTable={() => toggleTable("ss-res")}
+            note="Blended resolved sessions across self-serve workflows. The dashed series is the 2026 monthly target from the source scorecard.">
+            <LineChart labels={rangeMonths} seriesDefs={targetSeries("resolved", "Resolved sessions")} yFmt={fmtNum} colors={colors} T={T} />
+            {targetLegend("Resolved sessions")}
+            {openTables["ss-res"] && <DataTable labels={rangeMonths} seriesDefs={[
+              { key: "SWEEPR", label: "Actual", data: sliceR(SWEEPR.resolved.a) },
+              { key: "SWEEPR", label: "Target", data: sliceR(SWEEPR.resolved.t) }
+            ]} fmt={fmtNum} T={T} />}
+          </ChartCard>
+        </Section>
+
+        <Section num="02" eyebrow="Self-serve" title="Resolution rates" icon="tickets" T={T}>
+          <ChartCard title="Web/App resolution rate" T={T}
+            tableOpen={!!openTables["ss-web"]} onToggleTable={() => toggleTable("ss-web")}
+            note="Share of Web/App self-serve workflow sessions resolved without an agent. 2026 target rises through the year.">
+            <LineChart labels={rangeMonths} seriesDefs={targetSeries("webAppRate", "Web/App rate")} yFmt={(v) => fmtPct(v, 1)} colors={colors} T={T} />
+            {targetLegend("Web/App rate")}
+            {openTables["ss-web"] && <DataTable labels={rangeMonths} seriesDefs={[
+              { key: "SWEEPR", label: "Actual", data: sliceR(SWEEPR.webAppRate.a) },
+              { key: "SWEEPR", label: "Target", data: sliceR(SWEEPR.webAppRate.t) }
+            ]} fmt={(v) => fmtPct(v, 1)} T={T} />}
+          </ChartCard>
+          <ChartCard title="CCAI IVR resolution rate" T={T}
+            tableOpen={!!openTables["ss-ivr"]} onToggleTable={() => toggleTable("ss-ivr")}
+            note="Reported Jan – Apr 2026; the source marks May 2026 onward as not available. Target is 14.0% for 2026.">
+            <LineChart labels={rangeMonths} seriesDefs={targetSeries("ivrRate", "CCAI IVR rate")} yFmt={(v) => fmtPct(v, 1)} colors={colors} T={T} />
+            {targetLegend("CCAI IVR rate")}
+            {openTables["ss-ivr"] && <DataTable labels={rangeMonths} seriesDefs={[
+              { key: "SWEEPR", label: "Actual", data: sliceR(SWEEPR.ivrRate.a) },
+              { key: "SWEEPR", label: "Target", data: sliceR(SWEEPR.ivrRate.t) }
+            ]} fmt={(v) => fmtPct(v, 1)} T={T} />}
+          </ChartCard>
+        </Section>
+
+        <Section num="03" eyebrow="Self-serve" title="Customer experience" icon="cx" T={T}>
+          <ChartCard title="CX 'Easy to follow' score" T={T}
+            tableOpen={!!openTables["ss-easy"]} onToggleTable={() => toggleTable("ss-easy")}
+            note="Customer-rated ease of following the workflow. Reported from Oct 2025; the 2026 target is 4.00.">
+            <LineChart labels={rangeMonths} seriesDefs={targetSeries("cxEasy", "Easy to follow")} yFmt={(v) => v.toFixed(2)} colors={colors} T={T} />
+            {targetLegend("Easy to follow")}
+            {openTables["ss-easy"] && <DataTable labels={rangeMonths} seriesDefs={[
+              { key: "SWEEPR", label: "Actual", data: sliceR(SWEEPR.cxEasy.a) },
+              { key: "SWEEPR", label: "Target", data: sliceR(SWEEPR.cxEasy.t) }
+            ]} fmt={(v) => (v == null ? "—" : v.toFixed(2))} T={T} />}
+          </ChartCard>
+          <ChartCard title="CX 'Comment sentiment' score" T={T}
+            tableOpen={!!openTables["ss-sent"]} onToggleTable={() => toggleTable("ss-sent")}
+            note="Sentiment of free-text workflow comments on a negative scale — less negative is better. Reported from Oct 2025; the 2026 target is -0.50.">
+            <LineChart labels={rangeMonths} seriesDefs={targetSeries("cxSent", "Comment sentiment")} yFmt={(v) => v.toFixed(2)} colors={colors} T={T} />
+            {targetLegend("Comment sentiment")}
+            {openTables["ss-sent"] && <DataTable labels={rangeMonths} seriesDefs={[
+              { key: "SWEEPR", label: "Actual", data: sliceR(SWEEPR.cxSent.a) },
+              { key: "SWEEPR", label: "Target", data: sliceR(SWEEPR.cxSent.t) }
+            ]} fmt={(v) => (v == null ? "—" : v.toFixed(2))} T={T} />}
+          </ChartCard>
+        </Section>
+
+        <Section num="04" eyebrow="Self-serve" title="Churn impact" icon="saved" T={T}>
+          <ChartCard title="Sweepr involved churn rate" T={T}
+            tableOpen={!!openTables["ss-chn"]} onToggleTable={() => toggleTable("ss-chn")}
+            note="Churn rate among customers whose journey involved a Sweepr workflow. Reported for 2026 only; no target is set in the source.">
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
+            {openTables["ss-chn"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+          </ChartCard>
+          <ChartCard title="Deacts saved" T={T}
+            tableOpen={!!openTables["ss-dea"]} onToggleTable={() => toggleTable("ss-dea")}
+            note="Deactivations avoided through self-serve workflow saves. Reported for 2026 only; no target is set in the source.">
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Deacts saved", data: sliceR(SWEEPR.deacts.a) }]} yFmt={fmtNum} colors={colors} T={T} />
+            {openTables["ss-dea"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Deacts saved", data: sliceR(SWEEPR.deacts.a) }]} fmt={fmtNum} T={T} />}
+          </ChartCard>
+        </Section>
+      </>
+    );
+  }
+
   // ------------------------------ pages ------------------------------
   function HomePage() {
     return (
       <>
         <Section num="01" eyebrow="Executive summary" title={scope === "All" ? "All products at a glance" : `${scope} at a glance`} icon="overview" T={T} collapsible>
           <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" />
+          {scope === "All" && (() => {
+            const res = sweeprFig("resolved", 0);
+            const dea = sweeprFig("deacts", 0);
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14, marginTop: 14 }}>
+                <StatCard T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtNum(res.latest)}
+                  sub={`${res.latestMonth} · target ${fmtNum(res.target)} · Sweepr workflows`}
+                  deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />
+                <StatCard T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
+                  sub={`${dea.latestMonth} · Sweepr workflows`}
+                  deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
+              </div>
+            );
+          })()}
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
@@ -1264,7 +1457,9 @@ export default function ReliabilityScorecards() {
 
   const pageTitle = page === "home"
     ? "Reliability monthly performance scorecard"
-    : `${page} reliability scorecard`;
+    : page === "selfserve"
+      ? "Self-serve workflows scorecard"
+      : `${page} reliability scorecard`;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg, color: T.text, fontFamily: FONT }}>
@@ -1297,7 +1492,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div>
         </div>
       </aside>
@@ -1309,7 +1504,9 @@ export default function ReliabilityScorecards() {
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
-            <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives</span>
+            <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "selfserve"
+              ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
+              : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
             <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
             <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: Jun 2026)</span>
           </div>
@@ -1347,7 +1544,7 @@ export default function ReliabilityScorecards() {
             </div>
           </div>
 
-          {page === "home" ? <HomePage /> : <ProductPage product={page} />}
+          {page === "home" ? <HomePage /> : page === "selfserve" ? <SelfServePage /> : <ProductPage product={page} />}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>
           Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
