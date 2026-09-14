@@ -339,8 +339,41 @@ const SWEEPR = {
   }
 };
 
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926" };
+// ---------------------------------------------------------------------------
+// TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
+// Arrays align with MONTHS (Jan 2025 – Aug 2026).
+// Tickets: Looker Ticket Categories tab, split by Product
+//   (Optik TV (Legacy) = Legacy; TV Evolution = OPUS).
+// Repairs & base: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
+//   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV.
+//   The source reports the split for 2026 onward only (2025 = null).
+// swaps2026: total 2026 swap volumes from the Tableau Swapped Orders dashboard
+//   (Total TV = Legacy, Total OPUS = OPUS); null = not yet loaded from the source.
+// ---------------------------------------------------------------------------
+const TV_PLATFORMS = [
+  {
+    id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom · IPTV West + TQ ILEC TV",
+    tickets: [28724, 28040, 30652, 30984, 31535, 26335, 26637, 24474, 22010, 26283, 25560, 24547, 26833, 23176, 23159, 23715, 20858, 20917, 21489, 22123],
+    repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 1581, 1418, 1590, 1663, 1605, 1105, 1263, 1240],
+    base: [null, null, null, null, null, null, null, null, null, null, null, null, 821723, 816290, 811279, 798308, 788806, 784491, 761917, 744256],
+    swaps2026: null
+  },
+  {
+    id: "opus", name: "TV Evolution", sub: "OPUS + PFE Vulcan - TV",
+    tickets: [9480, 9810, 10722, 10734, 10003, 10096, 10007, 10731, 12168, 15164, 15504, 13886, 12128, 9921, 9441, 10894, 9879, 11256, 9867, 10678],
+    repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 307, 310, 329, 330, 336, 307, 309, 305],
+    base: [null, null, null, null, null, null, null, null, null, null, null, null, 313057, 317647, 321934, 331737, 339109, 341964, 363352, 380113],
+    swaps2026: null
+  }
+];
+// Per-platform rates derived where both volume and base are reported
+TV_PLATFORMS.forEach((p) => {
+  p.ticketRate = p.tickets.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(2) : null));
+  p.repairRate = p.repairs.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(3) : null));
+});
+
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
 const SCOPES = ["All", "HSIA", "TV", "SHS"];
 
@@ -1153,6 +1186,106 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ TV platform breakout ------------------------------
+  function TvPlatformBreakout() {
+    const platColor = (p) => colors[p.id === "legacy" ? "LEGACY" : "OPUS"];
+    const statRow = (label, text, deltaEl) => (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "5px 0", borderBottom: `1px solid ${T.border}`, fontSize: 12.5 }}>
+        <span style={{ color: T.textMuted }}>{label}</span>
+        <span style={{ textAlign: "right" }}>
+          <b style={{ color: T.text }}>{text}</b>
+          {deltaEl && <span style={{ marginLeft: 8 }}>{deltaEl}</span>}
+        </span>
+      </div>
+    );
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
+          {TV_PLATFORMS.map((p) => {
+            const tk = rowFigures(p.tickets, 0, true);
+            const tr = rowFigures(p.ticketRate, 2, true);
+            const rp = rowFigures(p.repairs, 0, true);
+            const rr = rowFigures(p.repairRate, 3, true);
+            const bs = rowFigures(p.base, 0, false);
+            const col = platColor(p);
+            const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
+            return (
+              <div key={p.id} style={{ background: T.surface, border: `1px solid ${T.border}`, borderTop: `3px solid ${col}`, borderRadius: 12, padding: "14px 18px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                  <span style={{ color: col, display: "inline-flex" }}><Icon name="tv" size={15} /></span>
+                  <span style={{ fontWeight: 800, color: T.heading, fontSize: 14.5 }}>{p.name}</span>
+                </div>
+                <div style={{ fontSize: 11.5, color: T.textFaint, marginBottom: 10 }}>{p.sub}</div>
+                {statRow("Subscriber base", fmtBig(bs.latest), <DeltaText d={bs.mom} T={T} suffix="MoM" />)}
+                {statRow(`Tickets · ${tk.latestMonth ? shortMonth(tk.latestMonth) : ""}`, fmtNum(tk.latest), <DeltaText d={tk.yoy} T={T} suffix="YoY" />)}
+                {statRow("Ticket rate (% of platform base)", fmtPct(tr.latest, 2), <DeltaText d={tr.mom} T={T} suffix="pts MoM" />)}
+                {statRow(`Repairs · ${rp.latestMonth ? shortMonth(rp.latestMonth) : ""}`, fmtNum(rp.latest), <DeltaText d={rp.mom} T={T} suffix="MoM" />)}
+                {statRow("Repair rate (% of platform base)", fmtPct(rr.latest, 3), <DeltaText d={rr.mom} T={T} suffix="pts MoM" />)}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "5px 0", fontSize: 12.5 }}>
+                  <span style={{ color: T.textMuted }}>Swap volumes · 2026 total</span>
+                  <b style={{ color: swapTotal == null ? T.textFaint : T.text }}>{swapTotal == null ? "pending" : fmtNum(swapTotal)}</b>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <p style={{ fontSize: 12, color: T.textFaint, margin: "10px 2px 16px", lineHeight: 1.6 }}>
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate above. Swap volumes come from the Tableau Swapped Orders dashboard (Total TV = Legacy; Total OPUS = TV Evolution) — pending the next data pull.
+        </p>
+        <ChartCard title="Ticket volume by platform" T={T}
+          tableOpen={!!openTables["tvp-tk"]} onToggleTable={() => toggleTable("tvp-tk")}>
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].tickets) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].tickets) }
+          ]} yFmt={fmtNum} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-tk"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].tickets) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].tickets) }
+          ]} fmt={fmtNum} T={T} />}
+        </ChartCard>
+        <ChartCard title="Repair volume by platform" T={T}
+          tableOpen={!!openTables["tvp-rp"]} onToggleTable={() => toggleTable("tvp-rp")}
+          note="Repair split reported for 2026 onward.">
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].repairs) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].repairs) }
+          ]} yFmt={fmtNum} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-rp"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].repairs) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].repairs) }
+          ]} fmt={fmtNum} T={T} />}
+        </ChartCard>
+        <ChartCard title="Repair rate by platform (% of platform base)" T={T}
+          tableOpen={!!openTables["tvp-rr"]} onToggleTable={() => toggleTable("tvp-rr")}>
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].repairRate) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].repairRate) }
+          ]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-rr"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].repairRate) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].repairRate) }
+          ]} fmt={(v) => fmtPct(v, 3)} T={T} />}
+        </ChartCard>
+        <ChartCard title="Subscriber base by platform" T={T}
+          tableOpen={!!openTables["tvp-bs"]} onToggleTable={() => toggleTable("tvp-bs")}
+          note="Base split reported for 2026 onward. The migration from Mediaroom to OPUS is visible in the crossing trends.">
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].base) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].base) }
+          ]} yFmt={fmtBig} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-bs"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].base) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].base) }
+          ]} fmt={fmtNum} T={T} />}
+        </ChartCard>
+      </>
+    );
+  }
+
   // ------------------------------ self-serve (Sweepr) ------------------------------
   // goodDown=false: self-serve metrics improve when they rise (churn impact is the exception)
   function sweeprFig(key, dec, goodDown = false) {
@@ -1344,6 +1477,8 @@ export default function ReliabilityScorecards() {
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
+    // TV gets a platform breakout as section 01; later sections shift by one
+    const sn = (n) => String(n + (product === "TV" ? 1 : 0)).padStart(2, "0");
 
     return (
       <>
@@ -1352,7 +1487,13 @@ export default function ReliabilityScorecards() {
           Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)}pts YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
         </div>
 
-        <Section num="01" eyebrow={product} title="Calls" icon="calls" T={T}>
+        {product === "TV" && (
+          <Section num="01" eyebrow="TV platforms" title="Platform breakout — Optik TV Legacy vs TV Evolution" icon="tv" T={T}>
+            <TvPlatformBreakout />
+          </Section>
+        )}
+
+        <Section num={sn(1)} eyebrow={product} title="Calls" icon="calls" T={T}>
           <ChartCard title={`Contacts (${callsKey === "FFH" ? "FFH rollup" : "SHS"})`} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
             <LineChart labels={rangeMonths} seriesDefs={[
@@ -1370,7 +1511,7 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="02" eyebrow={product} title="Tickets" icon="tickets" T={T}>
+        <Section num={sn(2)} eyebrow={product} title="Tickets" icon="tickets" T={T}>
           <ChartCard title="Ticket rate (% of sub base)" T={T}
             tableOpen={!!openTables[product + "-tr"]} onToggleTable={() => toggleTable(product + "-tr")}>
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
@@ -1394,11 +1535,11 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="03" eyebrow={product} title="Ticket issues & movers" icon="issues" T={T}>
+        <Section num={sn(3)} eyebrow={product} title="Ticket issues & movers" icon="issues" T={T}>
           <TicketIssuesSection product={product} />
         </Section>
 
-        <Section num="04" eyebrow={product} title="Repairs / Dispatches" icon="repairs" T={T}>
+        <Section num={sn(4)} eyebrow={product} title="Repairs / Dispatches" icon="repairs" T={T}>
           <ChartCard title="Repair / dispatch rate (% of sub base)" T={T}
             tableOpen={!!openTables[product + "-rr"]} onToggleTable={() => toggleTable(product + "-rr")}>
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
@@ -1420,7 +1561,7 @@ export default function ReliabilityScorecards() {
           )}
         </Section>
 
-        <Section num="05" eyebrow={product} title="Churn" icon="churn" T={T}>
+        <Section num={sn(5)} eyebrow={product} title="Churn" icon="churn" T={T}>
           <ChartCard title="Churn rate (go/national RGU)" T={T}
             tableOpen={!!openTables[product + "-ch"]} onToggleTable={() => toggleTable(product + "-ch")}
             note="Churn runs behind the other indicators in the source (reported through Jun 2026; Jan 2025 was never reported).">
@@ -1429,7 +1570,7 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="06" eyebrow={product} title="Initiatives" icon="initiatives" T={T}>
+        <Section num={sn(6)} eyebrow={product} title="Initiatives" icon="initiatives" T={T}>
           {prodInits.length ? (
             <>
               <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
