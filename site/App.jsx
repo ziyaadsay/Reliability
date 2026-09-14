@@ -340,6 +340,25 @@ const SWEEPR = {
 };
 
 // ---------------------------------------------------------------------------
+// FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
+// Arrays align with MONTHS (Jan 2025 – Aug 2026).
+// HSIA = every field containing "HSIA" (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA).
+// TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
+// Scope differs from the KPI workbook's FFH rollup, so HSIA + TV here does not
+// foot exactly to the FFH series on the overview.
+// ---------------------------------------------------------------------------
+const CALLS_SPLIT = {
+  HSIA: {
+    offered:  [71682, 62931, 62987, 62533, 65485, 65903, 70864, 75668, 87327, 80838, 74636, 79127, 74019, 61328, 77629, 73862, 83488, 87411, 92079, 93496],
+    answered: [62721, 53784, 58862, 58588, 59487, 60466, 65898, 65375, 61542, 56697, 62221, 62803, 63365, 57406, 69218, 66333, 75192, 78792, 80390, 78374]
+  },
+  TV: {
+    offered:  [70986, 63302, 60180, 57649, 60110, 53867, 53371, 55743, 64459, 73649, 65301, 65045, 60826, 48557, 56815, 52649, 49389, 50181, 51497, 53370],
+    answered: [62745, 54822, 55965, 53508, 54033, 48853, 49214, 47720, 45778, 52570, 55079, 52475, 52737, 45730, 51223, 47806, 44898, 45464, 45329, 45193]
+  }
+};
+
+// ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
 // Arrays align with MONTHS (Jan 2025 – Aug 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
@@ -853,9 +872,10 @@ export default function ReliabilityScorecards() {
   // Executive/product tiles. deltaMode: "yoy" (overview) | "both" (product pages)
   function scopeTiles(sc) {
     const callsKey = sc === "All" ? "All" : sc === "SHS" ? "SHS" : "FFH";
-    const callsLabel = sc === "All" ? "Calls offered (all products)" : callsKey === "FFH" ? "Calls offered (FFH)" : "Calls offered (SHS)";
+    const callsData = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[callsKey];
+    const callsLabel = sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`;
     return [
-      { icon: "calls", label: callsLabel, data: DATA.callsOffered[callsKey], fmt: fmtNum, dec: 0, color: colors[callsKey], goodDown: true },
+      { icon: "calls", label: callsLabel, data: callsData, fmt: fmtNum, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
       { icon: "tickets", label: "Ticket rate", data: DATA.ticketRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "churn", label: "Churn rate", data: DATA.churnRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
@@ -1490,9 +1510,15 @@ export default function ReliabilityScorecards() {
 
   function ProductPage({ product }) {
     const callsKey = product === "SHS" ? "SHS" : "FFH";
+    const split = CALLS_SPLIT[product];
+    const callsOffered = split ? split.offered : DATA.callsOffered[callsKey];
+    const callsAnswered = split ? split.answered : DATA.callsAnswered[callsKey];
+    const callsTitle = split ? `Contacts (${product})` : `Contacts (${callsKey === "FFH" ? "FFH rollup" : "SHS"})`;
     const callsNote = product === "SHS"
       ? "SHS contacts, offered vs. answered."
-      : `Calls are only reported as an FFH rollup (HSIA + TV combined) — there is no ${product}-specific call series in the source.`;
+      : product === "HSIA"
+        ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs), summing every field containing HSIA. Scope differs from the KPI workbook, so HSIA + TV calls do not foot exactly to the overview's FFH rollup."
+        : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV. Scope differs from the KPI workbook, so HSIA + TV calls do not foot exactly to the overview's FFH rollup.";
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
@@ -1513,19 +1539,19 @@ export default function ReliabilityScorecards() {
         )}
 
         <Section num={sn(1)} eyebrow={product} title="Calls" icon="calls" T={T}>
-          <ChartCard title={`Contacts (${callsKey === "FFH" ? "FFH rollup" : "SHS"})`} T={T}
+          <ChartCard title={callsTitle} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
             <LineChart labels={rangeMonths} seriesDefs={[
-              { key: callsKey, label: "Offered", data: sliceR(DATA.callsOffered[callsKey]) },
-              { key: callsKey, label: "Answered", data: sliceR(DATA.callsAnswered[callsKey]), dash: "7 5" }
+              { key: product, label: "Offered", data: sliceR(callsOffered) },
+              { key: product, label: "Answered", data: sliceR(callsAnswered), dash: "7 5" }
             ]} yFmt={fmtNum} colors={colors} T={T} />
             <Legend items={[
-              { label: "Offered", color: colors[callsKey] },
-              { label: "Answered", color: colors[callsKey], dash: true }
+              { label: "Offered", color: colors[product] },
+              { label: "Answered", color: colors[product], dash: true }
             ]} T={T} />
             {openTables[product + "-calls"] && <DataTable labels={rangeMonths} seriesDefs={[
-              { key: callsKey, label: "Offered", data: sliceR(DATA.callsOffered[callsKey]) },
-              { key: callsKey, label: "Answered", data: sliceR(DATA.callsAnswered[callsKey]) }
+              { key: product, label: "Offered", data: sliceR(callsOffered) },
+              { key: product, label: "Answered", data: sliceR(callsAnswered) }
             ]} fmt={fmtNum} T={T} />}
           </ChartCard>
         </Section>
