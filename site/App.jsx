@@ -15,7 +15,9 @@ import React, { useState, useEffect, useRef } from "react";
     added later), grouped under the reliability program's four pillars and
     tagged to the five recurring issues from the cross-source synthesis.
 
-  Calls (Contacts, offered/answered) are an FFH rollup (HSIA + TV combined).
+  Calls (Contacts, offered/answered) are split by product from the TS Calls
+  Offered by Product workbook; the KPI workbook's FFH rollup is kept in DATA
+  for reference only.
   "All" figures are computed: volumes summed; rates blended as total volume
   over total subscriber base (churn: base-weighted mean).
 */
@@ -344,8 +346,9 @@ const SWEEPR = {
 // Arrays align with MONTHS (Jan 2025 – Aug 2026).
 // HSIA = every field containing "HSIA" (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA).
 // TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
-// Scope differs from the KPI workbook's FFH rollup, so HSIA + TV here does not
-// foot exactly to the FFH series on the overview.
+// These series also drive the overview scorecard's call rows and the derived
+// All-products calls; the KPI workbook's FFH rollup is retained in DATA only
+// for reference and is no longer displayed.
 // ---------------------------------------------------------------------------
 const CALLS_SPLIT = {
   HSIA: {
@@ -520,8 +523,8 @@ function useIsDark(mode) {
   for (let i = 0; i < n; i++) {
     const base = P.reduce((a, p) => a + DATA.subBase[p][i], 0);
     baseAll.push(base);
-    callsOffAll.push(DATA.callsOffered.FFH[i] + DATA.callsOffered.SHS[i]);
-    callsAnsAll.push(DATA.callsAnswered.FFH[i] + DATA.callsAnswered.SHS[i]);
+    callsOffAll.push(CALLS_SPLIT.HSIA.offered[i] + CALLS_SPLIT.TV.offered[i] + DATA.callsOffered.SHS[i]);
+    callsAnsAll.push(CALLS_SPLIT.HSIA.answered[i] + CALLS_SPLIT.TV.answered[i] + DATA.callsAnswered.SHS[i]);
     const tv = P.reduce((a, p) => a + DATA.ticketVolume[p][i], 0);
     tickVolAll.push(tv);
     tickRateAll.push(Math.round((tv / base) * 10000) / 100);
@@ -771,7 +774,8 @@ const INDICATORS = [
   {
     id: "calls", name: "Calls (contacts offered)", decimals: 0, fmt: fmtNumK, agg2025: "sum",
     rows: [
-      { key: "FFH", label: "FFH (HSIA + TV)", data: DATA.callsOffered.FFH },
+      { key: "HSIA", label: "HSIA", data: CALLS_SPLIT.HSIA.offered },
+      { key: "TV", label: "TV", data: CALLS_SPLIT.TV.offered },
       { key: "SHS", label: "SHS", data: DATA.callsOffered.SHS }
     ]
   },
@@ -848,8 +852,7 @@ export default function ReliabilityScorecards() {
     };
   }
 
-  const rowVisible = (key) =>
-    scope === "All" ? true : key === "FFH" ? scope === "HSIA" || scope === "TV" : key === scope;
+  const rowVisible = (key) => scope === "All" || key === scope;
 
   const navItems = [
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
@@ -1476,7 +1479,7 @@ export default function ReliabilityScorecards() {
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
-            {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are FFH + SHS contacts offered."}
+            {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are HSIA + TV + SHS contacts offered."}
             {" "}Annual churn: HSIA {DATA.annualChurn.HSIA.y2026.toFixed(2)}% 2026 YTD vs {DATA.annualChurn.HSIA.y2025.toFixed(2)}% 2025 · TV {DATA.annualChurn.TV.y2026.toFixed(2)}% vs {DATA.annualChurn.TV.y2025.toFixed(2)}% · SHS {DATA.annualChurn.SHS.y2026.toFixed(2)}% vs {DATA.annualChurn.SHS.y2025.toFixed(2)}%.
           </p>
         </Section>
@@ -1487,7 +1490,7 @@ export default function ReliabilityScorecards() {
           </p>
           <ScorecardTable />
           <p style={{ fontSize: 12, color: T.textFaint, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
-            Calls are contacts offered, reported as an FFH rollup (HSIA + TV combined) — no product-level call split exists in the source. Churn rate is first reported for Feb 2025.
+            Calls are contacts offered. HSIA and TV call series come from the TS Calls Offered by Product workbook (Actuals tabs); SHS calls come from the KPI workbook. Churn rate is first reported for Feb 2025.
           </p>
         </Section>
 
@@ -1517,8 +1520,8 @@ export default function ReliabilityScorecards() {
     const callsNote = product === "SHS"
       ? "SHS contacts, offered vs. answered."
       : product === "HSIA"
-        ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs), summing every field containing HSIA. Scope differs from the KPI workbook, so HSIA + TV calls do not foot exactly to the overview's FFH rollup."
-        : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV. Scope differs from the KPI workbook, so HSIA + TV calls do not foot exactly to the overview's FFH rollup.";
+        ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs), summing every field containing HSIA."
+        : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.";
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
