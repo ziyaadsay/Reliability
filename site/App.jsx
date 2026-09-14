@@ -347,8 +347,10 @@ const SWEEPR = {
 // Repairs & base: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
 //   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV.
 //   The source reports the split for 2026 onward only (2025 = null).
-// swaps2026: total 2026 swap volumes from the Tableau Swapped Orders dashboard
-//   (Total TV = Legacy, Total OPUS = OPUS); null = not yet loaded from the source.
+// swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
+//   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
+//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; September is excluded
+//   as a partial month at the time of the pull.
 // ---------------------------------------------------------------------------
 const TV_PLATFORMS = [
   {
@@ -356,14 +358,14 @@ const TV_PLATFORMS = [
     tickets: [28724, 28040, 30652, 30984, 31535, 26335, 26637, 24474, 22010, 26283, 25560, 24547, 26833, 23176, 23159, 23715, 20858, 20917, 21489, 22123],
     repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 1581, 1418, 1590, 1663, 1605, 1105, 1263, 1240],
     base: [null, null, null, null, null, null, null, null, null, null, null, null, 821723, 816290, 811279, 798308, 788806, 784491, 761917, 744256],
-    swaps2026: null
+    swaps2026: [null, null, null, null, null, null, null, null, null, null, null, null, 2003, 1686, 1764, 1443, 1178, 977, 698, 596]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS + PFE Vulcan - TV",
     tickets: [9480, 9810, 10722, 10734, 10003, 10096, 10007, 10731, 12168, 15164, 15504, 13886, 12128, 9921, 9441, 10894, 9879, 11256, 9867, 10678],
     repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 307, 310, 329, 330, 336, 307, 309, 305],
     base: [null, null, null, null, null, null, null, null, null, null, null, null, 313057, 317647, 321934, 331737, 339109, 341964, 363352, 380113],
-    swaps2026: null
+    swaps2026: [null, null, null, null, null, null, null, null, null, null, null, null, 1352, 1141, 1080, 954, 701, 727, 231, 226]
   }
 ];
 // Per-platform rates derived where both volume and base are reported
@@ -1207,6 +1209,7 @@ export default function ReliabilityScorecards() {
             const rp = rowFigures(p.repairs, 0, true);
             const rr = rowFigures(p.repairRate, 3, true);
             const bs = rowFigures(p.base, 0, false);
+            const sw = rowFigures(p.swaps2026 || [], 0, true);
             const col = platColor(p);
             const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
             return (
@@ -1223,14 +1226,17 @@ export default function ReliabilityScorecards() {
                 {statRow("Repair rate (% of platform base)", fmtPct(rr.latest, 3), <DeltaText d={rr.mom} T={T} suffix="pts MoM" />)}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "5px 0", fontSize: 12.5 }}>
                   <span style={{ color: T.textMuted }}>Swap volumes · 2026 total</span>
-                  <b style={{ color: swapTotal == null ? T.textFaint : T.text }}>{swapTotal == null ? "pending" : fmtNum(swapTotal)}</b>
+                  <span style={{ textAlign: "right" }}>
+                    <b style={{ color: swapTotal == null ? T.textFaint : T.text }}>{swapTotal == null ? "pending" : fmtNum(swapTotal)}</b>
+                    {sw.mom && <span style={{ marginLeft: 8 }}><DeltaText d={sw.mom} T={T} suffix="MoM" /></span>}
+                  </span>
                 </div>
               </div>
             );
           })}
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "10px 2px 16px", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate above. Swap volumes come from the Tableau Swapped Orders dashboard (Total TV = Legacy; Total OPUS = TV Evolution) — pending the next data pull.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate above. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; September is excluded as a partial month.
         </p>
         <ChartCard title="Ticket volume by platform" T={T}
           tableOpen={!!openTables["tvp-tk"]} onToggleTable={() => toggleTable("tvp-tk")}>
@@ -1268,6 +1274,19 @@ export default function ReliabilityScorecards() {
             { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].repairRate) },
             { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].repairRate) }
           ]} fmt={(v) => fmtPct(v, 3)} T={T} />}
+        </ChartCard>
+        <ChartCard title="Repair swap volume by platform" T={T}
+          tableOpen={!!openTables["tvp-sw"]} onToggleTable={() => toggleTable("tvp-sw")}
+          note="Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026; September (partial month) is excluded.">
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].swaps2026) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].swaps2026) }
+          ]} yFmt={fmtNum} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-sw"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].swaps2026) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].swaps2026) }
+          ]} fmt={fmtNum} T={T} />}
         </ChartCard>
         <ChartCard title="Subscriber base by platform" T={T}
           tableOpen={!!openTables["tvp-bs"]} onToggleTable={() => toggleTable("tvp-bs")}
