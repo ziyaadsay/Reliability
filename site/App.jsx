@@ -34,41 +34,49 @@ const MONTHS = [
 const DATA = {
   callsOffered: {
     FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179],
-    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978]
+    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   callsAnswered: {
     FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856],
-    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636]
+    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   ticketRate: {
     HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99,3.06],
     TV:   [3.71,3.68,4.02,4.10,4.05,3.54,3.57,3.44,3.35,4.05,4.03,3.77,3.81,3.36,3.78,3.53,3.04,3.10,3.22,3.03],
-    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08]
+    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08],
+    "SH+": [null,null,null,null,null,null,3.30,3.12,2.83,2.81,2.58,2.97,2.95,3.20,3.42,2.86,2.37,3.16,2.77,2.22]
   },
   ticketVolume: {
     HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789],
     TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,34055],
-    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724]
+    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724],
+    "SH+": [null,null,null,null,null,null,748,783,757,789,782,958,1023,1143,1387,1234,1092,1558,1498,1322]
   },
   repairRate: {
     HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91,0.79],
     TV:   [0.21,0.17,0.22,0.20,0.18,0.15,0.16,0.15,0.16,0.19,0.18,0.17,0.16,0.15,0.17,0.20,0.18,0.13,0.16,0.12],
-    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39]
+    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39],
+    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.089]
   },
   repairVolume: {
     HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445,15082],
     TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390],
-    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653]
+    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653],
+    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53]
   },
   churnRate: {
     HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,null,null],
     TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,null,null],
-    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,null,null]
+    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,null,null],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
     HSIA: [1882545,1884654,1886869,1886034,1886940,1894103,1892708,1894469,1902829,1905345,1905574,1909753,1902859,1904760,1908112,1906873,1907916,1912608,1914753,1920616],
     TV:   [1023254,1023001,1023592,1012348,1021021,1022003,1019316,1016784,1014448,1014746,1013761,1013837,1017435,1018970,1020171,1012595,1074046,1073827,1004848,1124369],
-    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508]
+    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508],
+    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,59600]
   },
   annualChurn: {
     HSIA: { y2026: 0.95, y2025: 1.13, yoyPts: -0.18 },
@@ -396,10 +404,10 @@ TV_PLATFORMS.forEach((p) => {
   p.repairRate = p.repairs.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(3) : null));
 });
 
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
-const SCOPES = ["All", "HSIA", "TV", "SHS"];
+const SCOPES = ["All", "HSIA", "TV", "SHS", "SH+"];
 
 const LIGHT_THEME = {
   bg: "#FFFFFF", surface: "#FFFFFF", band: "#F6F2FA", panel: "#FAF9FB",
@@ -447,6 +455,7 @@ const ICON_PATHS = {
   pillar3: "M21 3 10 14M21 3l-7 18-3-8-8-3z",
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
+  shplus: "M3 11l9-8 9 8M5 9.5V21h14V9.5M12 12v6M9 15h6",
   cx: "M8 10h.01M16 10h.01M8.5 15a4.5 4.5 0 0 0 7 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z",
   saved: "M12 21C7 17 3 13.5 3 9.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 9 3.5c0 4-4 7.5-9 11.5zM9 12l2 2 4-4"
 };
@@ -458,7 +467,7 @@ function Icon({ name, size = 15, style }) {
     </svg>
   );
 }
-const PRODUCT_ICON = { All: "overview", HSIA: "hsia", TV: "tv", SHS: "shs", FFH: "hsia" };
+const PRODUCT_ICON = { All: "overview", HSIA: "hsia", TV: "tv", SHS: "shs", "SH+": "shplus", FFH: "hsia" };
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -781,11 +790,11 @@ const INDICATORS = [
   },
   {
     id: "tickets", name: "Ticket rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
-    rows: PRODUCTS.map((p) => ({ key: p, label: p, data: DATA.ticketRate[p] }))
+    rows: [...PRODUCTS, "SH+"].map((p) => ({ key: p, label: p, data: DATA.ticketRate[p] }))
   },
   {
     id: "repairs", name: "Repair / dispatch rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
-    rows: PRODUCTS.map((p) => ({ key: p, label: p, data: DATA.repairRate[p] }))
+    rows: [...PRODUCTS, "SH+"].map((p) => ({ key: p, label: p, data: DATA.repairRate[p] }))
   },
   {
     id: "churn", name: "Churn rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
@@ -858,7 +867,9 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
+    { id: "tvplatforms", label: "Platform breakout", icon: "tv", color: colors.TV, child: true },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
+    { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR }
   ];
 
@@ -874,6 +885,15 @@ export default function ReliabilityScorecards() {
 
   // Executive/product tiles. deltaMode: "yoy" (overview) | "both" (product pages)
   function scopeTiles(sc) {
+    if (sc === "SH+") {
+      return [
+        { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "tickets", label: "Ticket rate", data: DATA.ticketRate["SH+"], fmt: fmtPct, dec: 2, color: colors["SH+"], goodDown: true },
+        { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate["SH+"], fmt: fmtPct, dec: 2, color: colors["SH+"], goodDown: true },
+        { icon: "base", label: "Subscriber base", data: DATA.subBase["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: false }
+      ];
+    }
     const callsKey = sc === "All" ? "All" : sc === "SHS" ? "SHS" : "FFH";
     const callsData = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[callsKey];
     const callsLabel = sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`;
@@ -910,9 +930,13 @@ export default function ReliabilityScorecards() {
 
   // Top ticket issue per product, flagged in the executive summary
   function TopIssueFlags({ prods }) {
+    const withData = prods.filter((p) => LOOKER[p]);
+    if (!withData.length) {
+      return <p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0" }}>Ticket category detail is not yet available for {prods.join(", ")}.</p>;
+    }
     return (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 12, marginTop: 14 }}>
-        {prods.map((p) => {
+        {withData.map((p) => {
           const t = LOOKER[p].topIssues[0];
           const worse = t.a25 != null && t.a26 > t.a25;
           return (
@@ -996,8 +1020,11 @@ export default function ReliabilityScorecards() {
   function RecurringIssuesTable() {
     const thBase = { padding: "10px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
     const tdBase = { padding: "9px 12px", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", fontSize: 12.5 };
-    const prods = scope === "All" ? PRODUCTS : [scope];
+    const prods = (scope === "All" ? PRODUCTS : [scope]).filter((p) => LOOKER[p]);
     const rows = OVERVIEW_ISSUES.filter((r) => prods.some((p) => r[p]));
+    if (!prods.length) {
+      return <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>Ticket category detail is not yet available for {scope}.</p>;
+    }
     return (
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -1103,7 +1130,7 @@ export default function ReliabilityScorecards() {
   }
 
   function PillarInitiatives() {
-    const prods = scope === "All" ? ["HSIA", "TV"] : scope === "SHS" ? [] : [scope];
+    const prods = scope === "All" ? ["HSIA", "TV"] : scope === "SHS" || scope === "SH+" ? [] : [scope];
     return (
       <>
         {PILLARS.map((pl) => {
@@ -1127,8 +1154,8 @@ export default function ReliabilityScorecards() {
             </div>
           );
         })}
-        {scope === "SHS" && (
-          <p style={{ fontSize: 12.5, color: T.textFaint }}>SHS initiatives have not been added to the source workbook yet.</p>
+        {(scope === "SHS" || scope === "SH+") && (
+          <p style={{ fontSize: 12.5, color: T.textFaint }}>{scope} initiatives have not been added to the source workbook yet.</p>
         )}
       </>
     );
@@ -1379,7 +1406,7 @@ export default function ReliabilityScorecards() {
           Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
         </p>
 
-        <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T}>
+        <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T} collapsible>
           <ChartCard title="Blended (v2) resolved sessions" T={T}
             tableOpen={!!openTables["ss-res"]} onToggleTable={() => toggleTable("ss-res")}
             note="Blended resolved sessions across self-serve workflows. The dashed series is the 2026 monthly target from the source scorecard.">
@@ -1392,7 +1419,7 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="02" eyebrow="Self-serve" title="Resolution rates" icon="tickets" T={T}>
+        <Section num="02" eyebrow="Self-serve" title="Resolution rates" icon="tickets" T={T} collapsible defaultOpen={false}>
           <ChartCard title="Web/App resolution rate" T={T}
             tableOpen={!!openTables["ss-web"]} onToggleTable={() => toggleTable("ss-web")}
             note="Share of Web/App self-serve workflow sessions resolved without an agent. 2026 target rises through the year.">
@@ -1415,7 +1442,7 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="03" eyebrow="Self-serve" title="Customer experience" icon="cx" T={T}>
+        <Section num="03" eyebrow="Self-serve" title="Customer experience" icon="cx" T={T} collapsible defaultOpen={false}>
           <ChartCard title="CX 'Easy to follow' score" T={T}
             tableOpen={!!openTables["ss-easy"]} onToggleTable={() => toggleTable("ss-easy")}
             note="Customer-rated ease of following the workflow. Reported from Oct 2025; the 2026 target is 4.00.">
@@ -1438,7 +1465,7 @@ export default function ReliabilityScorecards() {
           </ChartCard>
         </Section>
 
-        <Section num="04" eyebrow="Self-serve" title="Churn impact" icon="saved" T={T}>
+        <Section num="04" eyebrow="Self-serve" title="Churn impact" icon="saved" T={T} collapsible defaultOpen={false}>
           <ChartCard title="Sweepr involved churn rate" T={T}
             tableOpen={!!openTables["ss-chn"]} onToggleTable={() => toggleTable("ss-chn")}
             note="Churn rate among customers whose journey involved a Sweepr workflow. Reported for 2026 only; no target is set in the source.">
@@ -1479,7 +1506,7 @@ export default function ReliabilityScorecards() {
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
-            {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are HSIA + TV + SHS contacts offered."}
+            {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are HSIA + TV + SHS contacts offered. SH+ is reported separately (from Jul 2025) and is not yet included in the All rollup."}
             {" "}Annual churn: HSIA {DATA.annualChurn.HSIA.y2026.toFixed(2)}% 2026 YTD vs {DATA.annualChurn.HSIA.y2025.toFixed(2)}% 2025 · TV {DATA.annualChurn.TV.y2026.toFixed(2)}% vs {DATA.annualChurn.TV.y2025.toFixed(2)}% · SHS {DATA.annualChurn.SHS.y2026.toFixed(2)}% vs {DATA.annualChurn.SHS.y2025.toFixed(2)}%.
           </p>
         </Section>
@@ -1512,11 +1539,12 @@ export default function ReliabilityScorecards() {
   }
 
   function ProductPage({ product }) {
-    const callsKey = product === "SHS" ? "SHS" : "FFH";
+    const hasCalls = product !== "SH+";
+    const hasLooker = !!LOOKER[product];
     const split = CALLS_SPLIT[product];
-    const callsOffered = split ? split.offered : DATA.callsOffered[callsKey];
-    const callsAnswered = split ? split.answered : DATA.callsAnswered[callsKey];
-    const callsTitle = split ? `Contacts (${product})` : `Contacts (${callsKey === "FFH" ? "FFH rollup" : "SHS"})`;
+    const callsOffered = split ? split.offered : DATA.callsOffered[product];
+    const callsAnswered = split ? split.answered : DATA.callsAnswered[product];
+    const callsTitle = `Contacts (${product})`;
     const callsNote = product === "SHS"
       ? "SHS contacts, offered vs. answered."
       : product === "HSIA"
@@ -1525,23 +1553,44 @@ export default function ReliabilityScorecards() {
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
-    // TV gets a platform breakout as section 01; later sections shift by one
-    const sn = (n) => String(n + (product === "TV" ? 1 : 0)).padStart(2, "0");
+
+    // Sections are numbered sequentially per product; all are collapsible and
+    // only the first starts expanded. Keys force a remount on product change
+    // so each page opens in its default state.
+    let secNo = 0;
+    const sec = (title, icon, children) => {
+      secNo += 1;
+      return (
+        <Section key={`${product}-${title}`} num={String(secNo).padStart(2, "0")} eyebrow={product} title={title} icon={icon}
+          T={T} collapsible defaultOpen={secNo === 1}>
+          {children}
+        </Section>
+      );
+    };
 
     return (
       <>
         <TileRow tiles={scopeTiles(product)} deltaMode="both" />
-        <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
-          Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)}pts YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
-        </div>
-
+        {yoyChurn && (
+          <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
+            Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)}pts YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
+          </div>
+        )}
         {product === "TV" && (
-          <Section num="01" eyebrow="TV platforms" title="Platform breakout — Optik TV Legacy vs TV Evolution" icon="tv" T={T}>
-            <TvPlatformBreakout />
-          </Section>
+          <div style={{ fontSize: 12.5, margin: "10px 2px 0" }}>
+            <button onClick={() => setPage("tvplatforms")}
+              style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline" }}>
+              Platform breakout — Optik TV Legacy vs TV Evolution →
+            </button>
+          </div>
+        )}
+        {product === "SH+" && (
+          <p style={{ fontSize: 12.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.6 }}>
+            SmartHome+ reporting starts Jul 2025 (SH+ reliability KPIs workbook). Calls, churn, ticket categories and improvement initiatives are not yet reported for SH+.
+          </p>
         )}
 
-        <Section num={sn(1)} eyebrow={product} title="Calls" icon="calls" T={T}>
+        {hasCalls && sec("Calls", "calls",
           <ChartCard title={callsTitle} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
             <LineChart labels={rangeMonths} seriesDefs={[
@@ -1557,69 +1606,82 @@ export default function ReliabilityScorecards() {
               { key: product, label: "Answered", data: sliceR(callsAnswered) }
             ]} fmt={fmtNum} T={T} />}
           </ChartCard>
-        </Section>
+        )}
 
-        <Section num={sn(2)} eyebrow={product} title="Tickets" icon="tickets" T={T}>
-          <ChartCard title="Ticket rate (% of sub base)" T={T}
-            tableOpen={!!openTables[product + "-tr"]} onToggleTable={() => toggleTable(product + "-tr")}>
-            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-            {openTables[product + "-tr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
-          </ChartCard>
-          <ChartCard title={`Ticket volume with top category — ${L.topCat.name}`} T={T}
-            tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
-            note={`Looker ticket categories, Churn Measurement 2026 workbook. The dashed series maps the top category (${L.topCat.name}) as a datapoint against total ${product} tickets.`}>
-            <LineChart labels={rangeMonths} seriesDefs={[
-              { key: product, label: "Total tickets", data: sliceR(L.monthlyTotal) },
-              { key: product, label: `Top category: ${L.topCat.name}`, data: sliceR(L.topCat.series), dash: "7 5" }
-            ]} yFmt={fmtNum} colors={colors} T={T} />
-            <Legend items={[
-              { label: "Total tickets", color: colors[product] },
-              { label: `Top category: ${L.topCat.name}`, color: colors[product], dash: true }
-            ]} T={T} />
-            {openTables[product + "-tv"] && <DataTable labels={rangeMonths} seriesDefs={[
-              { key: product, label: "Total", data: sliceR(L.monthlyTotal) },
-              { key: product, label: L.topCat.name, data: sliceR(L.topCat.series) }
-            ]} fmt={fmtNum} T={T} />}
-          </ChartCard>
-        </Section>
+        {sec("Tickets", "tickets",
+          <>
+            <ChartCard title="Ticket rate (% of sub base)" T={T}
+              tableOpen={!!openTables[product + "-tr"]} onToggleTable={() => toggleTable(product + "-tr")}
+              note={product === "SH+" ? "SH+ tickets are reported from Jul 2025 (SH+ reliability KPIs workbook)." : undefined}>
+              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
+              {openTables[product + "-tr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+            </ChartCard>
+            {hasLooker ? (
+              <ChartCard title={`Ticket volume with top category — ${L.topCat.name}`} T={T}
+                tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
+                note={`Looker ticket categories, Churn Measurement 2026 workbook. The dashed series maps the top category (${L.topCat.name}) as a datapoint against total ${product} tickets.`}>
+                <LineChart labels={rangeMonths} seriesDefs={[
+                  { key: product, label: "Total tickets", data: sliceR(L.monthlyTotal) },
+                  { key: product, label: `Top category: ${L.topCat.name}`, data: sliceR(L.topCat.series), dash: "7 5" }
+                ]} yFmt={fmtNum} colors={colors} T={T} />
+                <Legend items={[
+                  { label: "Total tickets", color: colors[product] },
+                  { label: `Top category: ${L.topCat.name}`, color: colors[product], dash: true }
+                ]} T={T} />
+                {openTables[product + "-tv"] && <DataTable labels={rangeMonths} seriesDefs={[
+                  { key: product, label: "Total", data: sliceR(L.monthlyTotal) },
+                  { key: product, label: L.topCat.name, data: sliceR(L.topCat.series) }
+                ]} fmt={fmtNum} T={T} />}
+              </ChartCard>
+            ) : (
+              <ChartCard title="Ticket volume" T={T}
+                tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
+                note="Ticket category detail (Looker) is not yet available for SH+, so no top-category overlay is shown.">
+                <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketVolume[product]) }]} yFmt={fmtNum} colors={colors} T={T} />
+                {openTables[product + "-tv"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketVolume[product]) }]} fmt={fmtNum} T={T} />}
+              </ChartCard>
+            )}
+          </>
+        )}
 
-        <Section num={sn(3)} eyebrow={product} title="Ticket issues & movers" icon="issues" T={T}>
-          <TicketIssuesSection product={product} />
-        </Section>
+        {hasLooker && sec("Ticket issues & movers", "issues", <TicketIssuesSection product={product} />)}
 
-        <Section num={sn(4)} eyebrow={product} title="Repairs / Dispatches" icon="repairs" T={T}>
-          <ChartCard title="Repair / dispatch rate (% of sub base)" T={T}
-            tableOpen={!!openTables[product + "-rr"]} onToggleTable={() => toggleTable(product + "-rr")}>
-            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-            {openTables[product + "-rr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
-          </ChartCard>
-          <ChartCard title="Repair (dispatch) volume" T={T}
-            tableOpen={!!openTables[product + "-rv"]} onToggleTable={() => toggleTable(product + "-rv")}>
-            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} yFmt={fmtNum} colors={colors} T={T} />
-            {openTables[product + "-rv"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} fmt={fmtNum} T={T} />}
-          </ChartCard>
-          {product === "HSIA" && (
-            <div style={{ background: T.purpleLightest, border: `1px solid ${T.purpleLighter}`, borderRadius: 12, padding: "18px 20px", marginTop: 16 }}>
-              <h3 style={{ margin: "0 0 4px", fontSize: 15, color: T.heading }}>HSIA spotlight — severely degraded fibre line</h3>
-              <p style={{ margin: "0 0 12px", fontSize: 13, color: T.textMuted, maxWidth: 640 }}>
-                Share of HSIA repairs coded as severely degraded fibre line (Jun 2025 – May 2026; this table has its own reporting window in the source). Currently the single largest identified driver of HSIA repairs.
-              </p>
-              <LineChart labels={DATA.hsiaFibreMonths} seriesDefs={[{ key: "HSIA", label: "HSIA", data: DATA.hsiaFibrePct }]} height={190} yFmt={(v) => v.toFixed(1) + "%"} colors={colors} T={T} />
-            </div>
-          )}
-        </Section>
+        {sec("Repairs / Dispatches", "repairs",
+          <>
+            <ChartCard title="Repair / dispatch rate (% of sub base)" T={T}
+              tableOpen={!!openTables[product + "-rr"]} onToggleTable={() => toggleTable(product + "-rr")}
+              note={product === "SH+" ? "SH+ repairs are reported from Jul 2025 (SH+ reliability KPIs workbook)." : undefined}>
+              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
+              {openTables[product + "-rr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+            </ChartCard>
+            <ChartCard title="Repair (dispatch) volume" T={T}
+              tableOpen={!!openTables[product + "-rv"]} onToggleTable={() => toggleTable(product + "-rv")}>
+              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} yFmt={fmtNum} colors={colors} T={T} />
+              {openTables[product + "-rv"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} fmt={fmtNum} T={T} />}
+            </ChartCard>
+            {product === "HSIA" && (
+              <div style={{ background: T.purpleLightest, border: `1px solid ${T.purpleLighter}`, borderRadius: 12, padding: "18px 20px", marginTop: 16 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 15, color: T.heading }}>HSIA spotlight — severely degraded fibre line</h3>
+                <p style={{ margin: "0 0 12px", fontSize: 13, color: T.textMuted, maxWidth: 640 }}>
+                  Share of HSIA repairs coded as severely degraded fibre line (Jun 2025 – May 2026; this table has its own reporting window in the source). Currently the single largest identified driver of HSIA repairs.
+                </p>
+                <LineChart labels={DATA.hsiaFibreMonths} seriesDefs={[{ key: "HSIA", label: "HSIA", data: DATA.hsiaFibrePct }]} height={190} yFmt={(v) => v.toFixed(1) + "%"} colors={colors} T={T} />
+              </div>
+            )}
+          </>
+        )}
 
-        <Section num={sn(5)} eyebrow={product} title="Churn" icon="churn" T={T}>
+        {product !== "SH+" && sec("Churn", "churn",
           <ChartCard title="Churn rate (go/national RGU)" T={T}
             tableOpen={!!openTables[product + "-ch"]} onToggleTable={() => toggleTable(product + "-ch")}
             note="Churn runs behind the other indicators in the source (reported through Jun 2026; Jan 2025 was never reported).">
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
             {openTables[product + "-ch"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
           </ChartCard>
-        </Section>
+        )}
 
-        <Section num={sn(6)} eyebrow={product} title="Initiatives" icon="initiatives" T={T}>
-          {prodInits.length ? (
+        {sec("Initiatives", "initiatives",
+          prodInits.length ? (
             <>
               <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
                 {product} initiatives from the workbook's Initiatives tab, with status, timeline and prime. Use the filters to narrow the list.
@@ -1637,10 +1699,18 @@ export default function ReliabilityScorecards() {
               })()}
             </>
           ) : (
-            <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>SHS initiatives have not been added to the source workbook yet — this section will populate once they are.</p>
-          )}
-        </Section>
+            <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>{product} initiatives have not been added to the source workbook yet — this section will populate once they are.</p>
+          )
+        )}
       </>
+    );
+  }
+
+  function TvPlatformsPage() {
+    return (
+      <Section key="tvplatforms" num="01" eyebrow="TV platforms" title="Platform breakout — Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible>
+        <TvPlatformBreakout />
+      </Section>
     );
   }
 
@@ -1648,7 +1718,9 @@ export default function ReliabilityScorecards() {
     ? "Reliability monthly performance scorecard"
     : page === "selfserve"
       ? "Self-serve workflows scorecard"
-      : `${page} reliability scorecard`;
+      : page === "tvplatforms"
+        ? "TV platform breakout"
+        : `${page} reliability scorecard`;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg, color: T.text, fontFamily: FONT }}>
@@ -1656,7 +1728,7 @@ export default function ReliabilityScorecards() {
       <aside style={{ width: 224, flexShrink: 0, background: T.surface, borderRight: `1px solid ${T.border}`, display: "flex", flexDirection: "column", position: "sticky", top: 0, height: "100vh" }}>
         <div style={{ padding: "22px 20px 16px", borderBottom: `1px solid ${T.border}` }}>
           <img src={TELUS_LOGO} alt="TELUS" style={{ height: 28, width: "auto", display: "block", background: isDark ? "#FFFFFF" : "transparent", borderRadius: 6, padding: isDark ? "4px 7px" : 0, boxSizing: "content-box" }} />
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textSecondary, letterSpacing: ".06em", textTransform: "uppercase", marginTop: 10 }}>Reliability Scorecards</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textSecondary, letterSpacing: ".06em", textTransform: "uppercase", marginTop: 10 }}>Reliability Strategy</div>
         </div>
         <nav style={{ padding: "14px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
           {navItems.map((item) => {
@@ -1667,9 +1739,10 @@ export default function ReliabilityScorecards() {
                   display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
                   background: active ? T.navActiveBg : "transparent", color: active ? T.navActiveText : T.textSecondary,
                   border: "none", borderLeft: `3px solid ${active ? T.heading : "transparent"}`,
-                  borderRadius: 8, padding: "9px 12px", fontSize: 13.5, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: FONT
+                  borderRadius: 8, padding: item.child ? "6px 12px 6px 32px" : "9px 12px",
+                  fontSize: item.child ? 12.5 : 13.5, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: FONT
                 }}>
-                <span style={{ color: item.color, display: "inline-flex" }}><Icon name={item.icon} size={15} /></span>
+                <span style={{ color: item.color, display: "inline-flex" }}><Icon name={item.icon} size={item.child ? 13 : 15} /></span>
                 {item.label}
               </button>
             );
@@ -1681,7 +1754,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div>
         </div>
       </aside>
@@ -1689,13 +1762,17 @@ export default function ReliabilityScorecards() {
       {/* Content */}
       <main style={{ flex: 1, minWidth: 0 }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 32px 64px" }}>
-          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${page}` : ""}</Eyebrow>
+          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${page === "tvplatforms" ? "TV · Platforms" : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
             <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "selfserve"
               ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
-              : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
+              : page === "tvplatforms"
+                ? "TV platforms · Optik TV Legacy vs TV Evolution: base, tickets, repairs, swaps"
+                : page === "SH+" || (page === "home" && scope === "SH+")
+                  ? "SH+: tickets, repairs/dispatches, base (from Jul 2025)"
+                  : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
             <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
             <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: Jun 2026)</span>
           </div>
@@ -1733,7 +1810,7 @@ export default function ReliabilityScorecards() {
             </div>
           </div>
 
-          {page === "home" ? <HomePage /> : page === "selfserve" ? <SelfServePage /> : <ProductPage product={page} />}
+          {page === "home" ? <HomePage /> : page === "selfserve" ? <SelfServePage /> : page === "tvplatforms" ? <TvPlatformsPage /> : <ProductPage product={page} />}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>
           Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
