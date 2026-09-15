@@ -384,14 +384,14 @@ const CALLS_SPLIT = {
 // ---------------------------------------------------------------------------
 const TV_PLATFORMS = [
   {
-    id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom · IPTV West + TQ ILEC TV",
+    id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
     tickets: [28724, 28040, 30652, 30984, 31535, 26335, 26637, 24474, 22010, 26283, 25560, 24547, 26833, 23176, 23159, 23715, 20858, 20917, 21489, 22123],
     repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 1581, 1418, 1590, 1663, 1605, 1105, 1263, 1240],
     base: [null, null, null, null, null, null, null, null, null, null, null, null, 821723, 816290, 811279, 798308, 788806, 784491, 761917, 744256],
     swaps2026: [null, null, null, null, null, null, null, null, null, null, null, null, 2003, 1686, 1764, 1443, 1178, 977, 698, 596]
   },
   {
-    id: "opus", name: "TV Evolution", sub: "OPUS + PFE Vulcan - TV",
+    id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480, 9810, 10722, 10734, 10003, 10096, 10007, 10731, 12168, 15164, 15504, 13886, 12128, 9921, 9441, 10894, 9879, 11256, 9867, 10678],
     repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 307, 310, 329, 330, 336, 307, 309, 305],
     base: [null, null, null, null, null, null, null, null, null, null, null, null, 313057, 317647, 321934, 331737, 339109, 341964, 363352, 380113],
@@ -827,6 +827,7 @@ export default function ReliabilityScorecards() {
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
+  const [tvNavOpen, setTvNavOpen] = useState(false); // "By Platform" nav subsection, collapsed by default
   const NO_INIT_FILTERS = { theme: "All", status: "All", timeline: "All", prime: "All" };
   const [initFilters, setInitFilters] = useState(NO_INIT_FILTERS);
 
@@ -867,7 +868,7 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
-    { id: "tvplatforms", label: "Platform breakout", icon: "tv", color: colors.TV, child: true },
+    { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR }
@@ -906,9 +907,9 @@ export default function ReliabilityScorecards() {
     ];
   }
 
-  function TileRow({ tiles, deltaMode }) {
+  function TileRow({ tiles, deltaMode, columns, extras }) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: columns ? `repeat(${columns}, 1fr)` : "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {tiles.map((tile, i) => {
           const f = rowFigures(tile.data, tile.dec, tile.goodDown);
           const deltas = [];
@@ -924,6 +925,7 @@ export default function ReliabilityScorecards() {
               deltas={deltas} />
           );
         })}
+        {extras}
       </div>
     );
   }
@@ -1001,8 +1003,15 @@ export default function ReliabilityScorecards() {
                   {rangeMonths.map((m, i) => {
                     const gi = fromIdx + i;
                     const isLast = gi === toIdx;
+                    // Focus month is coloured by direction vs the prior month.
+                    // Every scorecard category improves when it falls, so down = good.
+                    let cellColor = T.text;
+                    if (isLast && r.data[gi] != null && gi > 0 && r.data[gi - 1] != null) {
+                      const diff = r.data[gi] - r.data[gi - 1];
+                      cellColor = diff > 0 ? T.bad : diff < 0 ? T.good : T.text;
+                    }
                     return (
-                      <td key={m} style={{ ...tdBase, textAlign: "right", background: isLast ? T.highlightCol : undefined, fontWeight: isLast ? 700 : 400, color: T.text }}>
+                      <td key={m} style={{ ...tdBase, textAlign: "right", background: isLast ? T.highlightCol : undefined, fontWeight: isLast ? 700 : 400, color: cellColor }}>
                         {ind.fmt(r.data[gi])}
                       </td>
                     );
@@ -1488,20 +1497,21 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <Section num="01" eyebrow="Executive summary" title={scope === "All" ? "All products at a glance" : `${scope} at a glance`} icon="overview" T={T} collapsible>
-          <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" />
-          {scope === "All" && (() => {
+          {(() => {
+            // On the All scope the two self-serve cards join the KPI grid right
+            // after the subscriber base card; a fixed 4-column grid keeps both
+            // rows equally sized and aligned (4 + 3).
             const res = sweeprFig("resolved", 0);
             const dea = sweeprFig("deacts", 0);
-            return (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14, marginTop: 14 }}>
-                <StatCard T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtNum(res.latest)}
-                  sub={`${res.latestMonth} · target ${fmtNum(res.target)} · Sweepr workflows`}
-                  deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />
-                <StatCard T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
-                  sub={`${dea.latestMonth} · Sweepr workflows`}
-                  deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
-              </div>
-            );
+            const selfServeCards = scope === "All" ? [
+              <StatCard key="ss-res" T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtNum(res.latest)}
+                sub={`${res.latestMonth} · target ${fmtNum(res.target)} · Sweepr workflows`}
+                deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />,
+              <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
+                sub={`${dea.latestMonth} · Sweepr workflows`}
+                deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
+            ] : null;
+            return <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
           })()}
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
@@ -1580,7 +1590,7 @@ export default function ReliabilityScorecards() {
           <div style={{ fontSize: 12.5, margin: "10px 2px 0" }}>
             <button onClick={() => setPage("tvplatforms")}
               style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline" }}>
-              Platform breakout — Optik TV Legacy vs TV Evolution →
+              By Platform — Optik TV Legacy vs TV Evolution →
             </button>
           </div>
         )}
@@ -1708,7 +1718,7 @@ export default function ReliabilityScorecards() {
 
   function TvPlatformsPage() {
     return (
-      <Section key="tvplatforms" num="01" eyebrow="TV platforms" title="Platform breakout — Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible>
+      <Section key="tvplatforms" num="01" eyebrow="TV · By Platform" title="Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible>
         <TvPlatformBreakout />
       </Section>
     );
@@ -1719,7 +1729,7 @@ export default function ReliabilityScorecards() {
     : page === "selfserve"
       ? "Self-serve workflows scorecard"
       : page === "tvplatforms"
-        ? "TV platform breakout"
+        ? "TV by platform"
         : `${page} reliability scorecard`;
 
   return (
@@ -1733,6 +1743,10 @@ export default function ReliabilityScorecards() {
         <nav style={{ padding: "14px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
           {navItems.map((item) => {
             const active = page === item.id;
+            // "By Platform" stays hidden until the TV item is expanded (or the
+            // sub-page itself is open, so the active state is always visible).
+            if (item.child && !tvNavOpen && page !== "tvplatforms") return null;
+            const isTv = item.id === "TV";
             return (
               <button key={item.id} onClick={() => { setPage(item.id); setInitFilters(NO_INIT_FILTERS); }}
                 style={{
@@ -1744,6 +1758,10 @@ export default function ReliabilityScorecards() {
                 }}>
                 <span style={{ color: item.color, display: "inline-flex" }}><Icon name={item.icon} size={item.child ? 13 : 15} /></span>
                 {item.label}
+                {isTv && (
+                  <span onClick={(e) => { e.stopPropagation(); setTvNavOpen((o) => !o); }}
+                    style={{ marginLeft: "auto", color: T.textMuted, fontSize: 12, padding: "0 4px", transform: tvNavOpen || page === "tvplatforms" ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>
+                )}
               </button>
             );
           })}
@@ -1762,7 +1780,7 @@ export default function ReliabilityScorecards() {
       {/* Content */}
       <main style={{ flex: 1, minWidth: 0 }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 32px 64px" }}>
-          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${page === "tvplatforms" ? "TV · Platforms" : page}` : ""}</Eyebrow>
+          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${page === "tvplatforms" ? "TV · By Platform" : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
