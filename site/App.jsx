@@ -404,6 +404,17 @@ TV_PLATFORMS.forEach((p) => {
   p.repairRate = p.repairs.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(3) : null));
 });
 
+// ---------------------------------------------------------------------------
+// TV ticket, sentiment and cross analysis — Jun–Aug 2026.
+// Source: TV agent/technician ticket notes (95,739 tickets; Category 1-3 + Agent
+// Notes = agent grouping, Resolution 1-3 + Resolution Text = closure grouping,
+// with ~4% carrying a structured technician determination) and the Optik TV
+// customer survey verbatims (1,728 / 1,800 / 2,146 respondents; scoring columns
+// ignored). Theme counts come from keyword classification of free text and are
+// indicative, not exact. Values are [Jun, Jul, Aug].
+// ---------------------------------------------------------------------------
+const TVA = {"months":["Jun 2026","Jul 2026","Aug 2026"],"tickets":{"total":[31968,31156,32614],"agentCat":[{"name":"Video Issues","v":[6930,6796,6715],"pct":-3.1},{"name":"STB No Boot","v":[6242,6711,7097],"pct":13.7},{"name":"Recording Issues","v":[4066,4663,4669],"pct":14.8},{"name":"Digital Box","v":[4323,3800,4357],"pct":0.8},{"name":"Channel Issues","v":[4693,3397,3493],"pct":-25.6},{"name":"Remote","v":[1594,1744,1707],"pct":7.1},{"name":"Apps","v":[952,955,1185],"pct":24.5},{"name":"Audio Issues","v":[701,689,765],"pct":9.1},{"name":"Recordings","v":[536,548,577],"pct":7.6},{"name":"TV Features","v":[524,441,515],"pct":-1.7},{"name":"HS & TV Affected","v":[415,410,447],"pct":7.7},{"name":"Mobile App","v":[299,282,311],"pct":4.0},{"name":"VOD","v":[186,234,216],"pct":16.1},{"name":"Guide Issues","v":[107,79,111],"pct":3.7},{"name":"PPV/VOD","v":[61,42,80],"pct":31.1}],"rising":[{"name":"STB No Boot \u203a Stuck on Initializing","v":[3409,3642,4084],"delta":675,"pct":19.8},{"name":"Recording Issues \u203a Cannot Set Recordings","v":[2648,3078,3116],"delta":468,"pct":17.7},{"name":"Digital Box \u203a Setup","v":[1830,1812,2115],"delta":285,"pct":15.6},{"name":"Apps \u203a Youtube","v":[42,50,235],"delta":193,"pct":459.5},{"name":"STB No Boot \u203a Registration Code","v":[291,375,417],"delta":126,"pct":43.3},{"name":"Recording Issues \u203a Cannot View Recordings List","v":[772,845,864],"delta":92,"pct":11.9},{"name":"Remote \u203a Programming","v":[854,946,934],"delta":80,"pct":9.4},{"name":"STB No Boot \u203a Quick Client Initialization Error","v":[489,564,553],"delta":64,"pct":13.1}],"falling":[{"name":"Channel Issues \u203a Channel Not Working","v":[2247,1617,1662],"delta":-585,"pct":-26.0},{"name":"Channel Issues \u203a Missing Channels","v":[1831,1380,1471],"delta":-360,"pct":-19.7},{"name":"Digital Box \u203a No Boot","v":[2146,1679,1877],"delta":-269,"pct":-12.5},{"name":"Channel Issues \u203a Manage My Channels","v":[615,400,359],"delta":-256,"pct":-41.6},{"name":"Video Issues \u203a No Video","v":[4388,4267,4229],"delta":-159,"pct":-3.6},{"name":"STB No Boot \u203a Red X","v":[299,296,248],"delta":-51,"pct":-17.1},{"name":"Video Issues \u203a Stop/Stuttering/Freezing","v":[2104,2054,2073],"delta":-31,"pct":-1.5},{"name":"Audio Issues \u203a Low Audio","v":[195,175,169],"delta":-26,"pct":-13.3}],"techR1":[{"name":"Education","v":[9824,9766,10646]},{"name":"Connectivity","v":[4628,4434,4705]},{"name":"Customer","v":[4557,4132,3802]},{"name":"IPTV","v":[3705,3975,4216]},{"name":"(no technician closure)","v":[3819,3829,3999]},{"name":"Optik Evolution","v":[3116,2839,2802]},{"name":"Optik TV Self-Install","v":[589,547,619]},{"name":"HSIA","v":[380,344,342]},{"name":"Pik TV","v":[261,278,302]}],"techRising":[{"name":"Education \u203a IPTV","v":[7577,7555,8183],"delta":606,"pct":8.0},{"name":"IPTV \u203a Set Top Box","v":[1771,1801,1927],"delta":156,"pct":8.8},{"name":"Education \u203a HSIA","v":[1214,1214,1352],"delta":138,"pct":11.4},{"name":"IPTV \u203a Recording Issues - PVR STB","v":[386,502,509],"delta":123,"pct":31.9},{"name":"Education \u203a Pik TV","v":[782,747,850],"delta":68,"pct":8.7}],"techFalling":[{"name":"Customer \u203a Customer Training/Education/Inquiry Only","v":[4356,3927,3576],"delta":-780,"pct":-17.9},{"name":"Optik Evolution \u203a Provisioning","v":[580,443,371],"delta":-209,"pct":-36.0},{"name":"Optik Evolution \u203a Digital Box","v":[1111,984,974],"delta":-137,"pct":-12.3},{"name":"Connectivity \u203a STB/PVR","v":[3168,2976,3140],"delta":-28,"pct":-0.9},{"name":"Optik Evolution \u203a Physical Connections","v":[169,152,155],"delta":-14,"pct":-8.3}],"divergence":{"all":[{"alignment":34.3,"nofault":52.7,"reattribution":65.7,"closed":27876},{"alignment":34.7,"nofault":52.4,"reattribution":65.3,"closed":27038},{"alignment":34.9,"nofault":52.5,"reattribution":65.1,"closed":28320}],"field":[{"alignment":79.6,"nofault":7.9,"nontelus":9.5,"reattribution":20.4,"visits":1316},{"alignment":76.9,"nofault":11.2,"nontelus":14.6,"reattribution":23.1,"visits":1426},{"alignment":73.0,"nofault":12.5,"nontelus":14.4,"reattribution":27.0,"visits":1409}],"perCat":[{"cat":"STB No Boot","n":7097,"alignment":46.7,"nofault":49.9,"techTop":["Education / no fault","STB hardware"]},{"cat":"Video Issues","n":6715,"alignment":43.5,"nofault":53.5,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recording Issues","n":4669,"alignment":25.4,"nofault":52.0,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Digital Box","n":4357,"alignment":44.8,"nofault":52.1,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Channel Issues","n":3493,"alignment":13.1,"nofault":54.7,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Remote","n":1707,"alignment":28.4,"nofault":55.5,"techTop":["Education / no fault","Remote control"]},{"cat":"Apps","n":1185,"alignment":21.5,"nofault":62.2,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Audio Issues","n":765,"alignment":13.9,"nofault":51.4,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recordings","n":577,"alignment":29.1,"nofault":49.8,"techTop":["Education / no fault","Recording / PVR"]},{"cat":"TV Features","n":515,"alignment":17.9,"nofault":47.2,"techTop":["Education / no fault","Network / connectivity"]}],"perCatField":[{"cat":"STB No Boot","n":681,"alignment":80.2,"nofault":11.3,"nontelus":12.0,"techTop":"STB hardware"},{"cat":"Video Issues","n":329,"alignment":77.5,"nofault":14.6,"nontelus":15.2,"techTop":"STB hardware"},{"cat":"Recording Issues","n":124,"alignment":59.7,"nofault":8.9,"nontelus":10.5,"techTop":"STB hardware"},{"cat":"HS & TV Affected","n":106,"alignment":62.3,"nofault":7.5,"nontelus":13.2,"techTop":"Network / connectivity"},{"cat":"Digital Box","n":83,"alignment":77.1,"nofault":15.7,"nontelus":30.1,"techTop":"STB hardware"}]},"closure":[{"tickets":31968,"field_visit_pct":4.1,"agent_education_closure_pct":44.8},{"tickets":31156,"field_visit_pct":4.6,"agent_education_closure_pct":44.4},{"tickets":32614,"field_visit_pct":4.3,"agent_education_closure_pct":44.1}],"determination":[[1194,125],[1219,209],[1211,205]],"fixes":[{"name":"Replaced STB / PVR / OPUS box","v":[234,264,223],"pct":-4.7},{"name":"Wi-Fi / WAP / wireless STB placement","v":[175,189,175],"pct":0.0},{"name":"Education / no fault found / working on arrival","v":[61,98,107],"pct":75.4},{"name":"Recording / PVR settings","v":[57,79,72],"pct":26.3},{"name":"ONT / light level / fibre","v":[53,77,74],"pct":39.6},{"name":"Remote control","v":[49,83,66],"pct":34.7},{"name":"Firmware / software / reboot fix","v":[47,63,60],"pct":27.7},{"name":"Power supply / power cable","v":[60,47,33],"pct":-45.0},{"name":"Modem / gateway replaced or reset","v":[41,44,41],"pct":0.0},{"name":"Re-terminated / replaced cabling","v":[26,22,15],"pct":-42.3}],"commentCoverage":[20183,18888,19221],"themes":[{"name":"Recording / PVR","v":[3790,4280,4345],"pct":14.6},{"name":"Swap / replacement shipped","v":[3811,3415,3466],"pct":-9.1},{"name":"Modem / gateway","v":[3351,3101,3490],"pct":4.1},{"name":"Ethernet / HDMI / cabling","v":[3180,3080,3315],"pct":4.2},{"name":"Wi-Fi / wireless STB signal","v":[3112,3067,3146],"pct":1.1},{"name":"Channel missing / not authorized","v":[3546,2809,2950],"pct":-16.8},{"name":"Repeat / recurring issue","v":[2622,2415,2466],"pct":-5.9},{"name":"Remote control","v":[2249,2290,2274],"pct":1.1},{"name":"Fibre / ONT / light level","v":[2189,2056,2225],"pct":1.6},{"name":"Stuck initializing / reboot loop","v":[1635,1593,1773],"pct":8.4},{"name":"No signal / black screen","v":[1793,1477,1470],"pct":-18.0},{"name":"Outage / active network event","v":[1540,1236,1364],"pct":-11.4},{"name":"Dispatch / technician booked","v":[1193,1126,1313],"pct":10.1},{"name":"Power / power supply","v":[1177,1052,1095],"pct":-7.0},{"name":"Freezing / pixelation / glitching","v":[1017,966,969],"pct":-4.7},{"name":"Firmware / software update","v":[944,801,760],"pct":-19.5},{"name":"Streaming apps (Netflix, Prime, YouTube, TV+ app)","v":[867,743,892],"pct":2.9},{"name":"Audio / sound","v":[741,768,808],"pct":9.0},{"name":"Customer wants tech / refuses troubleshooting","v":[353,291,336],"pct":-4.8}],"devices":[{"name":"4K STB","v":[21558,20749,21265],"pct":-1.4},{"name":"OPUS / TV+ box (TV Evolution)","v":[9241,8304,8482],"pct":-8.2},{"name":"VIP5662W (Mediaroom PVR)","v":[6215,6665,7321],"pct":17.8},{"name":"VIP5602W (Mediaroom wSTB)","v":[4986,5318,5578],"pct":11.9},{"name":"T3200M gateway","v":[4099,4116,4363],"pct":6.4},{"name":"Pik TV","v":[1111,1065,1187],"pct":6.8},{"name":"NH20T gateway","v":[776,736,427],"pct":-45.0}],"platform":[{"name":"Mediaroom (legacy)","v":[9270,9667,10483],"pct":13.1},{"name":"OPUS / TV Evolution","v":[8658,7844,7944],"pct":-8.2}]},"survey":{"respondents":[1728,1800,2146],"polarity":{"positive":[40.8,38.3,37.2],"neutral":[35.8,38.3,37.9],"negative":[23.3,23.4,24.9]},"polarityN":{"positive":[695,679,782],"neutral":[610,678,797],"negative":[397,415,524]},"themes":[{"name":"Positive: satisfied / no issues","v":[791,786,898],"pct":[45.8,43.7,41.8],"neg":[68,68,80]},{"name":"Customer service & support access","v":[636,657,781],"pct":[36.8,36.5,36.4],"neg":[208,213,271]},{"name":"Price, value & contract increases","v":[561,574,678],"pct":[32.5,31.9,31.6],"neg":[198,189,250]},{"name":"Reliability: freezing, outages & drop-outs","v":[402,426,485],"pct":[23.3,23.7,22.6],"neg":[122,140,150]},{"name":"Billing & account","v":[287,308,371],"pct":[16.6,17.1,17.3],"neg":[121,126,156]},{"name":"Channels, packages & content","v":[273,287,354],"pct":[15.8,15.9,16.5],"neg":[87,89,128]},{"name":"Internet & Wi-Fi","v":[265,268,359],"pct":[15.3,14.9,16.7],"neg":[103,99,150]},{"name":"Set-top box / equipment","v":[231,257,294],"pct":[13.4,14.3,13.7],"neg":[92,93,122]},{"name":"Installation & technicians","v":[130,118,139],"pct":[7.5,6.6,6.5],"neg":[48,41,54]},{"name":"Picture & sound quality","v":[106,100,139],"pct":[6.1,5.6,6.5],"neg":[29,37,41]},{"name":"Recording / PVR","v":[91,104,138],"pct":[5.3,5.8,6.4],"neg":[29,32,47]},{"name":"Apps & streaming","v":[79,104,108],"pct":[4.6,5.8,5.0],"neg":[25,41,48]},{"name":"Remote, guide & navigation","v":[91,89,104],"pct":[5.3,4.9,4.8],"neg":[35,29,42]}],"tvIssues":[{"name":"Customer service experience","v":[70,91,75],"pct":[4.05,5.06,3.49]},{"name":"Interruptions / freezing / restarts","v":[66,73,83],"pct":[3.82,4.06,3.87]},{"name":"Picture quality","v":[44,48,58],"pct":[2.55,2.67,2.7]},{"name":"Recording / PVR","v":[19,19,38],"pct":[1.1,1.06,1.77]},{"name":"Outages / service loss","v":[23,18,27],"pct":[1.33,1.0,1.26]},{"name":"TV features","v":[17,22,20],"pct":[0.98,1.22,0.93]},{"name":"Sound quality","v":[13,21,14],"pct":[0.75,1.17,0.65]},{"name":"Remote control","v":[9,16,21],"pct":[0.52,0.89,0.98]},{"name":"Channel guide / navigation","v":[15,11,18],"pct":[0.87,0.61,0.84]},{"name":"Apps / streaming","v":[12,10,16],"pct":[0.69,0.56,0.75]},{"name":"On-demand / VOD","v":[4,7,5],"pct":[0.23,0.39,0.23]}],"support":{"positive":[34,32,42],"neutral":[408,394,505],"negative":[148,150,186]},"quotes":{"Picture quality":["Seems to stutter and freeze sometimes","Weak signal   and sound  quality","My picture os constantly pixelating. It is a poor watch","Always freezes or is buffering ?"],"Customer service experience":["Not speaking English not communicating with each other so every service call back to square 1","Plusieurs appels avant d'\u00eatre en mesure de r\u00e9gler le probl\u00e8me.  Les agents se lance la balle l'un l'autre en accusant leur coll\u00e8gue de ne pas avoir compris et su r\u00e9gler le probl\u00e8me","My issues tend to go unresolved. I sometimes cases i get some resolution and so get great phone reps who really try. I think you are way overpriced for the glitchy services","Absolutely no one knows anything to help you."],"Interruptions / freezing / restarts":["Home page doesn\u2019t initially load properly or freezes and is unresponsive to the remote","Half the time I can't access cable channels or streaming services","As stated within the questions provided.","Neither of my tvs are working."],"Recording / PVR":["This whole thing was like stepping on a landmine. Picture freezes.","Broken voice and picture frozen in the beginning of recording","Losing last half of recorded programs. Failing to play recorded programs. and some pixelizing on some stations at times.","The PVR listing disappears occasionally"],"Remote control":["Unable to sync Telus remote with tv remote","Not responding when pressing buttons","For some reason I only have one remote for two boxes.","Always having to unplug modem and router screen freezes or says check internet"]}}};
+
 const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
 const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
@@ -455,6 +466,9 @@ const ICON_PATHS = {
   pillar3: "M21 3 10 14M21 3l-7 18-3-8-8-3z",
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
+  notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
+  sentiment: "M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01",
+  cross: "M6 6h.01M18 6h.01M6 18h.01M18 18h.01M12 12h.01M7 7l4 4M17 7l-4 4M7 17l4-4M17 17l-4-4",
   shplus: "M3 11l9-8 9 8M5 9.5V21h14V9.5M12 12v6M9 15h6",
   cx: "M8 10h.01M16 10h.01M8.5 15a4.5 4.5 0 0 0 7 0M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z",
   saved: "M12 21C7 17 3 13.5 3 9.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 9 3.5c0 4-4 7.5-9 11.5zM9 12l2 2 4-4"
@@ -811,6 +825,10 @@ function agg2025(data, mode) {
 
 const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
+// TV sub-pages (nested under TV in the nav, collapsed by default)
+const TV_CHILD_PAGES = ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"];
+const TV_CHILD_LABEL = { tvplatforms: "By Platform", tvtickets: "Ticket Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis" };
+
 // Initiatives covering a recurring-issue group, product-scoped
 function initiativesCovering(product, grp) {
   return INITIATIVES.filter((it) => it.p === product && it.issues.includes(grp));
@@ -869,6 +887,9 @@ export default function ReliabilityScorecards() {
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true },
+    { id: "tvtickets", label: "Ticket Analysis", icon: "notes", color: colors.TV, child: true },
+    { id: "tvsentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.TV, child: true },
+    { id: "tvcross", label: "Cross Analysis", icon: "cross", color: colors.TV, child: true },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR }
@@ -1587,11 +1608,13 @@ export default function ReliabilityScorecards() {
           </div>
         )}
         {product === "TV" && (
-          <div style={{ fontSize: 12.5, margin: "10px 2px 0" }}>
-            <button onClick={() => setPage("tvplatforms")}
-              style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline" }}>
-              By Platform — Optik TV Legacy vs TV Evolution →
-            </button>
+          <div style={{ fontSize: 12.5, margin: "10px 2px 0", display: "flex", gap: 18, flexWrap: "wrap" }}>
+            {TV_CHILD_PAGES.map((id) => (
+              <button key={id} onClick={() => setPage(id)}
+                style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline" }}>
+                {TV_CHILD_LABEL[id]} →
+              </button>
+            ))}
           </div>
         )}
         {product === "SH+" && (
@@ -1718,9 +1741,594 @@ export default function ReliabilityScorecards() {
 
   function TvPlatformsPage() {
     return (
-      <Section key="tvplatforms" num="01" eyebrow="TV · By Platform" title="Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible>
+      <Section key="tvplatforms" num="01" eyebrow="TV · By Platform" title="Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible defaultOpen={false}>
         <TvPlatformBreakout />
       </Section>
+    );
+  }
+
+  // ------------------------------ TV analysis sub-pages (tickets, sentiment, cross) ------------------------------
+  const AN_MONTHS = ["Jun", "Jul", "Aug"];
+  const anTh = { padding: "9px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", textAlign: "left" };
+  const anTd = { padding: "8px 12px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5, verticalAlign: "middle" };
+  const anNum = { ...anTd, textAlign: "right", whiteSpace: "nowrap", color: T.text };
+
+  // Sub-menu pages: every section starts collapsed
+  function secFactory(prefix, eyebrow) {
+    let n = 0;
+    return (title, icon, children) => {
+      n += 1;
+      return (
+        <Section key={`${prefix}-${title}`} num={String(n).padStart(2, "0")} eyebrow={eyebrow} title={title} icon={icon} T={T} collapsible defaultOpen={false}>
+          {children}
+        </Section>
+      );
+    };
+  }
+
+  function TrendBars({ v, color }) {
+    const vals = v.map((x) => x || 0);
+    const mx = Math.max(...vals, 1);
+    return (
+      <span style={{ display: "inline-flex", alignItems: "flex-end", gap: 3, height: 22 }} title={AN_MONTHS.map((m, i) => `${m}: ${v[i]}`).join(" · ")}>
+        {vals.map((x, i) => <span key={i} style={{ width: 8, height: Math.max(2, Math.round((x / mx) * 22)), background: color, opacity: i === 2 ? 1 : 0.45, borderRadius: 2 }} />)}
+      </span>
+    );
+  }
+
+  // Aug vs Jun movement with percent
+  function Move({ v, goodDown = true, dec = 0, unit = "" }) {
+    if (v[0] == null || v[2] == null) return <span style={{ color: T.textFaint }}>—</span>;
+    const d = delta(v[2], v[0], unit, dec, goodDown);
+    return <span style={{ whiteSpace: "nowrap" }}><DeltaText d={d} T={T} />{v[0] ? <span style={{ color: T.textFaint, fontSize: 11.5 }}> ({yoyPctText(v[2], v[0])})</span> : null}</span>;
+  }
+
+  function MoverCards({ rising, falling, risingTitle = "Rising · Aug vs Jun 2026", fallingTitle = "Falling · Aug vs Jun 2026" }) {
+    const card = (title, rows, tone) => (
+      <div style={{ flex: 1, minWidth: 280, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${tone === "up" ? T.bad : T.good}`, borderRadius: 10, padding: "12px 16px" }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
+        {rows.map((r) => (
+          <div key={r.name} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5, padding: "3px 0" }}>
+            <span style={{ color: T.textSecondary }}>{r.name}</span>
+            <span style={{ fontWeight: 700, color: tone === "up" ? T.bad : T.good, whiteSpace: "nowrap" }}>
+              {r.delta > 0 ? "▲ +" : "▼ "}{Math.abs(r.delta).toLocaleString()}{r.pct != null && <span style={{ color: T.textFaint, fontWeight: 400 }}> ({r.pct > 0 ? "+" : ""}{r.pct}%)</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+    return <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>{card(risingTitle, rising, "up")}{card(fallingTitle, falling, "down")}</div>;
+  }
+
+  function Recs({ items }) {
+    const tagColor = (t) => (t === "Rising" || t === "Emerging" ? T.bad : t === "Falling" ? T.good : T.textMuted);
+    return (
+      <div style={{ display: "grid", gap: 12 }}>
+        {items.map((it, i) => (
+          <div key={i} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 18px", display: "grid", gridTemplateColumns: "64px 1fr", gap: 14 }}>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: T.heading }}>{it.pri}</div>
+              <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tagColor(it.tag) }}>{it.tag}</div>
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, color: T.textSecondary, fontSize: 14 }}>{it.title}</div>
+              <div style={{ fontSize: 12.5, color: T.textMuted, marginTop: 5, lineHeight: 1.55 }}><b style={{ color: T.textSecondary }}>Evidence:</b> {it.evidence}</div>
+              <div style={{ fontSize: 12.5, color: T.textMuted, marginTop: 4, lineHeight: 1.55 }}><b style={{ color: T.textSecondary }}>Action:</b> {it.action}</div>
+              {it.initiatives && <div style={{ fontSize: 12, color: T.textFaint, marginTop: 5 }}>Linked TV initiatives: {it.initiatives.join(" · ")}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function MonthHeader({ extra = [] }) {
+    return (
+      <tr>
+        <th style={anTh}>{extra[0] || ""}</th>
+        {AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}
+        <th style={anTh}>Trend</th>
+        <th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th>
+        {extra.slice(1).map((e) => <th key={e} style={anTh}>{e}</th>)}
+      </tr>
+    );
+  }
+
+  const TV_RECS = [
+    { pri: "P1", tag: "Rising", title: "Swarm the PVR recording defect and replace failing legacy PVRs",
+      evidence: "Recording Issues tickets 4,066 → 4,669 (+15%), with Cannot Set Recordings +18%; recording is the #1 theme in agent comments (+15%); technician recording fixes +26%, yet 46% of recording dispatches end in an STB hardware swap; recording mentions in survey verbatims up 61% (1.10% → 1.77% of respondents).",
+      action: "Correlate Cannot Set Recordings with PVR firmware and whole-home recording configuration, proactively replace VIP5662W PVRs InSight flags as unreachable, and give agents a hardware-vs-software decision tree so recording tickets route to the right fix first time.",
+      initiatives: ["Recording Restart Issue Fix", "Recording Deletion Enhancements", "Sports Team Recordings"] },
+    { pri: "P1", tag: "Rising", title: "Ethernet-first fix path for legacy STB initialisation failures",
+      evidence: "STB No Boot › Stuck on Initializing 3,409 → 4,084 (+20%) and Registration Code +43%; VIP5662W mentions +18% and Mediaroom mentions +13% while OPUS mentions fall 8%; half of these tickets close as education / no fault, and 55% of the dispatches end as STB hardware.",
+      action: "Add an InSight auto-check for PVR not reachable with no Ethernet link, publish a self-serve wired-connection flow for VIP5662W, and offer OPUS migration to households with repeat boot tickets.",
+      initiatives: ["Revamped OPUS Migration Process", "Equipment Order Fallout Audit"] },
+    { pri: "P1", tag: "Divergence", title: "Pre-dispatch quality gate to close the agent–technician categorisation gap",
+      evidence: "65% of closures land in a different domain than the agent's opening category (52% end as education / no fault); on true field visits divergence rose 20.4% → 27.0%, no-fault-found 7.9% → 12.5% and non-TELUS-caused 9.5% → 14.4%; repeat-issue language appears in 12.8% of agent comments.",
+      action: "Gate dispatch on an InSight evidence checklist (RSSI, ONT light level, STB reachability), QA Copilot-assisted notes for a stated diagnosis, and flag repeat contacts for senior-agent handling; target field divergence back under 20%.", initiatives: ["InSight Conviva Video Quality Metrics & Co-pilot Ingestion"] },
+    { pri: "P2", tag: "Persistent", title: "Wireless STB placement and Wi-Fi diagnostics",
+      evidence: "WAP / wireless STB placement is the #2 field fix (13% of visits, flat); Connectivity closures hold at ~4.6K a month; freezing and interruptions are the most-mentioned TV issue in verbatims (3.9% of respondents) and Internet & Wi-Fi mentions rose 15.3% → 16.7%.",
+      action: "Surface STB RSSI in the agent InSight view with a placement script, default to wired STB connections on installs, and target Wi-Fi 6 boosters at multi-STB homes.", initiatives: ["Low RSSI + Low Bitrate Proactive Campaign"] },
+    { pri: "P2", tag: "Emerging", title: "YouTube app regression (August)",
+      evidence: "Apps › YouTube tickets 42 → 50 → 235 (+460%) drove the Apps category up 24%; no matching movement in technician findings or verbatims yet, which points to an app-side release rather than network or hardware.",
+      action: "Escalate to the YouTube / TV+ app owner for a hotfix, publish an agent workaround, and watch September volumes before treating it as structural." },
+    { pri: "P2", tag: "Rising", title: "Support access and chatbot escalation",
+      evidence: "Customer service is the largest negative theme in verbatims (208 → 271 negative mentions, +30%); chatbot verbatims run 25% negative vs 6% positive; TV customer-service verbatims peaked at 5.1% of respondents in July.",
+      action: "Add a direct human-escalation path from the chatbot for repeat or unresolved TV issues, tighten hand-off notes between agents, and offer scheduled callbacks for tickets with prior contacts." },
+    { pri: "P3", tag: "Falling", title: "Sustain the channel and power-supply fixes",
+      evidence: "Channel Not Working −26%, Missing Channels −20%, Manage My Channels −42%; OPUS provisioning closures −36%; power-supply field fixes 60 → 33 (−45%) and Digital Box › No Boot −12.5%.",
+      action: "Keep the channel audit and PSU replacement programs funded through Q4 and move remaining channel verbatims (mostly package and value) to the commercial team.",
+      initiatives: ["UUID Auto Sync — Blocking Channels Fix", "Automated Missing TV Channel Audit", "PSU Replacement Campaign"] },
+  ];
+
+  function TvTicketAnalysisPage() {
+    const K = TVA.tickets;
+    const sec = secFactory("tvt", "TV · Ticket Analysis");
+    const dAll = K.divergence.all, dF = K.divergence.field;
+    const catMax = Math.max(...K.agentCat.map((c) => Math.max(...c.v)));
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtNum(K.total[2])} sub="Aug 2026 · agent + technician notes"
+            deltas={[<Move key="m" v={K.total} />]} />
+          <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Aug"
+            deltas={[<span key="a" style={{ color: T.textMuted }}>Jun {K.closure[0].field_visit_pct}% · Jul {K.closure[1].field_visit_pct}%</span>]} />
+          <StatCard T={T} color={colors.TV} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub="share of closed tickets · Aug"
+            deltas={[<Move key="m" v={dAll.map((d) => d.nofault)} dec={1} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="issues" label="Categorisation divergence" value={fmtPct(dAll[2].reattribution, 1)} sub="closure domain ≠ agent category · all closures"
+            deltas={[<Move key="m" v={dAll.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="issues" label="Field-visit divergence" value={fmtPct(dF[2].reattribution, 1)} sub="technician finding ≠ agent category"
+            deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Jun – Aug 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
+        </p>
+
+        {sec("Top issues by agent categorisation", "tickets",
+          <>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><MonthHeader extra={["Category 1 (agent)", "Share · Aug"]} /></thead>
+                <tbody>
+                  {K.agentCat.map((c) => (
+                    <tr key={c.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ width: Math.max(4, Math.round((c.v[2] / catMax) * 90)), height: 8, background: colors.TV, opacity: 0.7, borderRadius: 3 }} />{c.name}
+                        </span>
+                      </td>
+                      {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={anTd}><TrendBars v={c.v} color={colors.TV} /></td>
+                      <td style={anNum}><Move v={c.v} /></td>
+                      <td style={{ ...anNum, color: T.textMuted }}>{(c.v[2] / K.total[2] * 100).toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Category 1 › Category 2)</div>
+            <MoverCards rising={K.rising} falling={K.falling} />
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jun or Aug by absolute change. The YouTube app jump (42 → 235) is the only new driver; the rest are shifts inside established categories.</p>
+          </>
+        )}
+
+        {sec("Agent vs technician categorisation", "issues",
+          <>
+            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+              Each agent Category 1 maps to a symptom domain, each closure (Resolution 1–2) to a cause domain. <b style={{ color: T.textSecondary }}>Alignment</b> means the closure domain is one the symptom would predict (STB No Boot closing as STB hardware or connectivity, for example); <b style={{ color: T.textSecondary }}>divergence</b> is everything else, with <b style={{ color: T.textSecondary }}>education / no fault</b> broken out because it is the single largest cause. The left panel scores every closed ticket; the right panel scores only tickets with a written technician determination, the purest agent-vs-tech comparison.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14, marginBottom: 16 }}>
+              {[["All closures (agent or technician)", dAll, false], ["Field visits only (technician determination)", dF, true]].map(([title, D, isField]) => (
+                <div key={title} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>{title}</div>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead><tr><th style={anTh}>Indicator</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>Δ</th></tr></thead>
+                    <tbody>
+                      {[["Divergence score (re-attributed)", "reattribution", true], ["Aligned with agent category", "alignment", false], ["Closed as education / no fault", "nofault", true]]
+                        .concat(isField ? [["Determined non-TELUS caused", "nontelus", true]] : [])
+                        .map(([label, key, goodDown]) => (
+                          <tr key={key}>
+                            <td style={{ ...anTd, color: T.textSecondary, fontWeight: key === "reattribution" ? 700 : 500 }}>{label}</td>
+                            {D.map((d, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{d[key]}%</td>)}
+                            <td style={anNum}><Move v={D.map((d) => d[key])} dec={1} unit=" pts" goodDown={goodDown} /></td>
+                          </tr>
+                        ))}
+                      <tr><td style={{ ...anTd, color: T.textFaint, fontSize: 11.5 }}>{isField ? "Field visits" : "Closed tickets"}</td>{D.map((d, i) => <td key={i} style={{ ...anNum, color: T.textFaint, fontSize: 11.5 }}>{fmtNum(isField ? d.visits : d.closed)}</td>)}<td style={anTd} /></tr>
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — all closures, Aug 2026</div>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Tickets</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>Divergence</th><th style={{ ...anTh, textAlign: "right" }}>Education / no fault</th><th style={anTh}>Most common closure domains</th></tr></thead>
+                <tbody>
+                  {K.divergence.perCat.map((c) => (
+                    <tr key={c.cat}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.cat}</td>
+                      <td style={anNum}>{fmtNum(c.n)}</td>
+                      <td style={anNum}>{c.alignment}%</td>
+                      <td style={{ ...anNum, fontWeight: 700, color: 100 - c.alignment >= 70 ? T.bad : T.text }}>{(100 - c.alignment).toFixed(1)}%</td>
+                      <td style={anNum}>{c.nofault}%</td>
+                      <td style={{ ...anTd, color: T.textMuted }}>{c.techTop.join(" · ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — field visits only, Aug 2026</div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Visits</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>No fault found</th><th style={{ ...anTh, textAlign: "right" }}>Non-TELUS caused</th><th style={anTh}>Technician's top finding</th></tr></thead>
+                <tbody>
+                  {K.divergence.perCatField.map((c) => (
+                    <tr key={c.cat}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.cat}</td>
+                      <td style={anNum}>{fmtNum(c.n)}</td>
+                      <td style={{ ...anNum, color: c.alignment < 65 ? T.bad : T.text }}>{c.alignment}%</td>
+                      <td style={anNum}>{c.nofault}%</td>
+                      <td style={{ ...anNum, color: c.nontelus >= 25 ? T.bad : T.text }}>{c.nontelus}%</td>
+                      <td style={{ ...anTd, color: T.textMuted }}>{c.techTop}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Reading the gap: Channel Issues and Recording Issues carry the widest divergence on all closures (87% and 75%), driven by education closures; on field visits, Recording Issues is the weakest match (60% aligned, technicians most often find STB hardware) and Digital Box has the highest non-TELUS-caused share (30%).</p>
+          </>
+        )}
+
+        {sec("Technician closures and fixes", "repairs",
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14, marginBottom: 16 }}>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><MonthHeader extra={["Resolution 1 (closure)"]} /></thead>
+                  <tbody>
+                    {K.techR1.map((c) => (
+                      <tr key={c.name}>
+                        <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                        {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                        <td style={anTd}><TrendBars v={c.v} color={colors.TV} /></td>
+                        <td style={anNum}><Move v={c.v} goodDown={c.name !== "Education" && c.name !== "Customer"} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>Technician determination · field visits</div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr><th style={anTh}>Determination</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug share</th></tr></thead>
+                  <tbody>
+                    {[["TELUS caused (no fee)", 0], ["Non-TELUS caused (fee applied)", 1]].map(([label, idx]) => (
+                      <tr key={label}>
+                        <td style={{ ...anTd, color: T.textSecondary, fontWeight: 600 }}>{label}</td>
+                        {K.determination.map((d, i) => <td key={i} style={anNum}>{fmtNum(d[idx])}</td>)}
+                        <td style={{ ...anNum, fontWeight: 700, color: idx === 1 ? T.bad : T.text }}>{(K.determination[2][idx] / (K.determination[2][0] + K.determination[2][1]) * 100).toFixed(1)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused visits rose from 9.5% to 14.4% of determinations, the clearest sign that more dispatches are reaching homes where the fault is customer equipment or setup.</p>
+              </div>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><MonthHeader extra={["Fix theme"]} /></thead>
+                <tbody>
+                  {K.fixes.map((c) => (
+                    <tr key={c.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                      {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={anTd}><TrendBars v={c.v} color={colors.TV} /></td>
+                      <td style={anNum}><Move v={c.v} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Closure movers (Resolution 1 › Resolution 2)</div>
+            <MoverCards rising={K.techRising} falling={K.techFalling} />
+          </>
+        )}
+
+        {sec("What agents are writing", "notes",
+          <>
+            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
+              Themes are keyword-classified from the agent's own comment block (system diagnostic text excluded). A written agent comment was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} August tickets; counts are tickets whose comment mentions the theme.
+            </p>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><MonthHeader extra={["Theme in agent comments"]} /></thead>
+                <tbody>
+                  {K.themes.map((c) => (
+                    <tr key={c.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                      {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={anTd}><TrendBars v={c.v} color={colors.TV} /></td>
+                      <td style={anNum}><Move v={c.v} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
+              <div style={{ overflowX: "auto" }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Equipment mentioned in notes</div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><MonthHeader extra={["Device"]} /></thead>
+                  <tbody>
+                    {K.devices.map((c) => (
+                      <tr key={c.name}>
+                        <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                        {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                        <td style={anTd}><TrendBars v={c.v} color={colors.TV} /></td>
+                        <td style={anNum}><Move v={c.v} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Platform mentioned in notes</div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><MonthHeader extra={["Platform"]} /></thead>
+                  <tbody>
+                    {K.platform.map((c) => (
+                      <tr key={c.name}>
+                        <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                        {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                        <td style={anTd}><TrendBars v={c.v} color={c.name.startsWith("OPUS") ? colors.OPUS : colors.LEGACY} /></td>
+                        <td style={anNum}><Move v={c.v} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Legacy Mediaroom equipment (VIP5662W PVR, VIP5602W wireless STB) is mentioned more each month while OPUS mentions fall, consistent with the By Platform split where Legacy carries two thirds of TV tickets on a shrinking base.</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {sec("Recommendations", "initiatives", <Recs items={TV_RECS.filter((r) => ["P1", "P3"].includes(r.pri) || r.tag === "Emerging")} />)}
+      </>
+    );
+  }
+
+  function TvSentimentPage() {
+    const S = TVA.survey;
+    const sec = secFactory("tvs", "TV · Customer Sentiment");
+    const share = (arr, i) => arr[i];
+    const themeMovers = S.themes.map((t) => ({ name: t.name, delta: +(t.pct[2] - t.pct[0]).toFixed(1), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null })).filter((t) => t.name !== "Positive: satisfied / no issues");
+    const rising = themeMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
+    const falling = themeMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
+    const issueMovers = S.tvIssues.map((t) => ({ name: t.name, delta: +(t.pct[2] - t.pct[0]).toFixed(2), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null }));
+    const iRising = issueMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
+    const iFalling = issueMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
+    const supTot = S.support.positive.map((_, i) => S.support.positive[i] + S.support.neutral[i] + S.support.negative[i]);
+    const topIssue = S.tvIssues.filter((t) => !t.name.startsWith("Customer service"))[0];
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={colors.TV} icon="base" label="Survey respondents" value={fmtNum(S.respondents[2])} sub="Optik TV survey · Aug 2026" deltas={[<Move key="m" v={S.respondents} goodDown={false} />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(S.polarity.negative[2], 1)} sub="share of reason-for-rating verbatims · Aug" deltas={[<Move key="m" v={S.polarity.negative} dec={1} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Positive verbatims" value={fmtPct(S.polarity.positive[2], 1)} sub="share · Aug" deltas={[<Move key="m" v={S.polarity.positive} dec={1} unit=" pts" goodDown={false} />]} />
+          <StatCard T={T} color={colors.TV} icon="tv" label={`Top TV issue: ${topIssue.name.split(" /")[0]}`} value={fmtPct(topIssue.pct[2], 2)} sub="respondents describing it · Aug" deltas={[<Move key="m" v={topIssue.pct} dec={2} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="cx" label="Chatbot verbatims negative" value={fmtPct(S.support.negative[2] / supTot[2] * 100, 1)} sub={`of ${fmtNum(supTot[2])} digital-support comments · Aug`} deltas={[<span key="p" style={{ color: T.textMuted }}>positive {fmtPct(S.support.positive[2] / supTot[2] * 100, 1)}</span>]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          Verbatims only: the general reason-for-rating comments (v1, v2, v3, v6), the TV-specific issue descriptions, and the digital-support comments from the CF&amp;R Optik TV survey, Jun – Aug 2026. Score columns (NPS and ratings) are excluded. Sentiment is a positive/negative lexicon applied to each respondent's combined comments; themes are keyword-classified in English and French.
+        </p>
+
+        {sec("Verbatim sentiment", "sentiment",
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th></tr></thead>
+                  <tbody>
+                    {["positive", "neutral", "negative"].map((p) => (
+                      <tr key={p}>
+                        <td style={{ ...anTd, fontWeight: 600, color: p === "positive" ? T.good : p === "negative" ? T.bad : T.textSecondary, textTransform: "capitalize" }}>{p}</td>
+                        {S.polarity[p].map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}% <span style={{ color: T.textFaint, fontSize: 11 }}>({fmtNum(S.polarityN[p][i])})</span></td>)}
+                        <td style={anNum}><Move v={S.polarity[p]} dec={1} unit=" pts" goodDown={p !== "positive"} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                {AN_MONTHS.map((m, i) => (
+                  <div key={m} style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 700, marginBottom: 4 }}>{m} 2026</div>
+                    <div style={{ display: "flex", height: 16, borderRadius: 6, overflow: "hidden", border: `1px solid ${T.border}` }}>
+                      <div style={{ width: `${S.polarity.positive[i]}%`, background: T.good }} title={`positive ${S.polarity.positive[i]}%`} />
+                      <div style={{ width: `${S.polarity.neutral[i]}%`, background: T.borderStrong }} title={`neutral ${S.polarity.neutral[i]}%`} />
+                      <div style={{ width: `${S.polarity.negative[i]}%`, background: T.bad }} title={`negative ${S.polarity.negative[i]}%`} />
+                    </div>
+                  </div>
+                ))}
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>Sentiment drifted negative through the summer: positive comments fell 3.6 points and negative rose 1.6 points, with the neutral middle absorbing the rest. The shift is concentrated in support-access and price comments rather than TV reliability itself.</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {sec("Themes in customer verbatims", "issues",
+          <>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Theme</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · % of respondents</th>)}<th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th><th style={{ ...anTh, textAlign: "right" }}>Negative mentions Jun → Aug</th></tr></thead>
+                <tbody>
+                  {S.themes.map((t) => {
+                    const pos = t.name.startsWith("Positive");
+                    return (
+                      <tr key={t.name}>
+                        <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{t.name}</td>
+                        {t.pct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}%</td>)}
+                        <td style={anTd}><TrendBars v={t.v} color={pos ? T.good : colors.TV} /></td>
+                        <td style={anNum}><Move v={t.pct} dec={1} unit=" pts" goodDown={!pos} /></td>
+                        <td style={anNum}>{fmtNum(t.neg[0])} → {fmtNum(t.neg[2])} <Move v={t.neg} /></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jun (pts of respondents)" fallingTitle="Falling share · Aug vs Jun (pts of respondents)" />
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third. Recording, picture and sound, and channels are the TV-product themes gaining share.</p>
+          </>
+        )}
+
+        {sec("TV-specific issue verbatims", "tv",
+          <>
+            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
+              Respondents who flagged a TV problem were asked to describe it. Mention rate is the share of all respondents who wrote a description for that issue, so it tracks how many customers experience each problem month to month.
+            </p>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>TV issue described</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · mentions</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug rate</th><th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Rate Aug vs Jun</th></tr></thead>
+                <tbody>
+                  {S.tvIssues.map((t) => (
+                    <tr key={t.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{t.name}</td>
+                      {t.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={{ ...anNum, fontWeight: 700 }}>{t.pct[2]}%</td>
+                      <td style={anTd}><TrendBars v={t.v} color={colors.TV} /></td>
+                      <td style={anNum}><Move v={t.pct} dec={2} unit=" pts" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <MoverCards rising={iRising} falling={iFalling} risingTitle="Rising issue rate · Aug vs Jun (pts)" fallingTitle="Falling issue rate · Aug vs Jun (pts)" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
+              {Object.entries(S.quotes).map(([k, qs]) => (
+                <div key={k} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>{k} · in their words</div>
+                  {qs.map((q, i) => <div key={i} style={{ fontSize: 12.5, color: T.textSecondary, fontStyle: "italic", padding: "3px 0", lineHeight: 1.45 }}>“{q}”</div>)}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {sec("Digital support (chatbot) verbatims", "cx",
+          <>
+            <table style={{ width: "100%", maxWidth: 640, borderCollapse: "collapse" }}>
+              <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug share</th></tr></thead>
+              <tbody>
+                {["positive", "neutral", "negative"].map((p) => (
+                  <tr key={p}>
+                    <td style={{ ...anTd, fontWeight: 600, color: p === "positive" ? T.good : p === "negative" ? T.bad : T.textSecondary, textTransform: "capitalize" }}>{p}</td>
+                    {S.support[p].map((x, i) => <td key={i} style={anNum}>{fmtNum(x)}</td>)}
+                    <td style={{ ...anNum, fontWeight: 700 }}>{(S.support[p][2] / supTot[2] * 100).toFixed(1)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Comments about the chatbot and digital support run roughly four negative for every positive; the recurring complaint is being unable to reach a person for anything beyond a simple question.</p>
+          </>
+        )}
+
+        {sec("Recommendations", "initiatives",
+          <Recs items={[
+            TV_RECS[5],
+            { pri: "P2", tag: "Rising", title: "Close the loop on recording complaints",
+              evidence: "Recording is the fastest-growing TV issue in verbatims (1.10% → 1.77% of respondents, +61%), and customers describe lost second halves of recordings, PVR lists disappearing and shows recording that were never scheduled.",
+              action: "Pair the recording defect swarm with proactive outreach to customers who logged recording tickets, and add a recording-health check to the TV+ app.", initiatives: ["Recording Restart Issue Fix", "Recording Deletion Enhancements"] },
+            { pri: "P2", tag: "Persistent", title: "Make freezing and interruptions visible before customers call",
+              evidence: "Interruptions, freezing and restarts are the most-described TV issue every month (3.8% to 4.1% of respondents); picture-quality descriptions are steady at 2.6% to 2.7%.",
+              action: "Use Conviva video-quality metrics to trigger proactive Wi-Fi and STB checks, and publish a plain-language self-serve guide for wireless STB placement.", initiatives: ["Low RSSI + Low Bitrate Proactive Campaign", "InSight Conviva Video Quality Metrics & Co-pilot Ingestion"] },
+            { pri: "P3", tag: "Rising", title: "Remote control pairing and responsiveness",
+              evidence: "Remote descriptions almost doubled (0.52% → 0.98% of respondents) while Remote › Programming tickets rose 9% and technician remote fixes rose 35%.",
+              action: "Ship a pairing and responsiveness troubleshooter in the TV+ app and agent Copilot, and review the new TV+ remote's button parity, which customers call out directly." },
+          ]} />
+        )}
+      </>
+    );
+  }
+
+  function TvCrossPage() {
+    const sec = secFactory("tvx", "TV · Cross Analysis");
+    const verdictColor = (v) => (v.startsWith("Rising") || v.startsWith("Emerging") ? T.bad : v.startsWith("Falling") ? T.good : T.textMuted);
+    const MATRIX = [
+      { driver: "Recording / PVR failures", tickets: "Recording Issues 4,066 → 4,669 (+15%); Cannot Set Recordings +18%", notes: "Recording is the #1 agent-comment theme, 3,790 → 4,345 (+15%)", tech: "Recording fixes 57 → 72 (+26%); 46% of recording dispatches end in an STB hardware swap; 60% aligned", voice: "Recording descriptions 1.10% → 1.77% of respondents (+61%)", verdict: "Rising · confirmed in all four sources" },
+      { driver: "Legacy STB initialisation (Mediaroom)", tickets: "Stuck on Initializing 3,409 → 4,084 (+20%); Registration Code +43%", notes: "VIP5662W +18%, VIP5602W +12%, Mediaroom mentions +13%; OPUS mentions −8%", tech: "80% aligned; STB hardware is the finding in 55% of visits; 11% no fault", voice: "Interruptions / restarts steady at 3.8% to 4.1%", verdict: "Rising · ticket-led, ageing hardware" },
+      { driver: "Wi-Fi / wireless STB connectivity", tickets: "Connectivity closures ~4.6K a month, flat", notes: "Wi-Fi / wireless STB theme flat at ~3.1K; Ethernet / cabling +4%", tech: "WAP and wireless STB placement is the #2 fix (13% of visits)", voice: "Freezing / interruptions is the #1 TV issue; Internet & Wi-Fi theme 15.3% → 16.7%", verdict: "Persistent · high customer impact" },
+      { driver: "Channel availability", tickets: "Channel Not Working −26%; Missing Channels −20%; Manage My Channels −42%", notes: "Channel-missing theme 3,546 → 2,950 (−17%)", tech: "Optik Evolution › Provisioning closures −36%", voice: "Channels / content flat at ~16%, mostly package and value, not faults", verdict: "Falling · technical fix landed" },
+      { driver: "Support friction and repeat contacts", tickets: "Repeat-issue language in 12.8% of agent comments; 65% categorisation divergence", notes: "Customer wants tech / refuses troubleshooting ~340 a month", tech: "No fault found 7.9% → 12.5%; non-TELUS caused 9.5% → 14.4%", voice: "Customer service is the #1 negative theme (208 → 271, +30%); chatbot 25% negative vs 6% positive", verdict: "Rising · negative sentiment and diagnosis gap" },
+      { driver: "Streaming apps (YouTube)", tickets: "Apps › YouTube 42 → 50 → 235 (+460%); Apps +24%", notes: "Streaming-app theme +3%", tech: "No dispatch signal", voice: "Apps & streaming ~5%, flat", verdict: "Emerging · August app regression" },
+      { driver: "Remote control", tickets: "Remote › Programming +9%", notes: "Remote theme flat at ~2.3K", tech: "Remote fixes 49 → 66 (+35%)", voice: "Remote descriptions 0.52% → 0.98% (+88%)", verdict: "Rising · modest, cross-source" },
+      { driver: "Power supply / no boot", tickets: "Digital Box › No Boot −12.5%", notes: "Power theme 1,177 → 1,095 (−7%)", tech: "Power-supply fixes 60 → 33 (−45%)", voice: "Not raised", verdict: "Falling · PSU campaign effect" },
+    ];
+    const rising = [
+      { name: "Recording / PVR failures", src: "tickets +15% · notes +15% · tech +26% · verbatims +61%" },
+      { name: "Legacy STB initialisation", src: "tickets +20% · VIP5662W mentions +18%" },
+      { name: "Support friction / repeat contacts", src: "field divergence +6.6 pts · negative service verbatims +30%" },
+      { name: "YouTube app (emerging)", src: "tickets +460% in August" },
+      { name: "Remote control", src: "tickets +9% · tech +35% · verbatims +88%" },
+    ];
+    const falling = [
+      { name: "Channel availability", src: "tickets −26% · notes −17% · provisioning closures −36%" },
+      { name: "Power supply / no boot", src: "tickets −12.5% · PSU fixes −45%" },
+      { name: "No signal / outage mentions", src: "notes −18% and −11%" },
+      { name: "OPUS provisioning and setup faults", src: "closures −36%; setup tickets rising but non-TELUS-caused" },
+    ];
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={colors.TV} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, notes, technician and verbatims agree" deltas={[<span key="a" style={{ color: T.textMuted }}>recording, legacy STB boot, support friction</span>]} />
+          <StatCard T={T} color={colors.TV} icon="cross" label="Emerging driver" value="1" sub="ticket-only signal so far" deltas={[<span key="a" style={{ color: T.textMuted }}>YouTube app, August</span>]} />
+          <StatCard T={T} color={colors.TV} icon="initiatives" label="Falling drivers" value="2" sub="fixes visible in every source" deltas={[<span key="a" style={{ color: T.textMuted }}>channels, power supply</span>]} />
+          <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(TVA.survey.polarity.negative[2], 1)} sub="reason-for-rating comments · Aug" deltas={[<Move key="m" v={TVA.survey.polarity.negative} dec={1} unit=" pts" />]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          Each driver is read across four lenses for Jun – Aug 2026: ticket categories (agent), agent comment themes, technician findings on field visits, and customer survey verbatims. A driver is confirmed when the direction agrees across sources; ticket-only movement is flagged as emerging.
+        </p>
+
+        {sec("Signal alignment matrix", "cross",
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead><tr>{["Driver", "Ticket trend", "Agent notes", "Technician findings", "Customer verbatims", "Verdict"].map((h) => <th key={h} style={{ ...anTh, whiteSpace: "normal" }}>{h}</th>)}</tr></thead>
+              <tbody>
+                {MATRIX.map((r) => (
+                  <tr key={r.driver}>
+                    <td style={{ ...anTd, fontWeight: 700, color: T.textSecondary, width: "13%", whiteSpace: "normal", lineHeight: 1.4 }}>{r.driver}</td>
+                    <td style={{ ...anTd, color: T.textMuted, width: "18%", whiteSpace: "normal", lineHeight: 1.45, fontSize: 12 }}>{r.tickets}</td>
+                    <td style={{ ...anTd, color: T.textMuted, width: "18%", whiteSpace: "normal", lineHeight: 1.45, fontSize: 12 }}>{r.notes}</td>
+                    <td style={{ ...anTd, color: T.textMuted, width: "18%", whiteSpace: "normal", lineHeight: 1.45, fontSize: 12 }}>{r.tech}</td>
+                    <td style={{ ...anTd, color: T.textMuted, width: "18%", whiteSpace: "normal", lineHeight: 1.45, fontSize: 12 }}>{r.voice}</td>
+                    <td style={{ ...anTd, fontWeight: 700, color: verdictColor(r.verdict), width: "15%", whiteSpace: "normal", lineHeight: 1.45, fontSize: 12 }}>{r.verdict}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {sec("Consolidated rising and falling drivers", "issues",
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+            {[["Rising", rising, T.bad], ["Falling", falling, T.good]].map(([title, items, col]) => (
+              <div key={title} style={{ flex: 1, minWidth: 300, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${col}`, borderRadius: 10, padding: "12px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: col, marginBottom: 8 }}>{title} · Aug vs Jun 2026</div>
+                {items.map((it, i) => (
+                  <div key={it.name} style={{ padding: "6px 0", borderBottom: i < items.length - 1 ? `1px solid ${T.border}` : "none" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary }}>{i + 1}. {it.name}</div>
+                    <div style={{ fontSize: 12, color: T.textFaint, marginTop: 2 }}>{it.src}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sec("Prioritised recommendations", "initiatives", <Recs items={TV_RECS} />)}
+      </>
     );
   }
 
@@ -1730,7 +2338,13 @@ export default function ReliabilityScorecards() {
       ? "Self-serve workflows scorecard"
       : page === "tvplatforms"
         ? "TV by platform"
-        : `${page} reliability scorecard`;
+        : page === "tvtickets"
+          ? "TV ticket analysis"
+          : page === "tvsentiment"
+            ? "TV customer sentiment analysis"
+            : page === "tvcross"
+              ? "TV cross analysis"
+              : `${page} reliability scorecard`;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg, color: T.text, fontFamily: FONT }}>
@@ -1745,7 +2359,7 @@ export default function ReliabilityScorecards() {
             const active = page === item.id;
             // "By Platform" stays hidden until the TV item is expanded (or the
             // sub-page itself is open, so the active state is always visible).
-            if (item.child && !tvNavOpen && page !== "tvplatforms") return null;
+            if (item.child && !tvNavOpen && !TV_CHILD_PAGES.includes(page)) return null;
             const isTv = item.id === "TV";
             return (
               <button key={item.id} onClick={() => { setPage(item.id); setInitFilters(NO_INIT_FILTERS); }}
@@ -1760,7 +2374,7 @@ export default function ReliabilityScorecards() {
                 {item.label}
                 {isTv && (
                   <span onClick={(e) => { e.stopPropagation(); setTvNavOpen((o) => !o); }}
-                    style={{ marginLeft: "auto", color: T.textMuted, fontSize: 12, padding: "0 4px", transform: tvNavOpen || page === "tvplatforms" ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>
+                    style={{ marginLeft: "auto", color: T.textMuted, fontSize: 12, padding: "0 4px", transform: tvNavOpen || TV_CHILD_PAGES.includes(page) ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>
                 )}
               </button>
             );
@@ -1772,7 +2386,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · TV analysis: agent/technician ticket notes and Optik TV survey verbatims (Jun – Aug 2026) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div>
         </div>
       </aside>
@@ -1780,7 +2394,7 @@ export default function ReliabilityScorecards() {
       {/* Content */}
       <main style={{ flex: 1, minWidth: 0 }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 32px 64px" }}>
-          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${page === "tvplatforms" ? "TV · By Platform" : page}` : ""}</Eyebrow>
+          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${TV_CHILD_LABEL[page] ? `TV · ${TV_CHILD_LABEL[page]}` : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
@@ -1788,7 +2402,13 @@ export default function ReliabilityScorecards() {
               ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
               : page === "tvplatforms"
                 ? "TV platforms · Optik TV Legacy vs TV Evolution: base, tickets, repairs, swaps"
-                : page === "SH+" || (page === "home" && scope === "SH+")
+                : page === "tvtickets"
+                  ? "TV tickets Jun – Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+                  : page === "tvsentiment"
+                    ? "Optik TV survey verbatims Jun – Aug 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
+                    : page === "tvcross"
+                      ? "TV cross analysis Jun – Aug 2026 · ticket trends × agent/technician notes × customer verbatims"
+                      : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: tickets, repairs/dispatches, base (from Jul 2025)"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
             <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
@@ -1828,7 +2448,13 @@ export default function ReliabilityScorecards() {
             </div>
           </div>
 
-          {page === "home" ? <HomePage /> : page === "selfserve" ? <SelfServePage /> : page === "tvplatforms" ? <TvPlatformsPage /> : <ProductPage product={page} />}
+          {page === "home" ? <HomePage />
+            : page === "selfserve" ? <SelfServePage />
+            : page === "tvplatforms" ? <TvPlatformsPage />
+            : page === "tvtickets" ? <TvTicketAnalysisPage />
+            : page === "tvsentiment" ? <TvSentimentPage />
+            : page === "tvcross" ? <TvCrossPage />
+            : <ProductPage product={page} />}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>
           Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
