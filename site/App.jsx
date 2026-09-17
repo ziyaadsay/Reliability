@@ -518,6 +518,14 @@ function delta(curr, prev, unit, decimals, goodWhenDown = true) {
   return { text: `${arrow} ${mag}${unit}`, tone: flat ? "flat" : good ? "good" : "bad" };
 }
 
+// Percentage-point movements on rate KPIs are reported in basis points (1 pt = 100 bps)
+// `pctDecimals` is the precision the rate itself is shown at: a rate shown to
+// 3 decimals (e.g. 0.167%) keeps one decimal of bps so small moves stay visible.
+function deltaBps(curr, prev, goodWhenDown = true, pctDecimals = 2) {
+  if (curr == null || prev == null) return null;
+  return delta(curr * 100, prev * 100, " bps", Math.max(0, pctDecimals - 2), goodWhenDown);
+}
+
 function yoyPctText(a26, a25) {
   if (!a25) return "new";
   const p = ((a26 - a25) / a25) * 100;
@@ -864,19 +872,29 @@ export default function ReliabilityScorecards() {
     }
   }, []);
 
+  useEffect(() => {
+    document.title = "Reliability Strategy";
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#4B286D'/><path d='M9 38h10l6-15 8 27 8-19 5 7h9' fill='none' stroke='#66CC02' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+    let link = document.querySelector("link[rel='icon']");
+    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+    link.type = "image/svg+xml";
+    link.href = "data:image/svg+xml," + encodeURIComponent(svg);
+  }, []);
+
   const rangeMonths = MONTHS.slice(fromIdx, toIdx + 1);
   const sliceR = (arr) => arr.slice(fromIdx, toIdx + 1);
   const latestLabel = MONTHS[toIdx];
 
   function toggleTable(id) { setOpenTables((o) => ({ ...o, [id]: !o[id] })); }
 
-  function rowFigures(data, decimals, goodWhenDown = true) {
+  function rowFigures(data, decimals, goodWhenDown = true, bps = false) {
     const li = lastIdxUpTo(data, toIdx);
     if (li < 0) return { latest: null };
+    const D = bps ? (a, b) => deltaBps(a, b, goodWhenDown, decimals) : (a, b) => delta(a, b, "", decimals, goodWhenDown);
     return {
       latest: data[li], latestMonth: MONTHS[li],
-      mom: li >= 1 ? delta(data[li], data[li - 1], "", decimals, goodWhenDown) : null,
-      yoy: li >= 12 ? delta(data[li], data[li - 12], "", decimals, goodWhenDown) : null
+      mom: li >= 1 ? D(data[li], data[li - 1]) : null,
+      yoy: li >= 12 ? D(data[li], data[li - 12]) : null
     };
   }
 
@@ -932,7 +950,7 @@ export default function ReliabilityScorecards() {
     return (
       <div style={{ display: "grid", gridTemplateColumns: columns ? `repeat(${columns}, 1fr)` : "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {tiles.map((tile, i) => {
-          const f = rowFigures(tile.data, tile.dec, tile.goodDown);
+          const f = rowFigures(tile.data, tile.dec, tile.goodDown, tile.fmt === fmtPct);
           const deltas = [];
           if (deltaMode === "yoy") {
             deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="vs prior yr." />);
@@ -1285,9 +1303,9 @@ export default function ReliabilityScorecards() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
           {TV_PLATFORMS.map((p) => {
             const tk = rowFigures(p.tickets, 0, true);
-            const tr = rowFigures(p.ticketRate, 2, true);
+            const tr = rowFigures(p.ticketRate, 2, true, true);
             const rp = rowFigures(p.repairs, 0, true);
-            const rr = rowFigures(p.repairRate, 3, true);
+            const rr = rowFigures(p.repairRate, 3, true, true);
             const bs = rowFigures(p.base, 0, false);
             const sw = rowFigures(p.swaps2026 || [], 0, true);
             const col = platColor(p);
@@ -1301,9 +1319,9 @@ export default function ReliabilityScorecards() {
                 <div style={{ fontSize: 11.5, color: T.textFaint, marginBottom: 10 }}>{p.sub}</div>
                 {statRow("Subscriber base", fmtBig(bs.latest), <DeltaText d={bs.mom} T={T} suffix="MoM" />)}
                 {statRow(`Tickets · ${tk.latestMonth ? shortMonth(tk.latestMonth) : ""}`, fmtNum(tk.latest), <DeltaText d={tk.yoy} T={T} suffix="YoY" />)}
-                {statRow("Ticket rate (% of platform base)", fmtPct(tr.latest, 2), <DeltaText d={tr.mom} T={T} suffix="pts MoM" />)}
+                {statRow("Ticket rate (% of platform base)", fmtPct(tr.latest, 2), <DeltaText d={tr.mom} T={T} suffix="MoM" />)}
                 {statRow(`Repairs · ${rp.latestMonth ? shortMonth(rp.latestMonth) : ""}`, fmtNum(rp.latest), <DeltaText d={rp.mom} T={T} suffix="MoM" />)}
-                {statRow("Repair rate (% of platform base)", fmtPct(rr.latest, 3), <DeltaText d={rr.mom} T={T} suffix="pts MoM" />)}
+                {statRow("Repair rate (% of platform base)", fmtPct(rr.latest, 3), <DeltaText d={rr.mom} T={T} suffix="MoM" />)}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "5px 0", fontSize: 12.5 }}>
                   <span style={{ color: T.textMuted }}>Swap volumes · 2026 total</span>
                   <span style={{ textAlign: "right" }}>
@@ -1387,24 +1405,25 @@ export default function ReliabilityScorecards() {
 
   // ------------------------------ self-serve (Sweepr) ------------------------------
   // goodDown=false: self-serve metrics improve when they rise (churn impact is the exception)
-  function sweeprFig(key, dec, goodDown = false) {
+  function sweeprFig(key, dec, goodDown = false, bps = false) {
     const s = SWEEPR[key];
     const li = lastIdxUpTo(s.a, toIdx);
     if (li < 0) return { latest: null };
+    const D = bps ? (a, b) => deltaBps(a, b, goodDown, dec) : (a, b) => delta(a, b, "", dec, goodDown);
     return {
       latest: s.a[li], latestMonth: MONTHS[li], target: s.t[li],
-      vsTarget: s.t[li] != null ? delta(s.a[li], s.t[li], "", dec, goodDown) : null,
-      mom: li >= 1 ? delta(s.a[li], s.a[li - 1], "", dec, goodDown) : null,
-      yoy: li >= 12 ? delta(s.a[li], s.a[li - 12], "", dec, goodDown) : null
+      vsTarget: s.t[li] != null ? D(s.a[li], s.t[li]) : null,
+      mom: li >= 1 ? D(s.a[li], s.a[li - 1]) : null,
+      yoy: li >= 12 ? D(s.a[li], s.a[li - 12]) : null
     };
   }
 
   function SelfServePage() {
     const col = colors.SWEEPR;
     const res = sweeprFig("resolved", 0);
-    const web = sweeprFig("webAppRate", 1);
+    const web = sweeprFig("webAppRate", 1, false, true);
     const easy = sweeprFig("cxEasy", 2);
-    const chn = sweeprFig("churn", 2, true);
+    const chn = sweeprFig("churn", 2, true, true);
     const dea = sweeprFig("deacts", 0);
     const targetSeries = (key, label) => [
       { key: "SWEEPR", label, data: sliceR(SWEEPR[key].a) },
@@ -1421,13 +1440,13 @@ export default function ReliabilityScorecards() {
             deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="vs prior yr." />]} />
           <StatCard T={T} color={col} icon="tickets" label="Web/App resolution rate" value={fmtPct(web.latest, 1)}
             sub={`${web.latestMonth} · target ${fmtPct(web.target, 1)}`}
-            deltas={[<DeltaText key="t" d={web.vsTarget} T={T} suffix="pts vs target" />, <DeltaText key="y" d={web.yoy} T={T} suffix="pts vs prior yr." />]} />
+            deltas={[<DeltaText key="t" d={web.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={web.yoy} T={T} suffix="vs prior yr." />]} />
           <StatCard T={T} color={col} icon="cx" label="CX 'Easy to follow'" value={easy.latest == null ? "—" : easy.latest.toFixed(2)}
             sub={easy.latest == null ? undefined : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`}
             deltas={[<DeltaText key="t" d={easy.vsTarget} T={T} suffix="vs target" />]} />
           <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn" value={fmtPct(chn.latest, 2)}
             sub={chn.latestMonth}
-            deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="pts vs prior mo." />]} />
+            deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="vs prior mo." />]} />
           <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
             sub={dea.latestMonth}
             deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
@@ -1604,7 +1623,7 @@ export default function ReliabilityScorecards() {
         <TileRow tiles={scopeTiles(product)} deltaMode="both" />
         {yoyChurn && (
           <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
-            Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)}pts YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
+            Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.round(Math.abs(yoyChurn.yoyPts) * 100)} bps YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
           </div>
         )}
         {product === "TV" && (
@@ -1777,9 +1796,9 @@ export default function ReliabilityScorecards() {
   }
 
   // Aug vs Jun movement with percent
-  function Move({ v, goodDown = true, dec = 0, unit = "" }) {
+  function Move({ v, goodDown = true, dec = 0, unit = "", bps = false }) {
     if (v[0] == null || v[2] == null) return <span style={{ color: T.textFaint }}>—</span>;
-    const d = delta(v[2], v[0], unit, dec, goodDown);
+    const d = bps ? deltaBps(v[2], v[0], goodDown, dec) : delta(v[2], v[0], unit, dec, goodDown);
     return <span style={{ whiteSpace: "nowrap" }}><DeltaText d={d} T={T} />{v[0] ? <span style={{ color: T.textFaint, fontSize: 11.5 }}> ({yoyPctText(v[2], v[0])})</span> : null}</span>;
   }
 
@@ -1791,7 +1810,7 @@ export default function ReliabilityScorecards() {
           <div key={r.name} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5, padding: "3px 0" }}>
             <span style={{ color: T.textSecondary }}>{r.name}</span>
             <span style={{ fontWeight: 700, color: tone === "up" ? T.bad : T.good, whiteSpace: "nowrap" }}>
-              {r.delta > 0 ? "▲ +" : "▼ "}{Math.abs(r.delta).toLocaleString()}{r.pct != null && <span style={{ color: T.textFaint, fontWeight: 400 }}> ({r.pct > 0 ? "+" : ""}{r.pct}%)</span>}
+              {r.delta > 0 ? "▲ +" : "▼ "}{Math.abs(r.delta).toLocaleString()}{r.unit || ""}{r.pct != null && <span style={{ color: T.textFaint, fontWeight: 400 }}> ({r.pct > 0 ? "+" : ""}{r.pct}%)</span>}
             </span>
           </div>
         ))}
@@ -1874,11 +1893,11 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Aug"
             deltas={[<span key="a" style={{ color: T.textMuted }}>Jun {K.closure[0].field_visit_pct}% · Jul {K.closure[1].field_visit_pct}%</span>]} />
           <StatCard T={T} color={colors.TV} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub="share of closed tickets · Aug"
-            deltas={[<Move key="m" v={dAll.map((d) => d.nofault)} dec={1} unit=" pts" />]} />
+            deltas={[<Move key="m" v={dAll.map((d) => d.nofault)} bps />]} />
           <StatCard T={T} color={colors.TV} icon="issues" label="Categorisation divergence" value={fmtPct(dAll[2].reattribution, 1)} sub="closure domain ≠ agent category · all closures"
-            deltas={[<Move key="m" v={dAll.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
+            deltas={[<Move key="m" v={dAll.map((d) => d.reattribution)} bps />]} />
           <StatCard T={T} color={colors.TV} icon="issues" label="Field-visit divergence" value={fmtPct(dF[2].reattribution, 1)} sub="technician finding ≠ agent category"
-            deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
+            deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
           {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Jun – Aug 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
@@ -1930,7 +1949,7 @@ export default function ReliabilityScorecards() {
                           <tr key={key}>
                             <td style={{ ...anTd, color: T.textSecondary, fontWeight: key === "reattribution" ? 700 : 500 }}>{label}</td>
                             {D.map((d, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{d[key]}%</td>)}
-                            <td style={anNum}><Move v={D.map((d) => d[key])} dec={1} unit=" pts" goodDown={goodDown} /></td>
+                            <td style={anNum}><Move v={D.map((d) => d[key])} bps goodDown={goodDown} /></td>
                           </tr>
                         ))}
                       <tr><td style={{ ...anTd, color: T.textFaint, fontSize: 11.5 }}>{isField ? "Field visits" : "Closed tickets"}</td>{D.map((d, i) => <td key={i} style={{ ...anNum, color: T.textFaint, fontSize: 11.5 }}>{fmtNum(isField ? d.visits : d.closed)}</td>)}<td style={anTd} /></tr>
@@ -2102,10 +2121,10 @@ export default function ReliabilityScorecards() {
     const S = TVA.survey;
     const sec = secFactory("tvs", "TV · Customer Sentiment");
     const share = (arr, i) => arr[i];
-    const themeMovers = S.themes.map((t) => ({ name: t.name, delta: +(t.pct[2] - t.pct[0]).toFixed(1), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null })).filter((t) => t.name !== "Positive: satisfied / no issues");
+    const themeMovers = S.themes.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[0]) * 100), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null, unit: " bps" })).filter((t) => t.name !== "Positive: satisfied / no issues");
     const rising = themeMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
     const falling = themeMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
-    const issueMovers = S.tvIssues.map((t) => ({ name: t.name, delta: +(t.pct[2] - t.pct[0]).toFixed(2), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null }));
+    const issueMovers = S.tvIssues.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[0]) * 100), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null, unit: " bps" }));
     const iRising = issueMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
     const iFalling = issueMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
     const supTot = S.support.positive.map((_, i) => S.support.positive[i] + S.support.neutral[i] + S.support.negative[i]);
@@ -2114,9 +2133,9 @@ export default function ReliabilityScorecards() {
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
           <StatCard T={T} color={colors.TV} icon="base" label="Survey respondents" value={fmtNum(S.respondents[2])} sub="Optik TV survey · Aug 2026" deltas={[<Move key="m" v={S.respondents} goodDown={false} />]} />
-          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(S.polarity.negative[2], 1)} sub="share of reason-for-rating verbatims · Aug" deltas={[<Move key="m" v={S.polarity.negative} dec={1} unit=" pts" />]} />
-          <StatCard T={T} color={colors.TV} icon="sentiment" label="Positive verbatims" value={fmtPct(S.polarity.positive[2], 1)} sub="share · Aug" deltas={[<Move key="m" v={S.polarity.positive} dec={1} unit=" pts" goodDown={false} />]} />
-          <StatCard T={T} color={colors.TV} icon="tv" label={`Top TV issue: ${topIssue.name.split(" /")[0]}`} value={fmtPct(topIssue.pct[2], 2)} sub="respondents describing it · Aug" deltas={[<Move key="m" v={topIssue.pct} dec={2} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(S.polarity.negative[2], 1)} sub="share of reason-for-rating verbatims · Aug" deltas={[<Move key="m" v={S.polarity.negative} bps />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Positive verbatims" value={fmtPct(S.polarity.positive[2], 1)} sub="share · Aug" deltas={[<Move key="m" v={S.polarity.positive} bps goodDown={false} />]} />
+          <StatCard T={T} color={colors.TV} icon="tv" label={`Top TV issue: ${topIssue.name.split(" /")[0]}`} value={fmtPct(topIssue.pct[2], 2)} sub="respondents describing it · Aug" deltas={[<Move key="m" v={topIssue.pct} bps />]} />
           <StatCard T={T} color={colors.TV} icon="cx" label="Chatbot verbatims negative" value={fmtPct(S.support.negative[2] / supTot[2] * 100, 1)} sub={`of ${fmtNum(supTot[2])} digital-support comments · Aug`} deltas={[<span key="p" style={{ color: T.textMuted }}>positive {fmtPct(S.support.positive[2] / supTot[2] * 100, 1)}</span>]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
@@ -2134,7 +2153,7 @@ export default function ReliabilityScorecards() {
                       <tr key={p}>
                         <td style={{ ...anTd, fontWeight: 600, color: p === "positive" ? T.good : p === "negative" ? T.bad : T.textSecondary, textTransform: "capitalize" }}>{p}</td>
                         {S.polarity[p].map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}% <span style={{ color: T.textFaint, fontSize: 11 }}>({fmtNum(S.polarityN[p][i])})</span></td>)}
-                        <td style={anNum}><Move v={S.polarity[p]} dec={1} unit=" pts" goodDown={p !== "positive"} /></td>
+                        <td style={anNum}><Move v={S.polarity[p]} bps goodDown={p !== "positive"} /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -2151,7 +2170,7 @@ export default function ReliabilityScorecards() {
                     </div>
                   </div>
                 ))}
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>Sentiment drifted negative through the summer: positive comments fell 3.6 points and negative rose 1.6 points, with the neutral middle absorbing the rest. The shift is concentrated in support-access and price comments rather than TV reliability itself.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>Sentiment drifted negative through the summer: positive comments fell 360 bps and negative rose 160 bps, with the neutral middle absorbing the rest. The shift is concentrated in support-access and price comments rather than TV reliability itself.</p>
               </div>
             </div>
           </>
@@ -2170,7 +2189,7 @@ export default function ReliabilityScorecards() {
                         <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{t.name}</td>
                         {t.pct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}%</td>)}
                         <td style={anTd}><TrendBars v={t.v} color={pos ? T.good : colors.TV} /></td>
-                        <td style={anNum}><Move v={t.pct} dec={1} unit=" pts" goodDown={!pos} /></td>
+                        <td style={anNum}><Move v={t.pct} bps goodDown={!pos} /></td>
                         <td style={anNum}>{fmtNum(t.neg[0])} → {fmtNum(t.neg[2])} <Move v={t.neg} /></td>
                       </tr>
                     );
@@ -2178,7 +2197,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jun (pts of respondents)" fallingTitle="Falling share · Aug vs Jun (pts of respondents)" />
+            <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jun (bps of respondents)" fallingTitle="Falling share · Aug vs Jun (bps of respondents)" />
             <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third. Recording, picture and sound, and channels are the TV-product themes gaining share.</p>
           </>
         )}
@@ -2198,13 +2217,13 @@ export default function ReliabilityScorecards() {
                       {t.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
                       <td style={{ ...anNum, fontWeight: 700 }}>{t.pct[2]}%</td>
                       <td style={anTd}><TrendBars v={t.v} color={colors.TV} /></td>
-                      <td style={anNum}><Move v={t.pct} dec={2} unit=" pts" /></td>
+                      <td style={anNum}><Move v={t.pct} bps /></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <MoverCards rising={iRising} falling={iFalling} risingTitle="Rising issue rate · Aug vs Jun (pts)" fallingTitle="Falling issue rate · Aug vs Jun (pts)" />
+            <MoverCards rising={iRising} falling={iFalling} risingTitle="Rising issue rate · Aug vs Jun (bps)" fallingTitle="Falling issue rate · Aug vs Jun (bps)" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
               {Object.entries(S.quotes).map(([k, qs]) => (
                 <div key={k} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
@@ -2268,7 +2287,7 @@ export default function ReliabilityScorecards() {
     const rising = [
       { name: "Recording / PVR failures", src: "tickets +15% · notes +15% · tech +26% · verbatims +61%" },
       { name: "Legacy STB initialisation", src: "tickets +20% · VIP5662W mentions +18%" },
-      { name: "Support friction / repeat contacts", src: "field divergence +6.6 pts · negative service verbatims +30%" },
+      { name: "Support friction / repeat contacts", src: "field divergence +660 bps · negative service verbatims +30%" },
       { name: "YouTube app (emerging)", src: "tickets +460% in August" },
       { name: "Remote control", src: "tickets +9% · tech +35% · verbatims +88%" },
     ];
@@ -2284,8 +2303,8 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.TV} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, notes, technician and verbatims agree" deltas={[<span key="a" style={{ color: T.textMuted }}>recording, legacy STB boot, support friction</span>]} />
           <StatCard T={T} color={colors.TV} icon="cross" label="Emerging driver" value="1" sub="ticket-only signal so far" deltas={[<span key="a" style={{ color: T.textMuted }}>YouTube app, August</span>]} />
           <StatCard T={T} color={colors.TV} icon="initiatives" label="Falling drivers" value="2" sub="fixes visible in every source" deltas={[<span key="a" style={{ color: T.textMuted }}>channels, power supply</span>]} />
-          <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} dec={1} unit=" pts" />]} />
-          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(TVA.survey.polarity.negative[2], 1)} sub="reason-for-rating comments · Aug" deltas={[<Move key="m" v={TVA.survey.polarity.negative} dec={1} unit=" pts" />]} />
+          <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} bps />]} />
+          <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(TVA.survey.polarity.negative[2], 1)} sub="reason-for-rating comments · Aug" deltas={[<Move key="m" v={TVA.survey.polarity.negative} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
           Each driver is read across four lenses for Jun – Aug 2026: ticket categories (agent), agent comment themes, technician findings on field visits, and customer survey verbatims. A driver is confirmed when the direction agrees across sources; ticket-only movement is flagged as emerging.
