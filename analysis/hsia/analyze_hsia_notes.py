@@ -18,11 +18,16 @@ for f in FILES:
     ws = wb.worksheets[0]
     it = ws.iter_rows(values_only=True)
     hdr = [str(h or '') for h in next(it)]
-    for r in it:
+    has_id = 'Trouble Ticket ID' in hdr
+    for i, r in enumerate(it):
         r = tuple(r) + (None,) * (len(hdr) - len(r))
-        d = {hdr[i]: ('' if v is None else str(v)) for i, v in enumerate(r)}
-        if not d.get('Trouble Ticket ID'):
+        d = {hdr[j]: ('' if v is None else str(v)) for j, v in enumerate(r)}
+        if not d.get('Ticket Created Date') or not d.get('Category 1'):
             continue
+        # some weekly exports omit the ticket ID column; fall back to a per-file row key
+        if not has_id or not d.get('Trouble Ticket ID'):
+            d['Trouble Ticket ID'] = f'{f}:{i}'
+        d.setdefault('Flag Dispatch', '')
         rows.append(d)
 print('files', len(FILES), 'rows', len(rows), file=sys.stderr)
 
@@ -93,7 +98,7 @@ out['tech_r123_rising'], out['tech_r123_falling'] = movers(tech_r123, floor=150)
 def agent_domain(r):
     c1, c2 = r['c1'], r['c2']
     if c1 in ('Abandon', 'NWH'): return None
-    if c1 == 'Wireless': return 'Wi-Fi'
+    if c1 in ('Wireless', 'Wi-Fi connection'): return 'Wi-Fi'
     if c1 == 'Incompatible Equipment' or c2 == 'Incompatible Equipment': return 'Equipment compatibility'
     if c1 == 'Connectivity':
         if c2 == 'Slow Speeds': return 'Speed'
