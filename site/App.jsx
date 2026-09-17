@@ -106,8 +106,8 @@ const ISSUE_ORDER = ["Connectivity", "TV", "Speed", "WiFi", "Support", "SHS Hard
 
 const LOOKER = {
   HSIA: {
-    monthlyTotal: [51899,49793,55855,56761,58936,58399,63006,62623,59217,61519,61508,59567,59904,52240,55612,59691,61600,63872,64686,60572],
-    topCat: { name: "Connectivity", series: [39154,37540,41805,42145,43524,43593,46796,46373,43447,44553,44780,43541,43695,37892,40481,43843,44772,46349,47060,44386] },
+    monthlyTotal: [42489,41047,47251,48475,49389,48900,52579,52722,50457,51979,53130,53539,53989,46972,49550,54149,56084,59165,59145,60572],
+    topCat: { name: "Connectivity", series: [32131,30626,35029,36273,37702,37343,40270,40370,38782,39606,39618,39896,38899,33705,36185,40138,41961,42848,42887,44386] },
     topIssues: [
       { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305 },
       { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536 },
@@ -120,7 +120,7 @@ const LOOKER = {
     ],
     rising: [
       { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305, delta: 3035 },
-      { issue: "Incompatible Equipment (new category)", grp: "Speed", a26: 2037, a25: 0, delta: 2037 },
+      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2037, a25: 0, delta: 2037 },
       { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1522, a25: 0, delta: 1522 }
     ],
     falling: [
@@ -130,56 +130,54 @@ const LOOKER = {
     ]
   },
   TV: {
-    monthlyTotal: [39631,39191,42556,42165,41236,36721,37319,35035,32164,35516,35342,33290,36340,31148,31562,30675,29513,29868,31363,32801],
-    topCat: { name: "STB No Boot", series: [7924,7573,8420,8506,8394,7938,8080,7379,6486,7143,7364,7307,7627,6482,6543,6425,6153,6379,7027,7203] },
+    monthlyTotal: [38203,37850,41374,41718,41538,36431,36644,35205,34178,41446,41064,38433,38961,33097,32600,34609,30737,32173,31355,32801],
+    topCat: { name: "STB No Boot", series: [8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203] },
     topIssues: [
-      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 4433, a25: 4381, a25x: true },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 3629, a25: 5299 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 2724, a25: 3110 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2534, a25: 1651 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2431, a25: 1950 },
-      { issue: "STB No Boot › Power Issues", grp: "TV", a26: 2130, a25: 2274 },
-      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 1998, a25: 2196 },
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1590, a25: 3441 }
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920 },
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 4149, a25: 4283 },
+      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238 },
+      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2077, a25: 2310 },
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1477, a25: 1283 }
     ],
     rising: [
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2534, a25: 1651, delta: 883 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2431, a25: 1950, delta: 481 },
-      { issue: "Recordings › Functionality", grp: "TV", a26: 442, a25: 206, delta: 236 }
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238, delta: 883 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186, delta: 481 },
+      { issue: "Recordings › Functionality", grp: "TV", a26: 516, a25: 280, delta: 236 }
     ],
     falling: [
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1590, a25: 3441, delta: -1851 },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 3629, a25: 5299, delta: -1670 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 2724, a25: 3110, delta: -386 }
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738, delta: -1851 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920, delta: -1670 },
+      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505, delta: -386 }
     ]
   },
   SHS: {
-    monthlyTotal: [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,38702],
-    topCat: { name: "Main Panel", series: [7355,7107,8697,9210,8879,8465,9704,9359,9247,8988,8798,8823,8319,7360,7328,7469,6772,7519,7683,7273] },
+    monthlyTotal: [35888,35833,43965,46504,45961,44223,50684,50121,48962,48838,44322,45432,43986,36977,34961,36722,34900,38993,40749,38702],
+    topCat: { name: "Main Panel", series: [6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273] },
     topIssues: [
-      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 1708, a25: 1793 },
       { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985 },
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1682, a25: 1251 },
+      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2126, a25: 2305 },
+      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2040, a25: 2217 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1807, a25: 2091 },
+      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1590, a25: 2280 },
       { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610 },
-      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1333, a25: 1799 },
-      { issue: "Outdoor Camera › Troubleshoot", grp: "SHS Hardware", a26: 1651, a25: 2064 },
-      { issue: "Doorbell Camera › Troubleshoot", grp: "SHS Hardware", a26: 1394, a25: 1783 },
-      { issue: "Mobile App Self-Serve › App support", grp: "Support", a26: 1216, a25: 1585 }
+      { issue: "Outdoor Camera › Wi-Fi connection", grp: "SHS Hardware", a26: 1110, a25: 1396 },
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672 }
     ],
     rising: [
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1682, a25: 1251, delta: 431 },
-      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 897, a25: 653, delta: 244 },
-      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 780, a25: 541, delta: 239 }
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672, delta: 431 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 860, a25: 616, delta: 244 },
+      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 967, a25: 728, delta: 239 }
     ],
     falling: [
       { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610, delta: -2178 },
-      { issue: "CMS inquiry › Event history", grp: "Support", a26: 574, a25: 1411, delta: -837 },
+      { issue: "CMS inquiry › Event history", grp: "Support", a26: 829, a25: 1666, delta: -837 },
       { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985, delta: -830 }
     ]
   }
 };
-
-// Recurring-issue rollup for the Overview (Aug 2026 vs Aug 2025 volumes)
 const OVERVIEW_ISSUES = [
   { grp: "Connectivity", HSIA: [36342, 34439], TV: null, SHS: null },
   { grp: "TV", HSIA: null, TV: [30980, 33224], SHS: null },
@@ -2661,14 +2659,14 @@ export default function ReliabilityScorecards() {
     const K = HSA.tickets;
     const verdictColor = (v) => (v.startsWith("Rising") || v.startsWith("Emerging") ? T.bad : v.startsWith("Falling") ? T.good : T.textMuted);
     const MATRIX = [
-      { driver: "Incompatible equipment (plan vs hardware)", tickets: "Incompatible Equipment › Incompatible 876 → 1,994 (+128%); combined with the Connectivity sub-code 2,693 → 3,488 (+30%)", looker: "New category in 2026: 2,037 tickets Jan–Aug vs 0 in 2025", notes: "Boost Wi-Fi 7 (BV3) mentions +60%; NH20 / NAH mentions +2%; gateway swap-shipped theme −9%", tech: "1,185 visits in Aug, 90% aligned; closed as ONT install (602) or gateway (406); 6% non-TELUS", verdict: "Rising · confirmed, fulfilment not fault" },
-      { driver: "No Dataflow / all devices down", tickets: "No Dataflow 11,566 → 13,151 (+14%); All Devices Affected +15%", looker: "13,340 tickets Jan–Aug 2026 vs 10,305 in 2025 (+29% YoY)", notes: "No-internet theme 10,834 → 11,426 (+5.5%); outage theme +8.5%", tech: "1,813 visits, 85% aligned; access line / ONT is the finding on 52%, gateway on 22%; 12% non-TELUS", verdict: "Rising · confirmed across all three lenses" },
-      { driver: "Copper No Sync and outage-tagged tickets", tickets: "No Sync 2,924 → 3,717 (+27%); No DSL Light +18%; No Sync › Outage 314 → 640; No IP › Outage +75%", looker: "No Sync 4,522 vs 4,104 (+10% YoY)", notes: "Copper / DSL mentions +5%; outage theme +8.5%; Actiontec legacy modem +7%", tech: "1,303 No Sync visits, 90% aligned; access line 58%, provisioning 11%", verdict: "Rising · copper-led" },
-      { driver: "Wi-Fi misdiagnosis and unfound faults", tickets: "Wireless tickets −7% (Can't Connect, Disconnects) but Found OK › Not Required closures 472 → 965 (+104%)", looker: "Wireless › Can't Connect +8% YoY; Disconnects +16% YoY", notes: "Wi-Fi cannot-connect theme flat at ~3.0K; Boost / extender theme +2%", tech: "Wireless visits 44% to 46% aligned; technicians find access-line or gateway faults on about half; non-TELUS caused 9.5% → 13.8% overall", verdict: "Divergence · diagnosis gap, not volume" },
-      { driver: "Intermittent connectivity (Losing Sync)", tickets: "Losing Sync 5,927 → 6,391 (+8%); Intermittent Connectivity +8%", looker: "6,707 vs 6,525 (+3% YoY)", notes: "Intermittent-drop theme 9,444 → 8,267 (−12.5%)", tech: "1,974 visits, 82% aligned; access line / ONT 53%, gateway 22%", verdict: "Persistent · tickets up, agent language down" },
+      { driver: "Incompatible equipment (plan vs hardware)", tickets: "Incompatible Equipment › Incompatible 876 → 1,994 (+128%); combined with the Connectivity sub-code 2,693 → 3,488 (+30%)", looker: "New category: 2,037 tickets in Aug 2026, none in Aug 2025", notes: "Boost Wi-Fi 7 (BV3) mentions +60%; NH20 / NAH mentions +2%; gateway swap-shipped theme −9%", tech: "1,185 visits in Aug, 90% aligned; closed as ONT install (602) or gateway (406); 6% non-TELUS", verdict: "Rising · confirmed, fulfilment not fault" },
+      { driver: "No Dataflow / all devices down", tickets: "No Dataflow 11,566 → 13,151 (+14%); All Devices Affected +15%", looker: "13,340 in Aug 2026 vs 10,305 in Aug 2025 (+29% YoY)", notes: "No-internet theme 10,834 → 11,426 (+5.5%); outage theme +8.5%", tech: "1,813 visits, 85% aligned; access line / ONT is the finding on 52%, gateway on 22%; 12% non-TELUS", verdict: "Rising · confirmed across all three lenses" },
+      { driver: "Copper No Sync and outage-tagged tickets", tickets: "No Sync 2,924 → 3,717 (+27%); No DSL Light +18%; No Sync › Outage 314 → 640; No IP › Outage +75%", looker: "No Sync 4,522 vs 4,104 in Aug 2025 (+10% YoY)", notes: "Copper / DSL mentions +5%; outage theme +8.5%; Actiontec legacy modem +7%", tech: "1,303 No Sync visits, 90% aligned; access line 58%, provisioning 11%", verdict: "Rising · copper-led" },
+      { driver: "Wi-Fi misdiagnosis and unfound faults", tickets: "Wireless tickets −7% (Can't Connect, Disconnects) but Found OK › Not Required closures 472 → 965 (+104%)", looker: "Wireless › Can't Connect +8% YoY; Disconnects +16% YoY (Aug vs Aug)", notes: "Wi-Fi cannot-connect theme flat at ~3.0K; Boost / extender theme +2%", tech: "Wireless visits 44% to 46% aligned; technicians find access-line or gateway faults on about half; non-TELUS caused 9.5% → 13.8% overall", verdict: "Divergence · diagnosis gap, not volume" },
+      { driver: "Intermittent connectivity (Losing Sync)", tickets: "Losing Sync 5,927 → 6,391 (+8%); Intermittent Connectivity +8%", looker: "6,707 vs 6,525 in Aug 2025 (+3% YoY)", notes: "Intermittent-drop theme 9,444 → 8,267 (−12.5%)", tech: "1,974 visits, 82% aligned; access line / ONT 53%, gateway 22%", verdict: "Persistent · tickets up, agent language down" },
       { driver: "Provisioning fallout", tickets: "Connectivity › Incompatible Equipment › Not Required −30% as codes migrate", looker: "Not separately reported", notes: "Firmware / settings theme −4%", tech: "NetCracker › Stuck 453 → 645 (+42%); HSIA › Provisioning ~950 a month; provisioning fixes ~1,100 visits a month", verdict: "Rising · back-office signal only" },
-      { driver: "Speed complaints", tickets: "Connectivity › Slow Speeds −7%; Wireless › Slow Speeds −14%", looker: "Slow Speeds +10% YoY; Wireless Slow Speeds +11% YoY (2026 still above 2025)", notes: "Slow-speed / buffering theme 12,851 → 11,736 (−9%)", tech: "1,059 visits, 84% aligned; Wi-Fi / Boost fixes +6.5%", verdict: "Falling · Q3 improvement on a higher 2026 base" },
-      { driver: "Degraded fibre (severe line issues)", tickets: "Historical Data › Severe Line Issues 2,917 → 2,593 (−11%)", looker: "ONT Not Ranged 7,216 vs 8,536 (−15% YoY)", notes: "ONT / fibre / light-level theme −4%; red / alarm light theme −3.5%", tech: "Historical Data visits 93% aligned, 85% access line / ONT; fibre fixes flat at ~4.6K", verdict: "Falling · proactive fibre programs landing" },
+      { driver: "Speed complaints", tickets: "Connectivity › Slow Speeds −7%; Wireless › Slow Speeds −14%", looker: "Slow Speeds +10% YoY; Wireless Slow Speeds +11% YoY (Aug 2026 still above Aug 2025)", notes: "Slow-speed / buffering theme 12,851 → 11,736 (−9%)", tech: "1,059 visits, 84% aligned; Wi-Fi / Boost fixes +6.5%", verdict: "Falling · Q3 improvement on a higher 2026 base" },
+      { driver: "Degraded fibre (severe line issues)", tickets: "Historical Data › Severe Line Issues 2,917 → 2,593 (−11%)", looker: "ONT Not Ranged 7,216 vs 8,536 in Aug 2025 (−15% YoY)", notes: "ONT / fibre / light-level theme −4%; red / alarm light theme −3.5%", tech: "Historical Data visits 93% aligned, 85% access line / ONT; fibre fixes flat at ~4.6K", verdict: "Falling · proactive fibre programs landing" },
     ];
     const rising = [
       { name: "Incompatible equipment (plan vs hardware)", src: "tickets +128% (new code) · 1,185 visits closing as ONT / gateway installs" },
@@ -2693,13 +2691,13 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.HSIA} icon="cx" label="Non-TELUS-caused visits" value={fmtPct(K.divergence.field[2].nontelus, 1)} sub="share of technician determinations · Aug" deltas={[<Move key="m" v={K.divergence.field.map((d) => d.nontelus)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Each driver is read across the available lenses for Jun – Aug 2026: ticket categories from the notes export (agent), Looker ticket volumes year over year (Jan – Aug 2026 vs 2025), agent comment themes, and technician findings on field visits. A driver is confirmed when the direction agrees across sources. Customer survey verbatims are not yet available for HSIA and will be added as a fifth lens when they are.
+          Each driver is read across the available lenses for Jun – Aug 2026: ticket categories from the notes export (agent), Looker ticket volumes year over year (Aug 2026 vs Aug 2025), agent comment themes, and technician findings on field visits. A driver is confirmed when the direction agrees across sources. Customer survey verbatims are not yet available for HSIA and will be added as a fifth lens when they are.
         </p>
 
         {sec("Signal alignment matrix", "cross",
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead><tr>{["Driver", "Ticket trend (notes, Aug vs Jun)", "Looker volume (2026 vs 2025)", "Agent notes", "Technician findings", "Verdict"].map((h) => <th key={h} style={{ ...anTh, whiteSpace: "normal" }}>{h}</th>)}</tr></thead>
+              <thead><tr>{["Driver", "Ticket trend (notes, Aug vs Jun)", "Looker volume (Aug 2026 vs Aug 2025)", "Agent notes", "Technician findings", "Verdict"].map((h) => <th key={h} style={{ ...anTh, whiteSpace: "normal" }}>{h}</th>)}</tr></thead>
               <tbody>
                 {MATRIX.map((r) => (
                   <tr key={r.driver}>
