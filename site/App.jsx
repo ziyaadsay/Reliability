@@ -469,6 +469,7 @@ const ICON_PATHS = {
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
   notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
+  slides: "M3 5h18v12H3zM8 21h8M12 17v4M7 9h6M7 12h10",
   sentiment: "M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01",
   cross: "M6 6h.01M18 6h.01M6 18h.01M18 18h.01M12 12h.01M7 7l4 4M17 7l-4 4M7 17l4-4M17 17l-4-4",
   shplus: "M3 11l9-8 9 8M5 9.5V21h14V9.5M12 12v6M9 15h6",
@@ -837,16 +838,292 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { HSIA: ["hsiatickets", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
 const CHILD_LABEL = {
+  execsummary: "Executive Summary",
   hsiatickets: "Ticket Analysis", hsiacross: "Cross Analysis",
   tvplatforms: "By Platform", tvtickets: "Ticket Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
+const PARENT_LABEL = { home: "Overview" };
 
 // Initiatives covering a recurring-issue group, product-scoped
 function initiativesCovering(product, grp) {
   return INITIATIVES.filter((it) => it.p === product && it.issues.includes(grp));
+}
+
+// Initiative themes each Looker issue maps to, by product. The Ticket issues &
+// movers section uses this to show which initiative theme(s) address an issue
+// and to count initiative coverage by theme (HSIA and TV initiatives carry a
+// theme in the workbook; SHS initiatives are not yet in the source).
+function issueThemes(product, issue) {
+  const [c1, c2 = ""] = issue.split(" › ").map((s) => s.trim());
+  if (product === "HSIA") {
+    if (c1 === "Wireless" || c1 === "Wi-Fi connection" || c1 === "NWH") return c2 === "Slow Speeds" ? ["Wi-Fi", "Speed & equipment"] : ["Wi-Fi"];
+    if (c1.startsWith("Incompatible Equipment") || c2 === "Incompatible Equipment") return ["Speed & equipment"];
+    if (c2 === "Slow Speeds") return ["Speed & equipment"];
+    if (c2 === "No Sync") return ["Copper strategy", "Outage"];
+    if (c2 === "Losing Sync" || c2 === "Historical Data") return ["GPON degraded fibre", "Copper strategy"];
+    if (c2 === "No Dataflow" || c2 === "No IP") return ["GPON degraded fibre", "Outage"];
+    if (c2 === "ONT Not Ranged") return ["GPON degraded fibre"];
+    if (c1 === "Abandon") return [];
+    return ["GPON degraded fibre"];
+  }
+  if (product === "TV") {
+    if (c1 === "Video Issues" || c1 === "Audio Issues") return ["Video Quality"];
+    if (c1 === "Recording Issues" || c1 === "Recordings") return ["Recording Issues"];
+    if (c1 === "Channel Issues" || c1 === "VOD" || c1 === "PPV/VOD" || c1 === "PPV" || c1 === "Guide Issues") return ["Channel Issues"];
+    if (c1 === "Digital Box" && c2 === "Setup") return ["Onboarding"];
+    if (c1 === "Apps" || c1 === "Mobile App" || c1 === "TV Features") return ["Onboarding"];
+    if (c1 === "Abandon") return [];
+    return ["Hardware"];
+  }
+  return [];
+}
+function initiativesByTheme(product, themes) {
+  return INITIATIVES.filter((it) => it.p === product && themes.includes(it.theme));
+}
+
+// ---------------------------------------------------------------------------
+// Executive summary deck export. Slides are laid out on a 1120 × 630 canvas
+// that maps 1:1 onto a 13.33in × 7.5in (16:9) slide. The .pptx is written
+// here without any library (stored ZIP + minimal PresentationML) so it opens
+// in Google Slides and PowerPoint; the PDF path builds a printable HTML deck
+// and hands it to the browser's print dialog (Save as PDF).
+// ---------------------------------------------------------------------------
+const DECK_W = 1120, DECK_H = 630;
+const DECK_LIGHT = { bg: "#FFFFFF", band: "#4B286D", bandText: "#C9A9E8", green: "#66CC02", panel: "#F6F2FA", border: "#E7E3EC", text: "#2C2E30", muted: "#676E73", faint: "#9A93A6", heading: "#4B286D", good: "#2B8000", bad: "#B3261E" };
+const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · TCS PLT Charter scorecard (Sweepr) · movements on rates are in bps";
+
+function sparkPoints(series, w, h) {
+  const idx = series.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  if (idx.length < 2) return [];
+  const vals = idx.map(([, v]) => v);
+  const min = Math.min(...vals), max = Math.max(...vals), span = max - min || 1;
+  const n = series.length - 1;
+  return idx.map(([i, v]) => [+((i / n) * w).toFixed(1), +((h - ((v - min) / span) * h)).toFixed(1)]);
+}
+
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(bytes) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+// Stored (uncompressed) ZIP from [{ name, text }] entries
+function zipStore(files, mime) {
+  const enc = new TextEncoder();
+  const u16 = (v) => [v & 255, (v >>> 8) & 255];
+  const u32 = (v) => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  const now = new Date();
+  const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  const parts = [], central = [];
+  let offset = 0;
+  files.forEach((f) => {
+    const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+    const head = new Uint8Array([...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)]);
+    parts.push(head, name, data);
+    central.push(new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(dosTime), ...u16(dosDate), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(offset)]), name);
+    offset += head.length + name.length + data.length;
+  });
+  const cdSize = central.reduce((a, b) => a + b.length, 0);
+  const end = new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(offset), ...u16(0)]);
+  return new Blob([...parts, ...central, end], { type: mime });
+}
+
+const EMU_PER_PX = 12192000 / DECK_W;
+const xmlEsc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+let pptxShapeId = 1;
+const emu = (px) => Math.round(px * EMU_PER_PX);
+const hex6 = (c) => String(c).replace("#", "").toUpperCase();
+function pptxXfrm(x, y, w, h) { return `<a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${Math.max(1, emu(w))}" cy="${Math.max(1, emu(h))}"/></a:xfrm>`; }
+function pptxRun(r) {
+  const fill = r.color ? `<a:solidFill><a:srgbClr val="${hex6(r.color)}"/></a:solidFill>` : "";
+  return `<a:r><a:rPr lang="en-CA" sz="${Math.round((r.sz || 12) * 100)}" b="${r.b ? 1 : 0}" dirty="0">${fill}<a:latin typeface="Arial"/></a:rPr><a:t>${xmlEsc(r.t)}</a:t></a:r>`;
+}
+function pptxPara(p) {
+  const runs = (p.runs || [{ t: p.t, sz: p.sz, b: p.b, color: p.color }]).map(pptxRun).join("");
+  const pPr = p.space ? `<a:pPr algn="${p.align || "l"}"><a:spcBef><a:spcPts val="${Math.round(p.space * 100)}"/></a:spcBef></a:pPr>` : `<a:pPr algn="${p.align || "l"}"/>`;
+  return `<a:p>${pPr}${runs}</a:p>`;
+}
+function pptxShape({ x, y, w, h, fill, line, radius, paras, anchor = "t", inset = 8 }) {
+  pptxShapeId += 1;
+  const geom = radius ? `<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val ${radius}"/></a:avLst></a:prstGeom>` : `<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>`;
+  const fillXml = fill ? `<a:solidFill><a:srgbClr val="${hex6(fill)}"/></a:solidFill>` : "<a:noFill/>";
+  const lineXml = line ? `<a:ln w="9525"><a:solidFill><a:srgbClr val="${hex6(line)}"/></a:solidFill></a:ln>` : "<a:ln><a:noFill/></a:ln>";
+  const ins = emu(inset);
+  const body = paras && paras.length
+    ? `<p:txBody><a:bodyPr wrap="square" lIns="${ins}" tIns="${ins}" rIns="${ins}" bIns="${ins}" anchor="${anchor}"><a:normAutofit/></a:bodyPr><a:lstStyle/>${paras.map(pptxPara).join("")}</p:txBody>`
+    : `<p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="en-CA"/></a:p></p:txBody>`;
+  return `<p:sp><p:nvSpPr><p:cNvPr id="${pptxShapeId}" name="Shape ${pptxShapeId}"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>${pptxXfrm(x, y, w, h)}${geom}${fillXml}${lineXml}</p:spPr>${body}</p:sp>`;
+}
+// Freeform polyline (sparkline) with points in canvas px relative to (x, y)
+function pptxPolyline({ x, y, w, h, points, color, width = 2 }) {
+  pptxShapeId += 1;
+  const W = Math.max(1, emu(w)), H = Math.max(1, emu(h));
+  const path = points.map((p, i) => { const tag = i === 0 ? "moveTo" : "lnTo"; return `<a:${tag}><a:pt x="${emu(p[0])}" y="${emu(p[1])}"/></a:${tag}>`; }).join("");
+  return `<p:sp><p:nvSpPr><p:cNvPr id="${pptxShapeId}" name="Line ${pptxShapeId}"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>${pptxXfrm(x, y, w, h)}<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/><a:rect l="0" t="0" r="r" b="b"/><a:pathLst><a:path w="${W}" h="${H}" fill="none">${path}</a:path></a:pathLst></a:custGeom><a:noFill/><a:ln w="${Math.round(width * 12700)}" cap="rnd"><a:solidFill><a:srgbClr val="${hex6(color)}"/></a:solidFill><a:round/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="en-CA"/></a:p></p:txBody></p:sp>`;
+}
+const PPTX_NS = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+const XML_HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+const PPTX_EMPTY_TREE = '<p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld>';
+const PPTX_THEME = `${XML_HEAD}<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Reliability"><a:themeElements><a:clrScheme name="Reliability"><a:dk1><a:srgbClr val="2C2E30"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="4B286D"/></a:dk2><a:lt2><a:srgbClr val="F6F2FA"/></a:lt2><a:accent1><a:srgbClr val="4B286D"/></a:accent1><a:accent2><a:srgbClr val="66CC02"/></a:accent2><a:accent3><a:srgbClr val="7C53A5"/></a:accent3><a:accent4><a:srgbClr val="2B8000"/></a:accent4><a:accent5><a:srgbClr val="2A78D6"/></a:accent5><a:accent6><a:srgbClr val="00838F"/></a:accent6><a:hlink><a:srgbClr val="4B286D"/></a:hlink><a:folHlink><a:srgbClr val="7C53A5"/></a:folHlink></a:clrScheme><a:fontScheme name="Reliability"><a:majorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme><a:fmtScheme name="Reliability"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="9525"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="12700"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="19050"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`;
+
+function pptxSlideXml(shapes) {
+  return `${XML_HEAD}<p:sld ${PPTX_NS}><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${shapes.join("")}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
+}
+
+// Deck model → per-slide shape lists (mirrors the on-screen slide layout)
+function deckToPptxSlides(deck) {
+  const C = DECK_LIGHT;
+  const toneCol = (t) => (t === "good" ? C.good : t === "bad" ? C.bad : C.muted);
+  const chrome = (n, title, shapes) => [
+    pptxShape({ x: 0, y: 0, w: DECK_W, h: 78, fill: C.band }),
+    pptxShape({ x: 0, y: 78, w: DECK_W, h: 4, fill: C.green }),
+    pptxShape({ x: 36, y: 10, w: 900, h: 20, inset: 0, paras: [{ t: `RELIABILITY STRATEGY · EXECUTIVE SUMMARY · ${deck.month.toUpperCase()}`, sz: 8, b: true, color: C.bandText }] }),
+    pptxShape({ x: 36, y: 30, w: 940, h: 40, inset: 0, anchor: "ctr", paras: [{ t: title, sz: 20, b: true, color: "#FFFFFF" }] }),
+    pptxShape({ x: 980, y: 30, w: 104, h: 40, inset: 0, anchor: "ctr", paras: [{ t: `${n} / 4`, sz: 10, color: C.bandText, align: "r" }] }),
+    ...shapes,
+    pptxShape({ x: 36, y: 600, w: 1048, h: 20, inset: 0, paras: [{ t: DECK_SOURCE, sz: 7.5, color: C.faint }] })
+  ];
+  const colW = 338, gap = 17, top = 100, cardH = 488;
+
+  // Slide 1 — KPI cards per product
+  const s1 = [];
+  deck.kpis.forEach((k, i) => {
+    const x = 36 + i * (colW + gap);
+    s1.push(pptxShape({ x, y: top, w: colW, h: cardH, fill: C.bg, line: C.border, radius: 4000 }));
+    s1.push(pptxShape({ x: x + 14, y: top + 10, w: colW - 28, h: 26, inset: 0, paras: [{ t: k.product, sz: 14, b: true, color: k.color }] }));
+    const tw = (colW - 28 - 10) / 2, th = (cardH - 50 - 20) / 3;
+    k.tiles.forEach((t, j) => {
+      const tx = x + 14 + (j % 2) * (tw + 10), ty = top + 46 + Math.floor(j / 2) * (th + 10);
+      s1.push(pptxShape({ x: tx, y: ty, w: tw, h: th, fill: C.panel, radius: 4000 }));
+      s1.push(pptxShape({ x: tx + 10, y: ty + 8, w: tw - 20, h: th - 16, inset: 0, paras: [
+        { t: t.label.toUpperCase(), sz: 7.5, b: true, color: C.muted },
+        { t: t.value, sz: 20, b: true, color: C.heading, space: 4 },
+        { t: t.month, sz: 7.5, color: C.faint },
+        { t: t.yoy ? `${t.yoy.text} vs prior yr.` : "—", sz: 9, b: true, color: t.yoy ? toneCol(t.yoy.tone) : C.faint, space: 4 }
+      ] }));
+    });
+  });
+
+  // Slide 2 — top issue, trend, rising and falling per product
+  const s2 = [];
+  deck.issues.forEach((k, i) => {
+    const x = 36 + i * (colW + gap), ix = x + 14, iw = colW - 28;
+    s2.push(pptxShape({ x, y: top, w: colW, h: cardH, fill: C.bg, line: C.border, radius: 4000 }));
+    s2.push(pptxShape({ x: ix, y: top + 10, w: iw, h: 66, inset: 0, paras: [
+      { t: `${k.product.toUpperCase()} · TOP TICKET ISSUE — ${k.asOf.toUpperCase()}`, sz: 7.5, b: true, color: k.color },
+      { t: k.issue, sz: 12, b: true, color: C.text, space: 3 },
+      { runs: [{ t: `${k.volume.toLocaleString()} tickets · `, sz: 9.5, color: C.muted }, { t: k.yoy, sz: 9.5, b: true, color: toneCol(k.tone) }], space: 2 }
+    ] }));
+    const sy = top + 84, sh = 86;
+    s2.push(pptxShape({ x: ix, y: sy, w: iw, h: sh + 26, fill: C.panel, radius: 4000 }));
+    const pts = sparkPoints(k.trend, iw - 24, sh - 20);
+    if (pts.length > 1) s2.push(pptxPolyline({ x: ix + 12, y: sy + 10, w: iw - 24, h: sh - 20, points: pts, color: k.color, width: 2 }));
+    s2.push(pptxShape({ x: ix + 12, y: sy + sh - 4, w: iw - 24, h: 26, inset: 0, paras: [{ t: `${k.trendName} tickets · ${k.trendFrom} – ${k.trendTo} (Looker)`, sz: 7.5, color: C.faint }] }));
+    const list = (title, rows, col, y) => [
+      pptxShape({ x: ix, y, w: iw, h: 18, inset: 0, paras: [{ t: title, sz: 8, b: true, color: col }] }),
+      ...rows.map((r, j) => pptxShape({ x: ix, y: y + 20 + j * 30, w: iw, h: 30, inset: 0, paras: [{ t: r.name, sz: 8.5, color: C.text }, { t: r.text, sz: 8, b: true, color: col }] }))
+    ];
+    const listY = sy + sh + 40;
+    s2.push(...list(`RISING · ${k.compare.toUpperCase()}`, k.rising, C.bad, listY));
+    s2.push(...list(`FALLING · ${k.compare.toUpperCase()}`, k.falling, C.good, listY + 20 + 3 * 30 + 12));
+  });
+
+  // Slide 3 — initiative milestones in the month
+  const s3 = [];
+  const cols = [[36, 96, "PRODUCT"], [140, 400, "INITIATIVE"], [548, 160, "THEME"], [716, 96, "STATUS"], [820, 110, "TIMELINE"], [938, 146, "PRIME"]];
+  s3.push(...cols.map(([cx, cw, hd]) => pptxShape({ x: cx, y: top, w: cw, h: 20, inset: 0, paras: [{ t: hd, sz: 7.5, b: true, color: C.muted }] })));
+  s3.push(pptxShape({ x: 36, y: top + 22, w: 1048, h: 1, fill: C.border }));
+  if (!deck.milestones.length) s3.push(pptxShape({ x: 36, y: top + 40, w: 1048, h: 30, inset: 0, paras: [{ t: `No initiative has a milestone dated ${deck.month}.`, sz: 11, color: C.muted }] }));
+  const rowH = Math.min(48, Math.floor(470 / Math.max(1, deck.milestones.length)));
+  deck.milestones.forEach((m, j) => {
+    const y = top + 30 + j * rowH;
+    const vals = [m.product, m.name, m.theme, m.status, m.timeline, m.prime];
+    cols.forEach(([cx, cw], ci) => s3.push(pptxShape({ x: cx, y, w: cw, h: rowH - 4, inset: 0, anchor: "ctr", paras: [{ t: vals[ci], sz: ci === 1 ? 10 : 9, b: ci <= 1 || ci === 3, color: ci === 0 ? m.color : ci === 3 ? (m.status === "Launched" ? C.good : m.status === "Stalled" ? C.bad : C.heading) : C.text }] })));
+    s3.push(pptxShape({ x: 36, y: y + rowH - 3, w: 1048, h: 1, fill: C.border }));
+  });
+
+  // Slide 4 — self-serve cards
+  const s4 = [];
+  const tw4 = (1048 - 4 * 14) / 5;
+  deck.selfServe.forEach((t, i) => {
+    const x = 36 + i * (tw4 + 14), y = 120, h = 190;
+    s4.push(pptxShape({ x, y, w: tw4, h, fill: C.bg, line: C.border, radius: 4000 }));
+    s4.push(pptxShape({ x: x + 12, y: y + 12, w: tw4 - 24, h: h - 24, inset: 0, paras: [
+      { t: t.label.toUpperCase(), sz: 7.5, b: true, color: C.muted },
+      { t: t.value, sz: 22, b: true, color: C.heading, space: 6 },
+      { t: t.sub, sz: 7.5, color: C.faint },
+      ...t.deltas.map(([d, suf]) => ({ t: d ? `${d.text} ${suf}` : "—", sz: 9, b: true, color: d ? toneCol(d.tone) : C.faint, space: 4 }))
+    ] }));
+  });
+  s4.push(pptxShape({ x: 36, y: 330, w: 1048, h: 60, inset: 0, paras: [{ t: deck.selfServeNote, sz: 9.5, color: C.muted }] }));
+
+  return [chrome(1, deck.titles[0], s1), chrome(2, deck.titles[1], s2), chrome(3, deck.titles[2], s3), chrome(4, deck.titles[3], s4)];
+}
+
+function pptxFromDeck(deck) {
+  pptxShapeId = 1;
+  const slides = deckToPptxSlides(deck);
+  const rels = (items) => `${XML_HEAD}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${items.map(([id, type, target]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/${type}" Target="${target}"/>`).join("")}</Relationships>`;
+  const files = [
+    { name: "[Content_Types].xml", text: `${XML_HEAD}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slides.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join("")}</Types>` },
+    { name: "_rels/.rels", text: `${XML_HEAD}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>` },
+    { name: "ppt/presentation.xml", text: `${XML_HEAD}<p:presentation ${PPTX_NS} saveSubsetFonts="1"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slides.map((_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 3}"/>`).join("")}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000"/><p:notesSz cx="6858000" cy="9144000"/><p:defaultTextStyle><a:defPPr><a:defRPr lang="en-CA"/></a:defPPr></p:defaultTextStyle></p:presentation>` },
+    { name: "ppt/_rels/presentation.xml.rels", text: rels([["rId1", "slideMaster", "slideMasters/slideMaster1.xml"], ["rId2", "theme", "theme/theme1.xml"], ...slides.map((_, i) => [`rId${i + 3}`, "slide", `slides/slide${i + 1}.xml`])]) },
+    { name: "ppt/slideMasters/slideMaster1.xml", text: `${XML_HEAD}<p:sldMaster ${PPTX_NS}>${PPTX_EMPTY_TREE}<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle><a:lvl1pPr/></p:titleStyle><p:bodyStyle><a:lvl1pPr/></p:bodyStyle><p:otherStyle><a:lvl1pPr/></p:otherStyle></p:txStyles></p:sldMaster>` },
+    { name: "ppt/slideMasters/_rels/slideMaster1.xml.rels", text: rels([["rId1", "slideLayout", "../slideLayouts/slideLayout1.xml"], ["rId2", "theme", "../theme/theme1.xml"]]) },
+    { name: "ppt/slideLayouts/slideLayout1.xml", text: `${XML_HEAD}<p:sldLayout ${PPTX_NS} type="blank" preserve="1">${PPTX_EMPTY_TREE}<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>` },
+    { name: "ppt/slideLayouts/_rels/slideLayout1.xml.rels", text: rels([["rId1", "slideMaster", "../slideMasters/slideMaster1.xml"]]) },
+    { name: "ppt/theme/theme1.xml", text: PPTX_THEME }
+  ];
+  slides.forEach((shapes, i) => {
+    files.push({ name: `ppt/slides/slide${i + 1}.xml`, text: pptxSlideXml(shapes) });
+    files.push({ name: `ppt/slides/_rels/slide${i + 1}.xml.rels`, text: rels([["rId1", "slideLayout", "../slideLayouts/slideLayout1.xml"]]) });
+  });
+  return zipStore(files, "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+}
+
+function downloadBlob(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 3000);
+}
+
+// Printable HTML deck (one 16:9 page per slide) for the PDF option
+function deckToHtml(deck) {
+  const C = DECK_LIGHT, e = xmlEsc;
+  const tone = (t) => (t === "good" ? C.good : t === "bad" ? C.bad : C.muted);
+  const chrome = (n, title, body) => `<section class="slide"><header><div class="eyebrow">Reliability Strategy · Executive summary · ${e(deck.month)}</div><div class="row"><h1>${e(title)}</h1><span class="num">${n} / 4</span></div></header><div class="body">${body}</div><footer>${e(DECK_SOURCE)}</footer></section>`;
+  const s1 = `<div class="cols">${deck.kpis.map((k) => `<div class="card"><div class="prod" style="color:${k.color}">${e(k.product)}</div><div class="tiles">${k.tiles.map((t) => `<div class="tile"><div class="lbl">${e(t.label)}</div><div class="val">${e(t.value)}</div><div class="sub">${e(t.month)}</div><div class="d" style="color:${t.yoy ? tone(t.yoy.tone) : C.faint}">${t.yoy ? e(t.yoy.text) + " vs prior yr." : "—"}</div></div>`).join("")}</div></div>`).join("")}</div>`;
+  const spark = (k) => { const w = 300, h = 66, pts = sparkPoints(k.trend, w, h); return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${k.color}" stroke-width="2" stroke-linejoin="round" points="${pts.map((p) => p.join(",")).join(" ")}"/></svg>`; };
+  const s2 = `<div class="cols">${deck.issues.map((k) => `<div class="card"><div class="lbl" style="color:${k.color}">${e(k.product)} · top ticket issue — ${e(k.asOf)}</div><div class="issue">${e(k.issue)}</div><div class="sub2">${k.volume.toLocaleString()} tickets · <b style="color:${tone(k.tone)}">${e(k.yoy)}</b></div><div class="spark">${spark(k)}<div class="cap">${e(k.trendName)} tickets · ${e(k.trendFrom)} – ${e(k.trendTo)} (Looker)</div></div>${[["Rising", k.rising, C.bad], ["Falling", k.falling, C.good]].map(([t, rows, col]) => `<div class="mv"><div class="lbl" style="color:${col}">${t} · ${e(k.compare)}</div>${rows.map((r) => `<div class="mvr"><span>${e(r.name)}</span><b style="color:${col}">${e(r.text)}</b></div>`).join("")}</div>`).join("")}</div>`).join("")}</div>`;
+  const s3 = deck.milestones.length
+    ? `<table><thead><tr><th>Product</th><th>Initiative</th><th>Theme</th><th>Status</th><th>Timeline</th><th>Prime</th></tr></thead><tbody>${deck.milestones.map((m) => `<tr><td style="color:${m.color};font-weight:700">${e(m.product)}</td><td><b>${e(m.name)}</b></td><td>${e(m.theme)}</td><td style="font-weight:700;color:${m.status === "Launched" ? C.good : m.status === "Stalled" ? C.bad : C.heading}">${e(m.status)}</td><td>${e(m.timeline)}</td><td>${e(m.prime)}</td></tr>`).join("")}</tbody></table>`
+    : `<p class="empty">No initiative has a milestone dated ${e(deck.month)}.</p>`;
+  const s4 = `<div class="ss">${deck.selfServe.map((t) => `<div class="card"><div class="lbl">${e(t.label)}</div><div class="val big">${e(t.value)}</div><div class="sub">${e(t.sub)}</div>${t.deltas.map(([d, suf]) => `<div class="d" style="color:${d ? tone(d.tone) : C.faint}">${d ? e(d.text) + " " + e(suf) : "—"}</div>`).join("")}</div>`).join("")}</div><p class="note">${e(deck.selfServeNote)}</p>`;
+  const css = `@page{size:13.333in 7.5in;margin:0}html,body{margin:0;background:#fff}body{font-family:'Hanken Grotesk',Arial,Helvetica,sans-serif;color:${C.text};-webkit-print-color-adjust:exact;print-color-adjust:exact}.slide{width:13.333in;height:7.5in;box-sizing:border-box;display:flex;flex-direction:column;background:#fff;overflow:hidden;page-break-after:always;break-after:page}.slide:last-child{page-break-after:auto;break-after:auto}header{background:${C.band};color:#fff;padding:14px 40px 12px;border-bottom:4px solid ${C.green}}.eyebrow{font-size:9pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${C.bandText}}.row{display:flex;justify-content:space-between;align-items:baseline}h1{margin:4px 0 0;font-size:20pt;font-weight:700}.num{font-size:10pt;color:${C.bandText}}.body{flex:1;padding:20px 40px;min-height:0}footer{padding:6px 40px 12px;font-size:7.5pt;color:${C.faint}}.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;height:100%}.card{border:1px solid ${C.border};border-radius:10px;padding:14px 16px;background:#fff;box-sizing:border-box;display:flex;flex-direction:column}.prod{font-size:13pt;font-weight:800;margin-bottom:8px}.tiles{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:10px;flex:1}.mv,.spark,.issue,.sub2{flex:none}.tile{background:${C.panel};border-radius:8px;padding:10px 12px}.lbl{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:${C.muted}}.val{font-size:18pt;font-weight:700;color:${C.heading};margin-top:4px;line-height:1.1}.val.big{font-size:22pt}.sub{font-size:7.5pt;color:${C.faint};margin-top:3px}.d{font-size:9pt;font-weight:700;margin-top:4px}.issue{font-size:12pt;font-weight:700;margin-top:4px}.sub2{font-size:9.5pt;color:${C.muted};margin-top:2px}.spark{background:${C.panel};border-radius:8px;padding:10px 12px 6px;margin:10px 0}.cap{font-size:7.5pt;color:${C.faint}}.mv{margin-top:10px}.mvr{display:flex;justify-content:space-between;gap:8px;font-size:8.5pt;padding:3px 0;border-bottom:1px solid ${C.border}}table{width:100%;border-collapse:collapse;font-size:9.5pt}th{text-align:left;font-size:7.5pt;text-transform:uppercase;letter-spacing:.05em;color:${C.muted};padding:6px 8px;border-bottom:1px solid ${C.border}}td{padding:8px;border-bottom:1px solid ${C.border};vertical-align:top}.ss{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.note{font-size:9.5pt;color:${C.muted};margin-top:18px}.empty{color:${C.muted}}`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Reliability Strategy — Executive summary ${e(deck.month)}</title><style>${css}</style></head><body>${chrome(1, deck.titles[0], s1)}${chrome(2, deck.titles[1], s2)}${chrome(3, deck.titles[2], s3)}${chrome(4, deck.titles[3], s4)}</body></html>`;
+}
+function printDeck(deck) {
+  const frame = document.createElement("iframe");
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText = "position:fixed;right:0;bottom:0;width:1280px;height:720px;border:0;opacity:0;pointer-events:none";
+  document.body.appendChild(frame);
+  frame.onload = () => {
+    setTimeout(() => {
+      try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch (err) { /* print blocked */ }
+      setTimeout(() => frame.remove(), 60000);
+    }, 400);
+  };
+  frame.srcdoc = deckToHtml(deck);
 }
 
 // ---------------------------------------------------------------------------
@@ -909,6 +1186,7 @@ export default function ReliabilityScorecards() {
 
   const navItems = [
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
+    { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "hsiatickets", label: "Ticket Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
@@ -1254,13 +1532,14 @@ export default function ReliabilityScorecards() {
                 <th style={{ ...thBase, textAlign: "right" }}>Aug'26</th>
                 <th style={{ ...thBase, textAlign: "left", width: 130 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
-                <th style={{ ...thBase, textAlign: "left" }}>Recurring issue</th>
+                <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>
               </tr>
             </thead>
             <tbody>
               {L.topIssues.map((r, i) => {
-                const cov = initiativesCovering(product, r.grp);
+                const themes = issueThemes(product, r.issue);
+                const cov = initiativesByTheme(product, themes);
                 const d = delta(r.a26, r.a25 || null, "", 0, true);
                 return (
                   <tr key={r.issue}>
@@ -1273,7 +1552,11 @@ export default function ReliabilityScorecards() {
                     <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}>
                       {r.a25 ? <><DeltaText d={d} T={T} /> <span style={{ color: T.textFaint, fontSize: 11.5 }}>({yoyPctText(r.a26, r.a25)})</span></> : <span style={{ color: T.textFaint }}>new</span>}
                     </td>
-                    <td style={{ ...tdBase, whiteSpace: "nowrap", color: T.textMuted, fontSize: 12 }}>{r.grp === "SHS Hardware" ? "SHS hardware" : ISSUE_META[r.grp].label.split(",")[0]}</td>
+                    <td style={{ ...tdBase, whiteSpace: "nowrap", fontSize: 12 }}>
+                      {themes.length
+                        ? themes.map((t) => <span key={t} style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: T.textSecondary, borderRadius: 999, padding: "1px 9px", marginRight: 4, fontWeight: 600 }}>{t}</span>)
+                        : <span style={{ color: T.textFaint }}>{r.grp === "SHS Hardware" ? "SHS hardware (no initiative themes yet)" : ISSUE_META[r.grp].label.split(",")[0]}</span>}
+                    </td>
                     <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
                       {cov.length ? (
                         <span style={{ color: T.textSecondary }}>
@@ -1290,7 +1573,7 @@ export default function ReliabilityScorecards() {
           </table>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-          Looker ticket categories from the Churn Measurement 2026 workbook{product !== "SHS" ? " · initiative coverage counts initiatives tagged to the issue's recurring-issue group" : ""}. YoY compares Aug 2026 against Aug 2025.
+          Looker ticket categories from the Churn Measurement 2026 workbook{product !== "SHS" ? " · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes" : " · SHS initiatives (and their themes) are not yet in the source"}. YoY compares Aug 2026 against Aug 2025.
         </p>
       </>
     );
@@ -1564,6 +1847,12 @@ export default function ReliabilityScorecards() {
             return <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
           })()}
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
+          <div style={{ marginTop: 12 }}>
+            <button onClick={() => setPage("execsummary")}
+              style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Icon name="slides" size={13} /> Executive Summary slides →
+            </button>
+          </div>
           <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
             {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are HSIA + TV + SHS contacts offered. SH+ is reported separately (from Jul 2025) and is not yet included in the All rollup."}
@@ -2735,10 +3024,244 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ executive summary deck ------------------------------
+  // One data model drives the on-screen slides, the .pptx and the printable PDF.
+  function buildDeck() {
+    const month = latestLabel;
+    const D = (d) => (d ? { text: d.text, tone: d.tone } : null);
+    const kpis = PRODUCTS.map((p) => ({
+      product: p, color: colors[p],
+      tiles: scopeTiles(p).map((t) => {
+        const f = rowFigures(t.data, t.dec, t.goodDown, t.fmt === fmtPct);
+        return { label: t.label.replace(/\s*\(.*\)$/, ""), value: t.fmt(f.latest), month: f.latestMonth ? shortMonth(f.latestMonth) : "", yoy: D(f.yoy) };
+      })
+    }));
+    const asOf = "Aug'26", compare = "Aug'26 vs Aug'25";
+    const issues = PRODUCTS.filter((p) => LOOKER[p]).map((p) => {
+      const L = LOOKER[p], t = L.topIssues[0], worse = t.a25 != null && t.a26 > t.a25;
+      const mv = (r) => ({ name: r.issue, text: `${r.delta > 0 ? "+" : ""}${r.delta.toLocaleString()} (${yoyPctText(r.a26, r.a25)})` });
+      return {
+        product: p, color: colors[p], asOf, compare, issue: t.issue, volume: t.a26,
+        yoy: t.a25 != null ? `${worse ? "▲" : "▼"} ${yoyPctText(t.a26, t.a25)} YoY` : "new in 2026", tone: worse ? "bad" : "good",
+        trendName: L.topCat.name, trend: L.topCat.series, trendFrom: MONTHS[0], trendTo: MONTHS[MONTHS.length - 1],
+        rising: L.rising.slice(0, 3).map(mv), falling: L.falling.slice(0, 3).map(mv)
+      };
+    });
+    const milestones = INITIATIVES.filter((it) => it.timeline.includes(month)).map((it) => ({
+      product: it.p, color: colors[it.p], name: it.name, theme: it.theme, status: it.status, timeline: it.timeline, prime: it.prime,
+      pillar: (PILLARS.find((pl) => pl.n === it.pillar) || {}).name
+    }));
+    const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, true), dea = sweeprFig("deacts", 0);
+    const selfServe = [
+      { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "vs prior yr."]] },
+      { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "vs prior yr."]] },
+      { icon: "cx", label: "CX 'Easy to follow'", value: easy.latest == null ? "—" : easy.latest.toFixed(2), sub: easy.latest == null ? "" : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`, deltas: [[D(easy.vsTarget), "vs target"]] },
+      { icon: "churn", label: "Sweepr involved churn", value: fmtPct(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "vs prior mo."]] },
+      { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "vs prior mo."]] }
+    ];
+    return {
+      month, kpis, issues, milestones, selfServe,
+      selfServeNote: "Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.",
+      titles: [`KPI scorecard · ${month}`, `Top ticket issues and movers · ${asOf}`, `Initiative milestones · ${month}`, `Self-serve workflows (Sweepr) · ${month}`]
+    };
+  }
+
+  function ExecSummaryPage() {
+    const deck = buildDeck();
+    const scrollRef = useRef(null);
+    const [scale, setScale] = useState(1);
+    const [cur, setCur] = useState(0);
+    useEffect(() => {
+      const el = scrollRef.current;
+      if (!el) return undefined;
+      const measure = () => setScale(Math.max(0.25, el.clientWidth / DECK_W));
+      measure();
+      const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+      if (ro) ro.observe(el); else window.addEventListener("resize", measure);
+      return () => { if (ro) ro.disconnect(); else window.removeEventListener("resize", measure); };
+    }, []);
+    const goTo = (i) => {
+      const el = scrollRef.current;
+      const n = Math.max(0, Math.min(3, i));
+      if (el) el.scrollTo({ left: n * el.clientWidth, behavior: "smooth" });
+      setCur(n);
+    };
+    useEffect(() => {
+      const onKey = (e) => { if (e.key === "ArrowRight") goTo(cur + 1); else if (e.key === "ArrowLeft") goTo(cur - 1); };
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }, [cur]);
+    const onScroll = () => { const el = scrollRef.current; if (el && el.clientWidth) setCur(Math.max(0, Math.min(3, Math.round(el.scrollLeft / el.clientWidth)))); };
+    const toneCol = (t) => (t === "good" ? T.good : t === "bad" ? T.bad : T.textMuted);
+    const fileStem = `Reliability-Strategy-Executive-Summary-${deck.month.replace(/\s+/g, "-")}`;
+    const btn = (primary) => ({
+      border: `1px solid ${primary ? "transparent" : T.borderStrong}`, background: primary ? T.ink : "transparent", color: primary ? "#fff" : T.textSecondary,
+      borderRadius: 999, padding: "6px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: FONT, display: "inline-flex", alignItems: "center", gap: 7
+    });
+    const lbl = { fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted };
+
+    const Chrome = ({ n, title, children }) => (
+      <div style={{ width: DECK_W, height: DECK_H, background: T.surface, display: "flex", flexDirection: "column", fontFamily: FONT, color: T.text, boxSizing: "border-box" }}>
+        <div style={{ background: "#4B286D", color: "#fff", padding: "12px 36px 10px", borderBottom: "4px solid #66CC02" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#C9A9E8" }}>Reliability Strategy · Executive summary · {deck.month}</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>{title}</div>
+            <div style={{ fontSize: 12, color: "#C9A9E8" }}>{n} / 4</div>
+          </div>
+        </div>
+        <div style={{ flex: 1, padding: "18px 36px 0", minHeight: 0 }}>{children}</div>
+        <div style={{ padding: "6px 36px 10px", fontSize: 9.5, color: T.textFaint, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{DECK_SOURCE}</div>
+      </div>
+    );
+    const card = { background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px 16px", boxSizing: "border-box", minWidth: 0 };
+
+    const slide1 = (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, height: "100%" }}>
+        {deck.kpis.map((k) => (
+          <div key={k.product} style={{ ...card, display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <span style={{ color: k.color, display: "inline-flex" }}><Icon name={PRODUCT_ICON[k.product]} size={16} /></span>
+              <span style={{ fontSize: 16, fontWeight: 800, color: k.color }}>{k.product}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridAutoRows: "1fr", gap: 10, flex: 1 }}>
+              {k.tiles.map((t) => (
+                <div key={t.label} style={{ background: T.panel, borderRadius: 8, padding: "10px 12px" }}>
+                  <div style={lbl}>{t.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: T.heading, lineHeight: 1.1, marginTop: 4 }}>{t.value}</div>
+                  <div style={{ fontSize: 10, color: T.textFaint, marginTop: 2 }}>{t.month}</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 700, marginTop: 4, color: t.yoy ? toneCol(t.yoy.tone) : T.textFaint }}>{t.yoy ? `${t.yoy.text} vs prior yr.` : "—"}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
+    const Spark = ({ series, color }) => {
+      const w = 300, h = 66, pts = sparkPoints(series, w, h);
+      return (
+        <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ display: "block" }}>
+          <polyline fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" points={pts.map((p) => p.join(",")).join(" ")} />
+        </svg>
+      );
+    };
+    const slide2 = (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, height: "100%" }}>
+        {deck.issues.map((k) => (
+          <div key={k.product} style={card}>
+            <div style={{ ...lbl, color: k.color }}>{k.product} · top ticket issue — {k.asOf}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: T.textSecondary, marginTop: 4 }}>{k.issue}</div>
+            <div style={{ fontSize: 12.5, color: T.textMuted, marginTop: 2 }}>{k.volume.toLocaleString()} tickets · <b style={{ color: toneCol(k.tone) }}>{k.yoy}</b></div>
+            <div style={{ background: T.panel, borderRadius: 8, padding: "10px 12px 6px", margin: "10px 0" }}>
+              <Spark series={k.trend} color={k.color} />
+              <div style={{ fontSize: 10, color: T.textFaint, marginTop: 4 }}>{k.trendName} tickets · {k.trendFrom} – {k.trendTo} (Looker)</div>
+            </div>
+            {[["Rising", k.rising, T.bad], ["Falling", k.falling, T.good]].map(([title, rows, col]) => (
+              <div key={title} style={{ marginTop: 10 }}>
+                <div style={{ ...lbl, color: col }}>{title} · {k.compare}</div>
+                {rows.map((r) => (
+                  <div key={r.name} style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 11.5, padding: "3px 0", borderBottom: `1px solid ${T.border}` }}>
+                    <span style={{ color: T.textSecondary }}>{r.name}</span><b style={{ color: col, whiteSpace: "nowrap" }}>{r.text}</b>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+
+    const chip = (status) => {
+      const bg = status === "Launched" ? T.chipLaunched : status === "Stalled" ? T.chipStalled : status === "Ideation" ? T.chipIdea : T.chipFlight;
+      const fg = status === "Launched" ? T.chipLaunchedText : status === "Stalled" ? T.chipStalledText : status === "Ideation" ? T.chipIdeaText : T.chipFlightText;
+      return <span style={{ background: bg, color: fg, borderRadius: 999, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{status}</span>;
+    };
+    const th = { textAlign: "left", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, padding: "6px 8px", borderBottom: `1px solid ${T.border}` };
+    const td = { padding: "9px 8px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5, verticalAlign: "top" };
+    const slide3 = deck.milestones.length ? (
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead><tr>{["Product", "Initiative", "Theme", "Status", "Timeline", "Prime"].map((h) => <th key={h} style={th}>{h}</th>)}</tr></thead>
+        <tbody>
+          {deck.milestones.map((m) => (
+            <tr key={m.name}>
+              <td style={{ ...td, color: m.color, fontWeight: 700 }}>{m.product}</td>
+              <td style={{ ...td, fontWeight: 700, color: T.textSecondary }}>{m.name}<div style={{ fontSize: 10.5, color: T.textFaint, fontWeight: 400, marginTop: 2 }}>{m.pillar}</div></td>
+              <td style={{ ...td, color: T.textMuted }}>{m.theme}</td>
+              <td style={td}>{chip(m.status)}</td>
+              <td style={{ ...td, color: T.textMuted }}>{m.timeline}</td>
+              <td style={{ ...td, color: T.textMuted }}>{m.prime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : <p style={{ color: T.textMuted, fontSize: 14 }}>No initiative has a milestone dated {deck.month}.</p>;
+
+    const slide4 = (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 14 }}>
+          {deck.selfServe.map((t) => (
+            <div key={t.label} style={card}>
+              <div style={{ ...lbl, display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: colors.SWEEPR, display: "inline-flex" }}><Icon name={t.icon} size={13} /></span>{t.label}</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: T.heading, lineHeight: 1.1, marginTop: 8 }}>{t.value}</div>
+              <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 3 }}>{t.sub}</div>
+              {t.deltas.map(([d, suf], i) => <div key={i} style={{ fontSize: 12, fontWeight: 700, marginTop: 4, color: d ? toneCol(d.tone) : T.textFaint }}>{d ? `${d.text} ${suf}` : "—"}</div>)}
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textMuted, marginTop: 18, lineHeight: 1.6 }}>{deck.selfServeNote}</p>
+      </>
+    );
+
+    const slides = [slide1, slide2, slide3, slide4];
+    return (
+      <>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", margin: "6px 0 12px" }}>
+          <div>
+            <div style={lbl}>Slide {cur + 1} of 4</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: T.textSecondary }}>{deck.titles[cur]}</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <button onClick={() => goTo(cur - 1)} disabled={cur === 0} style={{ ...btn(false), opacity: cur === 0 ? 0.4 : 1 }} aria-label="Previous slide">‹ Prev</button>
+            <button onClick={() => goTo(cur + 1)} disabled={cur === 3} style={{ ...btn(false), opacity: cur === 3 ? 0.4 : 1 }} aria-label="Next slide">Next ›</button>
+            <span style={{ width: 1, height: 22, background: T.border, margin: "0 4px" }} />
+            <button onClick={() => downloadBlob(pptxFromDeck(deck), `${fileStem}.pptx`)} style={btn(true)} title="Downloads a .pptx that opens in Google Slides">
+              <Icon name="slides" size={13} /> Google Slides (.pptx)
+            </button>
+            <button onClick={() => printDeck(deck)} style={btn(false)} title="Opens the print dialog; choose Save as PDF">
+              <Icon name="notes" size={13} /> PDF
+            </button>
+          </div>
+        </div>
+        <div ref={scrollRef} onScroll={onScroll}
+          style={{ display: "flex", overflowX: "auto", overflowY: "hidden", scrollSnapType: "x mandatory", borderRadius: 14, border: `1px solid ${T.border}`, background: T.band, scrollbarWidth: "none" }}>
+          {slides.map((s, i) => (
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "start", aspectRatio: `${DECK_W} / ${DECK_H}`, position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, transform: `scale(${scale})`, transformOrigin: "top left" }}>
+                <Chrome n={i + 1} title={deck.titles[i]}>{s}</Chrome>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 12 }}>
+          {slides.map((_, i) => (
+            <button key={i} onClick={() => goTo(i)} aria-label={`Go to slide ${i + 1}`}
+              style={{ width: i === cur ? 22 : 8, height: 8, borderRadius: 999, border: "none", padding: 0, cursor: "pointer", background: i === cur ? T.heading : T.borderStrong, transition: "width .15s" }} />
+          ))}
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0", lineHeight: 1.6 }}>
+          Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of Aug 2026. The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
+        </p>
+      </>
+    );
+  }
+
   const pageTitle = page === "home"
     ? "Reliability monthly performance scorecard"
     : page === "selfserve"
       ? "Self-serve workflows scorecard"
+      : page === "execsummary"
+      ? "Executive summary"
       : page === "hsiatickets"
       ? "HSIA ticket analysis"
       : page === "hsiacross"
@@ -2802,12 +3325,14 @@ export default function ReliabilityScorecards() {
       {/* Content */}
       <main style={{ flex: 1, minWidth: 0 }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 32px 64px" }}>
-          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${CHILD_LABEL[page] ? `${CHILD_PARENT[page]} · ${CHILD_LABEL[page]}` : page}` : ""}</Eyebrow>
+          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${CHILD_LABEL[page] ? `${PARENT_LABEL[CHILD_PARENT[page]] || CHILD_PARENT[page]} · ${CHILD_LABEL[page]}` : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
             <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "selfserve"
               ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
+              : page === "execsummary"
+              ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
               : page === "hsiatickets"
               ? "HSIA tickets Jun – Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
               : page === "hsiacross"
@@ -2862,6 +3387,7 @@ export default function ReliabilityScorecards() {
 
           {page === "home" ? <HomePage />
             : page === "selfserve" ? <SelfServePage />
+            : page === "execsummary" ? <ExecSummaryPage />
             : page === "hsiatickets" ? <HsiaTicketAnalysisPage />
             : page === "hsiacross" ? <HsiaCrossPage />
             : page === "tvplatforms" ? <TvPlatformsPage />
