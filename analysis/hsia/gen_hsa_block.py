@@ -2,7 +2,7 @@ import json
 d = json.load(open('hsia_notes_analysis.json'))
 M = d['months']
 def v3(tbl, k): return tbl[k]
-def pct(v): return None if not v[0] else round((v[2]-v[0])/v[0]*100, 1)
+def pct(v): return None if not v[1] else round((v[2]-v[1])/v[1]*100, 1)  # Aug vs Jul
 def rows(tbl, n=None, skip=()):
     out = [{'name': k, 'v': v, 'pct': pct(v)} for k, v in tbl.items() if k not in skip]
     return out[:n] if n else out

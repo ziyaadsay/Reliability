@@ -409,13 +409,13 @@ TV_PLATFORMS.forEach((p) => {
 // with ~4% carrying a structured technician determination) and the Optik TV
 // customer survey verbatims (1,728 / 1,800 / 2,146 respondents; scoring columns
 // ignored). Theme counts come from keyword classification of free text and are
-// indicative, not exact. Values are [Jun, Jul, Aug].
+// indicative, not exact. Values are [Jun, Jul, Aug]; movements compare Aug with Jul.
 // ---------------------------------------------------------------------------
-const TVA = {"months":["Jun 2026","Jul 2026","Aug 2026"],"tickets":{"total":[31968,31156,32614],"agentCat":[{"name":"Video Issues","v":[6930,6796,6715],"pct":-3.1},{"name":"STB No Boot","v":[6242,6711,7097],"pct":13.7},{"name":"Recording Issues","v":[4066,4663,4669],"pct":14.8},{"name":"Digital Box","v":[4323,3800,4357],"pct":0.8},{"name":"Channel Issues","v":[4693,3397,3493],"pct":-25.6},{"name":"Remote","v":[1594,1744,1707],"pct":7.1},{"name":"Apps","v":[952,955,1185],"pct":24.5},{"name":"Audio Issues","v":[701,689,765],"pct":9.1},{"name":"Recordings","v":[536,548,577],"pct":7.6},{"name":"TV Features","v":[524,441,515],"pct":-1.7},{"name":"HS & TV Affected","v":[415,410,447],"pct":7.7},{"name":"Mobile App","v":[299,282,311],"pct":4.0},{"name":"VOD","v":[186,234,216],"pct":16.1},{"name":"Guide Issues","v":[107,79,111],"pct":3.7},{"name":"PPV/VOD","v":[61,42,80],"pct":31.1}],"rising":[{"name":"STB No Boot \u203a Stuck on Initializing","v":[3409,3642,4084],"delta":675,"pct":19.8},{"name":"Recording Issues \u203a Cannot Set Recordings","v":[2648,3078,3116],"delta":468,"pct":17.7},{"name":"Digital Box \u203a Setup","v":[1830,1812,2115],"delta":285,"pct":15.6},{"name":"Apps \u203a Youtube","v":[42,50,235],"delta":193,"pct":459.5},{"name":"STB No Boot \u203a Registration Code","v":[291,375,417],"delta":126,"pct":43.3},{"name":"Recording Issues \u203a Cannot View Recordings List","v":[772,845,864],"delta":92,"pct":11.9},{"name":"Remote \u203a Programming","v":[854,946,934],"delta":80,"pct":9.4},{"name":"STB No Boot \u203a Quick Client Initialization Error","v":[489,564,553],"delta":64,"pct":13.1}],"falling":[{"name":"Channel Issues \u203a Channel Not Working","v":[2247,1617,1662],"delta":-585,"pct":-26.0},{"name":"Channel Issues \u203a Missing Channels","v":[1831,1380,1471],"delta":-360,"pct":-19.7},{"name":"Digital Box \u203a No Boot","v":[2146,1679,1877],"delta":-269,"pct":-12.5},{"name":"Channel Issues \u203a Manage My Channels","v":[615,400,359],"delta":-256,"pct":-41.6},{"name":"Video Issues \u203a No Video","v":[4388,4267,4229],"delta":-159,"pct":-3.6},{"name":"STB No Boot \u203a Red X","v":[299,296,248],"delta":-51,"pct":-17.1},{"name":"Video Issues \u203a Stop/Stuttering/Freezing","v":[2104,2054,2073],"delta":-31,"pct":-1.5},{"name":"Audio Issues \u203a Low Audio","v":[195,175,169],"delta":-26,"pct":-13.3}],"techR1":[{"name":"Education","v":[9824,9766,10646]},{"name":"Connectivity","v":[4628,4434,4705]},{"name":"Customer","v":[4557,4132,3802]},{"name":"IPTV","v":[3705,3975,4216]},{"name":"(no technician closure)","v":[3819,3829,3999]},{"name":"Optik Evolution","v":[3116,2839,2802]},{"name":"Optik TV Self-Install","v":[589,547,619]},{"name":"HSIA","v":[380,344,342]},{"name":"Pik TV","v":[261,278,302]}],"techRising":[{"name":"Education \u203a IPTV","v":[7577,7555,8183],"delta":606,"pct":8.0},{"name":"IPTV \u203a Set Top Box","v":[1771,1801,1927],"delta":156,"pct":8.8},{"name":"Education \u203a HSIA","v":[1214,1214,1352],"delta":138,"pct":11.4},{"name":"IPTV \u203a Recording Issues - PVR STB","v":[386,502,509],"delta":123,"pct":31.9},{"name":"Education \u203a Pik TV","v":[782,747,850],"delta":68,"pct":8.7}],"techFalling":[{"name":"Customer \u203a Customer Training/Education/Inquiry Only","v":[4356,3927,3576],"delta":-780,"pct":-17.9},{"name":"Optik Evolution \u203a Provisioning","v":[580,443,371],"delta":-209,"pct":-36.0},{"name":"Optik Evolution \u203a Digital Box","v":[1111,984,974],"delta":-137,"pct":-12.3},{"name":"Connectivity \u203a STB/PVR","v":[3168,2976,3140],"delta":-28,"pct":-0.9},{"name":"Optik Evolution \u203a Physical Connections","v":[169,152,155],"delta":-14,"pct":-8.3}],"divergence":{"all":[{"alignment":34.3,"nofault":52.7,"reattribution":65.7,"closed":27876},{"alignment":34.7,"nofault":52.4,"reattribution":65.3,"closed":27038},{"alignment":34.9,"nofault":52.5,"reattribution":65.1,"closed":28320}],"field":[{"alignment":79.6,"nofault":7.9,"nontelus":9.5,"reattribution":20.4,"visits":1316},{"alignment":76.9,"nofault":11.2,"nontelus":14.6,"reattribution":23.1,"visits":1426},{"alignment":73.0,"nofault":12.5,"nontelus":14.4,"reattribution":27.0,"visits":1409}],"perCat":[{"cat":"STB No Boot","n":7097,"alignment":46.7,"nofault":49.9,"techTop":["Education / no fault","STB hardware"]},{"cat":"Video Issues","n":6715,"alignment":43.5,"nofault":53.5,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recording Issues","n":4669,"alignment":25.4,"nofault":52.0,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Digital Box","n":4357,"alignment":44.8,"nofault":52.1,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Channel Issues","n":3493,"alignment":13.1,"nofault":54.7,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Remote","n":1707,"alignment":28.4,"nofault":55.5,"techTop":["Education / no fault","Remote control"]},{"cat":"Apps","n":1185,"alignment":21.5,"nofault":62.2,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Audio Issues","n":765,"alignment":13.9,"nofault":51.4,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recordings","n":577,"alignment":29.1,"nofault":49.8,"techTop":["Education / no fault","Recording / PVR"]},{"cat":"TV Features","n":515,"alignment":17.9,"nofault":47.2,"techTop":["Education / no fault","Network / connectivity"]}],"perCatField":[{"cat":"STB No Boot","n":681,"alignment":80.2,"nofault":11.3,"nontelus":12.0,"techTop":"STB hardware"},{"cat":"Video Issues","n":329,"alignment":77.5,"nofault":14.6,"nontelus":15.2,"techTop":"STB hardware"},{"cat":"Recording Issues","n":124,"alignment":59.7,"nofault":8.9,"nontelus":10.5,"techTop":"STB hardware"},{"cat":"HS & TV Affected","n":106,"alignment":62.3,"nofault":7.5,"nontelus":13.2,"techTop":"Network / connectivity"},{"cat":"Digital Box","n":83,"alignment":77.1,"nofault":15.7,"nontelus":30.1,"techTop":"STB hardware"}]},"closure":[{"tickets":31968,"field_visit_pct":4.1,"agent_education_closure_pct":44.8},{"tickets":31156,"field_visit_pct":4.6,"agent_education_closure_pct":44.4},{"tickets":32614,"field_visit_pct":4.3,"agent_education_closure_pct":44.1}],"determination":[[1194,125],[1219,209],[1211,205]],"fixes":[{"name":"Replaced STB / PVR / OPUS box","v":[234,264,223],"pct":-4.7},{"name":"Wi-Fi / WAP / wireless STB placement","v":[175,189,175],"pct":0.0},{"name":"Education / no fault found / working on arrival","v":[61,98,107],"pct":75.4},{"name":"Recording / PVR settings","v":[57,79,72],"pct":26.3},{"name":"ONT / light level / fibre","v":[53,77,74],"pct":39.6},{"name":"Remote control","v":[49,83,66],"pct":34.7},{"name":"Firmware / software / reboot fix","v":[47,63,60],"pct":27.7},{"name":"Power supply / power cable","v":[60,47,33],"pct":-45.0},{"name":"Modem / gateway replaced or reset","v":[41,44,41],"pct":0.0},{"name":"Re-terminated / replaced cabling","v":[26,22,15],"pct":-42.3}],"commentCoverage":[20183,18888,19221],"themes":[{"name":"Recording / PVR","v":[3790,4280,4345],"pct":14.6},{"name":"Swap / replacement shipped","v":[3811,3415,3466],"pct":-9.1},{"name":"Modem / gateway","v":[3351,3101,3490],"pct":4.1},{"name":"Ethernet / HDMI / cabling","v":[3180,3080,3315],"pct":4.2},{"name":"Wi-Fi / wireless STB signal","v":[3112,3067,3146],"pct":1.1},{"name":"Channel missing / not authorized","v":[3546,2809,2950],"pct":-16.8},{"name":"Repeat / recurring issue","v":[2622,2415,2466],"pct":-5.9},{"name":"Remote control","v":[2249,2290,2274],"pct":1.1},{"name":"Fibre / ONT / light level","v":[2189,2056,2225],"pct":1.6},{"name":"Stuck initializing / reboot loop","v":[1635,1593,1773],"pct":8.4},{"name":"No signal / black screen","v":[1793,1477,1470],"pct":-18.0},{"name":"Outage / active network event","v":[1540,1236,1364],"pct":-11.4},{"name":"Dispatch / technician booked","v":[1193,1126,1313],"pct":10.1},{"name":"Power / power supply","v":[1177,1052,1095],"pct":-7.0},{"name":"Freezing / pixelation / glitching","v":[1017,966,969],"pct":-4.7},{"name":"Firmware / software update","v":[944,801,760],"pct":-19.5},{"name":"Streaming apps (Netflix, Prime, YouTube, TV+ app)","v":[867,743,892],"pct":2.9},{"name":"Audio / sound","v":[741,768,808],"pct":9.0},{"name":"Customer wants tech / refuses troubleshooting","v":[353,291,336],"pct":-4.8}],"devices":[{"name":"4K STB","v":[21558,20749,21265],"pct":-1.4},{"name":"OPUS / TV+ box (TV Evolution)","v":[9241,8304,8482],"pct":-8.2},{"name":"VIP5662W (Mediaroom PVR)","v":[6215,6665,7321],"pct":17.8},{"name":"VIP5602W (Mediaroom wSTB)","v":[4986,5318,5578],"pct":11.9},{"name":"T3200M gateway","v":[4099,4116,4363],"pct":6.4},{"name":"Pik TV","v":[1111,1065,1187],"pct":6.8},{"name":"NH20T gateway","v":[776,736,427],"pct":-45.0}],"platform":[{"name":"Mediaroom (legacy)","v":[9270,9667,10483],"pct":13.1},{"name":"OPUS / TV Evolution","v":[8658,7844,7944],"pct":-8.2}]},"survey":{"respondents":[1728,1800,2146],"polarity":{"positive":[40.8,38.3,37.2],"neutral":[35.8,38.3,37.9],"negative":[23.3,23.4,24.9]},"polarityN":{"positive":[695,679,782],"neutral":[610,678,797],"negative":[397,415,524]},"themes":[{"name":"Positive: satisfied / no issues","v":[791,786,898],"pct":[45.8,43.7,41.8],"neg":[68,68,80]},{"name":"Customer service & support access","v":[636,657,781],"pct":[36.8,36.5,36.4],"neg":[208,213,271]},{"name":"Price, value & contract increases","v":[561,574,678],"pct":[32.5,31.9,31.6],"neg":[198,189,250]},{"name":"Reliability: freezing, outages & drop-outs","v":[402,426,485],"pct":[23.3,23.7,22.6],"neg":[122,140,150]},{"name":"Billing & account","v":[287,308,371],"pct":[16.6,17.1,17.3],"neg":[121,126,156]},{"name":"Channels, packages & content","v":[273,287,354],"pct":[15.8,15.9,16.5],"neg":[87,89,128]},{"name":"Internet & Wi-Fi","v":[265,268,359],"pct":[15.3,14.9,16.7],"neg":[103,99,150]},{"name":"Set-top box / equipment","v":[231,257,294],"pct":[13.4,14.3,13.7],"neg":[92,93,122]},{"name":"Installation & technicians","v":[130,118,139],"pct":[7.5,6.6,6.5],"neg":[48,41,54]},{"name":"Picture & sound quality","v":[106,100,139],"pct":[6.1,5.6,6.5],"neg":[29,37,41]},{"name":"Recording / PVR","v":[91,104,138],"pct":[5.3,5.8,6.4],"neg":[29,32,47]},{"name":"Apps & streaming","v":[79,104,108],"pct":[4.6,5.8,5.0],"neg":[25,41,48]},{"name":"Remote, guide & navigation","v":[91,89,104],"pct":[5.3,4.9,4.8],"neg":[35,29,42]}],"tvIssues":[{"name":"Customer service experience","v":[70,91,75],"pct":[4.05,5.06,3.49]},{"name":"Interruptions / freezing / restarts","v":[66,73,83],"pct":[3.82,4.06,3.87]},{"name":"Picture quality","v":[44,48,58],"pct":[2.55,2.67,2.7]},{"name":"Recording / PVR","v":[19,19,38],"pct":[1.1,1.06,1.77]},{"name":"Outages / service loss","v":[23,18,27],"pct":[1.33,1.0,1.26]},{"name":"TV features","v":[17,22,20],"pct":[0.98,1.22,0.93]},{"name":"Sound quality","v":[13,21,14],"pct":[0.75,1.17,0.65]},{"name":"Remote control","v":[9,16,21],"pct":[0.52,0.89,0.98]},{"name":"Channel guide / navigation","v":[15,11,18],"pct":[0.87,0.61,0.84]},{"name":"Apps / streaming","v":[12,10,16],"pct":[0.69,0.56,0.75]},{"name":"On-demand / VOD","v":[4,7,5],"pct":[0.23,0.39,0.23]}],"support":{"positive":[34,32,42],"neutral":[408,394,505],"negative":[148,150,186]},"quotes":{"Picture quality":["Seems to stutter and freeze sometimes","Weak signal   and sound  quality","My picture os constantly pixelating. It is a poor watch","Always freezes or is buffering ?"],"Customer service experience":["Not speaking English not communicating with each other so every service call back to square 1","Plusieurs appels avant d'\u00eatre en mesure de r\u00e9gler le probl\u00e8me.  Les agents se lance la balle l'un l'autre en accusant leur coll\u00e8gue de ne pas avoir compris et su r\u00e9gler le probl\u00e8me","My issues tend to go unresolved. I sometimes cases i get some resolution and so get great phone reps who really try. I think you are way overpriced for the glitchy services","Absolutely no one knows anything to help you."],"Interruptions / freezing / restarts":["Home page doesn\u2019t initially load properly or freezes and is unresponsive to the remote","Half the time I can't access cable channels or streaming services","As stated within the questions provided.","Neither of my tvs are working."],"Recording / PVR":["This whole thing was like stepping on a landmine. Picture freezes.","Broken voice and picture frozen in the beginning of recording","Losing last half of recorded programs. Failing to play recorded programs. and some pixelizing on some stations at times.","The PVR listing disappears occasionally"],"Remote control":["Unable to sync Telus remote with tv remote","Not responding when pressing buttons","For some reason I only have one remote for two boxes.","Always having to unplug modem and router screen freezes or says check internet"]}}};
+const TVA = {"months":["Jun 2026","Jul 2026","Aug 2026"],"tickets":{"total":[31968,31156,32614],"agentCat":[{"name":"Video Issues","v":[6930,6796,6715],"pct":-1.2},{"name":"STB No Boot","v":[6242,6711,7097],"pct":5.8},{"name":"Recording Issues","v":[4066,4663,4669],"pct":0.1},{"name":"Digital Box","v":[4323,3800,4357],"pct":14.7},{"name":"Channel Issues","v":[4693,3397,3493],"pct":2.8},{"name":"Remote","v":[1594,1744,1707],"pct":-2.1},{"name":"Apps","v":[952,955,1185],"pct":24.1},{"name":"Audio Issues","v":[701,689,765],"pct":11.0},{"name":"Recordings","v":[536,548,577],"pct":5.3},{"name":"TV Features","v":[524,441,515],"pct":16.8},{"name":"HS & TV Affected","v":[415,410,447],"pct":9.0},{"name":"Mobile App","v":[299,282,311],"pct":10.3},{"name":"VOD","v":[186,234,216],"pct":-7.7},{"name":"Guide Issues","v":[107,79,111],"pct":40.5},{"name":"PPV/VOD","v":[61,42,80],"pct":90.5}],"rising":[{"name":"STB No Boot \u203a Stuck on Initializing","v":[3409,3642,4084],"delta":442,"pct":12.1},{"name":"Digital Box \u203a Setup","v":[1830,1812,2115],"delta":303,"pct":16.7},{"name":"Digital Box \u203a No Boot","v":[2146,1679,1877],"delta":198,"pct":11.8},{"name":"Apps \u203a Youtube","v":[42,50,235],"delta":185,"pct":370.0},{"name":"Channel Issues \u203a Missing Channels","v":[1831,1380,1471],"delta":91,"pct":6.6},{"name":"Audio Issues \u203a No Audio","v":[341,344,398],"delta":54,"pct":15.7},{"name":"TV Features \u203a Restart TV","v":[166,113,159],"delta":46,"pct":40.7},{"name":"Channel Issues \u203a Channel Not Working","v":[2247,1617,1662],"delta":45,"pct":2.8}],"falling":[{"name":"Recording Issues \u203a Playback Issues","v":[252,298,228],"delta":-70,"pct":-23.5},{"name":"STB No Boot \u203a Reboot Loop","v":[928,956,906],"delta":-50,"pct":-5.2},{"name":"STB No Boot \u203a Red X","v":[299,296,248],"delta":-48,"pct":-16.2},{"name":"Video Issues \u203a Pixelization","v":[285,343,302],"delta":-41,"pct":-12.0},{"name":"Channel Issues \u203a Manage My Channels","v":[615,400,359],"delta":-41,"pct":-10.2},{"name":"Video Issues \u203a No Video","v":[4388,4267,4229],"delta":-38,"pct":-0.9},{"name":"Apps \u203a TELUS TV + App","v":[182,204,175],"delta":-29,"pct":-14.2},{"name":"STB No Boot \u203a Stuck on PVR is Starting","v":[453,484,460],"delta":-24,"pct":-5.0}],"techR1":[{"name":"Education","v":[9824,9766,10646]},{"name":"Connectivity","v":[4628,4434,4705]},{"name":"Customer","v":[4557,4132,3802]},{"name":"IPTV","v":[3705,3975,4216]},{"name":"(no technician closure)","v":[3819,3829,3999]},{"name":"Optik Evolution","v":[3116,2839,2802]},{"name":"Optik TV Self-Install","v":[589,547,619]},{"name":"HSIA","v":[380,344,342]},{"name":"Pik TV","v":[261,278,302]}],"techRising":[{"name":"Education \u203a IPTV","v":[7577,7555,8183],"delta":628,"pct":8.3},{"name":"Connectivity \u203a STB/PVR","v":[3168,2976,3140],"delta":164,"pct":5.5},{"name":"Education \u203a HSIA","v":[1214,1214,1352],"delta":138,"pct":11.4},{"name":"IPTV \u203a Set Top Box","v":[1771,1801,1927],"delta":126,"pct":7.0},{"name":"Education \u203a Pik TV","v":[782,747,850],"delta":103,"pct":13.8}],"techFalling":[{"name":"Customer \u203a Customer Training/Education/Inquiry Only","v":[4356,3927,3576],"delta":-351,"pct":-8.9},{"name":"Optik Evolution \u203a Provisioning","v":[580,443,371],"delta":-72,"pct":-16.3},{"name":"IPTV \u203a Audio/Video Cables","v":[111,156,136],"delta":-20,"pct":-12.8},{"name":"Optik Evolution \u203a Remote Control","v":[219,237,219],"delta":-18,"pct":-7.6},{"name":"Optik Evolution \u203a Digital Box","v":[1111,984,974],"delta":-10,"pct":-1.0}],"divergence":{"all":[{"alignment":34.3,"nofault":52.7,"reattribution":65.7,"closed":27876},{"alignment":34.7,"nofault":52.4,"reattribution":65.3,"closed":27038},{"alignment":34.9,"nofault":52.5,"reattribution":65.1,"closed":28320}],"field":[{"alignment":79.6,"nofault":7.9,"nontelus":9.5,"reattribution":20.4,"visits":1316},{"alignment":76.9,"nofault":11.2,"nontelus":14.6,"reattribution":23.1,"visits":1426},{"alignment":73.0,"nofault":12.5,"nontelus":14.4,"reattribution":27.0,"visits":1409}],"perCat":[{"cat":"STB No Boot","n":7097,"alignment":46.7,"nofault":49.9,"techTop":["Education / no fault","STB hardware"]},{"cat":"Video Issues","n":6715,"alignment":43.5,"nofault":53.5,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recording Issues","n":4669,"alignment":25.4,"nofault":52.0,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Digital Box","n":4357,"alignment":44.8,"nofault":52.1,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Channel Issues","n":3493,"alignment":13.1,"nofault":54.7,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Remote","n":1707,"alignment":28.4,"nofault":55.5,"techTop":["Education / no fault","Remote control"]},{"cat":"Apps","n":1185,"alignment":21.5,"nofault":62.2,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Audio Issues","n":765,"alignment":13.9,"nofault":51.4,"techTop":["Education / no fault","Network / connectivity"]},{"cat":"Recordings","n":577,"alignment":29.1,"nofault":49.8,"techTop":["Education / no fault","Recording / PVR"]},{"cat":"TV Features","n":515,"alignment":17.9,"nofault":47.2,"techTop":["Education / no fault","Network / connectivity"]}],"perCatField":[{"cat":"STB No Boot","n":681,"alignment":80.2,"nofault":11.3,"nontelus":12.0,"techTop":"STB hardware"},{"cat":"Video Issues","n":329,"alignment":77.5,"nofault":14.6,"nontelus":15.2,"techTop":"STB hardware"},{"cat":"Recording Issues","n":124,"alignment":59.7,"nofault":8.9,"nontelus":10.5,"techTop":"STB hardware"},{"cat":"HS & TV Affected","n":106,"alignment":62.3,"nofault":7.5,"nontelus":13.2,"techTop":"Network / connectivity"},{"cat":"Digital Box","n":83,"alignment":77.1,"nofault":15.7,"nontelus":30.1,"techTop":"STB hardware"}]},"closure":[{"tickets":31968,"field_visit_pct":4.1,"agent_education_closure_pct":44.8},{"tickets":31156,"field_visit_pct":4.6,"agent_education_closure_pct":44.4},{"tickets":32614,"field_visit_pct":4.3,"agent_education_closure_pct":44.1}],"determination":[[1194,125],[1219,209],[1211,205]],"fixes":[{"name":"Replaced STB / PVR / OPUS box","v":[234,264,223],"pct":-15.5},{"name":"Wi-Fi / WAP / wireless STB placement","v":[175,189,175],"pct":-7.4},{"name":"Education / no fault found / working on arrival","v":[61,98,107],"pct":9.2},{"name":"Recording / PVR settings","v":[57,79,72],"pct":-8.9},{"name":"ONT / light level / fibre","v":[53,77,74],"pct":-3.9},{"name":"Remote control","v":[49,83,66],"pct":-20.5},{"name":"Firmware / software / reboot fix","v":[47,63,60],"pct":-4.8},{"name":"Power supply / power cable","v":[60,47,33],"pct":-29.8},{"name":"Modem / gateway replaced or reset","v":[41,44,41],"pct":-6.8},{"name":"Re-terminated / replaced cabling","v":[26,22,15],"pct":-31.8}],"commentCoverage":[20183,18888,19221],"themes":[{"name":"Recording / PVR","v":[3790,4280,4345],"pct":1.5},{"name":"Swap / replacement shipped","v":[3811,3415,3466],"pct":1.5},{"name":"Modem / gateway","v":[3351,3101,3490],"pct":12.5},{"name":"Ethernet / HDMI / cabling","v":[3180,3080,3315],"pct":7.6},{"name":"Wi-Fi / wireless STB signal","v":[3112,3067,3146],"pct":2.6},{"name":"Channel missing / not authorized","v":[3546,2809,2950],"pct":5.0},{"name":"Repeat / recurring issue","v":[2622,2415,2466],"pct":2.1},{"name":"Remote control","v":[2249,2290,2274],"pct":-0.7},{"name":"Fibre / ONT / light level","v":[2189,2056,2225],"pct":8.2},{"name":"Stuck initializing / reboot loop","v":[1635,1593,1773],"pct":11.3},{"name":"No signal / black screen","v":[1793,1477,1470],"pct":-0.5},{"name":"Outage / active network event","v":[1540,1236,1364],"pct":10.4},{"name":"Dispatch / technician booked","v":[1193,1126,1313],"pct":16.6},{"name":"Power / power supply","v":[1177,1052,1095],"pct":4.1},{"name":"Freezing / pixelation / glitching","v":[1017,966,969],"pct":0.3},{"name":"Firmware / software update","v":[944,801,760],"pct":-5.1},{"name":"Streaming apps (Netflix, Prime, YouTube, TV+ app)","v":[867,743,892],"pct":20.1},{"name":"Audio / sound","v":[741,768,808],"pct":5.2},{"name":"Customer wants tech / refuses troubleshooting","v":[353,291,336],"pct":15.5}],"devices":[{"name":"4K STB","v":[21558,20749,21265],"pct":2.5},{"name":"OPUS / TV+ box (TV Evolution)","v":[9241,8304,8482],"pct":2.1},{"name":"VIP5662W (Mediaroom PVR)","v":[6215,6665,7321],"pct":9.8},{"name":"VIP5602W (Mediaroom wSTB)","v":[4986,5318,5578],"pct":4.9},{"name":"T3200M gateway","v":[4099,4116,4363],"pct":6.0},{"name":"Pik TV","v":[1111,1065,1187],"pct":11.5},{"name":"NH20T gateway","v":[776,736,427],"pct":-42.0}],"platform":[{"name":"Mediaroom (legacy)","v":[9270,9667,10483],"pct":8.4},{"name":"OPUS / TV Evolution","v":[8658,7844,7944],"pct":1.3}]},"survey":{"respondents":[1728,1800,2146],"polarity":{"positive":[40.8,38.3,37.2],"neutral":[35.8,38.3,37.9],"negative":[23.3,23.4,24.9]},"polarityN":{"positive":[695,679,782],"neutral":[610,678,797],"negative":[397,415,524]},"themes":[{"name":"Positive: satisfied / no issues","v":[791,786,898],"pct":[45.8,43.7,41.8],"neg":[68,68,80]},{"name":"Customer service & support access","v":[636,657,781],"pct":[36.8,36.5,36.4],"neg":[208,213,271]},{"name":"Price, value & contract increases","v":[561,574,678],"pct":[32.5,31.9,31.6],"neg":[198,189,250]},{"name":"Reliability: freezing, outages & drop-outs","v":[402,426,485],"pct":[23.3,23.7,22.6],"neg":[122,140,150]},{"name":"Billing & account","v":[287,308,371],"pct":[16.6,17.1,17.3],"neg":[121,126,156]},{"name":"Channels, packages & content","v":[273,287,354],"pct":[15.8,15.9,16.5],"neg":[87,89,128]},{"name":"Internet & Wi-Fi","v":[265,268,359],"pct":[15.3,14.9,16.7],"neg":[103,99,150]},{"name":"Set-top box / equipment","v":[231,257,294],"pct":[13.4,14.3,13.7],"neg":[92,93,122]},{"name":"Installation & technicians","v":[130,118,139],"pct":[7.5,6.6,6.5],"neg":[48,41,54]},{"name":"Picture & sound quality","v":[106,100,139],"pct":[6.1,5.6,6.5],"neg":[29,37,41]},{"name":"Recording / PVR","v":[91,104,138],"pct":[5.3,5.8,6.4],"neg":[29,32,47]},{"name":"Apps & streaming","v":[79,104,108],"pct":[4.6,5.8,5.0],"neg":[25,41,48]},{"name":"Remote, guide & navigation","v":[91,89,104],"pct":[5.3,4.9,4.8],"neg":[35,29,42]}],"tvIssues":[{"name":"Customer service experience","v":[70,91,75],"pct":[4.05,5.06,3.49]},{"name":"Interruptions / freezing / restarts","v":[66,73,83],"pct":[3.82,4.06,3.87]},{"name":"Picture quality","v":[44,48,58],"pct":[2.55,2.67,2.7]},{"name":"Recording / PVR","v":[19,19,38],"pct":[1.1,1.06,1.77]},{"name":"Outages / service loss","v":[23,18,27],"pct":[1.33,1.0,1.26]},{"name":"TV features","v":[17,22,20],"pct":[0.98,1.22,0.93]},{"name":"Sound quality","v":[13,21,14],"pct":[0.75,1.17,0.65]},{"name":"Remote control","v":[9,16,21],"pct":[0.52,0.89,0.98]},{"name":"Channel guide / navigation","v":[15,11,18],"pct":[0.87,0.61,0.84]},{"name":"Apps / streaming","v":[12,10,16],"pct":[0.69,0.56,0.75]},{"name":"On-demand / VOD","v":[4,7,5],"pct":[0.23,0.39,0.23]}],"support":{"positive":[34,32,42],"neutral":[408,394,505],"negative":[148,150,186]},"quotes":{"Picture quality":["Seems to stutter and freeze sometimes","Weak signal   and sound  quality","My picture os constantly pixelating. It is a poor watch","Always freezes or is buffering ?"],"Customer service experience":["Not speaking English not communicating with each other so every service call back to square 1","Plusieurs appels avant d'\u00eatre en mesure de r\u00e9gler le probl\u00e8me.  Les agents se lance la balle l'un l'autre en accusant leur coll\u00e8gue de ne pas avoir compris et su r\u00e9gler le probl\u00e8me","My issues tend to go unresolved. I sometimes cases i get some resolution and so get great phone reps who really try. I think you are way overpriced for the glitchy services","Absolutely no one knows anything to help you."],"Interruptions / freezing / restarts":["Home page doesn\u2019t initially load properly or freezes and is unresponsive to the remote","Half the time I can't access cable channels or streaming services","As stated within the questions provided.","Neither of my tvs are working."],"Recording / PVR":["This whole thing was like stepping on a landmine. Picture freezes.","Broken voice and picture frozen in the beginning of recording","Losing last half of recorded programs. Failing to play recorded programs. and some pixelizing on some stations at times.","The PVR listing disappears occasionally"],"Remote control":["Unable to sync Telus remote with tv remote","Not responding when pressing buttons","For some reason I only have one remote for two boxes.","Always having to unplug modem and router screen freezes or says check internet"]}}};
 
 // HSIA agent/technician ticket-notes analysis, Jun – Aug 2026 (generated by
 // analysis/hsia/analyze_hsia_notes.py; aggregates only, no customer data)
-const HSA = {"months":["Jun 2026","Jul 2026","Aug 2026"],"tickets":{"total":[57270,57173,58787],"c1":[{"name":"Connectivity","v":[41091,41039,42732],"pct":4.0},{"name":"Wireless","v":[14380,13445,13135],"pct":-8.7},{"name":"Incompatible Equipment","v":[876,1656,1994],"pct":127.6},{"name":"Abandon","v":[806,937,848],"pct":5.2},{"name":"NWH","v":[89,93,75],"pct":-15.7}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[11566,11676,13151],"pct":13.7},{"name":"Connectivity › ONT Not Ranged","v":[7269,7205,7117],"pct":-2.1},{"name":"Connectivity › Slow Speeds","v":[6802,6433,6348],"pct":-6.7},{"name":"Connectivity › Losing Sync","v":[5927,6269,6391],"pct":7.8},{"name":"Wireless › Can't Connect","v":[6136,5788,5728],"pct":-6.6},{"name":"Wireless › Disconnects","v":[4441,4270,4149],"pct":-6.6},{"name":"Wireless › Slow Speeds","v":[3802,3387,3258],"pct":-14.3},{"name":"Connectivity › No Sync","v":[2924,3262,3717],"pct":27.1},{"name":"Connectivity › Historical Data","v":[2918,2917,2593],"pct":-11.1},{"name":"Connectivity › No IP","v":[1866,1939,1920],"pct":2.9},{"name":"Connectivity › Incompatible Equipment","v":[1817,1337,1494],"pct":-17.8},{"name":"Incompatible Equipment › Incompatible","v":[876,1656,1994],"pct":127.6},{"name":"Abandon › Abandon","v":[806,937,848],"pct":5.2}],"rising":[{"name":"Connectivity › No Dataflow › All Devices Affected","v":[10356,10420,11925],"delta":1569,"pct":15.2},{"name":"Incompatible Equipment › Incompatible › Not Applicable","v":[872,1651,1983],"delta":1111,"pct":127.4},{"name":"Connectivity › Losing Sync › Intermittent Connectivity","v":[5668,6060,6100],"delta":432,"pct":7.6},{"name":"Connectivity › No Sync › No DSL Light","v":[2196,2461,2595],"delta":399,"pct":18.2},{"name":"Connectivity › No Sync › Outage","v":[314,303,640],"delta":326,"pct":103.8},{"name":"Connectivity › No IP › Outage","v":[131,147,229],"delta":98,"pct":74.8},{"name":"Connectivity › Incompatible Equipment › Not Applicable","v":[461,485,543],"delta":82,"pct":17.8},{"name":"Connectivity › No Sync › No Power","v":[414,498,482],"delta":68,"pct":16.4}],"falling":[{"name":"Wireless › Slow Speeds › All Devices Affected","v":[2553,2248,2135],"delta":-418,"pct":-16.4},{"name":"Connectivity › Incompatible Equipment › Not Required","v":[1354,850,951],"delta":-403,"pct":-29.8},{"name":"Connectivity › Historical Data › Severe Line Issues","v":[2917,2914,2593],"delta":-324,"pct":-11.1},{"name":"Connectivity › Slow Speeds › All Devices Affected","v":[5341,5133,5038],"delta":-303,"pct":-5.7},{"name":"Wireless › Can't Connect › Single Device Affected","v":[1577,1516,1338],"delta":-239,"pct":-15.2},{"name":"Wireless › Disconnects › All Devices Affected","v":[3199,2981,2972],"delta":-227,"pct":-7.1},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[4168,4238,3988],"delta":-180,"pct":-4.3},{"name":"Wireless › Can't Connect › Some Devices Affected","v":[993,934,865],"delta":-128,"pct":-12.9}],"techR1":[{"name":"Education","v":[12052,11813,12410],"pct":3.0},{"name":"Connectivity","v":[9892,10346,10663],"pct":7.8},{"name":"HSIA","v":[7393,7723,7490],"pct":1.3},{"name":"GPON","v":[7371,7555,7544],"pct":2.3},{"name":"(no closure code)","v":[7366,7099,7843],"pct":6.5},{"name":"Customer","v":[6256,5336,4986],"pct":-20.3},{"name":"Cancel Ticket","v":[1381,1378,1370],"pct":-0.8},{"name":"Outside Plant","v":[1409,1299,1243],"pct":-11.8},{"name":"Found OK","v":[845,1119,1451],"pct":71.7},{"name":"IPTV","v":[708,789,753],"pct":6.4},{"name":"Network Service Wire","v":[652,756,689],"pct":5.7},{"name":"NetCracker","v":[505,552,702],"pct":39.0}],"techRising":[{"name":"Found OK › Not Required","v":[472,690,965],"delta":493,"pct":104.4},{"name":"Connectivity › Modem/Gateway","v":[7338,7685,7688],"delta":350,"pct":4.8},{"name":"GPON › Inside Premise Equipment","v":[4809,5006,5130],"delta":321,"pct":6.7},{"name":"Education › HSIA","v":[11339,11054,11583],"delta":244,"pct":2.2},{"name":"NetCracker › Stuck","v":[453,511,645],"delta":192,"pct":42.4},{"name":"Connectivity › Wifi Network Extender","v":[926,918,1096],"delta":170,"pct":18.4}],"techFalling":[{"name":"Customer › Customer Training/Education/Inquiry Only","v":[5630,4681,4311],"delta":-1319,"pct":-23.4},{"name":"GPON › Outside Plant","v":[2181,2178,2010],"delta":-171,"pct":-7.8},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[161,163,125],"delta":-36,"pct":-22.4},{"name":"Outside Plant › Not Jumpered","v":[289,300,255],"delta":-34,"pct":-11.8},{"name":"HSIA › Inside Wire/Pots Splitter/Microfilter","v":[370,369,336],"delta":-34,"pct":-9.2},{"name":"Outside Plant › Change Pair","v":[405,395,379],"delta":-26,"pct":-6.4}],"divergence":{"all":[{"alignment":53.3,"nofault":41.3,"nontelus":2.8,"reattribution":46.7,"closed":49087},{"alignment":55.3,"nofault":39.2,"nontelus":4.0,"reattribution":44.7,"closed":49133},{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118}],"field":[{"alignment":86.3,"nofault":5.5,"nontelus":9.5,"reattribution":13.7,"visits":14206},{"alignment":86.1,"nofault":6.1,"nontelus":13.2,"reattribution":13.9,"visits":14937},{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452}],"perCat":[{"cat":"Connectivity › No Dataflow","n":13151,"alignment":52.8,"nofault":40.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › ONT Not Ranged","n":7117,"alignment":69.2,"nofault":28.1,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Losing Sync","n":6391,"alignment":60.1,"nofault":33.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6348,"alignment":54.0,"nofault":44.2,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Can't Connect","n":5728,"alignment":34.8,"nofault":56.4,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4149,"alignment":36.4,"nofault":50.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":3717,"alignment":66.5,"nofault":30.1,"techTop":["Education / no fault","Access line / fibre / ONT"]},{"cat":"Wireless › Slow Speeds","n":3258,"alignment":33.0,"nofault":55.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Historical Data","n":2593,"alignment":79.2,"nofault":16.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":1994,"alignment":72.5,"nofault":23.8,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1920,"alignment":52.9,"nofault":41.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1494,"alignment":53.3,"nofault":42.4,"techTop":["Education / no fault","Modem / gateway"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":3454,"alignment":92.5,"nofault":4.4,"nontelus":20.6,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":1975,"alignment":82.3,"nofault":7.4,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1819,"alignment":85.4,"nofault":7.6,"nontelus":12.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1662,"alignment":92.6,"nofault":2.7,"nontelus":16.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1304,"alignment":89.9,"nofault":5.5,"nontelus":10.1,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1185,"alignment":90.5,"nofault":5.6,"nontelus":6.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1059,"alignment":84.3,"nofault":11.2,"nontelus":13.6,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":566,"alignment":46.3,"nofault":8.5,"nontelus":12.9,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":437,"alignment":86.3,"nofault":8.0,"nontelus":10.5,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":380,"alignment":84.2,"nofault":8.2,"nontelus":15.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":356,"alignment":45.5,"nofault":12.1,"nontelus":18.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":284,"alignment":44.4,"nofault":10.2,"nontelus":10.2,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":57270,"field_visit_pct":24.9,"agent_education_closure_pct":31.3,"no_closure_code_pct":12.9},{"tickets":57173,"field_visit_pct":26.3,"agent_education_closure_pct":29.3,"no_closure_code_pct":12.4},{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3}],"determination":[[12901,1357],[13021,1974],[12490,2000]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4639,4941,4631],"pct":-0.2},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3649,3846,3887],"pct":6.5},{"name":"Drop / service wire / outside plant","v":[1866,1882,1733],"pct":-7.1},{"name":"Inside wiring / jack / ethernet","v":[1194,1318,1352],"pct":13.2},{"name":"Modem / gateway replaced","v":[1112,1337,1160],"pct":4.3},{"name":"Provisioning / profile / port fix","v":[1079,1119,1114],"pct":3.2},{"name":"Education / no fault found / working on arrival","v":[744,836,799],"pct":7.4},{"name":"Power cycle / factory reset / firmware","v":[661,684,675],"pct":2.1},{"name":"Power supply / power","v":[164,201,157],"pct":-4.3},{"name":"Customer-owned equipment / third-party router","v":[69,66,74],"pct":7.2}],"commentCoverage":[46090,45159,45489],"themes":[{"name":"ONT / fibre / light level","v":[15920,15729,15321],"pct":-3.8},{"name":"Slow speed / buffering","v":[12851,12547,11736],"pct":-8.7},{"name":"No internet / all devices down","v":[10834,10606,11426],"pct":5.5},{"name":"Dispatch / technician booked","v":[10161,9812,9936],"pct":-2.2},{"name":"Boost / Wi-Fi extender","v":[9031,8990,9214],"pct":2.0},{"name":"Intermittent drops / disconnects","v":[9444,9323,8267],"pct":-12.5},{"name":"Firmware / settings / factory reset","v":[8162,7990,7861],"pct":-3.7},{"name":"Work from home / streaming / gaming impact","v":[7120,6691,7098],"pct":-0.3},{"name":"Outage / active network event","v":[6892,6537,7478],"pct":8.5},{"name":"DSL / copper line","v":[6599,6471,6582],"pct":-0.3},{"name":"Red / alarm light / LOS on ONT or modem","v":[6072,6123,5862],"pct":-3.5},{"name":"Repeat / recurring issue","v":[5874,5539,5399],"pct":-8.1},{"name":"Wi-Fi: cannot connect / single device","v":[3042,2821,3058],"pct":0.5},{"name":"No power / dead equipment","v":[2915,3046,2837],"pct":-2.7},{"name":"Modem / gateway swap shipped","v":[1260,1088,1141],"pct":-9.4},{"name":"Customer wants tech / refuses troubleshooting","v":[1053,893,846],"pct":-19.7},{"name":"Third-party / customer-owned router","v":[381,399,399],"pct":4.7}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37772,37386,37555],"pct":-0.6},{"name":"NH20 / NAH (Network Access Hub)","v":[15236,15541,15519],"pct":1.9},{"name":"T3200M gateway","v":[10210,10477,10778],"pct":5.6},{"name":"Actiontec / legacy modem","v":[5032,5084,5395],"pct":7.2},{"name":"Boost Wi-Fi 6","v":[2914,3019,3313],"pct":13.7},{"name":"Wi-Fi Hub / WFH","v":[2247,2203,1852],"pct":-17.6},{"name":"Boost Wi-Fi 7 (BV3)","v":[971,1113,1551],"pct":59.7},{"name":"Boost Lite (BLite)","v":[591,551,610],"pct":3.2}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[42267,41813,42320],"pct":0.1},{"name":"Copper (DSL / bonded)","v":[26409,27079,27785],"pct":5.2}],"domainMix":[{"agent":"Gateway / dataflow","n":13390,"v":[2191,3771,720,933,67,98,5476,127]},{"agent":"Access line & ONT","n":17003,"v":[6955,3160,290,1141,157,217,4884,196]},{"agent":"Speed","n":5406,"v":[675,1696,299,247,2,43,2388,56]},{"agent":"Wi-Fi","n":11228,"v":[839,3092,725,165,4,96,6106,197]},{"agent":"Equipment compatibility","n":3091,"v":[951,861,97,75,0,40,984,82]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
+const HSA = {"months":["Jun 2026","Jul 2026","Aug 2026"],"tickets":{"total":[57270,57173,58787],"c1":[{"name":"Connectivity","v":[41091,41039,42732],"pct":4.1},{"name":"Wireless","v":[14380,13445,13135],"pct":-2.3},{"name":"Incompatible Equipment","v":[876,1656,1994],"pct":20.4},{"name":"Abandon","v":[806,937,848],"pct":-9.5},{"name":"NWH","v":[89,93,75],"pct":-19.4}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[11566,11676,13151],"pct":12.6},{"name":"Connectivity › ONT Not Ranged","v":[7269,7205,7117],"pct":-1.2},{"name":"Connectivity › Slow Speeds","v":[6802,6433,6348],"pct":-1.3},{"name":"Connectivity › Losing Sync","v":[5927,6269,6391],"pct":1.9},{"name":"Wireless › Can't Connect","v":[6136,5788,5728],"pct":-1.0},{"name":"Wireless › Disconnects","v":[4441,4270,4149],"pct":-2.8},{"name":"Wireless › Slow Speeds","v":[3802,3387,3258],"pct":-3.8},{"name":"Connectivity › No Sync","v":[2924,3262,3717],"pct":13.9},{"name":"Connectivity › Historical Data","v":[2918,2917,2593],"pct":-11.1},{"name":"Connectivity › No IP","v":[1866,1939,1920],"pct":-1.0},{"name":"Connectivity › Incompatible Equipment","v":[1817,1337,1494],"pct":11.7},{"name":"Incompatible Equipment › Incompatible","v":[876,1656,1994],"pct":20.4},{"name":"Abandon › Abandon","v":[806,937,848],"pct":-9.5}],"rising":[{"name":"Connectivity › No Dataflow › All Devices Affected","v":[10356,10420,11925],"delta":1505,"pct":14.4},{"name":"Connectivity › No Sync › Outage","v":[314,303,640],"delta":337,"pct":111.2},{"name":"Incompatible Equipment › Incompatible › Not Applicable","v":[872,1651,1983],"delta":332,"pct":20.1},{"name":"Connectivity › ONT Not Ranged › Outage","v":[1017,825,1016],"delta":191,"pct":23.2},{"name":"Wireless › Can't Connect › All Devices Affected","v":[3560,3332,3521],"delta":189,"pct":5.7},{"name":"Connectivity › No Sync › No DSL Light","v":[2196,2461,2595],"delta":134,"pct":5.4},{"name":"Connectivity › Incompatible Equipment › Not Required","v":[1354,850,951],"delta":101,"pct":11.9},{"name":"Connectivity › Losing Sync › Outage","v":[240,203,286],"delta":83,"pct":40.9}],"falling":[{"name":"Connectivity › Historical Data › Severe Line Issues","v":[2917,2914,2593],"delta":-321,"pct":-11.0},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[4168,4238,3988],"delta":-250,"pct":-5.9},{"name":"Wireless › Can't Connect › Single Device Affected","v":[1577,1516,1338],"delta":-178,"pct":-11.7},{"name":"Wireless › Slow Speeds › All Devices Affected","v":[2553,2248,2135],"delta":-113,"pct":-5.0},{"name":"Wireless › Disconnects › Some Devices Affected","v":[871,973,870],"delta":-103,"pct":-10.6},{"name":"Connectivity › No IP › No Internet Light","v":[1735,1792,1691],"delta":-101,"pct":-5.6},{"name":"Connectivity › Slow Speeds › All Devices Affected","v":[5341,5133,5038],"delta":-95,"pct":-1.9},{"name":"Abandon › Abandon › Abandon","v":[805,936,845],"delta":-91,"pct":-9.7}],"techR1":[{"name":"Education","v":[12052,11813,12410],"pct":5.1},{"name":"Connectivity","v":[9892,10346,10663],"pct":3.1},{"name":"HSIA","v":[7393,7723,7490],"pct":-3.0},{"name":"GPON","v":[7371,7555,7544],"pct":-0.1},{"name":"(no closure code)","v":[7366,7099,7843],"pct":10.5},{"name":"Customer","v":[6256,5336,4986],"pct":-6.6},{"name":"Cancel Ticket","v":[1381,1378,1370],"pct":-0.6},{"name":"Outside Plant","v":[1409,1299,1243],"pct":-4.3},{"name":"Found OK","v":[845,1119,1451],"pct":29.7},{"name":"IPTV","v":[708,789,753],"pct":-4.6},{"name":"Network Service Wire","v":[652,756,689],"pct":-8.9},{"name":"NetCracker","v":[505,552,702],"pct":27.2}],"techRising":[{"name":"Education › HSIA","v":[11339,11054,11583],"delta":529,"pct":4.8},{"name":"Found OK › Not Required","v":[472,690,965],"delta":275,"pct":39.9},{"name":"Connectivity › Wifi Network Extender","v":[926,918,1096],"delta":178,"pct":19.4},{"name":"NetCracker › Stuck","v":[453,511,645],"delta":134,"pct":26.2},{"name":"Connectivity › Cable","v":[253,247,381],"delta":134,"pct":54.3},{"name":"GPON › Inside Premise Equipment","v":[4809,5006,5130],"delta":124,"pct":2.5}],"techFalling":[{"name":"Customer › Customer Training/Education/Inquiry Only","v":[5630,4681,4311],"delta":-370,"pct":-7.9},{"name":"GPON › Outside Plant","v":[2181,2178,2010],"delta":-168,"pct":-7.7},{"name":"HSIA › Modem/Gateway","v":[4389,4565,4410],"delta":-155,"pct":-3.4},{"name":"Network Service Wire › Drop/Serv Wire (Incl Bonding)","v":[553,621,564],"delta":-57,"pct":-9.2},{"name":"Outside Plant › Not Jumpered","v":[289,300,255],"delta":-45,"pct":-15.0},{"name":"HSIA › Provisioning","v":[927,997,956],"delta":-41,"pct":-4.1}],"divergence":{"all":[{"alignment":53.3,"nofault":41.3,"nontelus":2.8,"reattribution":46.7,"closed":49087},{"alignment":55.3,"nofault":39.2,"nontelus":4.0,"reattribution":44.7,"closed":49133},{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118}],"field":[{"alignment":86.3,"nofault":5.5,"nontelus":9.5,"reattribution":13.7,"visits":14206},{"alignment":86.1,"nofault":6.1,"nontelus":13.2,"reattribution":13.9,"visits":14937},{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452}],"perCat":[{"cat":"Connectivity › No Dataflow","n":13151,"alignment":52.8,"nofault":40.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › ONT Not Ranged","n":7117,"alignment":69.2,"nofault":28.1,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Losing Sync","n":6391,"alignment":60.1,"nofault":33.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6348,"alignment":54.0,"nofault":44.2,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Can't Connect","n":5728,"alignment":34.8,"nofault":56.4,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4149,"alignment":36.4,"nofault":50.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":3717,"alignment":66.5,"nofault":30.1,"techTop":["Education / no fault","Access line / fibre / ONT"]},{"cat":"Wireless › Slow Speeds","n":3258,"alignment":33.0,"nofault":55.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Historical Data","n":2593,"alignment":79.2,"nofault":16.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":1994,"alignment":72.5,"nofault":23.8,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1920,"alignment":52.9,"nofault":41.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1494,"alignment":53.3,"nofault":42.4,"techTop":["Education / no fault","Modem / gateway"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":3454,"alignment":92.5,"nofault":4.4,"nontelus":20.6,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":1975,"alignment":82.3,"nofault":7.4,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1819,"alignment":85.4,"nofault":7.6,"nontelus":12.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1662,"alignment":92.6,"nofault":2.7,"nontelus":16.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1304,"alignment":89.9,"nofault":5.5,"nontelus":10.1,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1185,"alignment":90.5,"nofault":5.6,"nontelus":6.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1059,"alignment":84.3,"nofault":11.2,"nontelus":13.6,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":566,"alignment":46.3,"nofault":8.5,"nontelus":12.9,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":437,"alignment":86.3,"nofault":8.0,"nontelus":10.5,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":380,"alignment":84.2,"nofault":8.2,"nontelus":15.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":356,"alignment":45.5,"nofault":12.1,"nontelus":18.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":284,"alignment":44.4,"nofault":10.2,"nontelus":10.2,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":57270,"field_visit_pct":24.9,"agent_education_closure_pct":31.3,"no_closure_code_pct":12.9},{"tickets":57173,"field_visit_pct":26.3,"agent_education_closure_pct":29.3,"no_closure_code_pct":12.4},{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3}],"determination":[[12901,1357],[13021,1974],[12490,2000]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4639,4941,4631],"pct":-6.3},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3649,3846,3887],"pct":1.1},{"name":"Drop / service wire / outside plant","v":[1866,1882,1733],"pct":-7.9},{"name":"Inside wiring / jack / ethernet","v":[1194,1318,1352],"pct":2.6},{"name":"Modem / gateway replaced","v":[1112,1337,1160],"pct":-13.2},{"name":"Provisioning / profile / port fix","v":[1079,1119,1114],"pct":-0.4},{"name":"Education / no fault found / working on arrival","v":[744,836,799],"pct":-4.4},{"name":"Power cycle / factory reset / firmware","v":[661,684,675],"pct":-1.3},{"name":"Power supply / power","v":[164,201,157],"pct":-21.9},{"name":"Customer-owned equipment / third-party router","v":[69,66,74],"pct":12.1}],"commentCoverage":[46090,45159,45489],"themes":[{"name":"ONT / fibre / light level","v":[15920,15729,15321],"pct":-2.6},{"name":"Slow speed / buffering","v":[12851,12547,11736],"pct":-6.5},{"name":"No internet / all devices down","v":[10834,10606,11426],"pct":7.7},{"name":"Dispatch / technician booked","v":[10161,9812,9936],"pct":1.3},{"name":"Boost / Wi-Fi extender","v":[9031,8990,9214],"pct":2.5},{"name":"Intermittent drops / disconnects","v":[9444,9323,8267],"pct":-11.3},{"name":"Firmware / settings / factory reset","v":[8162,7990,7861],"pct":-1.6},{"name":"Work from home / streaming / gaming impact","v":[7120,6691,7098],"pct":6.1},{"name":"Outage / active network event","v":[6892,6537,7478],"pct":14.4},{"name":"DSL / copper line","v":[6599,6471,6582],"pct":1.7},{"name":"Red / alarm light / LOS on ONT or modem","v":[6072,6123,5862],"pct":-4.3},{"name":"Repeat / recurring issue","v":[5874,5539,5399],"pct":-2.5},{"name":"Wi-Fi: cannot connect / single device","v":[3042,2821,3058],"pct":8.4},{"name":"No power / dead equipment","v":[2915,3046,2837],"pct":-6.9},{"name":"Modem / gateway swap shipped","v":[1260,1088,1141],"pct":4.9},{"name":"Customer wants tech / refuses troubleshooting","v":[1053,893,846],"pct":-5.3},{"name":"Third-party / customer-owned router","v":[381,399,399],"pct":0.0}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37772,37386,37555],"pct":0.5},{"name":"NH20 / NAH (Network Access Hub)","v":[15236,15541,15519],"pct":-0.1},{"name":"T3200M gateway","v":[10210,10477,10778],"pct":2.9},{"name":"Actiontec / legacy modem","v":[5032,5084,5395],"pct":6.1},{"name":"Boost Wi-Fi 6","v":[2914,3019,3313],"pct":9.7},{"name":"Wi-Fi Hub / WFH","v":[2247,2203,1852],"pct":-15.9},{"name":"Boost Wi-Fi 7 (BV3)","v":[971,1113,1551],"pct":39.4},{"name":"Boost Lite (BLite)","v":[591,551,610],"pct":10.7}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[42267,41813,42320],"pct":1.2},{"name":"Copper (DSL / bonded)","v":[26409,27079,27785],"pct":2.6}],"domainMix":[{"agent":"Gateway / dataflow","n":13390,"v":[2191,3771,720,933,67,98,5476,127]},{"agent":"Access line & ONT","n":17003,"v":[6955,3160,290,1141,157,217,4884,196]},{"agent":"Speed","n":5406,"v":[675,1696,299,247,2,43,2388,56]},{"agent":"Wi-Fi","n":11228,"v":[839,3092,725,165,4,96,6106,197]},{"agent":"Equipment compatibility","n":3091,"v":[951,861,97,75,0,40,984,82]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
 const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
 const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
@@ -779,12 +779,18 @@ function StatusChip({ status, T }) {
 }
 
 // Numbered section with lavender band header
+// Open/closed state is cached per section so it survives the remounts that
+// follow any dashboard state change (filters, range, table toggles). The cache
+// is cleared on page change so every page still opens in its default state.
+const SECTION_OPEN = {};
 function Section({ num, eyebrow, title, icon, T, children, collapsible, defaultOpen = true }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const cacheKey = `${eyebrow || ""}|${title}`;
+  const [open, setOpen] = useState(SECTION_OPEN[cacheKey] !== undefined ? SECTION_OPEN[cacheKey] : defaultOpen);
+  const toggle = () => { SECTION_OPEN[cacheKey] = !open; setOpen(!open); };
   return (
     <div style={{ border: `1px solid ${T.border}`, borderRadius: 14, marginTop: 22, overflow: "hidden", background: T.surface }}>
       <div
-        onClick={collapsible ? () => setOpen(!open) : undefined}
+        onClick={collapsible ? toggle : undefined}
         style={{ background: T.band, padding: "14px 20px", display: "flex", alignItems: "center", gap: 14, cursor: collapsible ? "pointer" : "default" }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: T.textFaint, letterSpacing: ".05em" }}>{num}</span>
         {icon && <span style={{ color: T.heading, display: "inline-flex" }}><Icon name={icon} size={17} /></span>}
@@ -841,8 +847,8 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Ticket Analysis", hsiacross: "Cross Analysis",
-  tvplatforms: "By Platform", tvtickets: "Ticket Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
+  hsiatickets: "Notes Analysis", hsiacross: "Cross Analysis",
+  tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
 const PARENT_LABEL = { home: "Overview" };
@@ -1156,6 +1162,7 @@ export default function ReliabilityScorecards() {
     }
   }, []);
 
+  useEffect(() => { Object.keys(SECTION_OPEN).forEach((k) => { delete SECTION_OPEN[k]; }); }, [page]);
   useEffect(() => {
     document.title = "Reliability Strategy";
     const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#4B286D'/><path d='M9 38h10l6-15 8 27 8-19 5 7h9' fill='none' stroke='#66CC02' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
@@ -1171,8 +1178,8 @@ export default function ReliabilityScorecards() {
 
   function toggleTable(id) { setOpenTables((o) => ({ ...o, [id]: !o[id] })); }
 
-  function rowFigures(data, decimals, goodWhenDown = true, bps = false) {
-    const li = lastIdxUpTo(data, toIdx);
+  function rowFigures(data, decimals, goodWhenDown = true, bps = false, upTo = toIdx) {
+    const li = lastIdxUpTo(data, upTo);
     if (li < 0) return { latest: null };
     const D = bps ? (a, b) => deltaBps(a, b, goodWhenDown, decimals) : (a, b) => delta(a, b, "", decimals, goodWhenDown);
     return {
@@ -1188,11 +1195,11 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
-    { id: "hsiatickets", label: "Ticket Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
-    { id: "tvtickets", label: "Ticket Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
+    { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
     { id: "tvsentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.TV, child: true, parent: "TV" },
     { id: "tvcross", label: "Cross Analysis", icon: "cross", color: colors.TV, child: true, parent: "TV" },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
@@ -1397,9 +1404,25 @@ export default function ReliabilityScorecards() {
   }
 
   // ------------------------------ initiatives ------------------------------
-  function InitiativeRows({ items }) {
+  // filterable: when set, the theme/status/timeline/prime header cells carry the
+  // filter dropdowns (one header row serves as both column label and filter).
+  function InitiativeRows({ items, filterable = false, allItems }) {
     const tdBase = { padding: "9px 12px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5, verticalAlign: "top" };
-    const thBase = { padding: "8px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, textAlign: "left", whiteSpace: "nowrap" };
+    const thBase = { padding: "8px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, textAlign: "left", whiteSpace: "nowrap", verticalAlign: "bottom" };
+    const pool = allItems || items;
+    const uniq = (k) => Array.from(new Set(pool.map((it) => it[k] || "—"))).sort();
+    const filterTh = (k, label) => (
+      <th style={thBase}>
+        {filterable ? (
+          <select value={initFilters[k]} onChange={(e) => setInitFilters((f) => ({ ...f, [k]: e.target.value }))}
+            style={{ ...selectStyle, padding: "3px 6px", fontSize: 11.5, fontWeight: initFilters[k] === "All" ? 700 : 600, color: initFilters[k] === "All" ? T.textMuted : T.heading, textTransform: initFilters[k] === "All" ? "uppercase" : "none", letterSpacing: initFilters[k] === "All" ? ".05em" : 0, maxWidth: 180 }}
+            aria-label={`Filter by ${label.toLowerCase()}`}>
+            <option value="All">{label} · all</option>
+            {uniq(k).map((v) => <option key={v} value={v}>{v}</option>)}
+          </select>
+        ) : label}
+      </th>
+    );
     return (
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -1407,13 +1430,16 @@ export default function ReliabilityScorecards() {
             <tr>
               <th style={thBase}>Initiative</th>
               <th style={thBase}>Product</th>
-              <th style={thBase}>Theme</th>
-              <th style={thBase}>Status</th>
-              <th style={thBase}>Timeline</th>
-              <th style={thBase}>Prime</th>
+              {filterTh("theme", "Theme")}
+              {filterTh("status", "Status")}
+              {filterTh("timeline", "Timeline")}
+              {filterTh("prime", "Prime")}
             </tr>
           </thead>
           <tbody>
+            {items.length === 0 && (
+              <tr><td colSpan={6} style={{ ...tdBase, color: T.textFaint }}>No initiatives match the selected filters.</td></tr>
+            )}
             {items.map((it) => (
               <tr key={it.p + it.name}>
                 <td style={{ ...tdBase, minWidth: 260 }}>
@@ -1433,34 +1459,6 @@ export default function ReliabilityScorecards() {
             ))}
           </tbody>
         </table>
-      </div>
-    );
-  }
-
-  function InitiativeFilterBar({ items }) {
-    const uniq = (k) => Array.from(new Set(items.map((it) => it[k] || "—"))).sort();
-    const active = INIT_FILTER_KEYS.some((k) => initFilters[k] !== "All");
-    const count = items.filter((it) => INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])).length;
-    return (
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", gap: 12, marginBottom: 14 }}>
-        {INIT_FILTER_KEYS.map((k) => (
-          <label key={k} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{k}</span>
-            <select value={initFilters[k]} onChange={(e) => setInitFilters((f) => ({ ...f, [k]: e.target.value }))} style={selectStyle}>
-              <option value="All">All</option>
-              {uniq(k).map((v) => <option key={v} value={v}>{v}</option>)}
-            </select>
-          </label>
-        ))}
-        {active && (
-          <button onClick={() => setInitFilters(NO_INIT_FILTERS)}
-            style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "6px 14px", fontSize: 12, cursor: "pointer", fontFamily: FONT }}>
-            Clear filters
-          </button>
-        )}
-        <span style={{ marginLeft: "auto", fontSize: 12, color: T.textFaint, alignSelf: "center" }}>
-          {count} of {items.length} initiative{items.length > 1 ? "s" : ""}
-        </span>
       </div>
     );
   }
@@ -1581,6 +1579,10 @@ export default function ReliabilityScorecards() {
 
   // ------------------------------ TV platform breakout ------------------------------
   function TvPlatformBreakout() {
+    // Sub-pages carry no date filter: always the full 2026 window and the latest month
+    const LAST = MONTHS.length - 1;
+    const rangeMonths = MONTHS.slice(12);
+    const sliceR = (arr) => arr.slice(12);
     const platColor = (p) => colors[p.id === "legacy" ? "LEGACY" : "OPUS"];
     const statRow = (label, text, deltaEl) => (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, padding: "5px 0", borderBottom: `1px solid ${T.border}`, fontSize: 12.5 }}>
@@ -1595,12 +1597,12 @@ export default function ReliabilityScorecards() {
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
           {TV_PLATFORMS.map((p) => {
-            const tk = rowFigures(p.tickets, 0, true);
-            const tr = rowFigures(p.ticketRate, 2, true, true);
-            const rp = rowFigures(p.repairs, 0, true);
-            const rr = rowFigures(p.repairRate, 3, true, true);
-            const bs = rowFigures(p.base, 0, false);
-            const sw = rowFigures(p.swaps2026 || [], 0, true);
+            const tk = rowFigures(p.tickets, 0, true, false, LAST);
+            const tr = rowFigures(p.ticketRate, 2, true, true, LAST);
+            const rp = rowFigures(p.repairs, 0, true, false, LAST);
+            const rr = rowFigures(p.repairRate, 3, true, true, LAST);
+            const bs = rowFigures(p.base, 0, false, false, LAST);
+            const sw = rowFigures(p.swaps2026 || [], 0, true, false, LAST);
             const col = platColor(p);
             const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
             return (
@@ -2034,18 +2036,29 @@ export default function ReliabilityScorecards() {
         {sec("Initiatives", "initiatives",
           prodInits.length ? (
             <>
-              <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
-                {product} initiatives from the workbook's Initiatives tab, with status, timeline and prime. Use the filters to narrow the list.
-              </p>
-              <InitiativeFilterBar items={prodInits} />
               {(() => {
                 const filtered = prodInits.filter((it) =>
                   INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])
                 );
-                return filtered.length ? (
-                  <InitiativeRows items={filtered} />
-                ) : (
-                  <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 0 0" }}>No initiatives match the selected filters.</p>
+                const active = INIT_FILTER_KEYS.some((k) => initFilters[k] !== "All");
+                return (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", margin: "0 0 12px" }}>
+                      <p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
+                        {product} initiatives from the workbook's Initiatives tab. Use the column headers to filter by theme, status, timeline or prime.
+                      </p>
+                      <span style={{ fontSize: 12, color: T.textFaint, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 10 }}>
+                        {filtered.length} of {prodInits.length} initiative{prodInits.length > 1 ? "s" : ""}
+                        {active && (
+                          <button onClick={() => setInitFilters(NO_INIT_FILTERS)}
+                            style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12, cursor: "pointer", fontFamily: FONT }}>
+                            Clear filters
+                          </button>
+                        )}
+                      </span>
+                    </div>
+                    <InitiativeRows items={filtered} filterable allItems={prodInits} />
+                  </>
                 );
               })()}
             </>
@@ -2094,14 +2107,14 @@ export default function ReliabilityScorecards() {
     );
   }
 
-  // Aug vs Jun movement with percent
+  // Aug vs Jul movement (latest month vs prior month) with percent
   function Move({ v, goodDown = true, dec = 0, unit = "", bps = false }) {
-    if (v[0] == null || v[2] == null) return <span style={{ color: T.textFaint }}>—</span>;
-    const d = bps ? deltaBps(v[2], v[0], goodDown, dec) : delta(v[2], v[0], unit, dec, goodDown);
-    return <span style={{ whiteSpace: "nowrap" }}><DeltaText d={d} T={T} />{v[0] ? <span style={{ color: T.textFaint, fontSize: 11.5 }}> ({yoyPctText(v[2], v[0])})</span> : null}</span>;
+    if (v[1] == null || v[2] == null) return <span style={{ color: T.textFaint }}>—</span>;
+    const d = bps ? deltaBps(v[2], v[1], goodDown, dec) : delta(v[2], v[1], unit, dec, goodDown);
+    return <span style={{ whiteSpace: "nowrap" }}><DeltaText d={d} T={T} />{v[1] ? <span style={{ color: T.textFaint, fontSize: 11.5 }}> ({yoyPctText(v[2], v[1])})</span> : null}</span>;
   }
 
-  function MoverCards({ rising, falling, risingTitle = "Rising · Aug vs Jun 2026", fallingTitle = "Falling · Aug vs Jun 2026" }) {
+  function MoverCards({ rising, falling, risingTitle = "Rising · Aug vs Jul 2026", fallingTitle = "Falling · Aug vs Jul 2026" }) {
     const card = (title, rows, tone) => (
       <div style={{ flex: 1, minWidth: 280, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${tone === "up" ? T.bad : T.good}`, borderRadius: 10, padding: "12px 16px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
@@ -2146,42 +2159,44 @@ export default function ReliabilityScorecards() {
         <th style={anTh}>{extra[0] || ""}</th>
         {AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}
         <th style={anTh}>Trend</th>
-        <th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th>
+        <th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th>
         {extra.slice(1).map((e) => <th key={e} style={anTh}>{e}</th>)}
       </tr>
     );
   }
 
   const TV_RECS = [
-    { pri: "P1", tag: "Rising", title: "Swarm the PVR recording defect and replace failing legacy PVRs",
-      evidence: "Recording Issues tickets 4,066 → 4,669 (+15%), with Cannot Set Recordings +18%; recording is the #1 theme in agent comments (+15%); technician recording fixes +26%, yet 46% of recording dispatches end in an STB hardware swap; recording mentions in survey verbatims up 61% (1.10% → 1.77% of respondents).",
-      action: "Correlate Cannot Set Recordings with PVR firmware and whole-home recording configuration, proactively replace VIP5662W PVRs InSight flags as unreachable, and give agents a hardware-vs-software decision tree so recording tickets route to the right fix first time.",
-      initiatives: ["Recording Restart Issue Fix", "Recording Deletion Enhancements", "Sports Team Recordings"] },
     { pri: "P1", tag: "Rising", title: "Ethernet-first fix path for legacy STB initialisation failures",
-      evidence: "STB No Boot › Stuck on Initializing 3,409 → 4,084 (+20%) and Registration Code +43%; VIP5662W mentions +18% and Mediaroom mentions +13% while OPUS mentions fall 8%; half of these tickets close as education / no fault, and 55% of the dispatches end as STB hardware.",
+      evidence: "STB No Boot › Stuck on Initializing 3,642 → 4,084 (+12%) is the largest mover of the month and lifted the STB No Boot category 6%; stuck-initialising language in agent comments +11%; VIP5662W mentions +10% and Mediaroom mentions +8% while OPUS mentions are flat (+1%); half of these tickets close as education / no fault and 55% of the dispatches end as STB hardware.",
       action: "Add an InSight auto-check for PVR not reachable with no Ethernet link, publish a self-serve wired-connection flow for VIP5662W, and offer OPUS migration to households with repeat boot tickets.",
       initiatives: ["Revamped OPUS Migration Process", "Equipment Order Fallout Audit"] },
+    { pri: "P1", tag: "Rising", title: "OPUS onboarding: Digital Box setup and no-boot",
+      evidence: "Digital Box › Setup 1,812 → 2,115 (+17%) and Digital Box › No Boot 1,679 → 1,877 (+12%); Optik Evolution › Setup closures 714 → 811 (+14%) and dispatch-booked language in agent comments +17%; Digital Box carries the highest non-TELUS-caused share of any TV category on field visits (30%), so many of these are setup and shipping problems rather than faults.",
+      action: "Put the AI onboarding videos and a guided setup check into the shipment notification and the TV+ app, use shipping telemetry to intercept late or failed deliveries before the customer calls, and audit equipment-order fallout weekly.",
+      initiatives: ["AI STB Onboarding Videos", "Shipping Telemetry Automation", "Equipment Order Fallout Audit", "Revamped OPUS Migration Process"] },
     { pri: "P1", tag: "Divergence", title: "Pre-dispatch quality gate to close the agent–technician categorisation gap",
-      evidence: "65% of closures land in a different domain than the agent's opening category (52% end as education / no fault); on true field visits divergence rose 20.4% → 27.0%, no-fault-found 7.9% → 12.5% and non-TELUS-caused 9.5% → 14.4%; repeat-issue language appears in 12.8% of agent comments.",
+      evidence: "On field visits the divergence between the agent's category and the technician's finding rose 23.1% → 27.0% (+390 bps) and no-fault-found 11.2% → 12.5% (+130 bps), with non-TELUS-caused flat at 14.4%; on all closures divergence is stuck at 65% (52% end as education / no fault) and Education › IPTV closures rose 8%; repeat-issue language appears in 12.8% of agent comments.",
       action: "Gate dispatch on an InSight evidence checklist (RSSI, ONT light level, STB reachability), QA Copilot-assisted notes for a stated diagnosis, and flag repeat contacts for senior-agent handling; target field divergence back under 20%.", initiatives: ["InSight Conviva Video Quality Metrics & Co-pilot Ingestion"] },
-    { pri: "P2", tag: "Persistent", title: "Wireless STB placement and Wi-Fi diagnostics",
-      evidence: "WAP / wireless STB placement is the #2 field fix (13% of visits, flat); Connectivity closures hold at ~4.6K a month; freezing and interruptions are the most-mentioned TV issue in verbatims (3.9% of respondents) and Internet & Wi-Fi mentions rose 15.3% → 16.7%.",
-      action: "Surface STB RSSI in the agent InSight view with a placement script, default to wired STB connections on installs, and target Wi-Fi 6 boosters at multi-STB homes.", initiatives: ["Low RSSI + Low Bitrate Proactive Campaign"] },
+    { pri: "P2", tag: "Persistent", title: "Recording: tickets flat, customer voice rising",
+      evidence: "Recording Issues tickets are flat (4,663 → 4,669) and Playback Issues fell 24%, but recording is still the #1 theme in agent comments (4,345, +1.5%), recording descriptions in survey verbatims doubled (19 → 38 respondents, 1.06% → 1.77%, +71 bps) and recording fixes fell 79 → 72 while 46% of recording dispatches still end in an STB hardware swap.",
+      action: "Keep the PVR defect swarm open, proactively replace VIP5662W PVRs InSight flags as unreachable, and give agents a hardware-vs-software decision tree so recording tickets route to the right fix first time.",
+      initiatives: ["Recording Restart Issue Fix", "Recording Deletion Enhancements", "Sports Team Recordings"] },
     { pri: "P2", tag: "Emerging", title: "YouTube app regression (August)",
-      evidence: "Apps › YouTube tickets 42 → 50 → 235 (+460%) drove the Apps category up 24%; no matching movement in technician findings or verbatims yet, which points to an app-side release rather than network or hardware.",
+      evidence: "Apps › YouTube tickets 50 → 235 (+370%) drove the Apps category up 24% and streaming-app language in agent comments up 20%; no matching movement in technician findings, and apps & streaming verbatims fell 80 bps, which points to an app-side release rather than network or hardware.",
       action: "Escalate to the YouTube / TV+ app owner for a hotfix, publish an agent workaround, and watch September volumes before treating it as structural." },
     { pri: "P2", tag: "Rising", title: "Support access and chatbot escalation",
-      evidence: "Customer service is the largest negative theme in verbatims (208 → 271 negative mentions, +30%); chatbot verbatims run 25% negative vs 6% positive; TV customer-service verbatims peaked at 5.1% of respondents in July.",
+      evidence: "Negative verbatims rose 23.4% → 24.9% (+150 bps) in August; customer service is the largest negative theme (213 → 271 negative mentions, +27%); chatbot verbatims run 25% negative vs 6% positive; customer-wants-a-technician language in agent comments +15%.",
       action: "Add a direct human-escalation path from the chatbot for repeat or unresolved TV issues, tighten hand-off notes between agents, and offer scheduled callbacks for tickets with prior contacts." },
-    { pri: "P3", tag: "Falling", title: "Sustain the channel and power-supply fixes",
-      evidence: "Channel Not Working −26%, Missing Channels −20%, Manage My Channels −42%; OPUS provisioning closures −36%; power-supply field fixes 60 → 33 (−45%) and Digital Box › No Boot −12.5%.",
+    { pri: "P3", tag: "Falling", title: "Sustain the channel, power-supply and playback fixes",
+      evidence: "Recording › Playback Issues −24%, STB No Boot › Red X −16%, Reboot Loop −5%, Video › Pixelization −12%, Manage My Channels −10%; OPUS provisioning closures 443 → 371 (−16%); power-supply field fixes 47 → 33 (−30%). Missing Channels (+7%) and Channel Not Working (+3%) edged back up after June's drop and are worth watching.",
       action: "Keep the channel audit and PSU replacement programs funded through Q4 and move remaining channel verbatims (mostly package and value) to the commercial team.",
       initiatives: ["UUID Auto Sync — Blocking Channels Fix", "Automated Missing TV Channel Audit", "PSU Replacement Campaign"] },
   ];
 
+
   function TvTicketAnalysisPage() {
     const K = TVA.tickets;
-    const sec = secFactory("tvt", "TV · Ticket Analysis");
+    const sec = secFactory("tvt", "TV · Notes Analysis");
     const dAll = K.divergence.all, dF = K.divergence.field;
     const catMax = Math.max(...K.agentCat.map((c) => Math.max(...c.v)));
     return (
@@ -2199,7 +2214,7 @@ export default function ReliabilityScorecards() {
             deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Jun – Aug 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Jun – Aug 2026; movements compare Aug 2026 with Jul 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
         </p>
 
         {sec("Top issues by agent categorisation", "tickets",
@@ -2226,7 +2241,7 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Category 1 › Category 2)</div>
             <MoverCards rising={K.rising} falling={K.falling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jun or Aug by absolute change. The YouTube app jump (42 → 235) is the only new driver; the rest are shifts inside established categories.</p>
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). The YouTube app jump (50 → 235) is the only new driver; the rest are shifts inside established categories.</p>
           </>
         )}
 
@@ -2329,7 +2344,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused visits rose from 9.5% to 14.4% of determinations, the clearest sign that more dispatches are reaching homes where the fault is customer equipment or setup.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused visits held at 14.4% of determinations in August (14.6% in July), well above June's 9.5%, so a steady one in seven dispatches reaches a home where the fault is customer equipment or setup.</p>
               </div>
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
@@ -2405,7 +2420,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Legacy Mediaroom equipment (VIP5662W PVR, VIP5602W wireless STB) is mentioned more each month while OPUS mentions fall, consistent with the By Platform split where Legacy carries two thirds of TV tickets on a shrinking base.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Legacy Mediaroom equipment (VIP5662W PVR +10%, VIP5602W wireless STB +5%) is mentioned more each month while OPUS mentions are flat (+1%), consistent with the By Platform split where Legacy carries two thirds of TV tickets on a shrinking base.</p>
               </div>
             </div>
           </>
@@ -2420,10 +2435,10 @@ export default function ReliabilityScorecards() {
     const S = TVA.survey;
     const sec = secFactory("tvs", "TV · Customer Sentiment");
     const share = (arr, i) => arr[i];
-    const themeMovers = S.themes.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[0]) * 100), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null, unit: " bps" })).filter((t) => t.name !== "Positive: satisfied / no issues");
+    const themeMovers = S.themes.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[1]) * 100), pct: t.pct[1] ? +((t.pct[2] - t.pct[1]) / t.pct[1] * 100).toFixed(0) : null, unit: " bps" })).filter((t) => t.name !== "Positive: satisfied / no issues");
     const rising = themeMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
     const falling = themeMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
-    const issueMovers = S.tvIssues.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[0]) * 100), pct: t.pct[0] ? +((t.pct[2] - t.pct[0]) / t.pct[0] * 100).toFixed(0) : null, unit: " bps" }));
+    const issueMovers = S.tvIssues.map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[1]) * 100), pct: t.pct[1] ? +((t.pct[2] - t.pct[1]) / t.pct[1] * 100).toFixed(0) : null, unit: " bps" }));
     const iRising = issueMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
     const iFalling = issueMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
     const supTot = S.support.positive.map((_, i) => S.support.positive[i] + S.support.neutral[i] + S.support.negative[i]);
@@ -2438,7 +2453,7 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.TV} icon="cx" label="Chatbot verbatims negative" value={fmtPct(S.support.negative[2] / supTot[2] * 100, 1)} sub={`of ${fmtNum(supTot[2])} digital-support comments · Aug`} deltas={[<span key="p" style={{ color: T.textMuted }}>positive {fmtPct(S.support.positive[2] / supTot[2] * 100, 1)}</span>]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Verbatims only: the general reason-for-rating comments (v1, v2, v3, v6), the TV-specific issue descriptions, and the digital-support comments from the CF&amp;R Optik TV survey, Jun – Aug 2026. Score columns (NPS and ratings) are excluded. Sentiment is a positive/negative lexicon applied to each respondent's combined comments; themes are keyword-classified in English and French.
+          Verbatims only: the general reason-for-rating comments (v1, v2, v3, v6), the TV-specific issue descriptions, and the digital-support comments from the CF&amp;R Optik TV survey, Jun – Aug 2026; movements compare Aug with Jul. Score columns (NPS and ratings) are excluded. Sentiment is a positive/negative lexicon applied to each respondent's combined comments; themes are keyword-classified in English and French.
         </p>
 
         {sec("Verbatim sentiment", "sentiment",
@@ -2446,7 +2461,7 @@ export default function ReliabilityScorecards() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th></tr></thead>
+                  <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th></tr></thead>
                   <tbody>
                     {["positive", "neutral", "negative"].map((p) => (
                       <tr key={p}>
@@ -2469,7 +2484,7 @@ export default function ReliabilityScorecards() {
                     </div>
                   </div>
                 ))}
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>Sentiment drifted negative through the summer: positive comments fell 360 bps and negative rose 160 bps, with the neutral middle absorbing the rest. The shift is concentrated in support-access and price comments rather than TV reliability itself.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>Sentiment moved negative again in August: positive comments fell 110 bps and negative rose 150 bps against July (positive is down 360 bps since June). The shift is concentrated in support-access, price and home-network comments rather than TV reliability itself, which lost 110 bps of share.</p>
               </div>
             </div>
           </>
@@ -2479,7 +2494,7 @@ export default function ReliabilityScorecards() {
           <>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><th style={anTh}>Theme</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · % of respondents</th>)}<th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Aug vs Jun</th><th style={{ ...anTh, textAlign: "right" }}>Negative mentions Jun → Aug</th></tr></thead>
+                <thead><tr><th style={anTh}>Theme</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · % of respondents</th>)}<th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th><th style={{ ...anTh, textAlign: "right" }}>Negative mentions Jul → Aug</th></tr></thead>
                 <tbody>
                   {S.themes.map((t) => {
                     const pos = t.name.startsWith("Positive");
@@ -2489,15 +2504,15 @@ export default function ReliabilityScorecards() {
                         {t.pct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}%</td>)}
                         <td style={anTd}><TrendBars v={t.v} color={pos ? T.good : colors.TV} /></td>
                         <td style={anNum}><Move v={t.pct} bps goodDown={!pos} /></td>
-                        <td style={anNum}>{fmtNum(t.neg[0])} → {fmtNum(t.neg[2])} <Move v={t.neg} /></td>
+                        <td style={anNum}>{fmtNum(t.neg[1])} → {fmtNum(t.neg[2])} <Move v={t.neg} /></td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jun (bps of respondents)" fallingTitle="Falling share · Aug vs Jun (bps of respondents)" />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third. Recording, picture and sound, and channels are the TV-product themes gaining share.</p>
+            <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jul (bps of respondents)" fallingTitle="Falling share · Aug vs Jul (bps of respondents)" />
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third and lost share in August. Internet & Wi-Fi (+180 bps), picture and sound (+90 bps), recording (+60 bps) and channels (+60 bps) gained share against July.</p>
           </>
         )}
 
@@ -2508,7 +2523,7 @@ export default function ReliabilityScorecards() {
             </p>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr><th style={anTh}>TV issue described</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · mentions</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug rate</th><th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Rate Aug vs Jun</th></tr></thead>
+                <thead><tr><th style={anTh}>TV issue described</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} · mentions</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug rate</th><th style={anTh}>Trend</th><th style={{ ...anTh, textAlign: "right" }}>Rate Aug vs Jul</th></tr></thead>
                 <tbody>
                   {S.tvIssues.map((t) => (
                     <tr key={t.name}>
@@ -2522,7 +2537,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <MoverCards rising={iRising} falling={iFalling} risingTitle="Rising issue rate · Aug vs Jun (bps)" fallingTitle="Falling issue rate · Aug vs Jun (bps)" />
+            <MoverCards rising={iRising} falling={iFalling} risingTitle="Rising issue rate · Aug vs Jul (bps)" fallingTitle="Falling issue rate · Aug vs Jul (bps)" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
               {Object.entries(S.quotes).map(([k, qs]) => (
                 <div key={k} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
@@ -2556,13 +2571,13 @@ export default function ReliabilityScorecards() {
           <Recs items={[
             TV_RECS[5],
             { pri: "P2", tag: "Rising", title: "Close the loop on recording complaints",
-              evidence: "Recording is the fastest-growing TV issue in verbatims (1.10% → 1.77% of respondents, +61%), and customers describe lost second halves of recordings, PVR lists disappearing and shows recording that were never scheduled.",
+              evidence: "Recording is the fastest-growing TV issue in verbatims: descriptions doubled from 19 to 38 respondents between July and August (1.06% → 1.77%, +71 bps) while recording tickets stayed flat, and customers describe lost second halves of recordings, PVR lists disappearing and shows recording that were never scheduled.",
               action: "Pair the recording defect swarm with proactive outreach to customers who logged recording tickets, and add a recording-health check to the TV+ app.", initiatives: ["Recording Restart Issue Fix", "Recording Deletion Enhancements"] },
             { pri: "P2", tag: "Persistent", title: "Make freezing and interruptions visible before customers call",
-              evidence: "Interruptions, freezing and restarts are the most-described TV issue every month (3.8% to 4.1% of respondents); picture-quality descriptions are steady at 2.6% to 2.7%.",
+              evidence: "Interruptions, freezing and restarts are the most-described TV issue every month (3.87% of respondents in August, 4.06% in July); picture-quality descriptions are steady at 2.7%, and Internet & Wi-Fi is the fastest-growing general theme (+180 bps).",
               action: "Use Conviva video-quality metrics to trigger proactive Wi-Fi and STB checks, and publish a plain-language self-serve guide for wireless STB placement.", initiatives: ["Low RSSI + Low Bitrate Proactive Campaign", "InSight Conviva Video Quality Metrics & Co-pilot Ingestion"] },
-            { pri: "P3", tag: "Rising", title: "Remote control pairing and responsiveness",
-              evidence: "Remote descriptions almost doubled (0.52% → 0.98% of respondents) while Remote › Programming tickets rose 9% and technician remote fixes rose 35%.",
+            { pri: "P3", tag: "Persistent", title: "Remote control pairing and responsiveness",
+              evidence: "Remote descriptions edged up again (0.89% → 0.98% of respondents, +9 bps; almost double June's 0.52%) while Remote tickets were flat (−2%) and technician remote fixes fell 83 → 66.",
               action: "Ship a pairing and responsiveness troubleshooter in the TV+ app and agent Copilot, and review the new TV+ remote's button parity, which customers call out directly." },
           ]} />
         )}
@@ -2574,39 +2589,40 @@ export default function ReliabilityScorecards() {
     const sec = secFactory("tvx", "TV · Cross Analysis");
     const verdictColor = (v) => (v.startsWith("Rising") || v.startsWith("Emerging") ? T.bad : v.startsWith("Falling") ? T.good : T.textMuted);
     const MATRIX = [
-      { driver: "Recording / PVR failures", tickets: "Recording Issues 4,066 → 4,669 (+15%); Cannot Set Recordings +18%", notes: "Recording is the #1 agent-comment theme, 3,790 → 4,345 (+15%)", tech: "Recording fixes 57 → 72 (+26%); 46% of recording dispatches end in an STB hardware swap; 60% aligned", voice: "Recording descriptions 1.10% → 1.77% of respondents (+61%)", verdict: "Rising · confirmed in all four sources" },
-      { driver: "Legacy STB initialisation (Mediaroom)", tickets: "Stuck on Initializing 3,409 → 4,084 (+20%); Registration Code +43%", notes: "VIP5662W +18%, VIP5602W +12%, Mediaroom mentions +13%; OPUS mentions −8%", tech: "80% aligned; STB hardware is the finding in 55% of visits; 11% no fault", voice: "Interruptions / restarts steady at 3.8% to 4.1%", verdict: "Rising · ticket-led, ageing hardware" },
-      { driver: "Wi-Fi / wireless STB connectivity", tickets: "Connectivity closures ~4.6K a month, flat", notes: "Wi-Fi / wireless STB theme flat at ~3.1K; Ethernet / cabling +4%", tech: "WAP and wireless STB placement is the #2 fix (13% of visits)", voice: "Freezing / interruptions is the #1 TV issue; Internet & Wi-Fi theme 15.3% → 16.7%", verdict: "Persistent · high customer impact" },
-      { driver: "Channel availability", tickets: "Channel Not Working −26%; Missing Channels −20%; Manage My Channels −42%", notes: "Channel-missing theme 3,546 → 2,950 (−17%)", tech: "Optik Evolution › Provisioning closures −36%", voice: "Channels / content flat at ~16%, mostly package and value, not faults", verdict: "Falling · technical fix landed" },
-      { driver: "Support friction and repeat contacts", tickets: "Repeat-issue language in 12.8% of agent comments; 65% categorisation divergence", notes: "Customer wants tech / refuses troubleshooting ~340 a month", tech: "No fault found 7.9% → 12.5%; non-TELUS caused 9.5% → 14.4%", voice: "Customer service is the #1 negative theme (208 → 271, +30%); chatbot 25% negative vs 6% positive", verdict: "Rising · negative sentiment and diagnosis gap" },
-      { driver: "Streaming apps (YouTube)", tickets: "Apps › YouTube 42 → 50 → 235 (+460%); Apps +24%", notes: "Streaming-app theme +3%", tech: "No dispatch signal", voice: "Apps & streaming ~5%, flat", verdict: "Emerging · August app regression" },
-      { driver: "Remote control", tickets: "Remote › Programming +9%", notes: "Remote theme flat at ~2.3K", tech: "Remote fixes 49 → 66 (+35%)", voice: "Remote descriptions 0.52% → 0.98% (+88%)", verdict: "Rising · modest, cross-source" },
-      { driver: "Power supply / no boot", tickets: "Digital Box › No Boot −12.5%", notes: "Power theme 1,177 → 1,095 (−7%)", tech: "Power-supply fixes 60 → 33 (−45%)", voice: "Not raised", verdict: "Falling · PSU campaign effect" },
+      { driver: "Legacy STB initialisation (Mediaroom)", tickets: "Stuck on Initializing 3,642 → 4,084 (+12%); STB No Boot category +6%", notes: "Stuck-initialising theme 1,593 → 1,773 (+11%); VIP5662W mentions +10%, Mediaroom +8%, OPUS +1%", tech: "80% aligned; STB hardware is the finding in 55% of visits; STB replacements 264 → 223 (−16%)", voice: "Interruptions / restarts 4.06% → 3.87% of respondents (−19 bps)", verdict: "Rising · ticket and notes led, ageing hardware" },
+      { driver: "OPUS onboarding (Digital Box setup / no boot)", tickets: "Digital Box › Setup 1,812 → 2,115 (+17%); Digital Box › No Boot +12%", notes: "Dispatch-booked theme +17%; swap / replacement-shipped theme +1.5%", tech: "Optik Evolution › Setup closures 714 → 811 (+14%); Digital Box visits 30% non-TELUS caused", voice: "Set-top box / equipment theme 14.3% → 13.7% (−60 bps)", verdict: "Rising · onboarding and shipping, not faults" },
+      { driver: "Recording / PVR", tickets: "Recording Issues flat, 4,663 → 4,669; Playback Issues −24%", notes: "Recording is still the #1 agent-comment theme, 4,280 → 4,345 (+1.5%)", tech: "Recording fixes 79 → 72 (−9%); 60% aligned; STB hardware the top finding", voice: "Recording descriptions 1.06% → 1.77% of respondents (+71 bps; 19 → 38 mentions)", verdict: "Persistent · customer voice rising" },
+      { driver: "Wi-Fi / home network and wireless STB", tickets: "Connectivity › STB/PVR closures 2,976 → 3,140 (+5.5%)", notes: "Modem / gateway theme +12.5%; Ethernet / cabling +8%; Wi-Fi / wireless STB +2.6%", tech: "WAP and wireless STB placement 189 → 175 (−7%), still the #2 fix", voice: "Internet & Wi-Fi theme 14.9% → 16.7% (+180 bps), the largest verbatim riser; negative mentions 99 → 150", verdict: "Rising · high customer impact" },
+      { driver: "Support friction and repeat contacts", tickets: "Repeat-issue language in 12.8% of agent comments; all-closure divergence flat at 65%", notes: "Customer wants tech / refuses troubleshooting 291 → 336 (+15%)", tech: "Field divergence 23.1% → 27.0% (+390 bps); no fault found 11.2% → 12.5%; non-TELUS caused flat at 14.4%", voice: "Negative verbatims 23.4% → 24.9% (+150 bps); customer-service negative mentions 213 → 271 (+27%); chatbot 25% negative", verdict: "Rising · diagnosis gap and sentiment" },
+      { driver: "Streaming apps (YouTube)", tickets: "Apps › YouTube 50 → 235 (+370%); Apps +24%", notes: "Streaming-app theme 743 → 892 (+20%)", tech: "No dispatch signal", voice: "Apps & streaming 5.8% → 5.0% (−80 bps)", verdict: "Emerging · August app regression" },
+      { driver: "Channel availability", tickets: "Missing Channels +7%; Channel Not Working +3%; Manage My Channels −10%", notes: "Channel-missing theme 2,809 → 2,950 (+5%)", tech: "Optik Evolution › Provisioning closures 443 → 371 (−16%)", voice: "Channels / content 15.9% → 16.5% (+60 bps), mostly package and value, not faults", verdict: "Watch · June fix holding, small rebound" },
+      { driver: "Power supply / boot failures", tickets: "STB No Boot › Red X −16%; Reboot Loop −5%", notes: "Power theme 1,052 → 1,095 (+4%)", tech: "Power-supply fixes 47 → 33 (−30%); cabling fixes 22 → 15", voice: "Not raised", verdict: "Falling · PSU campaign effect" },
     ];
     const rising = [
-      { name: "Recording / PVR failures", src: "tickets +15% · notes +15% · tech +26% · verbatims +61%" },
-      { name: "Legacy STB initialisation", src: "tickets +20% · VIP5662W mentions +18%" },
-      { name: "Support friction / repeat contacts", src: "field divergence +660 bps · negative service verbatims +30%" },
-      { name: "YouTube app (emerging)", src: "tickets +460% in August" },
-      { name: "Remote control", src: "tickets +9% · tech +35% · verbatims +88%" },
+      { name: "Legacy STB initialisation", src: "tickets +12% · notes +11% · Mediaroom mentions +8%" },
+      { name: "OPUS onboarding / Digital Box setup", src: "tickets +17% · Optik Evolution › Setup closures +14%" },
+      { name: "Wi-Fi / home network", src: "verbatims +180 bps · gateway theme +12.5% · cabling +8%" },
+      { name: "Support friction / repeat contacts", src: "field divergence +390 bps · negative verbatims +150 bps" },
+      { name: "YouTube app (emerging)", src: "tickets +370% in August" },
     ];
     const falling = [
-      { name: "Channel availability", src: "tickets −26% · notes −17% · provisioning closures −36%" },
-      { name: "Power supply / no boot", src: "tickets −12.5% · PSU fixes −45%" },
-      { name: "No signal / outage mentions", src: "notes −18% and −11%" },
-      { name: "OPUS provisioning and setup faults", src: "closures −36%; setup tickets rising but non-TELUS-caused" },
+      { name: "Recording playback issues", src: "tickets −24% · recording fixes −9%" },
+      { name: "Boot failures: Red X and Reboot Loop", src: "tickets −16% and −5% · STB replacements −16%" },
+      { name: "Power supply", src: "PSU fixes −30%" },
+      { name: "OPUS provisioning", src: "closures −16%" },
+      { name: "Customer training closures", src: "Customer › Training / Education −9%" },
     ];
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.TV} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, notes, technician and verbatims agree" deltas={[<span key="a" style={{ color: T.textMuted }}>recording, legacy STB boot, support friction</span>]} />
+          <StatCard T={T} color={colors.TV} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, notes, technician and verbatims agree" deltas={[<span key="a" style={{ color: T.textMuted }}>legacy STB boot, OPUS onboarding, support friction</span>]} />
           <StatCard T={T} color={colors.TV} icon="cross" label="Emerging driver" value="1" sub="ticket-only signal so far" deltas={[<span key="a" style={{ color: T.textMuted }}>YouTube app, August</span>]} />
-          <StatCard T={T} color={colors.TV} icon="initiatives" label="Falling drivers" value="2" sub="fixes visible in every source" deltas={[<span key="a" style={{ color: T.textMuted }}>channels, power supply</span>]} />
+          <StatCard T={T} color={colors.TV} icon="initiatives" label="Falling drivers" value="2" sub="fixes visible in every source" deltas={[<span key="a" style={{ color: T.textMuted }}>recording playback, power supply</span>]} />
           <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} bps />]} />
           <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(TVA.survey.polarity.negative[2], 1)} sub="reason-for-rating comments · Aug" deltas={[<Move key="m" v={TVA.survey.polarity.negative} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Each driver is read across four lenses for Jun – Aug 2026: ticket categories (agent), agent comment themes, technician findings on field visits, and customer survey verbatims. A driver is confirmed when the direction agrees across sources; ticket-only movement is flagged as emerging.
+          Each driver is read across four lenses, comparing Aug 2026 with Jul 2026: ticket categories (agent), agent comment themes, technician findings on field visits, and customer survey verbatims. A driver is confirmed when the direction agrees across sources; ticket-only movement is flagged as emerging.
         </p>
 
         {sec("Signal alignment matrix", "cross",
@@ -2633,7 +2649,7 @@ export default function ReliabilityScorecards() {
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
             {[["Rising", rising, T.bad], ["Falling", falling, T.good]].map(([title, items, col]) => (
               <div key={title} style={{ flex: 1, minWidth: 300, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${col}`, borderRadius: 10, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: col, marginBottom: 8 }}>{title} · Aug vs Jun 2026</div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: col, marginBottom: 8 }}>{title} · Aug vs Jul 2026</div>
                 {items.map((it, i) => (
                   <div key={it.name} style={{ padding: "6px 0", borderBottom: i < items.length - 1 ? `1px solid ${T.border}` : "none" }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary }}>{i + 1}. {it.name}</div>
@@ -2651,35 +2667,36 @@ export default function ReliabilityScorecards() {
   }
 
   const HSIA_RECS = [
-    { pri: "P1", tag: "Rising", title: "Qualify equipment at order time to stop the Incompatible Equipment surge",
-      evidence: "Incompatible Equipment › Incompatible 876 → 1,994 (+128%), with the older Connectivity › Incompatible Equipment code at ~1,500 a month; combined 2,693 → 3,488 (+30%). 1,185 August field visits carried this code and closed 90% aligned, mostly as an ONT (602) or gateway (406) install, so these are plan-versus-hardware mismatches reaching the truck rather than faults.",
-      action: "Run the compatibility check when the speed upgrade is ordered (not when the customer calls), auto-ship the compatible gateway or book the ONT install with the upgrade, and add an InSight banner for plan / ONT / gateway mismatches so agents skip troubleshooting and go straight to fulfilment.",
-      initiatives: ["Gigabit Speed Compatibility ICU Intervention", "Improve Provisioning Checks for 3 Gig in InSight", "HSIA Legacy Hardware Upgrades"] },
     { pri: "P1", tag: "Rising", title: "No Dataflow: automate the ONT and outage checks before the ticket exists",
-      evidence: "Connectivity › No Dataflow is the largest category, 11,566 → 13,151 (+14%), and All Devices Affected grew 15%; 41% of these tickets close as education / no fault, while field visits find an access-line or ONT fault 52% of the time. Outage language in agent comments rose 6,892 → 7,478 (+8.5%) and the outage-tagged No Sync and No IP sub-categories doubled.",
+      evidence: "Connectivity › No Dataflow is the largest category and the largest mover, 11,676 → 13,151 (+13%), with All Devices Affected +14%; outage language in agent comments rose 6,537 → 7,478 (+14%) and the outage-tagged sub-categories jumped (No Sync › Outage 303 → 640, ONT Not Ranged › Outage 825 → 1,016, Losing Sync › Outage +41%). 41% of No Dataflow tickets close as education / no fault while field visits find an access-line or ONT fault 52% of the time.",
       action: "Fire the live ONT check and outage lookup from the IVR and self-serve flows so outage-affected and power-off customers are told before an agent is engaged; give agents a one-click ONT reachability, LOS and power verdict; and route confirmed ONT-down cases straight to dispatch.",
       initiatives: ["DIY Revamp Live ONT Check", "Pulse Cluster GUI for Outages", "Service Guarantee: Internet Backup to Cellular"] },
+    { pri: "P1", tag: "Rising", title: "Qualify equipment at order time to stop the Incompatible Equipment climb",
+      evidence: "Incompatible Equipment › Incompatible 1,656 → 1,994 (+20%) and Connectivity › Incompatible Equipment 1,337 → 1,494 (+12%); combined 2,993 → 3,488 (+17%). 1,185 August field visits carried this code and closed 90% aligned, mostly as an ONT (602) or gateway (406) install, so these are plan-versus-hardware mismatches reaching the truck rather than faults.",
+      action: "Run the compatibility check when the speed upgrade is ordered (not when the customer calls), auto-ship the compatible gateway or book the ONT install with the upgrade, and add an InSight banner for plan / ONT / gateway mismatches so agents skip troubleshooting and go straight to fulfilment.",
+      initiatives: ["Gigabit Speed Compatibility ICU Intervention", "Improve Provisioning Checks for 3 Gig in InSight", "HSIA Legacy Hardware Upgrades"] },
     { pri: "P1", tag: "Divergence", title: "Evidence gate for Wireless dispatches",
-      evidence: "Wireless categories are the weakest match between agent and closure: 33% to 36% aligned on all closures (over half end as education) and only 44% to 46% aligned on field visits, where technicians find an access-line or gateway fault on roughly half the Wi-Fi tickets they attend. Found OK › Not Required closures doubled (472 → 965) and non-TELUS-caused determinations rose 9.5% → 13.8% (+430 bps).",
+      evidence: "Wireless categories are the weakest match between agent and closure: 33% to 36% aligned on all closures (over half end as education) and only 44% to 46% aligned on field visits, where technicians find an access-line or gateway fault on roughly half the Wi-Fi tickets they attend. Found OK › Not Required closures rose 690 → 965 (+40%) and Avoidable Dispatch +22%; field-visit divergence 13.9% → 15.1% (+120 bps) and non-TELUS-caused 13.2% → 13.8% (+60 bps); Wi-Fi extender closures +19%.",
       action: "Require a RouteThis or Cloudcheck result and a gateway health check before any Wireless ticket is dispatched, route single-device complaints to guided self-serve, and pair the technician Wi-Fi certification with a mandatory KIT test so the visit closes with evidence.",
       initiatives: ["Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Technician WiFi Certification Tool", "Cloudcheck Fine Tuning", "KIT Test Tool Mandatory Pass on All Jobs"] },
     { pri: "P2", tag: "Rising", title: "Copper No Sync: intercept repeat copper tickets with fibre or WHSIA",
-      evidence: "Connectivity › No Sync 2,924 → 3,717 (+27%) with No DSL Light +18% and No Sync › Outage 314 → 640; copper / DSL mentions in agent comments 26,409 → 27,785 (+5%) while fibre mentions are flat; legacy Actiontec modem mentions +7%.",
+      evidence: "Connectivity › No Sync 3,262 → 3,717 (+14%) with No DSL Light +5% and No Sync › Outage 303 → 640 (+111%); copper / DSL mentions in agent comments +2.6% against fibre mentions +1.2%; legacy Actiontec modem mentions +6%.",
       action: "Trigger the copper-to-fibre repair intercept on the second copper sync ticket in 90 days, offer WHSIA where fibre is not yet built, and prioritise outside-plant pair changes in the clusters driving the outage-tagged tickets.",
       initiatives: ["Copper to Fibre Repair Intercept", "Proactive Intervention C2F Migration", "Copper to WHSIA Technology Change in CSR"] },
     { pri: "P2", tag: "Persistent", title: "Provisioning fallout: stuck orders and profile errors",
-      evidence: "NetCracker › Stuck closures 453 → 645 (+42%) and HSIA › Provisioning holds at ~950 a month; provisioning / profile fixes appear on ~1,100 field visits a month, visits that a back-office correction could have avoided.",
+      evidence: "NetCracker › Stuck closures 511 → 645 (+26%) while HSIA › Provisioning holds near 1,000 a month (997 → 956); provisioning / profile fixes appear on ~1,100 field visits a month, visits that a back-office correction could have avoided.",
       action: "Auto-retry stuck NetCracker orders and surface the failure to the agent, add a provisioning profile check to InSight for speed-tier tickets, and report fallout by order type weekly.",
       initiatives: ["Improve Provisioning Checks for 3 Gig in InSight"] },
-    { pri: "P3", tag: "Falling", title: "Sustain the speed, Wi-Fi and degraded-fibre gains",
-      evidence: "Wireless › Slow Speeds −14%, Connectivity › Slow Speeds −7%, Wireless › Can't Connect and Disconnects −7% each, Historical Data › Severe Line Issues −11%; intermittent-drop language in agent comments −12.5% and slow-speed language −9%.",
-      action: "Keep the GPONe degradation and Wi-Fi proactive campaigns funded through Q4, extend Cloudcheck server capacity ahead of the 3 Gig ramp, and track Boost Wi-Fi 7 (BV3) mentions, which rose 60%, for early hardware issues.",
+    { pri: "P3", tag: "Falling", title: "Sustain the degraded-fibre, speed and Wi-Fi gains",
+      evidence: "Historical Data › Severe Line Issues 2,914 → 2,593 (−11%) and ONT Not Ranged › Alarm Light −6%; Wireless › Slow Speeds −4%, Disconnects −3% and single-device Can't Connect −12%; intermittent-drop language in agent comments −11%, slow-speed language −6.5% and red / alarm-light language −4%; ONT and fibre field fixes −6%.",
+      action: "Keep the GPONe degradation and Wi-Fi proactive campaigns funded through Q4, extend Cloudcheck server capacity ahead of the 3 Gig ramp, and track Boost Wi-Fi 7 (BV3) mentions, which rose 39% in a month, for early hardware issues.",
       initiatives: ["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "Wi-Fi Scaling — Proactive Campaigns", "Cloudcheck Server Upgrades & Speed Test Improvements"] },
   ];
 
+
   function HsiaTicketAnalysisPage() {
     const K = HSA.tickets;
-    const sec = secFactory("hst", "HSIA · Ticket Analysis");
+    const sec = secFactory("hst", "HSIA · Notes Analysis");
     const dAll = K.divergence.all, dF = K.divergence.field;
     const catMax = Math.max(...K.agentCat.map((c) => Math.max(...c.v)));
     const mixMax = Math.max(...K.domainMix.flatMap((r) => r.v));
@@ -2698,7 +2715,7 @@ export default function ReliabilityScorecards() {
             deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          {fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, Jun – Aug 2026, from the weekly notes exports. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; {K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative. Customer survey verbatims are not yet available for HSIA, so there is no sentiment page.
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, Jun – Aug 2026, from the weekly notes exports; movements compare Aug 2026 with Jul 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; {K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative. Customer survey verbatims are not yet available for HSIA, so there is no sentiment page.
         </p>
 
         {sec("Top issues by agent categorisation", "tickets",
@@ -2734,7 +2751,7 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Category 1 › 2 › 3)</div>
             <MoverCards rising={K.rising} falling={K.falling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jun or Aug by absolute change. Incompatible Equipment is being re-coded from the Connectivity sub-category to its own Category 1, so the two lines should be read together (2,693 → 3,488 combined, +30%). No Dataflow › All Devices Affected is the single largest movement in either direction.</p>
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). Incompatible Equipment is being re-coded from the Connectivity sub-category to its own Category 1, so the two lines should be read together (2,993 → 3,488 combined, +17%). No Dataflow › All Devices Affected is the single largest movement in either direction; the outage-tagged sub-categories more than doubled.</p>
           </>
         )}
 
@@ -2854,7 +2871,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused determinations rose from 9.5% to 13.8% of visits (1,357 → 2,000, +47%) while total visits were flat, so a growing share of dispatches reach homes where the fault is customer equipment, wiring or setup. Found OK › Not Required closures doubled over the same period.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused determinations rose from 13.2% to 13.8% of visits (1,974 → 2,000) while total visits fell 3%, so a growing share of dispatches reach homes where the fault is customer equipment, wiring or setup. Found OK › Not Required closures rose 40% in the same month.</p>
               </div>
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
@@ -2876,7 +2893,7 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Closure movers (Resolution 1 › Resolution 2)</div>
             <MoverCards rising={K.techRising} falling={K.techFalling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Fibre work (ONT, light level, splice) is the largest field fix at about a third of visits and Wi-Fi / Boost placement the second at 27%; inside-wiring fixes rose 13%. Customer training closures fell 23% while Found OK and NetCracker stuck-order closures rose, so more tickets are reaching a truck or a back-office queue without a fault being found.</p>
+            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Fibre work (ONT, light level, splice) is the largest field fix at about a third of visits (−6% on the month) and Wi-Fi / Boost placement the second at 27%; modem replacements fell 13%. Customer training closures fell 8% while Found OK (+40%) and NetCracker stuck-order closures (+26%) rose, so more tickets are reaching a truck or a back-office queue without a fault being found.</p>
           </>
         )}
 
@@ -2932,7 +2949,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Fibre-related mentions (ONT, PureFibre, GPON) are flat while copper / DSL mentions rose 5%, matching the No Sync › No DSL Light growth. Among Wi-Fi hardware, Boost Wi-Fi 7 (BV3) mentions rose 60% and Boost Wi-Fi 6 14% as the older Wi-Fi Hub fell 18%; legacy Actiontec modem mentions are still rising.</p>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Fibre-related mentions (ONT, PureFibre, GPON) rose 1% while copper / DSL mentions rose 2.6%, matching the No Sync › No DSL Light growth (+5%). Among Wi-Fi hardware, Boost Wi-Fi 7 (BV3) mentions rose 39% and Boost Wi-Fi 6 10% in a month as the older Wi-Fi Hub fell 16%; legacy Actiontec modem mentions are still rising (+6%).</p>
               </div>
             </div>
           </>
@@ -2948,45 +2965,45 @@ export default function ReliabilityScorecards() {
     const K = HSA.tickets;
     const verdictColor = (v) => (v.startsWith("Rising") || v.startsWith("Emerging") ? T.bad : v.startsWith("Falling") ? T.good : T.textMuted);
     const MATRIX = [
-      { driver: "Incompatible equipment (plan vs hardware)", tickets: "Incompatible Equipment › Incompatible 876 → 1,994 (+128%); combined with the Connectivity sub-code 2,693 → 3,488 (+30%)", looker: "New category: 2,037 tickets in Aug 2026, none in Aug 2025", notes: "Boost Wi-Fi 7 (BV3) mentions +60%; NH20 / NAH mentions +2%; gateway swap-shipped theme −9%", tech: "1,185 visits in Aug, 90% aligned; closed as ONT install (602) or gateway (406); 6% non-TELUS", verdict: "Rising · confirmed, fulfilment not fault" },
-      { driver: "No Dataflow / all devices down", tickets: "No Dataflow 11,566 → 13,151 (+14%); All Devices Affected +15%", looker: "13,340 in Aug 2026 vs 10,305 in Aug 2025 (+29% YoY)", notes: "No-internet theme 10,834 → 11,426 (+5.5%); outage theme +8.5%", tech: "1,813 visits, 85% aligned; access line / ONT is the finding on 52%, gateway on 22%; 12% non-TELUS", verdict: "Rising · confirmed across all three lenses" },
-      { driver: "Copper No Sync and outage-tagged tickets", tickets: "No Sync 2,924 → 3,717 (+27%); No DSL Light +18%; No Sync › Outage 314 → 640; No IP › Outage +75%", looker: "No Sync 4,522 vs 4,104 in Aug 2025 (+10% YoY)", notes: "Copper / DSL mentions +5%; outage theme +8.5%; Actiontec legacy modem +7%", tech: "1,303 No Sync visits, 90% aligned; access line 58%, provisioning 11%", verdict: "Rising · copper-led" },
-      { driver: "Wi-Fi misdiagnosis and unfound faults", tickets: "Wireless tickets −7% (Can't Connect, Disconnects) but Found OK › Not Required closures 472 → 965 (+104%)", looker: "Wireless › Can't Connect +8% YoY; Disconnects +16% YoY (Aug vs Aug)", notes: "Wi-Fi cannot-connect theme flat at ~3.0K; Boost / extender theme +2%", tech: "Wireless visits 44% to 46% aligned; technicians find access-line or gateway faults on about half; non-TELUS caused 9.5% → 13.8% overall", verdict: "Divergence · diagnosis gap, not volume" },
-      { driver: "Intermittent connectivity (Losing Sync)", tickets: "Losing Sync 5,927 → 6,391 (+8%); Intermittent Connectivity +8%", looker: "6,707 vs 6,525 in Aug 2025 (+3% YoY)", notes: "Intermittent-drop theme 9,444 → 8,267 (−12.5%)", tech: "1,974 visits, 82% aligned; access line / ONT 53%, gateway 22%", verdict: "Persistent · tickets up, agent language down" },
-      { driver: "Provisioning fallout", tickets: "Connectivity › Incompatible Equipment › Not Required −30% as codes migrate", looker: "Not separately reported", notes: "Firmware / settings theme −4%", tech: "NetCracker › Stuck 453 → 645 (+42%); HSIA › Provisioning ~950 a month; provisioning fixes ~1,100 visits a month", verdict: "Rising · back-office signal only" },
-      { driver: "Speed complaints", tickets: "Connectivity › Slow Speeds −7%; Wireless › Slow Speeds −14%", looker: "Slow Speeds +10% YoY; Wireless Slow Speeds +11% YoY (Aug 2026 still above Aug 2025)", notes: "Slow-speed / buffering theme 12,851 → 11,736 (−9%)", tech: "1,059 visits, 84% aligned; Wi-Fi / Boost fixes +6.5%", verdict: "Falling · Q3 improvement on a higher 2026 base" },
-      { driver: "Degraded fibre (severe line issues)", tickets: "Historical Data › Severe Line Issues 2,917 → 2,593 (−11%)", looker: "ONT Not Ranged 7,216 vs 8,536 in Aug 2025 (−15% YoY)", notes: "ONT / fibre / light-level theme −4%; red / alarm light theme −3.5%", tech: "Historical Data visits 93% aligned, 85% access line / ONT; fibre fixes flat at ~4.6K", verdict: "Falling · proactive fibre programs landing" },
+      { driver: "No Dataflow / all devices down", tickets: "No Dataflow 11,676 → 13,151 (+13%); All Devices Affected +14%", looker: "13,340 in Aug 2026 vs 10,305 in Aug 2025 (+29% YoY)", notes: "No-internet theme 10,606 → 11,426 (+8%); outage theme 6,537 → 7,478 (+14%)", tech: "1,813 visits, 85% aligned; access line / ONT is the finding on 52%, gateway on 22%; 12% non-TELUS", verdict: "Rising · confirmed across all three lenses" },
+      { driver: "Incompatible equipment (plan vs hardware)", tickets: "Incompatible Equipment › Incompatible 1,656 → 1,994 (+20%); combined with the Connectivity sub-code 2,993 → 3,488 (+17%)", looker: "New category: 2,037 tickets in Aug 2026, none in Aug 2025", notes: "Boost Wi-Fi 7 (BV3) mentions +39%; Boost Wi-Fi 6 +10%; gateway swap-shipped theme +5%", tech: "1,185 visits in Aug, 90% aligned; closed as ONT install (602) or gateway (406); 6% non-TELUS", verdict: "Rising · confirmed, fulfilment not fault" },
+      { driver: "Copper No Sync and outage-tagged tickets", tickets: "No Sync 3,262 → 3,717 (+14%); No DSL Light +5%; No Sync › Outage 303 → 640 (+111%); ONT Not Ranged › Outage +23%", looker: "No Sync 4,522 vs 4,104 in Aug 2025 (+10% YoY)", notes: "Copper / DSL mentions +2.6% vs fibre +1.2%; outage theme +14%; Actiontec legacy modem +6%", tech: "1,303 No Sync visits, 90% aligned; access line 58%, provisioning 11%", verdict: "Rising · copper and outage led" },
+      { driver: "Wi-Fi misdiagnosis and unfound faults", tickets: "Wireless tickets −1% to −4%, but Found OK › Not Required closures 690 → 965 (+40%) and Avoidable Dispatch +22%", looker: "Wireless › Can't Connect +8% YoY; Disconnects +16% YoY (Aug vs Aug)", notes: "Wi-Fi cannot-connect theme 2,821 → 3,058 (+8%); Boost / extender theme +2.5%", tech: "Wireless visits 44% to 46% aligned; Wi-Fi extender closures +19%; non-TELUS caused 13.2% → 13.8% (+60 bps)", verdict: "Divergence · diagnosis gap, not volume" },
+      { driver: "Intermittent connectivity (Losing Sync)", tickets: "Losing Sync 6,269 → 6,391 (+2%); Losing Sync › Outage 203 → 286 (+41%)", looker: "6,707 vs 6,525 in Aug 2025 (+3% YoY)", notes: "Intermittent-drop theme 9,323 → 8,267 (−11%)", tech: "1,974 visits, 82% aligned; access line / ONT 53%, gateway 22%", verdict: "Persistent · tickets flat, agent language down" },
+      { driver: "Provisioning fallout", tickets: "Connectivity › Incompatible Equipment › Not Required 850 → 951 (+12%) as codes migrate", looker: "Not separately reported", notes: "Firmware / settings theme −2%", tech: "NetCracker › Stuck 511 → 645 (+26%); HSIA › Provisioning 997 → 956; provisioning fixes flat at ~1,100 visits", verdict: "Rising · back-office signal only" },
+      { driver: "Speed complaints", tickets: "Connectivity › Slow Speeds −1%; Wireless › Slow Speeds −4%", looker: "Slow Speeds +10% YoY; Wireless Slow Speeds +11% YoY (Aug 2026 still above Aug 2025)", notes: "Slow-speed / buffering theme 12,547 → 11,736 (−6.5%)", tech: "1,059 visits, 84% aligned; Wi-Fi / Boost fixes +1%", verdict: "Falling · slow improvement on a higher 2026 base" },
+      { driver: "Degraded fibre (severe line issues)", tickets: "Historical Data › Severe Line Issues 2,914 → 2,593 (−11%); ONT Not Ranged › Alarm Light −6%", looker: "ONT Not Ranged 7,216 vs 8,536 in Aug 2025 (−15% YoY)", notes: "ONT / fibre / light-level theme −2.6%; red / alarm light theme −4%", tech: "Historical Data visits 93% aligned, 85% access line / ONT; fibre fixes 4,941 → 4,631 (−6%)", verdict: "Falling · proactive fibre programs landing" },
     ];
     const rising = [
-      { name: "Incompatible equipment (plan vs hardware)", src: "tickets +128% (new code) · 1,185 visits closing as ONT / gateway installs" },
-      { name: "No Dataflow / all devices down", src: "tickets +14% · notes +5.5% · outage language +8.5% · Looker +29% YoY" },
-      { name: "Copper No Sync and outage-tagged tickets", src: "tickets +27% · No DSL Light +18% · copper mentions +5%" },
-      { name: "Unfound faults and non-TELUS-caused visits", src: "Found OK +104% · non-TELUS caused +430 bps · Wireless visits under 50% aligned" },
-      { name: "Provisioning fallout", src: "NetCracker stuck +42%" },
+      { name: "No Dataflow / all devices down", src: "tickets +13% · notes +8% · outage language +14% · Looker +29% YoY" },
+      { name: "Incompatible equipment (plan vs hardware)", src: "tickets +20% · 1,185 visits closing as ONT / gateway installs" },
+      { name: "Copper No Sync and outage-tagged tickets", src: "tickets +14% · outage-tagged +111% · copper mentions +2.6%" },
+      { name: "Unfound faults and non-TELUS-caused visits", src: "Found OK +40% · non-TELUS caused +60 bps · Wireless visits under 50% aligned" },
+      { name: "Provisioning fallout", src: "NetCracker stuck +26%" },
     ];
     const falling = [
-      { name: "Speed complaints", src: "tickets −7% / −14% · slow-speed notes −9%" },
-      { name: "Degraded fibre / severe line issues", src: "tickets −11% · ONT Not Ranged −15% YoY" },
-      { name: "Intermittent-drop language", src: "agent theme −12.5% · repeat-issue language −8%" },
-      { name: "Customer training closures", src: "Customer › Training / Education −23%" },
+      { name: "Degraded fibre / severe line issues", src: "tickets −11% · fibre fixes −6% · ONT Not Ranged −15% YoY" },
+      { name: "Intermittent-drop language", src: "agent theme −11% · repeat-issue language −2.5%" },
+      { name: "Speed complaints", src: "tickets −1% / −4% · slow-speed notes −6.5%" },
+      { name: "Customer training closures", src: "Customer › Training / Education −8%" },
     ];
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.HSIA} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, agent notes and technician findings agree" deltas={[<span key="a" style={{ color: T.textMuted }}>incompatible equipment, no dataflow, copper no sync</span>]} />
+          <StatCard T={T} color={colors.HSIA} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, agent notes and technician findings agree" deltas={[<span key="a" style={{ color: T.textMuted }}>no dataflow, incompatible equipment, copper no sync</span>]} />
           <StatCard T={T} color={colors.HSIA} icon="cross" label="Diagnosis gap" value="1" sub="volume flat, closures diverging" deltas={[<span key="a" style={{ color: T.textMuted }}>Wireless dispatches</span>]} />
-          <StatCard T={T} color={colors.HSIA} icon="initiatives" label="Falling drivers" value="2" sub="improvement visible in every lens" deltas={[<span key="a" style={{ color: T.textMuted }}>speed, degraded fibre</span>]} />
+          <StatCard T={T} color={colors.HSIA} icon="initiatives" label="Falling drivers" value="2" sub="improvement visible in every lens" deltas={[<span key="a" style={{ color: T.textMuted }}>degraded fibre, speed</span>]} />
           <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field-visit divergence" value={fmtPct(K.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={K.divergence.field.map((d) => d.reattribution)} bps />]} />
           <StatCard T={T} color={colors.HSIA} icon="cx" label="Non-TELUS-caused visits" value={fmtPct(K.divergence.field[2].nontelus, 1)} sub="share of technician determinations · Aug" deltas={[<Move key="m" v={K.divergence.field.map((d) => d.nontelus)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Each driver is read across the available lenses for Jun – Aug 2026: ticket categories from the notes export (agent), Looker ticket volumes year over year (Aug 2026 vs Aug 2025), agent comment themes, and technician findings on field visits. A driver is confirmed when the direction agrees across sources. Customer survey verbatims are not yet available for HSIA and will be added as a fifth lens when they are.
+          Each driver is read across the available lenses, comparing Aug 2026 with Jul 2026: ticket categories from the notes export (agent), Looker ticket volumes year over year (Aug 2026 vs Aug 2025), agent comment themes, and technician findings on field visits. A driver is confirmed when the direction agrees across sources. Customer survey verbatims are not yet available for HSIA and will be added as a fifth lens when they are.
         </p>
 
         {sec("Signal alignment matrix", "cross",
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead><tr>{["Driver", "Ticket trend (notes, Aug vs Jun)", "Looker volume (Aug 2026 vs Aug 2025)", "Agent notes", "Technician findings", "Verdict"].map((h) => <th key={h} style={{ ...anTh, whiteSpace: "normal" }}>{h}</th>)}</tr></thead>
+              <thead><tr>{["Driver", "Ticket trend (notes, Aug vs Jul)", "Looker volume (Aug 2026 vs Aug 2025)", "Agent notes", "Technician findings", "Verdict"].map((h) => <th key={h} style={{ ...anTh, whiteSpace: "normal" }}>{h}</th>)}</tr></thead>
               <tbody>
                 {MATRIX.map((r) => (
                   <tr key={r.driver}>
@@ -3007,7 +3024,7 @@ export default function ReliabilityScorecards() {
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
             {[["Rising", rising, T.bad], ["Falling", falling, T.good]].map(([title, items, col]) => (
               <div key={title} style={{ flex: 1, minWidth: 300, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${col}`, borderRadius: 10, padding: "12px 16px" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: col, marginBottom: 8 }}>{title} · Aug vs Jun 2026</div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: col, marginBottom: 8 }}>{title} · Aug vs Jul 2026</div>
                 {items.map((it, i) => (
                   <div key={it.name} style={{ padding: "6px 0", borderBottom: i < items.length - 1 ? `1px solid ${T.border}` : "none" }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary }}>{i + 1}. {it.name}</div>
@@ -3263,13 +3280,13 @@ export default function ReliabilityScorecards() {
       : page === "execsummary"
       ? "Executive summary"
       : page === "hsiatickets"
-      ? "HSIA ticket analysis"
+      ? "HSIA notes analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
       : page === "tvplatforms"
         ? "TV by platform"
         : page === "tvtickets"
-          ? "TV ticket analysis"
+          ? "TV notes analysis"
           : page === "tvsentiment"
             ? "TV customer sentiment analysis"
             : page === "tvcross"
@@ -3317,7 +3334,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV analysis: agent/technician ticket notes, Optik TV survey verbatims (Jun – Aug 2026) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes, Optik TV survey verbatims (Jun – Aug 2026, Aug vs Jul) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div>
         </div>
       </aside>
@@ -3334,17 +3351,17 @@ export default function ReliabilityScorecards() {
               : page === "execsummary"
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
               : page === "hsiatickets"
-              ? "HSIA tickets Jun – Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+              ? "HSIA notes analysis · Aug vs Jul 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
               : page === "hsiacross"
-              ? "HSIA cross analysis Jun – Aug 2026 · ticket trends × Looker volumes × agent/technician notes"
+              ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "tvplatforms"
                 ? "TV platforms · Optik TV Legacy vs TV Evolution: base, tickets, repairs, swaps"
                 : page === "tvtickets"
-                  ? "TV tickets Jun – Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+                  ? "TV notes analysis · Aug vs Jul 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
                   : page === "tvsentiment"
-                    ? "Optik TV survey verbatims Jun – Aug 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
+                    ? "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
                     : page === "tvcross"
-                      ? "TV cross analysis Jun – Aug 2026 · ticket trends × agent/technician notes × customer verbatims"
+                      ? "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims"
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: tickets, repairs/dispatches, base (from Jul 2025)"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
@@ -3373,7 +3390,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {!PRODUCTS.includes(CHILD_PARENT[page]) && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
@@ -3382,7 +3399,7 @@ export default function ReliabilityScorecards() {
               <select value={toIdx} onChange={(e) => { const v = +e.target.value; setToIdx(v); if (v < fromIdx) setFromIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
               </select>
-            </div>
+            </div>}
           </div>
 
           {page === "home" ? <HomePage />

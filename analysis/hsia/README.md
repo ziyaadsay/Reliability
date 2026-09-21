@@ -1,6 +1,6 @@
 # HSIA ticket notes analysis
 
-Script that produces the aggregated data behind the HSIA "Ticket Analysis" and
+Script that produces the aggregated data behind the HSIA "Notes Analysis" and
 "Cross Analysis" sub-pages in `site/App.jsx`. There is no HSIA customer
 sentiment page yet because no HSIA survey verbatim files have been supplied.
 
@@ -11,7 +11,8 @@ sentiment page yet because no HSIA survey verbatim files have been supplied.
   monthly volumes by agent category and closure code, sub-category movers,
   agent-vs-closure categorisation divergence (all closures and field visits
   only), technician determinations and fix themes, agent-comment themes,
-  device mentions and fibre vs copper access mentions.
+  device mentions and fibre vs copper access mentions. Movers compare the
+  latest month with the prior month (Aug vs Jul 2026).
 
 Agent symptom domains: Access line & ONT (ONT Not Ranged, No Sync, Losing
 Sync, Historical Data), Gateway / dataflow (No Dataflow, No IP), Speed,

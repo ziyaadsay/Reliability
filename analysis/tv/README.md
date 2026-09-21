@@ -1,6 +1,6 @@
 # TV ticket notes and survey verbatim analysis
 
-Scripts that produce the aggregated data behind the TV "Ticket Analysis",
+Scripts that produce the aggregated data behind the TV "Notes Analysis",
 "Customer Sentiment Analysis" and "Cross Analysis" sub-pages in `site/App.jsx`
 (the `TVA` constant).
 
@@ -16,3 +16,5 @@ Scripts that produce the aggregated data behind the TV "Ticket Analysis",
   sample quotes. Score columns are ignored.
 
 Raw exports are not committed because they contain customer details.
+
+Movers and month-over-month movements compare Aug 2026 with Jul 2026.

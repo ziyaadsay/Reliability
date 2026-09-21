@@ -64,11 +64,12 @@ def monthly(keyfn, min_total=0):
     return {k: v for k, v in c.items() if sum(v) >= min_total}
 
 def movers(tbl, floor=150, n=8):
+    # Aug vs Jul (latest month vs prior month)
     items = []
     for k, v in tbl.items():
-        if v[0] >= floor or v[2] >= floor:
-            d = v[2] - v[0]
-            pct = (d / v[0] * 100) if v[0] else None
+        if v[1] >= floor or v[2] >= floor:
+            d = v[2] - v[1]
+            pct = (d / v[1] * 100) if v[1] else None
             items.append({'key': k, 'jun': v[0], 'jul': v[1], 'aug': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
     rising = sorted([i for i in items if i['delta'] > 0], key=lambda i: -i['delta'])[:n]
     falling = sorted([i for i in items if i['delta'] < 0], key=lambda i: i['delta'])[:n]
