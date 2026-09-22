@@ -694,6 +694,95 @@ function DeltaText({ d, T, suffix }) {
   return <span style={{ color, fontWeight: 600 }}>{d.text}{suffix ? ` ${suffix}` : ""}</span>;
 }
 
+// Bars (volume, left axis) with a line (rate, right axis) on one chart.
+// bar/line: { label, data, color, fmt }
+function ComboChart({ labels, bar, line, height = 240, T }) {
+  const wrapRef = useRef(null);
+  const [hoverI, setHoverI] = useState(null);
+  const left = 56, right = 64, top = 16, bottom = 22;
+  const plotW = VIEW_W - left - right, plotH = height - top - bottom;
+  const bVals = bar.data.filter((v) => v != null), lVals = line.data.filter((v) => v != null);
+  const bMax = bVals.length ? niceCeil(Math.max(...bVals) * 1.15) : 1;
+  const lMax = lVals.length ? niceCeil(Math.max(...lVals) * 1.15) : 1;
+  const n = Math.max(1, labels.length);
+  const slot = plotW / n;
+  const xCenter = (i) => left + slot * i + slot / 2;
+  const yBar = (v) => top + (1 - v / bMax) * plotH;
+  const yLine = (v) => top + (1 - v / lMax) * plotH;
+  const bw = Math.max(4, Math.min(30, slot * 0.58));
+
+  function handleMove(e) {
+    const rect = wrapRef.current.getBoundingClientRect();
+    const relX = ((e.clientX - rect.left) / rect.width) * VIEW_W;
+    const i = Math.max(0, Math.min(n - 1, Math.floor((relX - left) / slot)));
+    setHoverI(i);
+  }
+  const xLabelStep = Math.max(1, Math.ceil(n / 6));
+  const hoverPct = hoverI != null ? (xCenter(hoverI) / VIEW_W) * 100 : null;
+  const tooltipLeft = hoverPct == null ? 0 : Math.min(88, Math.max(2, hoverPct));
+  const tooltipAlignRight = hoverPct != null && hoverPct > 62;
+  const linePts = line.data.map((v, i) => (v == null ? null : { x: xCenter(i), y: yLine(v), v })).filter(Boolean);
+  const lastBarI = bar.data.reduce((a, v, i) => (v == null ? a : i), -1);
+
+  return (
+    <div ref={wrapRef} style={{ position: "relative", width: "100%", aspectRatio: `${VIEW_W} / ${height}` }} onMouseMove={handleMove} onMouseLeave={() => setHoverI(null)}>
+      <svg width="100%" height="100%" viewBox={`0 0 ${VIEW_W} ${height}`}>
+        {Array.from({ length: 5 }).map((_, t) => {
+          const y = top + plotH - (plotH * t) / 4;
+          return (
+            <g key={t}>
+              <line x1={left} x2={VIEW_W - right} y1={y} y2={y} stroke={T.border} strokeWidth="1" />
+              <text x={left - 8} y={y} fontSize="10.5" fill={T.textMuted} textAnchor="end" dominantBaseline="middle">{bar.fmt((bMax * t) / 4)}</text>
+              <text x={VIEW_W - right + 8} y={y} fontSize="10.5" fill={T.textMuted} textAnchor="start" dominantBaseline="middle">{line.fmt((lMax * t) / 4)}</text>
+            </g>
+          );
+        })}
+        {labels.map((m, i) =>
+          i % xLabelStep === 0 ? (
+            <text key={i} x={xCenter(i)} y={height - 6} fontSize="10" fill={T.textMuted} textAnchor="middle">
+              {m.replace(/(\d{4})/, (y) => y.slice(2))}
+            </text>
+          ) : null
+        )}
+        {bar.data.map((v, i) => v == null ? null : (
+          <rect key={i} x={xCenter(i) - bw / 2} y={yBar(v)} width={bw} height={Math.max(0, top + plotH - yBar(v))} rx="3"
+            fill={bar.color} opacity={hoverI === i ? 0.75 : 0.38} />
+        ))}
+        {lastBarI >= 0 && (() => {
+          // keep the bar label clear of the line's end label when the two meet
+          const by = yBar(bar.data[lastBarI]) - 6;
+          const ly = line.data[lastBarI] != null ? yLine(line.data[lastBarI]) : null;
+          const clash = ly != null && Math.abs(ly - by) < 14;
+          return clash
+            ? <text x={xCenter(lastBarI) - bw / 2 - 6} y={by} fontSize="11" fontWeight="600" fill={bar.color} textAnchor="end">{bar.fmt(bar.data[lastBarI])}</text>
+            : <text x={xCenter(lastBarI)} y={by} fontSize="11" fontWeight="600" fill={bar.color} textAnchor="middle">{bar.fmt(bar.data[lastBarI])}</text>;
+        })()}
+        {linePts.length > 0 && (
+          <g>
+            <path d={"M " + linePts.map((p) => `${p.x},${p.y}`).join(" L ")} fill="none" stroke={line.color} strokeWidth="2.5" />
+            {linePts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={hoverI != null && xCenter(hoverI) === p.x ? 4 : 2.5} fill={line.color} stroke={T.surface} strokeWidth="1.5" />)}
+            <text x={linePts[linePts.length - 1].x + 8} y={linePts[linePts.length - 1].y} fontSize="11.5" fontWeight="600" fill={line.color} dominantBaseline="middle"
+              textAnchor={linePts[linePts.length - 1].x > VIEW_W - right - 40 ? "start" : "start"}>{line.fmt(linePts[linePts.length - 1].v)}</text>
+          </g>
+        )}
+      </svg>
+      {hoverI != null && (
+        <div style={{
+          position: "absolute", top: 6, left: `${tooltipLeft}%`,
+          transform: tooltipAlignRight ? "translateX(-100%)" : "none",
+          background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8,
+          padding: "8px 10px", fontSize: 12, color: T.text, boxShadow: "0 4px 16px rgba(0,0,0,.14)",
+          pointerEvents: "none", whiteSpace: "nowrap", zIndex: 2
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>{labels[hoverI]}</div>
+          {bar.data[hoverI] != null && <div style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 9, height: 9, borderRadius: 2, background: bar.color, opacity: 0.6, display: "inline-block" }} />{bar.label}: <b>{bar.fmt(bar.data[hoverI])}</b></div>}
+          {line.data[hoverI] != null && <div style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: "50%", background: line.color, display: "inline-block" }} />{line.label}: <b>{line.fmt(line.data[hoverI])}</b></div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Eyebrow({ children, T, style }) {
   return <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: T.heading, ...style }}>{children}</div>;
 }
@@ -729,7 +818,7 @@ function DataTable({ labels, seriesDefs, fmt, T }) {
             <tr key={m}>
               <td style={{ padding: "6px 10px", borderBottom: `1px solid ${T.border}`, color: T.textSecondary, fontWeight: 600 }}>{m}</td>
               {seriesDefs.map((s, si) => (
-                <td key={si} style={{ padding: "6px 10px", borderBottom: `1px solid ${T.border}`, textAlign: "right", whiteSpace: "nowrap" }}>{fmt(s.data[i])}</td>
+                <td key={si} style={{ padding: "6px 10px", borderBottom: `1px solid ${T.border}`, textAlign: "right", whiteSpace: "nowrap" }}>{(s.fmt || fmt)(s.data[i])}</td>
               ))}
             </tr>
           ))}
@@ -761,7 +850,9 @@ function Legend({ items, T }) {
     <div style={{ display: "flex", gap: 18, alignItems: "center", margin: "8px 2px 2px", fontSize: 12.5, color: T.textSecondary, flexWrap: "wrap" }}>
       {items.map((it, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 16, height: 0, borderTop: `3px ${it.dash ? "dashed" : "solid"} ${it.color}`, borderRadius: 2 }} />
+          {it.bar
+            ? <span style={{ width: 12, height: 12, background: it.color, opacity: 0.5, borderRadius: 3, display: "inline-block" }} />
+            : <span style={{ width: 16, height: 0, borderTop: `3px ${it.dash ? "dashed" : "solid"} ${it.color}`, borderRadius: 2 }} />}
           {it.label}
         </div>
       ))}
@@ -1963,16 +2054,22 @@ export default function ReliabilityScorecards() {
 
         {sec("Tickets", "tickets",
           <>
-            <ChartCard title="Ticket rate (% of sub base)" T={T}
+            <ChartCard title="Tickets — volume (bars) and rate (line, % of sub base)" T={T}
               tableOpen={!!openTables[product + "-tr"]} onToggleTable={() => toggleTable(product + "-tr")}
-              note={product === "SH+" ? "SH+ tickets are reported from Jul 2025 (SH+ reliability KPIs workbook)." : undefined}>
-              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-              {openTables[product + "-tr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+              note={product === "SH+" ? "SH+ tickets are reported from Jul 2025 (SH+ reliability KPIs workbook). Volume on the left axis, rate on the right." : "Ticket volume on the left axis, ticket rate on the right axis (Reliability Deact KPIs tab)."}>
+              <ComboChart labels={rangeMonths} T={T}
+                bar={{ label: "Ticket volume", data: sliceR(DATA.ticketVolume[product]), color: colors[product], fmt: fmtNumK }}
+                line={{ label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), color: colors[product], fmt: (v) => fmtPct(v, 2) }} />
+              <Legend items={[{ label: "Ticket volume (bars, left axis)", color: colors[product], bar: true }, { label: "Ticket rate (line, right axis)", color: colors[product] }]} T={T} />
+              {openTables[product + "-tr"] && <DataTable labels={rangeMonths} seriesDefs={[
+                { key: product, label: "Ticket volume", data: sliceR(DATA.ticketVolume[product]), fmt: fmtNum },
+                { key: product, label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), fmt: (v) => fmtPct(v, 2) }
+              ]} fmt={fmtNum} T={T} />}
             </ChartCard>
-            {hasLooker ? (
-              <ChartCard title={`Ticket volume with top category — ${L.topCat.name}`} T={T}
+            {hasLooker && (
+              <ChartCard title={`Looker ticket volume with top category — ${L.topCat.name}`} T={T}
                 tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
-                note={`Looker ticket categories, Churn Measurement 2026 workbook. The dashed series maps the top category (${L.topCat.name}) as a datapoint against total ${product} tickets.`}>
+                note={`Looker ticket categories, Churn Measurement 2026 workbook. The dashed series maps the top category (${L.topCat.name}) as a datapoint against total ${product} Looker tickets.`}>
                 <LineChart labels={rangeMonths} seriesDefs={[
                   { key: product, label: "Total tickets", data: sliceR(L.monthlyTotal) },
                   { key: product, label: `Top category: ${L.topCat.name}`, data: sliceR(L.topCat.series), dash: "7 5" }
@@ -1986,13 +2083,6 @@ export default function ReliabilityScorecards() {
                   { key: product, label: L.topCat.name, data: sliceR(L.topCat.series) }
                 ]} fmt={fmtNum} T={T} />}
               </ChartCard>
-            ) : (
-              <ChartCard title="Ticket volume" T={T}
-                tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
-                note="Ticket category detail (Looker) is not yet available for SH+, so no top-category overlay is shown.">
-                <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketVolume[product]) }]} yFmt={fmtNum} colors={colors} T={T} />
-                {openTables[product + "-tv"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.ticketVolume[product]) }]} fmt={fmtNum} T={T} />}
-              </ChartCard>
             )}
           </>
         )}
@@ -2001,16 +2091,17 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <>
-            <ChartCard title="Repair / dispatch rate (% of sub base)" T={T}
+            <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, % of sub base)" T={T}
               tableOpen={!!openTables[product + "-rr"]} onToggleTable={() => toggleTable(product + "-rr")}
-              note={product === "SH+" ? "SH+ repairs are reported from Jul 2025 (SH+ reliability KPIs workbook)." : undefined}>
-              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-              {openTables[product + "-rr"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
-            </ChartCard>
-            <ChartCard title="Repair (dispatch) volume" T={T}
-              tableOpen={!!openTables[product + "-rv"]} onToggleTable={() => toggleTable(product + "-rv")}>
-              <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} yFmt={fmtNum} colors={colors} T={T} />
-              {openTables[product + "-rv"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.repairVolume[product]) }]} fmt={fmtNum} T={T} />}
+              note={product === "SH+" ? "SH+ repairs are reported from Jul 2025 (SH+ reliability KPIs workbook). Volume on the left axis, rate on the right." : "Repair (dispatch) volume on the left axis, repair rate on the right axis."}>
+              <ComboChart labels={rangeMonths} T={T}
+                bar={{ label: "Repair volume", data: sliceR(DATA.repairVolume[product]), color: colors[product], fmt: fmtNumK }}
+                line={{ label: "Repair rate", data: sliceR(DATA.repairRate[product]), color: colors[product], fmt: (v) => fmtPct(v, 2) }} />
+              <Legend items={[{ label: "Repair volume (bars, left axis)", color: colors[product], bar: true }, { label: "Repair rate (line, right axis)", color: colors[product] }]} T={T} />
+              {openTables[product + "-rr"] && <DataTable labels={rangeMonths} seriesDefs={[
+                { key: product, label: "Repair volume", data: sliceR(DATA.repairVolume[product]), fmt: fmtNum },
+                { key: product, label: "Repair rate", data: sliceR(DATA.repairRate[product]), fmt: (v) => fmtPct(v, 2) }
+              ]} fmt={fmtNum} T={T} />}
             </ChartCard>
             {product === "HSIA" && (
               <div style={{ background: T.purpleLightest, border: `1px solid ${T.purpleLighter}`, borderRadius: 12, padding: "18px 20px", marginTop: 16 }}>
@@ -2057,7 +2148,7 @@ export default function ReliabilityScorecards() {
                         )}
                       </span>
                     </div>
-                    <InitiativeRows items={filtered} filterable allItems={prodInits} />
+                    {InitiativeRows({ items: filtered, filterable: true, allItems: prodInits })}
                   </>
                 );
               })()}
@@ -2073,7 +2164,7 @@ export default function ReliabilityScorecards() {
   function TvPlatformsPage() {
     return (
       <Section key="tvplatforms" num="01" eyebrow="TV · By Platform" title="Optik TV Legacy vs TV Evolution" icon="tv" T={T} collapsible defaultOpen={false}>
-        <TvPlatformBreakout />
+        {TvPlatformBreakout()}
       </Section>
     );
   }
@@ -3402,16 +3493,19 @@ export default function ReliabilityScorecards() {
             </div>}
           </div>
 
-          {page === "home" ? <HomePage />
-            : page === "selfserve" ? <SelfServePage />
+          {/* Page renderers are plain functions (no hooks) called inline, so a
+              state change re-renders the existing DOM instead of remounting the
+              page; the Executive Summary keeps its own state and stays a component. */}
+          {page === "home" ? HomePage()
+            : page === "selfserve" ? SelfServePage()
             : page === "execsummary" ? <ExecSummaryPage />
-            : page === "hsiatickets" ? <HsiaTicketAnalysisPage />
-            : page === "hsiacross" ? <HsiaCrossPage />
-            : page === "tvplatforms" ? <TvPlatformsPage />
-            : page === "tvtickets" ? <TvTicketAnalysisPage />
-            : page === "tvsentiment" ? <TvSentimentPage />
-            : page === "tvcross" ? <TvCrossPage />
-            : <ProductPage product={page} />}
+            : page === "hsiatickets" ? HsiaTicketAnalysisPage()
+            : page === "hsiacross" ? HsiaCrossPage()
+            : page === "tvplatforms" ? TvPlatformsPage()
+            : page === "tvtickets" ? TvTicketAnalysisPage()
+            : page === "tvsentiment" ? TvSentimentPage()
+            : page === "tvcross" ? TvCrossPage()
+            : ProductPage({ product: page })}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>
           Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
