@@ -50,17 +50,26 @@ jobs:
           curl -fsSL https://gizmos.run/skills/install.sh | bash
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      # The CLI lists files with `git ls-files --exclude-standard`, so a gitignored
+      # dist/ inside the checkout yields "No files found". Push from a copy that
+      # lives outside the repository instead.
+      - name: Stage build output outside the repository
+        run: |
+          rm -rf "$RUNNER_TEMP/deploy"
+          cp -r site/dist "$RUNNER_TEMP/deploy"
+          echo "DEPLOY_DIR=$RUNNER_TEMP/deploy" >> "$GITHUB_ENV"
+
       - name: Preview upload
-        run: gizmos push --dry-run --app "$GIZMOS_APP" --org "$GIZMOS_ORG" site/dist
+        run: gizmos push --dry-run --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
 
       - name: Deploy (go live)
         if: github.event_name == 'push' || inputs.publish == 'publish'
         env:
           GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
-        run: gizmos push --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" site/dist
+        run: gizmos push --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
 
       - name: Save version only (not live)
         if: github.event_name == 'workflow_dispatch' && inputs.publish == 'save'
         env:
           GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
-        run: gizmos save --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" site/dist
+        run: gizmos save --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
