@@ -1065,6 +1065,22 @@ function initiativesCovering(product, grp) {
   return INITIATIVES.filter((it) => it.p === product && it.issues.includes(grp));
 }
 
+// HSIA customer pain points (hsia_ticket_recategorization tab, G4:I6): how the Looker
+// Category 1 › 2 ticket types roll up. Anything not listed there is "Not grouped".
+const HSIA_PAIN_POINTS = [
+  { name: "Connection Instability & Disconnects", types: "Can't connect · No data flow · Losing sync · No IP · No sync · ONT not ranged" },
+  { name: "Slow Speeds", types: "Wireless slow speeds · High-speed (wired) slow speeds · Incompatible equipment" },
+  { name: "WiFi Coverage Gaps", types: "Wireless disconnects · Wireless can't connect" },
+  { name: "Not grouped", types: "Ticket types outside the three groups (Historical Data, Abandon, NWH); the tab reports these as Other or leaves them out" }
+];
+function hsiaPainPoint(issue) {
+  const [c1, c2] = issue.split(" › ").map((x) => x.trim());
+  if (/Incompatible/.test(c1) || /Incompatible/.test(c2) || /Slow Speeds/.test(c2)) return "Slow Speeds";
+  if (c1 === "Wireless" || c1 === "Wi-Fi connection") return /Disconnects|Can't Connect/.test(c2) ? "WiFi Coverage Gaps" : "Not grouped";
+  if (c1 === "Connectivity" && /Can't Connect|No Dataflow|Losing Sync|No IP|No Sync|ONT Not Ranged/.test(c2)) return "Connection Instability & Disconnects";
+  return "Not grouped";
+}
+
 // Initiative themes each Looker issue maps to, by product. The Ticket issues &
 // movers section uses this to show which initiative theme(s) address an issue
 // and to count initiative coverage by theme (HSIA and TV initiatives carry a
@@ -1723,7 +1739,7 @@ export default function ReliabilityScorecards() {
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
         {rows.map((r) => (
           <div key={r.issue} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5, padding: "3px 0" }}>
-            <span style={{ color: T.textSecondary }}>{r.issue}</span>
+            <span style={{ color: T.textSecondary }}>{r.issue}{product === "HSIA" && <span style={{ color: T.textFaint, fontSize: 11 }}> · {hsiaPainPoint(r.issue)}</span>}</span>
             <span style={{ fontWeight: 700, color: tone === "up" ? T.bad : T.good, whiteSpace: "nowrap" }}>
               {r.delta > 0 ? "▲ +" : "▼ "}{r.delta.toLocaleString()} <span style={{ color: T.textFaint, fontWeight: 400 }}>({yoyPctText(r.a26, r.a25)})</span>
             </span>
@@ -1744,6 +1760,7 @@ export default function ReliabilityScorecards() {
               <tr>
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Issue (Category › Sub-category)</th>
+                {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
                 <th style={{ ...thBase, textAlign: "right" }}>Aug'26</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
@@ -1760,6 +1777,10 @@ export default function ReliabilityScorecards() {
                   <tr key={r.issue}>
                     <td style={{ ...tdBase, color: T.textFaint, fontWeight: 700 }}>{i + 1}</td>
                     <td style={{ ...tdBase, fontWeight: 600, color: T.textSecondary, whiteSpace: "nowrap" }}>{r.issue}</td>
+                    {product === "HSIA" && (() => { const pp = hsiaPainPoint(r.issue); return (
+                      <td style={{ ...tdBase, fontSize: 12, whiteSpace: "nowrap" }}>
+                        <span title={(HSIA_PAIN_POINTS.find((x) => x.name === pp) || {}).types} style={{ display: "inline-block", background: pp === "Not grouped" ? "transparent" : colors.HSIA + "1a", border: `1px solid ${pp === "Not grouped" ? T.border : colors.HSIA + "55"}`, color: pp === "Not grouped" ? T.textFaint : T.heading, borderRadius: 999, padding: "0 8px", fontWeight: 600, fontSize: 11.5 }}>{pp}</span>
+                      </td>); })()}
                     <td style={{ ...tdBase, textAlign: "right", fontWeight: 700, color: T.text, whiteSpace: "nowrap" }}>{r.a26.toLocaleString()}</td>
                     <td style={{ ...tdBase, padding: "8px 6px" }}>
                       <div style={{ width: `${(r.a26 / maxA26) * 100}%`, minWidth: 2, height: 9, background: colors[product], borderRadius: 3, opacity: 0.7 }} />
@@ -1787,6 +1808,17 @@ export default function ReliabilityScorecards() {
             </tbody>
           </table>
         </div>
+        {product === "HSIA" && (
+          <div style={{ marginTop: 12, padding: "10px 14px", background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>Customer pain points · how Looker ticket types are grouped (hsia_ticket_recategorization tab)</div>
+            {HSIA_PAIN_POINTS.map((pp) => (
+              <div key={pp.name} style={{ display: "flex", gap: 10, fontSize: 12, padding: "2px 0", flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 700, color: T.textSecondary, minWidth: 250 }}>{pp.name}</span>
+                <span style={{ color: T.textMuted }}>{pp.types}</span>
+              </div>
+            ))}
+          </div>
+        )}
         <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
           Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares Aug 2026 against Aug 2025.
         </p>
