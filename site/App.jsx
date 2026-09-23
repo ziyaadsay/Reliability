@@ -10,7 +10,10 @@ import React, { useState, useEffect, useRef } from "react";
     reported through Jun 2026.
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
     ticket counts by category, Jan 2025 – Aug 2026 (replaces the earlier
-    Tableau DRD feed).
+    Tableau DRD feed). For HSIA the category volumes come from the
+    "hsia_ticket_recategorization" tab (A9:U13: Looker ticket types rolled up
+    to customer pain points); the HSIA Looker tab is used for issue-level
+    context only (top issues, risers/fallers, biggest monthly riser).
   - "Initiatives" tab, same workbook — HSIA, TV and SHS initiatives grouped
     under the reliability program's four pillars and tagged to the recurring
     ticket issues (HSIA/TV from the cross-source synthesis, SHS via the
@@ -107,8 +110,11 @@ const ISSUE_ORDER = ["Connectivity", "TV", "Speed", "WiFi", "Support", "SHS Hard
 
 const LOOKER = {
   HSIA: {
-    monthlyTotal: [42489,41047,47251,48475,49389,48900,52579,52722,50457,51979,53130,53539,53989,46972,49550,54149,56084,59165,59145,60572],
-    topCat: { name: "Connectivity", series: [32131,30626,35029,36273,37702,37343,40270,40370,38782,39606,39618,39896,38899,33705,36185,40138,41961,42848,42887,44386] },
+    // Volume by customer pain point: hsia_ticket_recategorization tab (A9:U13),
+    // Jan 2025 – Aug 2026. The Looker tab below is kept for issue-level context only.
+    monthlyTotal: [41132,39847,45993,47181,48037,47358,50984,51281,49083,50410,51679,51903,52276,45642,48031,52495,55892,57273,57173,58789],
+    topCat: { name: "Connection Instability & Disconnects", series: [26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889] },
+    catSource: "recategorization",
     topIssues: [
       { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305 },
       { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536 },
@@ -179,17 +185,21 @@ const LOOKER = {
     ]
   }
 };
+// HSIA: hsia_ticket_recategorization pain points (Connection Instability & Disconnects → Connectivity,
+// Slow Speeds → Speed, WiFi Coverage Gaps → WiFi, Other → Support). TV/SHS: Looker Category 1 groups.
 const OVERVIEW_ISSUES = [
-  { grp: "Connectivity", HSIA: [36342, 34439], TV: null, SHS: null },
+  { grp: "Connectivity", HSIA: [34889, 33263], TV: null, SHS: null },
   { grp: "TV", HSIA: null, TV: [30980, 33224], SHS: null },
-  { grp: "Speed", HSIA: [13364, 8879], TV: null, SHS: null },
-  { grp: "WiFi", HSIA: [10011, 8925], TV: null, SHS: null },
-  { grp: "Support", HSIA: [855, 479], TV: [1821, 1981], SHS: [6108, 9715] },
+  { grp: "Speed", HSIA: [13094, 8723], TV: null, SHS: null },
+  { grp: "WiFi", HSIA: [9880, 8825], TV: null, SHS: null },
+  { grp: "Support", HSIA: [926, 470], TV: [1821, 1981], SHS: [6108, 9715] },
   { grp: "SHS Hardware", HSIA: null, TV: null, SHS: [32594, 40406] }
 ];
-// Looker Category 1 stacks (top 5 by Aug 2026 + other) and the biggest month-over-month
-// percentage riser among Category 1 › 2 issues with at least 100 tickets in the prior month (2026).
-const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connectivity","series":[32131,30626,35029,36273,37702,37343,40270,40370,38782,39606,39618,39896,38899,33705,36185,40138,41961,42848,42887,44386]},{"name":"Wireless","series":[9421,9206,10947,10721,10541,10834,11716,11873,11156,11854,12999,13142,14457,12715,12699,13335,13313,14476,13523,13216]},{"name":"Incompatible Equipment","series":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,909,1690,2037]},{"name":"Abandon","series":[936,1213,1273,1480,1146,723,593,479,487,476,489,462,601,522,630,663,790,815,949,855]},{"name":"NWH","series":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,89,93,75]},{"name":"Other categories","series":[1,2,2,1,0,0,0,0,32,43,24,39,32,30,36,13,19,28,3,3]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5014,5998,5978,5236,6260,5393,5360,5394,4255,4074,4673,4676]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5208,6248,8295,7488,7572,6369,6136,6286,5546,5760,5813,6305]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103}}}};
+// Category stacks: HSIA uses the four customer pain points from the hsia_ticket_recategorization
+// tab; TV and SHS use the Looker Category 1 groups (top 5 by Aug 2026 + other). Risers are the biggest
+// month-over-month percentage riser among Looker Category 1 › 2 issues with at least 100 tickets in
+// the prior month (2026); for HSIA these remain Looker context.
+const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7748,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12854,13302,12813,13094]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10705,9470,9365,10018,10061,10583,10058,9880]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,813,917,1034,926]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5014,5998,5978,5236,6260,5393,5360,5394,4255,4074,4673,4676]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5208,6248,8295,7488,7572,6369,6136,6286,5546,5760,5813,6305]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103}}}};
 Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], x));
 
 // ---------------------------------------------------------------------------
@@ -1106,7 +1116,7 @@ function initiativesByTheme(product, themes) {
 // ---------------------------------------------------------------------------
 const DECK_W = 1120, DECK_H = 630;
 const DECK_LIGHT = { bg: "#FFFFFF", band: "#4B286D", bandText: "#C9A9E8", green: "#66CC02", panel: "#F6F2FA", border: "#E7E3EC", text: "#2C2E30", muted: "#676E73", faint: "#9A93A6", heading: "#4B286D", good: "#2B8000", bad: "#B3261E" };
-const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · TCS PLT Charter scorecard (Sweepr) · movements on rates are in bps";
+const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · TCS PLT Charter scorecard (Sweepr) · movements on rates are in bps";
 
 function sparkPoints(series, w, h) {
   const idx = series.map((v, i) => [i, v]).filter(([, v]) => v != null);
@@ -1239,7 +1249,7 @@ function deckToPptxSlides(deck) {
     s2.push(pptxShape({ x: ix, y: sy, w: iw, h: sh + 26, fill: C.panel, radius: 4000 }));
     const pts = sparkPoints(k.trend, iw - 24, sh - 20);
     if (pts.length > 1) s2.push(pptxPolyline({ x: ix + 12, y: sy + 10, w: iw - 24, h: sh - 20, points: pts, color: k.color, width: 2 }));
-    s2.push(pptxShape({ x: ix + 12, y: sy + sh - 4, w: iw - 24, h: 26, inset: 0, paras: [{ t: `${k.trendName} tickets · ${k.trendFrom} – ${k.trendTo} (Looker)`, sz: 7.5, color: C.faint }] }));
+    s2.push(pptxShape({ x: ix + 12, y: sy + sh - 4, w: iw - 24, h: 26, inset: 0, paras: [{ t: `${k.trendName} tickets · ${k.trendFrom} – ${k.trendTo} (${k.trendSrc})`, sz: 7.5, color: C.faint }] }));
     const list = (title, rows, col, y) => [
       pptxShape({ x: ix, y, w: iw, h: 18, inset: 0, paras: [{ t: title, sz: 8, b: true, color: col }] }),
       ...rows.map((r, j) => pptxShape({ x: ix, y: y + 20 + j * 30, w: iw, h: 30, inset: 0, paras: [{ t: r.name, sz: 8.5, color: C.text }, { t: r.text, sz: 8, b: true, color: col }] }))
@@ -1317,7 +1327,7 @@ function deckToHtml(deck) {
   const chrome = (n, title, body) => `<section class="slide"><header><div class="eyebrow">Reliability Strategy · Executive summary · ${e(deck.month)}</div><div class="row"><h1>${e(title)}</h1><span class="num">${n} / 4</span></div></header><div class="body">${body}</div><footer>${e(DECK_SOURCE)}</footer></section>`;
   const s1 = `<div class="cols">${deck.kpis.map((k) => `<div class="card"><div class="prod" style="color:${k.color}">${e(k.product)}</div><div class="tiles">${k.tiles.map((t) => `<div class="tile"><div class="lbl">${e(t.label)}</div><div class="val">${e(t.value)}</div><div class="sub">${e(t.month)}</div><div class="d" style="color:${t.yoy ? tone(t.yoy.tone) : C.faint}">${t.yoy ? e(t.yoy.text) + " vs prior yr." : "—"}</div></div>`).join("")}</div></div>`).join("")}</div>`;
   const spark = (k) => { const w = 300, h = 66, pts = sparkPoints(k.trend, w, h); return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${k.color}" stroke-width="2" stroke-linejoin="round" points="${pts.map((p) => p.join(",")).join(" ")}"/></svg>`; };
-  const s2 = `<div class="cols">${deck.issues.map((k) => `<div class="card"><div class="lbl" style="color:${k.color}">${e(k.product)} · top ticket issue — ${e(k.asOf)}</div><div class="issue">${e(k.issue)}</div><div class="sub2">${k.volume.toLocaleString()} tickets · <b style="color:${tone(k.tone)}">${e(k.yoy)}</b></div><div class="spark">${spark(k)}<div class="cap">${e(k.trendName)} tickets · ${e(k.trendFrom)} – ${e(k.trendTo)} (Looker)</div></div>${[["Rising", k.rising, C.bad], ["Falling", k.falling, C.good]].map(([t, rows, col]) => `<div class="mv"><div class="lbl" style="color:${col}">${t} · ${e(k.compare)}</div>${rows.map((r) => `<div class="mvr"><span>${e(r.name)}</span><b style="color:${col}">${e(r.text)}</b></div>`).join("")}</div>`).join("")}</div>`).join("")}</div>`;
+  const s2 = `<div class="cols">${deck.issues.map((k) => `<div class="card"><div class="lbl" style="color:${k.color}">${e(k.product)} · top ticket issue — ${e(k.asOf)}</div><div class="issue">${e(k.issue)}</div><div class="sub2">${k.volume.toLocaleString()} tickets · <b style="color:${tone(k.tone)}">${e(k.yoy)}</b></div><div class="spark">${spark(k)}<div class="cap">${e(k.trendName)} tickets · ${e(k.trendFrom)} – ${e(k.trendTo)} (${e(k.trendSrc)})</div></div>${[["Rising", k.rising, C.bad], ["Falling", k.falling, C.good]].map(([t, rows, col]) => `<div class="mv"><div class="lbl" style="color:${col}">${t} · ${e(k.compare)}</div>${rows.map((r) => `<div class="mvr"><span>${e(r.name)}</span><b style="color:${col}">${e(r.text)}</b></div>`).join("")}</div>`).join("")}</div>`).join("")}</div>`;
   const s3 = deck.milestones.length
     ? `<table><thead><tr><th>Product</th><th>Initiative</th><th>Theme</th><th>Status</th><th>Timeline</th><th>Prime</th></tr></thead><tbody>${deck.milestones.map((m) => `<tr><td style="color:${m.color};font-weight:700">${e(m.product)}</td><td><b>${e(m.name)}</b></td><td>${e(m.theme)}</td><td style="font-weight:700;color:${m.status === "Launched" ? C.good : m.status === "Stalled" ? C.bad : C.heading}">${e(m.status)}</td><td>${e(m.timeline)}</td><td>${e(m.prime)}</td></tr>`).join("")}</tbody></table>`
     : `<p class="empty">No initiative has a milestone dated ${e(deck.month)}.</p>`;
@@ -2081,7 +2091,7 @@ export default function ReliabilityScorecards() {
 
         <Section num="03" eyebrow="Ticket analysis" title="Tickets by recurring issue — Aug 2026" icon="issues" T={T} collapsible>
           <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
-            Looker ticket counts grouped by the five recurring issues from the cross-source reliability synthesis (perception study, VOC, onboarding, CCTS, OpenSignal and ticket/repair analysis). SHS device categories sit outside the 5-issue framework, matching the synthesis. A falling count (▼, green) is favourable.
+            Ticket counts grouped by the five recurring issues from the cross-source reliability synthesis (perception study, VOC, onboarding, CCTS, OpenSignal and ticket/repair analysis). HSIA counts are the customer pain points from the workbook's hsia_ticket_recategorization tab (its Other group, abandoned and uncategorised tickets, sits in the Support row); TV and SHS use the Looker ticket categories. SHS device categories sit outside the 5-issue framework, matching the synthesis. A falling count (▼, green) is favourable.
           </p>
           <RecurringIssuesTable />
         </Section>
@@ -2195,12 +2205,14 @@ export default function ReliabilityScorecards() {
               ]} fmt={fmtNum} T={T} />}
             </ChartCard>
             {hasLooker && (
-              <ChartCard title={`Looker ticket volume by category — top category ${L.topCat.name}`} T={T}
+              <ChartCard title={L.catSource === "recategorization" ? `Ticket volume by customer pain point — largest ${L.topCat.name}` : `Looker ticket volume by category — top category ${L.topCat.name}`} T={T}
                 tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
-                note={`Looker ticket categories, Churn Measurement 2026 workbook. Bars stack the five largest Category 1 groups (by Aug 2026 volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar.`}>
+                note={L.catSource === "recategorization"
+                  ? `hsia_ticket_recategorization tab, Churn Measurement 2026 workbook. Looker ticket types rolled up to customer pain points: Connection Instability & Disconnects (can't connect, no data flow, losing sync, no IP, no sync, ONT not ranged), Slow Speeds (wireless and wired slow speeds, incompatible equipment), WiFi Coverage Gaps (wireless disconnects, wireless can't connect) and Other. ${L.topCat.name} sits at the base of each bar.`
+                  : `Looker ticket categories, Churn Measurement 2026 workbook. Bars stack the five largest Category 1 groups (by Aug 2026 volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar.`}>
                 {(() => {
                   const shades = [1, 0.72, 0.52, 0.38, 0.26];
-                  const stacks = L.cats.map((c, ci) => c.name === "Other categories"
+                  const stacks = L.cats.map((c, ci) => /^Other/.test(c.name)
                     ? { name: c.name, data: sliceR(c.series), color: T.borderStrong, opacity: 0.9 }
                     : { name: c.name, data: sliceR(c.series), color: colors[product], opacity: shades[ci] || 0.2 });
                   return (
@@ -3298,7 +3310,7 @@ export default function ReliabilityScorecards() {
       return {
         product: p, color: colors[p], asOf, compare, issue: t.issue, volume: t.a26,
         yoy: t.a25 != null ? `${worse ? "▲" : "▼"} ${yoyPctText(t.a26, t.a25)} YoY` : "new in 2026", tone: worse ? "bad" : "good",
-        trendName: L.topCat.name, trend: L.topCat.series, trendFrom: MONTHS[0], trendTo: MONTHS[MONTHS.length - 1],
+        trendName: L.topCat.name, trend: L.topCat.series, trendFrom: MONTHS[0], trendTo: MONTHS[MONTHS.length - 1], trendSrc: L.catSource === "recategorization" ? "recategorized" : "Looker",
         rising: L.rising.slice(0, 3).map(mv), falling: L.falling.slice(0, 3).map(mv)
       };
     });
@@ -3410,7 +3422,7 @@ export default function ReliabilityScorecards() {
             <div style={{ fontSize: 12.5, color: T.textMuted, marginTop: 2 }}>{k.volume.toLocaleString()} tickets · <b style={{ color: toneCol(k.tone) }}>{k.yoy}</b></div>
             <div style={{ background: T.panel, borderRadius: 8, padding: "10px 12px 6px", margin: "10px 0" }}>
               <Spark series={k.trend} color={k.color} />
-              <div style={{ fontSize: 10, color: T.textFaint, marginTop: 4 }}>{k.trendName} tickets · {k.trendFrom} – {k.trendTo} (Looker)</div>
+              <div style={{ fontSize: 10, color: T.textFaint, marginTop: 4 }}>{k.trendName} tickets · {k.trendFrom} – {k.trendTo} ({k.trendSrc})</div>
             </div>
             {[["Rising", k.rising, T.bad], ["Falling", k.falling, T.good]].map(([title, rows, col]) => (
               <div key={title} style={{ marginTop: 10 }}>
@@ -3505,7 +3517,7 @@ export default function ReliabilityScorecards() {
           ))}
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0", lineHeight: 1.6 }}>
-          Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of Aug 2026. The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
+          Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of Aug 2026 (the HSIA trend line uses the recategorized customer pain points). The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
         </p>
       </>
     );
@@ -3572,7 +3584,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes, Optik TV survey verbatims (Jun – Aug 2026, Aug vs Jul) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes, Optik TV survey verbatims (Jun – Aug 2026, Aug vs Jul) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div>
         </div>
       </aside>
