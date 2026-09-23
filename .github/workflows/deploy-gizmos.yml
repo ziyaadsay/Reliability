@@ -1,0 +1,66 @@
+# Builds the dashboard and deploys it to Gizmos (relstrat.telus.gizmos.run).
+#
+# Runs on every push to main that touches the site, and on demand from the
+# Actions tab ("Run workflow", any branch). Needs one repository secret:
+#   GIZMOS_API_KEY  - a gzm_ key generated at https://gizmos.run/settings
+name: Deploy to Gizmos
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/deploy-gizmos.yml"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish (go live) or only save a version"
+        type: choice
+        options: [publish, save]
+        default: publish
+
+concurrency:
+  group: deploy-gizmos
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GIZMOS_URL: https://gizmos.run
+      GIZMOS_APP: relstrat
+      GIZMOS_ORG: telus
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: site
+        run: npm ci
+
+      - name: Build
+        working-directory: site
+        run: npm run build
+
+      - name: Install gizmos CLI
+        run: |
+          curl -fsSL https://gizmos.run/skills/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Preview upload
+        run: gizmos push --dry-run --app "$GIZMOS_APP" --org "$GIZMOS_ORG" site/dist
+
+      - name: Deploy (go live)
+        if: github.event_name == 'push' || inputs.publish == 'publish'
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: gizmos push --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" site/dist
+
+      - name: Save version only (not live)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish == 'save'
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: gizmos save --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" site/dist
