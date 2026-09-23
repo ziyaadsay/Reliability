@@ -11,9 +11,10 @@ import React, { useState, useEffect, useRef } from "react";
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
     ticket counts by category, Jan 2025 – Aug 2026 (replaces the earlier
     Tableau DRD feed).
-  - "Initiatives" tab, same workbook — TV and HSIA initiatives (SHS to be
-    added later), grouped under the reliability program's four pillars and
-    tagged to the five recurring issues from the cross-source synthesis.
+  - "Initiatives" tab, same workbook — HSIA, TV and SHS initiatives grouped
+    under the reliability program's four pillars and tagged to the recurring
+    ticket issues (HSIA/TV from the cross-source synthesis, SHS via the
+    workbook's pillar sub-themes).
 
   Calls (Contacts, offered/answered) are split by product from the TS Calls
   Offered by Product workbook; the KPI workbook's FFH rollup is kept in DATA
@@ -192,7 +193,7 @@ const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connectivity","series":[32131,306
 Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], x));
 
 // ---------------------------------------------------------------------------
-// Initiatives (workbook "Initiatives" tab; SHS to be added later).
+// Initiatives (workbook "Initiatives" tab; HSIA, TV and SHS).
 // pillar: 1 Instrumenting · 2 By Design · 3 Proactive · 4 Front Line —
 // assignment follows the four-pillar framing from the reliability program's
 // cross-source synthesis. issues: recurring-issue coverage tags.
@@ -305,7 +306,34 @@ const INITIATIVES = [
   { p: "TV", pillar: 3, theme: "Onboarding", name: "AI STB Onboarding Videos", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV", "Support"],
     desc: "Six new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
   { p: "TV", pillar: 4, theme: "Video Quality", name: "InSight Conviva Video Quality Metrics & Co-pilot Ingestion", status: "Ideation", timeline: "—", prime: "Z. Sayhebolay", issues: ["TV", "Support"],
-    desc: "Updates InSight's Conviva video-quality metrics and feeds them into the agent co-pilot." }
+    desc: "Updates InSight's Conviva video-quality metrics and feeds them into the agent co-pilot." },
+  // ------------------------- SHS -------------------------
+  // Workbook rows carry pillar, theme, prime and a month; status is derived
+  // from the timeline (dated = In flight, undated or "explore" = Ideation).
+  { p: "SHS", pillar: 1, theme: "Telemetry detection & signal accuracy", name: "On-site Wrap-up for Organic Pro-Installs (explore)", status: "Ideation", timeline: "Dec 2026", prime: "Zaki", issues: ["SHS Hardware"],
+    desc: "Explores an on-site wrap-up step for organic professional installs so device health and signal are confirmed before the technician leaves." },
+  { p: "SHS", pillar: 2, theme: "HW/FW & architecture", name: "App Refreshments", status: "Ideation", timeline: "—", prime: "Sindey", issues: ["Support"],
+    desc: "Refresh of the SmartHome Security app experience; timeline to be confirmed." },
+  { p: "SHS", pillar: 2, theme: "HW/FW & architecture", name: "ADC Camera Investigation — RCA & Recommendations", status: "In flight", timeline: "Sep 2026", prime: "Zaki", issues: ["SHS Hardware"],
+    desc: "Root-cause analysis of Alarm.com camera failures with recommendations for hardware, firmware and support changes." },
+  { p: "SHS", pillar: 2, theme: "HW/FW & architecture", name: "Hardware: V516 and IQ5", status: "In flight", timeline: "Nov – Dec 2026", prime: "Leroy", issues: ["SHS Hardware"],
+    desc: "V516: new hardware with Bluetooth connectivity and a reconnect method when the Wi-Fi connection is lost (Dec). IQ5 panel (Nov)." },
+  { p: "SHS", pillar: 2, theme: "HW/FW & architecture", name: "Firmware: V730, IQ4 v4.6.2 and V750", status: "In flight", timeline: "Sep – Oct 2026", prime: "Leroy / Rosalinda", issues: ["SHS Hardware"],
+    desc: "V730 fw 05028 (launched Sep 14): automatic colour night vision in low light, better 2-way audio on long sessions, more reliable 2.4/5 GHz switching, Wi-Fi 6 interop. IQ4 fw v4.6.2 (Sep): PG+ device support, AC-power detection after interruptions, Z-Wave SmartStart, silent arming, cellular performance during outages. V750 fw v02113 (Oct): network connection and audio." },
+  { p: "SHS", pillar: 3, theme: "Proactive Campaigns & outreach enablement", name: "Malfunction Sweepr Flow Update", status: "In flight", timeline: "Oct 2026", prime: "Mihaela", issues: ["SHS Hardware", "Support"],
+    desc: "Updates the Sweepr self-serve flow for device malfunction so more sensor and detector faults resolve without a call." },
+  { p: "SHS", pillar: 3, theme: "Proactive Campaigns & outreach enablement", name: "Legacy: 20+ Device Expansion Support", status: "In flight", timeline: "Q1 2027", prime: "Steve", issues: ["SHS Hardware"],
+    desc: "Extends support coverage to more than 20 additional legacy device types." },
+  { p: "SHS", pillar: 3, theme: "Proactive Campaigns & outreach enablement", name: "MSF Proactive Campaign Update — Free Shipment", status: "In flight", timeline: "Sep 2026", prime: "Zaki", issues: ["SHS Hardware", "Support"],
+    desc: "Free replacement shipment for highly engaged customers with a high likelihood to churn." },
+  { p: "SHS", pillar: 4, theme: "Agent Tooling, Sweepr & FCR", name: "Camera Offline PA Campaign Signature Update", status: "In flight", timeline: "Oct 2026", prime: "Brittany", issues: ["SHS Hardware"],
+    desc: "Updates the proactive-alert campaign signature that detects offline cameras so outreach reaches the right customers." },
+  { p: "SHS", pillar: 4, theme: "Agent Tooling, Sweepr & FCR", name: "BnM Enhanced Reporting", status: "In flight", timeline: "Oct 2026", prime: "Phil", issues: ["Support"],
+    desc: "Enhanced reporting for the break-and-maintain (BnM) process to track first-call resolution and repeat contacts." },
+  { p: "SHS", pillar: 4, theme: "Agent Tooling, Sweepr & FCR", name: "IQ2 → IQ4 Proactive Upgrade Pilot", status: "In flight", timeline: "Nov 2026", prime: "Zaki", issues: ["SHS Hardware"],
+    desc: "Proactive panel upgrade from IQ2 to IQ4, piloted with 500 customers from October." },
+  { p: "SHS", pillar: 4, theme: "Agent Tooling, Sweepr & FCR", name: "MSF Battery Replacement Links and Video Updates", status: "In flight", timeline: "Oct 2026", prime: "Patti", issues: ["SHS Hardware", "Support"],
+    desc: "Affiliate links and refreshed videos for self-serve battery replacement on sensors and detectors." },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1030,7 +1058,7 @@ function initiativesCovering(product, grp) {
 // Initiative themes each Looker issue maps to, by product. The Ticket issues &
 // movers section uses this to show which initiative theme(s) address an issue
 // and to count initiative coverage by theme (HSIA and TV initiatives carry a
-// theme in the workbook; SHS initiatives are not yet in the source).
+// theme in the workbook; SHS themes follow the pillar sub-themes in the SHS block).
 function issueThemes(product, issue) {
   const [c1, c2 = ""] = issue.split(" › ").map((s) => s.trim());
   if (product === "HSIA") {
@@ -1052,6 +1080,16 @@ function issueThemes(product, issue) {
     if (c1 === "Apps" || c1 === "Mobile App" || c1 === "TV Features") return ["Onboarding"];
     if (c1 === "Abandon") return [];
     return ["Hardware"];
+  }
+  if (product === "SHS") {
+    if (c1 === "Legacy Equipment") return ["Proactive Campaigns & outreach enablement", "Agent Tooling, Sweepr & FCR"];
+    if (/Camera|Doorbell/.test(c1)) return ["HW/FW & architecture", "Agent Tooling, Sweepr & FCR"];
+    if (c1 === "Main Panel") return ["HW/FW & architecture", "Telemetry detection & signal accuracy"];
+    if (c1 === "Mobile App Self-Serve" || c1 === "Webpage Portal Self-Serve") return ["HW/FW & architecture", "Agent Tooling, Sweepr & FCR"];
+    if (c1 === "CMS inquiry" || c1 === "Repair appointment" || c1 === "Billing" || c1 === "Education") return ["Agent Tooling, Sweepr & FCR"];
+    if (c1 === "Abandon") return [];
+    if (/Power/.test(c2)) return ["Agent Tooling, Sweepr & FCR", "Proactive Campaigns & outreach enablement"];
+    return ["Proactive Campaigns & outreach enablement", "HW/FW & architecture"];
   }
   return [];
 }
@@ -1633,7 +1671,7 @@ export default function ReliabilityScorecards() {
   }
 
   function PillarInitiatives() {
-    const prods = scope === "All" ? ["HSIA", "TV"] : scope === "SHS" || scope === "SH+" ? [] : [scope];
+    const prods = scope === "All" ? ["HSIA", "TV", "SHS"] : scope === "SH+" ? [] : [scope];
     return (
       <>
         {PILLARS.map((pl) => {
@@ -1657,8 +1695,8 @@ export default function ReliabilityScorecards() {
             </div>
           );
         })}
-        {(scope === "SHS" || scope === "SH+") && (
-          <p style={{ fontSize: 12.5, color: T.textFaint }}>{scope} initiatives have not been added to the source workbook yet.</p>
+        {scope === "SH+" && (
+          <p style={{ fontSize: 12.5, color: T.textFaint }}>SH+ initiatives have not been added to the source workbook yet.</p>
         )}
       </>
     );
@@ -1697,7 +1735,7 @@ export default function ReliabilityScorecards() {
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Issue (Category › Sub-category)</th>
                 <th style={{ ...thBase, textAlign: "right" }}>Aug'26</th>
-                <th style={{ ...thBase, textAlign: "left", width: 130 }}></th>
+                <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>
@@ -1719,10 +1757,10 @@ export default function ReliabilityScorecards() {
                     <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}>
                       {r.a25 ? <><DeltaText d={d} T={T} /> <span style={{ color: T.textFaint, fontSize: 11.5 }}>({yoyPctText(r.a26, r.a25)})</span></> : <span style={{ color: T.textFaint }}>new</span>}
                     </td>
-                    <td style={{ ...tdBase, whiteSpace: "nowrap", fontSize: 12 }}>
+                    <td style={{ ...tdBase, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.7 }}>
                       {themes.length
-                        ? themes.map((t) => <span key={t} style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: T.textSecondary, borderRadius: 999, padding: "1px 9px", marginRight: 4, fontWeight: 600 }}>{t}</span>)
-                        : <span style={{ color: T.textFaint }}>{r.grp === "SHS Hardware" ? "SHS hardware (no initiative themes yet)" : ISSUE_META[r.grp].label.split(",")[0]}</span>}
+                        ? themes.map((t) => <span key={t} style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: T.textSecondary, borderRadius: 999, padding: "0 8px", marginRight: 4, fontWeight: 600, whiteSpace: "nowrap", fontSize: 11.5 }}>{t}</span>)
+                        : <span style={{ color: T.textFaint }}>{r.grp === "SHS Hardware" ? "SHS hardware" : ISSUE_META[r.grp].label.split(",")[0]}</span>}
                     </td>
                     <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
                       {cov.length ? (
@@ -1730,7 +1768,7 @@ export default function ReliabilityScorecards() {
                           <b style={{ color: T.heading }}>{cov.length}</b> — {cov.slice(0, 2).map((c) => c.name).join("; ")}{cov.length > 2 ? ` +${cov.length - 2} more` : ""}
                         </span>
                       ) : (
-                        <span style={{ color: T.textFaint }}>{product === "SHS" ? "— SHS initiatives to be added" : "— no mapped initiative"}</span>
+                        <span style={{ color: T.textFaint }}>— no mapped initiative</span>
                       )}
                     </td>
                   </tr>
@@ -1740,7 +1778,7 @@ export default function ReliabilityScorecards() {
           </table>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
-          Looker ticket categories from the Churn Measurement 2026 workbook{product !== "SHS" ? " · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes" : " · SHS initiatives (and their themes) are not yet in the source"}. YoY compares Aug 2026 against Aug 2025.
+          Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares Aug 2026 against Aug 2025.
         </p>
       </>
     );
@@ -2050,7 +2088,7 @@ export default function ReliabilityScorecards() {
 
         <Section num="04" eyebrow="Reliability program" title="Initiatives by pillar" icon="initiatives" T={T} collapsible>
           <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
-            Every initiative from the workbook's Initiatives tab, grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives. SHS initiatives will be added to the source later.
+            Every initiative from the workbook's Initiatives tab (HSIA, TV and SHS), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
           </p>
           <PillarInitiatives />
         </Section>
@@ -3233,6 +3271,15 @@ export default function ReliabilityScorecards() {
   }
 
   // ------------------------------ executive summary deck ------------------------------
+  // "Sep – Oct 2026" style ranges (SHS workbook rows) count for every month they span.
+  const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function timelineHasMonth(tl, month) {
+    if (tl.includes(month)) return true;
+    const m = tl.match(/^([A-Z][a-z]{2}) [–-] ([A-Z][a-z]{2}) (\d{4})$/), [mon, yr] = month.split(" ");
+    if (!m || m[3] !== yr) return false;
+    const a = MON3.indexOf(m[1]), b = MON3.indexOf(m[2]), i = MON3.indexOf(mon);
+    return a >= 0 && b >= 0 && i >= a && i <= b;
+  }
   // One data model drives the on-screen slides, the .pptx and the printable PDF.
   function buildDeck() {
     const month = latestLabel;
@@ -3255,7 +3302,7 @@ export default function ReliabilityScorecards() {
         rising: L.rising.slice(0, 3).map(mv), falling: L.falling.slice(0, 3).map(mv)
       };
     });
-    const milestones = INITIATIVES.filter((it) => it.timeline.includes(month)).map((it) => ({
+    const milestones = INITIATIVES.filter((it) => timelineHasMonth(it.timeline, month)).map((it) => ({
       product: it.p, color: colors[it.p], name: it.name, theme: it.theme, status: it.status, timeline: it.timeline, prime: it.prime,
       pillar: (PILLARS.find((pl) => pl.n === it.pillar) || {}).name
     }));
