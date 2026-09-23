@@ -1,0 +1,1124 @@
+<title>Gizmos Publishing Playbook</title>
+<style>
+  :root {
+    color-scheme: light;
+    --purple: #4B286D;
+    --purple-dark: #371E4F;
+    --purple-mid: #613889;
+    --purple-hi: #7733BB;
+    --purple-light: #D8CBE5;
+    --purple-tint: #F2EFF4;
+    --green: #66CC02;
+    --green-text: #2B8000;
+    --bg: #F4F4F7;
+    --surface: #FFFFFF;
+    --surface-2: #FAFAFA;
+    --text: #2C2E30;
+    --text-2: #414547;
+    --text-3: #676E73;
+    --border: #E3E6E8;
+    --border-2: #B2B9BF;
+    --code-bg: #2C2E30;
+    --code-text: #F4F4F7;
+    --hero-bg: #371E4F;
+    --hero-text: #FFFFFF;
+    --hero-muted: #D8CBE5;
+    --focus: #7733BB;
+    --warn-bg: #FFF7E6;
+    --warn-border: #F0B429;
+    --warn-text: #7A4B00;
+    --note-bg: #F2EFF4;
+    --easy: #2B8000;
+    --mid: #7733BB;
+    --hard: #4B286D;
+    --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --purple: #C9AEE6;
+      --purple-dark: #1E1529;
+      --purple-mid: #A57ED1;
+      --purple-hi: #B58BE0;
+      --purple-light: #4A3566;
+      --purple-tint: #2B2138;
+      --green: #8FE04A;
+      --green-text: #9BE85A;
+      --bg: #17111F;
+      --surface: #221A2E;
+      --surface-2: #2A2138;
+      --text: #ECE8F1;
+      --text-2: #CFC7DA;
+      --text-3: #A79DB6;
+      --border: #3A2F4A;
+      --border-2: #56496A;
+      --code-bg: #0F0B15;
+      --code-text: #E8E2F0;
+      --hero-bg: #1E1529;
+      --hero-text: #FFFFFF;
+      --hero-muted: #C9AEE6;
+      --focus: #B58BE0;
+      --warn-bg: #3A2E14;
+      --warn-border: #D9A431;
+      --warn-text: #F5D98B;
+      --note-bg: #2B2138;
+      --easy: #8FE04A;
+      --mid: #C9AEE6;
+      --hard: #E1D3F2;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --purple: #C9AEE6;
+    --purple-dark: #1E1529;
+    --purple-mid: #A57ED1;
+    --purple-hi: #B58BE0;
+    --purple-light: #4A3566;
+    --purple-tint: #2B2138;
+    --green: #8FE04A;
+    --green-text: #9BE85A;
+    --bg: #17111F;
+    --surface: #221A2E;
+    --surface-2: #2A2138;
+    --text: #ECE8F1;
+    --text-2: #CFC7DA;
+    --text-3: #A79DB6;
+    --border: #3A2F4A;
+    --border-2: #56496A;
+    --code-bg: #0F0B15;
+    --code-text: #E8E2F0;
+    --hero-bg: #1E1529;
+    --hero-text: #FFFFFF;
+    --hero-muted: #C9AEE6;
+    --focus: #B58BE0;
+    --warn-bg: #3A2E14;
+    --warn-border: #D9A431;
+    --warn-text: #F5D98B;
+    --note-bg: #2B2138;
+    --easy: #8FE04A;
+    --mid: #C9AEE6;
+    --hard: #E1D3F2;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--green-text); }
+  a:hover { color: var(--purple); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  h1, h2, h3, h4 { color: var(--purple); font-weight: 300; margin: 0; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: clamp(2rem, 5vw, 3.1rem); color: var(--hero-text); }
+  h2 { font-size: clamp(1.55rem, 3vw, 2rem); }
+  h3 { font-size: 1.25rem; font-weight: 400; }
+  h4 { font-size: 1.02rem; font-weight: 700; color: var(--text); }
+  p { margin: 0; }
+  ul, ol { margin: 0; padding-left: 1.3em; }
+  li + li { margin-top: .35em; }
+  strong { color: var(--text); font-weight: 700; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--purple-tint); color: var(--purple); padding: .1em .4em; border-radius: 4px; }
+  pre {
+    margin: 0; background: var(--code-bg); color: var(--code-text);
+    padding: 16px 18px; border-radius: 8px; overflow-x: auto;
+    font-family: var(--mono); font-size: .84rem; line-height: 1.5;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+  .eyebrow { font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; color: var(--text-3); font-weight: 700; }
+
+  /* Layout */
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+  .shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; padding-block: 40px 80px; }
+  @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 24px 64px; } }
+
+  /* Hero */
+  .hero { background: var(--hero-bg); color: var(--hero-text); padding-block: 44px 40px; }
+  .hero .wrap { display: grid; gap: 22px; }
+  .hero .eyebrow { color: var(--hero-muted); }
+  .hero p.lede { color: var(--hero-muted); max-width: 62ch; font-size: 1.08rem; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; }
+  .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: #66CC02; display: inline-block; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--hero-muted); font-size: .9rem; }
+
+  /* Route picker */
+  .picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 720px) { .picker { grid-template-columns: minmax(0, 1fr); } }
+  .route-btn {
+    text-align: left; background: rgba(255,255,255,.06); color: var(--hero-text);
+    border: 1px solid rgba(255,255,255,.22); border-radius: 10px; padding: 14px 16px;
+    cursor: pointer; font: inherit; display: grid; gap: 4px; transition: background .15s, border-color .15s;
+  }
+  .route-btn:hover { background: rgba(255,255,255,.12); }
+  .route-btn[aria-pressed="true"] { background: #FFFFFF; color: #2C2E30; border-color: #66CC02; box-shadow: 0 0 0 3px rgba(102,204,2,.35); }
+  .route-btn .lvl { font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; opacity: .85; }
+  .route-btn .nm { font-size: 1.1rem; font-weight: 700; }
+  .route-btn .sub { font-size: .88rem; opacity: .85; line-height: 1.4; }
+  .route-btn[aria-pressed="true"] .sub { opacity: .8; }
+
+  /* Side nav */
+  .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; display: grid; gap: 18px; }
+  @media (max-width: 900px) { .rail { position: static; } }
+  .rail nav { display: grid; gap: 2px; }
+  .rail nav a {
+    color: var(--text-2); text-decoration: none; font-size: .92rem; padding: 7px 10px; border-radius: 6px;
+    border-left: 3px solid transparent; display: flex; justify-content: space-between; gap: 8px; align-items: center;
+  }
+  .rail nav a:hover { background: var(--purple-tint); color: var(--purple); }
+  .rail nav a.active { border-left-color: var(--green); color: var(--purple); font-weight: 700; background: var(--surface); }
+  .rail nav a .pct { font-size: .74rem; color: var(--text-3); font-variant-numeric: tabular-nums; font-weight: 400; }
+  @media (max-width: 900px) { .rail nav { display: flex; flex-wrap: wrap; gap: 6px; } .rail nav a { border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; } .rail nav a.active { border-color: var(--green); } .rail nav a .pct { display: none; } }
+  .progress-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; }
+  .bar { height: 8px; background: var(--purple-tint); border-radius: 999px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--green); width: 0; transition: width .3s; }
+  .progress-card .num { font-size: 1.5rem; font-weight: 300; color: var(--purple); font-variant-numeric: tabular-nums; }
+  .progress-card button { font: inherit; font-size: .8rem; color: var(--text-3); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; justify-self: start; }
+
+  /* Sections */
+  main { display: grid; gap: 56px; min-width: 0; }
+  section.step { display: grid; gap: 22px; scroll-margin-top: 24px; }
+  .step-head { display: grid; gap: 8px; }
+  .step-head .applies { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; background: var(--purple-tint); color: var(--purple); }
+  .tag.easy { color: var(--easy); background: color-mix(in srgb, var(--easy) 14%, transparent); }
+  .tag.mid { color: var(--mid); background: color-mix(in srgb, var(--mid) 14%, transparent); }
+  .tag.hard { color: var(--hard); background: color-mix(in srgb, var(--hard) 16%, transparent); }
+  .tag.optional { color: var(--text-3); background: var(--surface-2); border: 1px solid var(--border); }
+  .step p.intro { color: var(--text-2); max-width: 68ch; font-size: 1.02rem; }
+
+  section.step > *, .card > *, .grid-2 > *, .grid-3 > *, .panel > *, ol.steps > li > div, .copy-wrap, .note, .warn, .lesson > div, .kv dd { min-width: 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; display: grid; gap: 14px; }
+  .card.tight { padding: 16px 18px; gap: 10px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 760px) { .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+
+  .note { background: var(--note-bg); border-left: 4px solid var(--purple); border-radius: 0 8px 8px 0; padding: 12px 16px; color: var(--text); font-size: .95rem; }
+  .warn { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 12px 16px; color: var(--warn-text); font-size: .95rem; }
+  .warn strong, .note strong { color: inherit; }
+  .lesson { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; background: var(--surface-2); border: 1px dashed var(--border-2); border-radius: 8px; padding: 12px 14px; font-size: .95rem; }
+  .lesson .ic { width: 28px; height: 28px; border-radius: 50%; background: var(--purple-tint); color: var(--purple); display: grid; place-items: center; font-weight: 700; font-size: .85rem; }
+
+  /* Checklist */
+  .check { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .check li { margin: 0; }
+  .check label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; }
+  .check label:hover { border-color: var(--border-2); }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: #2B8000; cursor: pointer; }
+  .check input:checked + span { color: var(--text-3); text-decoration: line-through; text-decoration-color: var(--border-2); }
+  .check span small { display: block; text-decoration: none; color: var(--text-3); font-size: .86rem; margin-top: 2px; }
+  .check input:checked + span small { text-decoration: none; }
+  .check li[data-route] { display: none; }
+  .check li[data-route].on { display: block; }
+
+  /* Route-scoped visibility */
+  [data-only]:not(.on) { display: none !important; }
+
+  /* Copy block */
+  .copy-wrap { position: relative; }
+  .copy-wrap pre { padding-top: 40px; }
+  .copy-wrap .cap { position: absolute; left: 14px; top: 10px; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: #B2B9BF; font-family: var(--font); font-weight: 700; }
+  .copy-btn { position: absolute; right: 10px; top: 8px; font: inherit; font-size: .78rem; font-weight: 700; background: #4B286D; color: #fff; border: none; border-radius: 4px; padding: 5px 11px; cursor: pointer; }
+  .copy-btn:hover { background: #613889; }
+  .copy-btn.done { background: #66CC02; color: #2C2E30; }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .93rem; }
+  th, td { text-align: left; padding: 11px 14px; vertical-align: top; border-bottom: 1px solid var(--border); }
+  th { color: var(--purple); font-weight: 700; background: var(--purple-tint); font-size: .84rem; letter-spacing: .03em; }
+  tbody tr:nth-child(even) td { background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.k { font-weight: 700; color: var(--text); white-space: nowrap; }
+  th.easy, th.mid, th.hard { border-top: 3px solid; }
+  th.easy { border-top-color: var(--easy); } th.mid { border-top-color: var(--mid); } th.hard { border-top-color: var(--hard); }
+
+  /* Flow diagram */
+  .flow-wrap { overflow-x: auto; padding-block: 4px; }
+  .flow { width: 100%; min-width: 640px; height: auto; display: block; }
+  .flow text { font-family: var(--font); }
+  .flow-box { fill: var(--surface); stroke: var(--purple); stroke-width: 1.5; }
+  .flow-box.acc { fill: var(--purple); stroke: var(--purple); }
+  .flow-box.tmp { fill: var(--surface); stroke: var(--warn-border); stroke-dasharray: 5 4; }
+  .flow-lbl { fill: var(--text); font-size: 13px; font-weight: 700; }
+  .flow-lbl.acc { fill: var(--surface); }
+  .flow-sub { fill: var(--text-3); font-size: 11px; }
+  .flow-sub.acc { fill: var(--purple-light); }
+  .flow-arrow { stroke: var(--border-2); stroke-width: 1.6; fill: none; }
+  .flow-head { fill: var(--border-2); }
+  .flow-step { fill: var(--green); }
+  .flow-step-n { fill: #2C2E30; font-size: 10px; font-weight: 700; }
+
+  /* Quiz */
+  .quiz { display: grid; gap: 16px; }
+  .q { display: grid; gap: 8px; }
+  .q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .q button { font: inherit; font-size: .92rem; background: var(--surface); color: var(--text); border: 1px solid var(--border-2); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .q button:hover { border-color: var(--purple); color: var(--purple); }
+  .q button[aria-pressed="true"] { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .verdict { border-radius: 8px; padding: 14px 16px; background: var(--purple-tint); display: grid; gap: 6px; }
+  .verdict .big { font-size: 1.15rem; font-weight: 700; color: var(--purple); }
+  .verdict button { font: inherit; font-size: .88rem; font-weight: 700; justify-self: start; background: var(--green); color: #2C2E30; border: none; border-radius: 4px; padding: 7px 14px; cursor: pointer; }
+
+  /* Route detail tabs */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+  .tabs button { font: inherit; font-weight: 700; font-size: .95rem; color: var(--text-3); background: none; border: none; border-bottom: 3px solid transparent; padding: 10px 14px; cursor: pointer; margin-bottom: -1px; }
+  .tabs button:hover { color: var(--purple); }
+  .tabs button[aria-selected="true"] { color: var(--purple); border-bottom-color: var(--green); }
+  .panel { display: none; gap: 18px; }
+  .panel.on { display: grid; }
+
+  ol.steps { list-style: none; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+  ol.steps > li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; margin: 0; }
+  ol.steps > li::before { counter-increment: s; content: counter(s); width: 34px; height: 34px; border-radius: 50%; background: var(--purple); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: .95rem; }
+  ol.steps > li > div { display: grid; gap: 8px; padding-top: 4px; }
+  ol.steps h4 { margin: 0; }
+
+  .kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; font-size: .95rem; }
+  .kv dt { color: var(--text-3); }
+  .kv dd { margin: 0; }
+  @media (max-width: 520px) { .kv { grid-template-columns: minmax(0, 1fr); gap: 2px; } .kv dd { margin-bottom: 8px; } }
+
+  footer { border-top: 1px solid var(--border); padding-block: 22px 40px; color: var(--text-3); font-size: .86rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: #fff; padding: 10px 16px; border-radius: 8px; font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> TELUS Reliability Strategy</div>
+    <div>
+      <p class="eyebrow">Interactive tutorial</p>
+      <h1>Publish your work to Gizmos with Claude</h1>
+    </div>
+    <p class="lede">Build a dashboard or update page in Claude, then get it live at <strong style="color:#fff">telus.gizmos.run</strong> so the team can track KPIs from one link. Pick the route that fits how often you will update it. The page then shows only the steps you need.</p>
+    <div class="picker" role="group" aria-label="Choose your route">
+      <button class="route-btn" data-pick="easy" aria-pressed="false">
+        <span class="lvl">Easy</span>
+        <span class="nm">Upload a .jsx file</span>
+        <span class="sub">Claude Chat writes one React file. You upload it in the Gizmos hub. No connectors, no code tools.</span>
+      </button>
+      <button class="route-btn" data-pick="mid" aria-pressed="false">
+        <span class="lvl">Intermediate</span>
+        <span class="nm">Push through the Gizmos connector</span>
+        <span class="sub">Claude Chat deploys for you. The page starts as a temporary artifact and must be made permanent.</span>
+      </button>
+      <button class="route-btn" data-pick="hard" aria-pressed="false">
+        <span class="lvl">Hard</span>
+        <span class="nm">Claude Code, GitHub, auto deploy</span>
+        <span class="sub">Code lives in GitHub. Every merge to main publishes itself. Fully automated once set up.</span>
+      </button>
+    </div>
+    <div class="hero-meta">
+      <span id="pickMsg">No route selected yet. All steps are shown.</span>
+      <span>Reading time: about 15 minutes. Setup time: 30 minutes (Easy) to 2 hours (Hard).</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap shell">
+  <aside class="rail">
+    <div class="progress-card">
+      <span class="eyebrow">Your setup progress</span>
+      <span class="num" id="progNum">0%</span>
+      <div class="bar"><span id="progBar"></span></div>
+      <span style="font-size:.82rem;color:var(--text-3)">Checkboxes are saved in this browser only.</span>
+      <button type="button" id="resetProgress">Reset checklist</button>
+    </div>
+    <nav aria-label="Sections" id="sideNav">
+      <a href="#choose">1. Choose a route</a>
+      <a href="#claude">2. Claude prerequisites <span class="pct" data-pct="claude"></span></a>
+      <a href="#memory">3. Memory and context <span class="pct" data-pct="memory"></span></a>
+      <a href="#gizmos">4. Gizmos sign-in and app <span class="pct" data-pct="gizmos"></span></a>
+      <a href="#data">5. Data sources <span class="pct" data-pct="data"></span></a>
+      <a href="#github" data-only="hard">6. GitHub setup <span class="pct" data-pct="github"></span></a>
+      <a href="#tableau">7. Tableau connector <span class="pct" data-pct="tableau"></span></a>
+      <a href="#publish">8. Build and publish</a>
+      <a href="#updates">9. Monthly update loop</a>
+      <a href="#trouble">10. Troubleshooting</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- 1. Choose -->
+    <section class="step" id="choose">
+      <div class="step-head">
+        <p class="eyebrow">Step 1</p>
+        <h2>Choose your route</h2>
+      </div>
+      <p class="intro">All three routes end in the same place: a page on telus.gizmos.run behind TELUS single sign-on. They differ in how much you set up once and how little you do each month afterwards.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th></th><th class="easy">Easy</th><th class="mid">Intermediate</th><th class="hard">Hard</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="k">Where you build</td><td>Claude Chat</td><td>Claude Chat with the Gizmos connector</td><td>Claude Code (web or terminal)</td></tr>
+            <tr><td class="k">How it gets to Gizmos</td><td>You download the .jsx file and upload it in the hub</td><td>Claude calls the connector and deploys for you</td><td>GitHub Actions runs <code>gizmos push</code> on every merge to main</td></tr>
+            <tr><td class="k">Result on first publish</td><td>Permanent app under a name you choose</td><td>Temporary artifact with a 7 day lease. Promote it to make it permanent.</td><td>Permanent app named in the workflow</td></tr>
+            <tr><td class="k">Monthly update effort</td><td>Ask Claude for the new file, download, upload again</td><td>Ask Claude to update the same artifact or app</td><td>Ask Claude Code to refresh the data and merge. Nothing else.</td></tr>
+            <tr><td class="k">Version history</td><td>Versions tab in the hub</td><td>Versions tab in the hub</td><td>Git history plus the Versions tab</td></tr>
+            <tr><td class="k">Someone else can update it</td><td>Anyone you share the hub app with, by uploading</td><td>Anyone shared on the app who has the connector</td><td>Anyone with write access to the repo</td></tr>
+            <tr><td class="k">Setup once</td><td>About 30 minutes</td><td>About 45 minutes</td><td>1 to 2 hours</td></tr>
+            <tr><td class="k">Needs an API key</td><td>No</td><td>No</td><td>Yes, stored as a GitHub secret</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Not sure? Answer three questions</h3>
+        <div class="quiz" id="quiz">
+          <div class="q" data-q="freq">
+            <strong>How often will this page change?</strong>
+            <div class="opts">
+              <button type="button" data-v="0">Once or a few times a year</button>
+              <button type="button" data-v="1">Monthly</button>
+              <button type="button" data-v="2">Weekly or more</button>
+            </div>
+          </div>
+          <div class="q" data-q="git">
+            <strong>How comfortable are you with GitHub and a terminal?</strong>
+            <div class="opts">
+              <button type="button" data-v="0">I would rather avoid them</button>
+              <button type="button" data-v="1">I can follow instructions</button>
+              <button type="button" data-v="2">Comfortable</button>
+            </div>
+          </div>
+          <div class="q" data-q="team">
+            <strong>Will other people need to publish updates too?</strong>
+            <div class="opts">
+              <button type="button" data-v="0">No, just me</button>
+              <button type="button" data-v="1">Maybe later</button>
+              <button type="button" data-v="2">Yes, from day one</button>
+            </div>
+          </div>
+          <div class="verdict" id="verdict" hidden>
+            <span class="eyebrow">Suggested route</span>
+            <span class="big" id="verdictName"></span>
+            <span id="verdictWhy"></span>
+            <button type="button" id="verdictApply">Use this route</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Claude prerequisites -->
+    <section class="step" id="claude" data-sec="claude">
+      <div class="step-head">
+        <p class="eyebrow">Step 2</p>
+        <h2>Set up Claude: skills and connectors</h2>
+        <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
+      </div>
+      <p class="intro">Skills teach Claude how TELUS wants things done. Connectors let Claude read and write other systems on your behalf. Set these up once in your Claude account and every future dashboard benefits.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Skills to enable</h3>
+          <p style="color:var(--text-2);font-size:.95rem">In Claude, open <strong>Settings</strong>, then <strong>Capabilities</strong> (or Skills), and turn these on. If your organization syncs skills, they may already be listed.</p>
+          <dl class="kv">
+            <dt>TELUS Brand</dt><dd>Applies TELUS purple, green, Helvetica Neue and the card patterns so every output looks like a TELUS deliverable without you asking.</dd>
+            <dt>Deploy to Gizmos</dt><dd>Teaches Claude the <code>gizmos push</code> CLI, app naming rules, versions, org selection and the artifact lifecycle. Needed for the Intermediate and Hard routes.</dd>
+            <dt>Data visualization</dt><dd>Consistent chart colours and chart types across your KPI cards.</dd>
+          </dl>
+          <div class="note" data-only="hard"><strong>Claude Code users:</strong> install the Gizmos skill and CLI in your project in one line. Run it in the terminal or ask Claude Code to run it.
+            <div class="copy-wrap" style="margin-top:10px"><span class="cap">bash</span><button class="copy-btn" type="button">Copy</button><pre><code>curl -fsSL https://gizmos.run/skills/install.sh | bash</code></pre></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Connectors to add</h3>
+          <p style="color:var(--text-2);font-size:.95rem">Open <strong>Settings</strong>, then <strong>Connectors</strong>. Pick from the organization directory, or use <strong>Add custom connector</strong> with the URL shown. Each one asks you to sign in with TELUS SSO the first time.</p>
+          <dl class="kv">
+            <dt>Google Drive</dt><dd>Reads the Google Sheets and Docs that hold your KPIs. All routes.</dd>
+            <dt>Gizmos</dt><dd>URL <code>https://gizmos.run/mcp</code>. Gives Claude the deploy_artifact, list_apps and get_studio_link tools. Intermediate route.</dd>
+            <dt>GitHub</dt><dd>Lets Claude Code open your repository, create branches and push. Hard route.</dd>
+            <dt>Tableau Cloud</dt><dd>Optional. Pulls view data and datasource queries when your KPIs live in Tableau. See step 7.</dd>
+            <dt>Gmail</dt><dd>Optional. Useful to send the monthly link and summary to stakeholders after publishing.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <ul class="check" data-sec="claude">
+        <li><label><input type="checkbox" data-key="claude-brand"><span>Turn on the TELUS Brand skill</span></label></li>
+        <li data-route="mid hard"><label><input type="checkbox" data-key="claude-gizmos-skill"><span>Turn on the Deploy to Gizmos skill</span></label></li>
+        <li><label><input type="checkbox" data-key="claude-drive"><span>Add the Google Drive connector and sign in <small>Test it: ask Claude to list your five most recent Drive files.</small></span></label></li>
+        <li data-route="mid"><label><input type="checkbox" data-key="claude-gizmos-conn"><span>Add the Gizmos connector <small>Test it: ask Claude to list your Gizmos apps. It should return names, orgs and live links.</small></span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="claude-github"><span>Connect GitHub to Claude Code <small>At claude.ai/code, connect your GitHub account and install the Claude GitHub App on the repository.</small></span></label></li>
+        <li><label><input type="checkbox" data-key="claude-tableau"><span>Add the Tableau Cloud connector if your KPIs live in Tableau (optional)</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 3. Memory -->
+    <section class="step" id="memory" data-sec="memory">
+      <div class="step-head">
+        <p class="eyebrow">Step 3</p>
+        <h2>Set up memory and context</h2>
+        <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
+      </div>
+      <p class="intro">The dashboard only stays consistent month to month if Claude remembers the definitions, sources and design decisions you settled on. Write them down once, in a place Claude reads every time.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Create a Claude Project for the dashboard</h3>
+          <ol>
+            <li>In Claude, create a new <strong>Project</strong> named after the page, for example <em>Reliability Strategy Dashboard</em>.</li>
+            <li>Paste the instruction template on the right into the project's <strong>Instructions</strong> and fill in the blanks.</li>
+            <li>Add supporting files to project knowledge: KPI definitions, the metric glossary, a screenshot of a page you want to match, and the current .jsx file if you already have one.</li>
+            <li>Start every dashboard chat inside this project. Claude will read the instructions before it writes anything.</li>
+          </ol>
+          <div class="note"><strong>Memory:</strong> with memory turned on, tell Claude explicit facts you want kept across chats, such as "Remember that my Gizmos app is relstrat in the telus org and the source workbook is Churn Measurement 2026." Ask "what do you remember about my dashboard?" to check.</div>
+          <div class="note" data-only="hard"><strong>Claude Code:</strong> the same information belongs in the repository as a <code>CLAUDE.md</code> file at the root, next to the README. Claude Code reads it on every session. Keep the build and deploy commands there too.</div>
+        </div>
+        <div class="card">
+          <h3>Project instruction template</h3>
+          <div class="copy-wrap"><span class="cap">Project instructions</span><button class="copy-btn" type="button">Copy</button><pre><code>You help me build and maintain the [DASHBOARD NAME] for TELUS.
+
+Audience: [e.g. Reliability leadership, product primes]. They check it monthly.
+
+Output format: a single-file React component (App.jsx) with a default
+export, no build step, no external imports besides react. Data lives in a
+DATA constant at the top of the file so it can be refreshed in place.
+
+Design: follow the TELUS Brand skill. Match the layout of the CPR Product
+Health Scorecards: left navigation, one page per product, KPI cards with
+month-over-month movement in basis points, then charts.
+
+Data sources (read with the Google Drive connector):
+- [Workbook name], tab [tab name]: monthly KPIs, months as columns.
+- [Workbook name], tab [tab name]: ticket categories.
+- [Doc name]: initiatives and commentary.
+
+Definitions:
+- Ticket rate = tickets / subscriber base x 100.
+- Churn is reported two months behind; leave later months blank.
+- "All" = volumes summed, rates blended over total base.
+
+Rules:
+- Never include customer names, addresses or raw notes. Aggregate first.
+- When refreshing data, change only the DATA block. Keep layout as is.
+- Reporting window: [Jan 2025] to the latest complete month.
+
+Publishing: Gizmos app [APP NAME] in the [telus] org.
+Live link: https://[APP NAME].telus.gizmos.run</code></pre></div>
+        </div>
+      </div>
+
+      <ul class="check" data-sec="memory">
+        <li><label><input type="checkbox" data-key="mem-project"><span>Create a Claude Project for the dashboard</span></label></li>
+        <li><label><input type="checkbox" data-key="mem-instr"><span>Fill in and save the project instructions</span></label></li>
+        <li><label><input type="checkbox" data-key="mem-files"><span>Upload KPI definitions and a reference screenshot to project knowledge</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="mem-claudemd"><span>Add CLAUDE.md and README.md to the repository with build and deploy notes</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 4. Gizmos -->
+    <section class="step" id="gizmos" data-sec="gizmos">
+      <div class="step-head">
+        <p class="eyebrow">Step 4</p>
+        <h2>Sign in to telus.gizmos.run and set up your app</h2>
+        <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
+      </div>
+      <p class="intro">Gizmos is the TELUS hosting platform for internal web apps. Every app gets its own address, sits behind TELUS SSO, keeps a version history, and can be shared with named people or the whole organization.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>First sign-in</h3>
+          <ol>
+            <li>Open <a href="https://telus.gizmos.run" target="_blank" rel="noopener">telus.gizmos.run</a> and sign in with your TELUS account. The hub lists the apps you own and the ones shared with you.</li>
+            <li>Note the org slug: <code>telus</code>. Your app will live at <code>&lt;app-name&gt;.telus.gizmos.run</code>, with a hub page at <code>telus.gizmos.run/live/&lt;app-name&gt;</code>.</li>
+            <li>Decide a name now. Names are lowercase letters, numbers, dashes and underscores, 1 to 64 characters, no dots or spaces. Names like <code>admin</code>, <code>api</code>, <code>hub</code>, <code>dev</code>, <code>studio</code> and <code>settings</code> are reserved. Deleting an app forfeits its name for good.</li>
+          </ol>
+          <dl class="kv">
+            <dt>Example</dt><dd>The Reliability Strategy dashboard is the app <code>relstrat</code>, live at relstrat.telus.gizmos.run.</dd>
+          </dl>
+        </div>
+        <div class="card">
+          <h3>Settings worth knowing</h3>
+          <dl class="kv">
+            <dt>Visibility</dt><dd>New apps are <strong>private</strong>. Share with named TELUS emails as viewer, editor or admin, or set <strong>organization</strong> so anyone at TELUS with SSO can open it. Organization visibility runs a quick health check on the home page first.</dd>
+            <dt>Versions</dt><dd>Every publish creates a version. Roll back or make a saved but unpublished version live from the <strong>Versions</strong> tab.</dd>
+            <dt>Description and labels</dt><dd>One line under 160 characters and up to five labels. They show on the community list, so write for someone searching for your KPI.</dd>
+            <dt>Favicon</dt><dd>Include a <code>favicon.ico</code> in what you upload and the tab, bookmark and hub avatar pick it up.</dd>
+            <dt>API key</dt><dd>Generate a <code>gzm_</code> key at <a href="https://gizmos.run/settings" target="_blank" rel="noopener">gizmos.run/settings</a>. It is only needed for the Hard route. Store it as a GitHub secret. Never paste it into a chat, a file or a commit.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card" data-only="mid">
+        <h3>Artifacts vs permanent apps (Intermediate route)</h3>
+        <p>When Claude deploys through the connector, it creates a <strong>Gizmos Artifact</strong>: a disposable app with a name like <code>art-3f9c...</code> and a <strong>7 day lease</strong>. Every update from Claude renews the lease. If nobody updates it for 7 days it is deleted, and there is a further 7 day window where a new deploy restores it.</p>
+        <p>For KPI tracking you want it permanent. Open the artifact in the hub and <strong>promote</strong> it, choosing a real name at the same time. From then on it behaves like any other app. Promotion happens once; updates keep working.</p>
+        <div class="warn"><strong>Renaming breaks old links.</strong> Promoting with a new name stops the old <code>art-...</code> address immediately. Promote before you share the link widely, or share only the final name.</div>
+      </div>
+
+      <ul class="check" data-sec="gizmos">
+        <li><label><input type="checkbox" data-key="gz-signin"><span>Sign in at telus.gizmos.run</span></label></li>
+        <li><label><input type="checkbox" data-key="gz-name"><span>Pick an app name that follows the naming rules</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gz-key"><span>Generate a gzm_ API key at gizmos.run/settings and keep it somewhere safe until step 6</span></label></li>
+        <li><label><input type="checkbox" data-key="gz-share"><span>Decide who can see it: named people or the whole organization</span></label></li>
+        <li data-route="mid"><label><input type="checkbox" data-key="gz-promote"><span>After the first deploy, promote the artifact to a permanent app</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 5. Data -->
+    <section class="step" id="data" data-sec="data">
+      <div class="step-head">
+        <p class="eyebrow">Step 5</p>
+        <h2>Set up or reuse data sources</h2>
+        <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
+      </div>
+      <p class="intro">Claude builds the page from whatever you point it at. A tidy Google Sheet is the most reliable source: it is shared, versioned, easy to review, and the Drive connector reads it directly. Keep numbers in Sheets and narrative in Docs.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Shape the workbook so Claude reads it cleanly</h3>
+          <ul>
+            <li><strong>One tab per table.</strong> The Reliability Strategy dashboard reads three tabs of the Churn Measurement 2026 workbook: the KPI table, the Looker ticket categories per product, and the initiatives list.</li>
+            <li><strong>Months across, metrics down.</strong> A single header row with month labels like <em>Jan 2025</em>. No merged cells, no blank spacer columns, no totals hidden inside the data range.</li>
+            <li><strong>Blank means not reported.</strong> Leave future or lagging months empty rather than typing 0. Churn reported two months behind stays blank and the page shows it as not yet available.</li>
+            <li><strong>A definitions tab.</strong> Metric name, formula, source system, owner. Claude uses it for tooltips and footnotes.</li>
+            <li><strong>Share the sheet</strong> with the people who will run updates, so their Drive connector can read it too.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Prompts that work</h3>
+          <div class="copy-wrap"><span class="cap">First build</span><button class="copy-btn" type="button">Copy</button><pre><code>Read the "Reliability Deact KPIs" tab of the Churn Measurement 2026
+workbook in my Drive. Build a single-file React dashboard (App.jsx) with
+a KPI card per metric showing the latest month, the change vs the prior
+month in basis points, and an 18 month trend chart. Follow the TELUS
+Brand skill. Put all figures in a DATA constant at the top of the file.</code></pre></div>
+          <div class="copy-wrap"><span class="cap">Monthly refresh</span><button class="copy-btn" type="button">Copy</button><pre><code>The workbook now has September 2026. Re-read the same tabs, update only
+the DATA block, keep the layout unchanged, and list every number that
+changed so I can spot-check it against the sheet.</code></pre></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="lesson"><span class="ic">!</span><div><strong>Aggregate before you publish.</strong> Raw agent notes and survey exports contain customer details. In the Reliability repo those exports are never committed; small Python scripts turn them into aggregated blocks first, and only the aggregates reach the page. Ask Claude to do the same and to leave the raw files out of the repo and out of the chat history.</div></div>
+        <div class="lesson"><span class="ic">i</span><div><strong>The page is a snapshot.</strong> All three routes publish a static site, so numbers are baked in at publish time and a refresh means republishing. That is what you want for a monthly KPI review: a stable, auditable record. Live-connected pages need a server component and are out of scope here.</div></div>
+      </div>
+
+      <ul class="check" data-sec="data">
+        <li><label><input type="checkbox" data-key="data-sheet"><span>Identify or create the Google Sheet that is the source of truth</span></label></li>
+        <li><label><input type="checkbox" data-key="data-shape"><span>Tidy the tabs: one header row, months across, no merged cells</span></label></li>
+        <li><label><input type="checkbox" data-key="data-defs"><span>Add a definitions tab with formula, source and owner per metric</span></label></li>
+        <li><label><input type="checkbox" data-key="data-doc"><span>Link the Google Doc that holds commentary and initiatives</span></label></li>
+        <li><label><input type="checkbox" data-key="data-privacy"><span>Confirm nothing customer-identifiable will reach the page</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 6. GitHub -->
+    <section class="step" id="github" data-sec="github" data-only="hard">
+      <div class="step-head">
+        <p class="eyebrow">Step 6</p>
+        <h2>Set up GitHub for the automated route</h2>
+        <div class="applies"><span class="tag hard">Hard</span></div>
+      </div>
+      <p class="intro">On this route the repository is the source of truth and GitHub Actions does the publishing. You set up the repo, one secret and one workflow file. After that, publishing is a side effect of merging.</p>
+
+      <div class="card">
+        <ol class="steps">
+          <li><div><h4>Create the repository</h4><p>Create a private repo in the TELUS GitHub organization (or your own account if that is the norm on your team). Add a README. Default branch <code>main</code>.</p></div></li>
+          <li><div><h4>Connect it to Claude Code</h4><p>Go to claude.ai/code, connect GitHub, and install the Claude GitHub App on the repository. Create an environment for the repo if prompted. Claude Code will clone it into a fresh session each time.</p></div></li>
+          <li><div><h4>Add the API key as a secret</h4><p>In the repo, open <strong>Settings</strong>, then <strong>Secrets and variables</strong>, then <strong>Actions</strong>. Create a repository secret named <code>GIZMOS_API_KEY</code> with the <code>gzm_</code> key from step 4. The workflow reads it from there; it never appears in logs.</p></div></li>
+          <li><div><h4>Scaffold the site</h4><p>Ask Claude Code to turn your App.jsx into a small Vite project under <code>site/</code>: an index.html, a main.jsx that mounts App, a vite.config.js with <code>base: "./"</code>, and a package.json with a build script. Vite projects must be built before they are pushed to Gizmos; the platform does not run JSX or bundler plugins for you.</p></div></li>
+          <li><div><h4>Add the deploy workflow</h4><p>Save the file below as <code>.github/workflows/deploy-gizmos.yml</code>. It runs on every push to main that touches <code>site/</code>, and on demand from the Actions tab where you can choose <strong>publish</strong> (go live) or <strong>save</strong> (store a version without publishing).</p>
+            <div class="copy-wrap"><span class="cap">.github/workflows/deploy-gizmos.yml</span><button class="copy-btn" type="button">Copy</button><pre><code>name: Deploy to Gizmos
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/deploy-gizmos.yml"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish (go live) or only save a version"
+        type: choice
+        options: [publish, save]
+        default: publish
+
+concurrency:
+  group: deploy-gizmos
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GIZMOS_URL: https://gizmos.run
+      GIZMOS_APP: your-app-name      # change me
+      GIZMOS_ORG: telus
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: site
+        run: npm ci
+
+      - name: Build
+        working-directory: site
+        run: npm run build
+
+      - name: Install gizmos CLI
+        run: |
+          curl -fsSL https://gizmos.run/skills/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # The CLI lists files with `git ls-files`, so a gitignored dist/
+      # inside the checkout yields "No files found". Push from a copy
+      # that lives outside the repository instead.
+      - name: Stage build output outside the repository
+        run: |
+          rm -rf "$RUNNER_TEMP/deploy"
+          cp -r site/dist "$RUNNER_TEMP/deploy"
+          echo "DEPLOY_DIR=$RUNNER_TEMP/deploy" >> "$GITHUB_ENV"
+
+      - name: Preview upload
+        run: gizmos push --dry-run --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
+
+      - name: Deploy (go live)
+        if: github.event_name == 'push' || inputs.publish == 'publish'
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: gizmos push --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
+
+      - name: Save version only (not live)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish == 'save'
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: gizmos save --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"</code></pre></div>
+          </div></li>
+          <li><div><h4>Merge and watch the Actions tab</h4><p>Push the workflow to main. Open the <strong>Actions</strong> tab and watch the run. The Preview step lists the files that will be uploaded; the Deploy step prints the live URL. The first successful run creates the app in Gizmos under the name you set.</p></div></li>
+        </ol>
+      </div>
+
+      <div class="grid-2">
+        <div class="lesson"><span class="ic">!</span><div><strong>Lesson learned: "No files found to deploy".</strong> The first version of the Reliability workflow pushed <code>site/dist</code> straight from the checkout. Because <code>dist/</code> is gitignored and the CLI collects files with git, it uploaded nothing. Copying the build to the runner's temp folder fixed it. The workflow above already includes that fix.</div></div>
+        <div class="lesson"><span class="ic">i</span><div><strong>Always name the org.</strong> A push defaults to the key owner's primary org. Passing <code>--org telus</code> every time means the app never lands in the wrong place if your account belongs to more than one org.</div></div>
+      </div>
+
+      <ul class="check" data-sec="github">
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-repo"><span>Create the repository with a main branch</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-connect"><span>Connect the repo to Claude Code</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-secret"><span>Add the GIZMOS_API_KEY repository secret</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-vite"><span>Scaffold the Vite project under site/</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-workflow"><span>Add the deploy workflow with your app name</span></label></li>
+        <li data-route="hard"><label><input type="checkbox" data-key="gh-first-run"><span>Confirm the first Actions run prints the live URL</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 7. Tableau -->
+    <section class="step" id="tableau" data-sec="tableau">
+      <div class="step-head">
+        <p class="eyebrow">Step 7</p>
+        <h2>Set up the Tableau connector</h2>
+        <div class="applies"><span class="tag optional">Optional, all routes</span></div>
+      </div>
+      <p class="intro">If a KPI already exists as a Tableau view, you do not need to re-export it by hand each month. The Tableau Cloud connector lets Claude find the workbook, read the view's data and drop it into your sheet or straight into the dashboard.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Connect once</h3>
+          <ol>
+            <li>In Claude, open <strong>Settings</strong>, then <strong>Connectors</strong>, and add <strong>Tableau Cloud</strong> from the TELUS directory.</li>
+            <li>Sign in with your TELUS account and approve the consent screen. Claude gets the same access you have in Tableau, nothing more.</li>
+            <li>Test it: ask Claude to <em>list my Tableau workbooks</em> or <em>search Tableau for "CCT Mapping"</em>. You should see workbook names, projects and views.</li>
+          </ol>
+          <h4>What Claude can do with it</h4>
+          <dl class="kv">
+            <dt>Find</dt><dd>Search content, list projects, workbooks, views and data sources.</dd>
+            <dt>Read</dt><dd>Get a view's underlying data as a table, or run a query against a published data source with filters and aggregations.</dd>
+            <dt>Snapshot</dt><dd>Fetch a view image for a static screenshot in a summary.</dd>
+            <dt>Pulse</dt><dd>Read Pulse metric definitions and insights for narrative context.</dd>
+          </dl>
+        </div>
+        <div class="card">
+          <h3>Two ways to use the data</h3>
+          <dl class="kv">
+            <dt>Recommended</dt><dd><strong>Land it in the sheet.</strong> Ask Claude to pull the view data and write it into a dedicated tab of your workbook (for example <em>Tableau DRD extract</em>). The dashboard reads the sheet like everything else, the numbers are reviewable, and the monthly loop stays the same.</dd>
+            <dt>Quick</dt><dd><strong>Read it straight into the page.</strong> Ask Claude to query the view and update the DATA block directly. Faster, but there is no paper trail between Tableau and the page.</dd>
+          </dl>
+          <div class="copy-wrap"><span class="cap">Prompt</span><button class="copy-btn" type="button">Copy</button><pre><code>Find the "DRD Assure CCT Mapping" view in Tableau. Pull its data for the
+last 18 months grouped by product and ticket category, and write it into
+a new tab called "Tableau DRD extract" in the Churn Measurement 2026
+workbook, months across. Then tell me the row counts per product.</code></pre></div>
+          <div class="lesson"><span class="ic">i</span><div><strong>From experience.</strong> The Reliability dashboard first took its ticket-driver breakdown from the Tableau DRD feed, then moved to Looker category tabs maintained inside the workbook because the categories were stable and easier to reconcile. Tableau is a great feed. The sheet is still the record.</div></div>
+        </div>
+      </div>
+
+      <ul class="check" data-sec="tableau">
+        <li><label><input type="checkbox" data-key="tb-conn"><span>Add the Tableau Cloud connector and sign in</span></label></li>
+        <li><label><input type="checkbox" data-key="tb-find"><span>Confirm Claude can find the workbook and view you need</span></label></li>
+        <li><label><input type="checkbox" data-key="tb-land"><span>Decide where Tableau data lands: a sheet tab (recommended) or the page directly</span></label></li>
+      </ul>
+    </section>
+
+    <!-- 8. Publish -->
+    <section class="step" id="publish">
+      <div class="step-head">
+        <p class="eyebrow">Step 8</p>
+        <h2>Build and publish</h2>
+      </div>
+      <p class="intro">With the setup done, this is the part you repeat. Each route below shows the flow, the exact steps, and what "done" looks like.</p>
+
+      <div class="tabs" role="tablist" aria-label="Route">
+        <button role="tab" id="tab-easy" aria-selected="true" aria-controls="panel-easy" data-tab="easy">Easy: upload a .jsx file</button>
+        <button role="tab" id="tab-mid" aria-selected="false" aria-controls="panel-mid" data-tab="mid">Intermediate: Gizmos connector</button>
+        <button role="tab" id="tab-hard" aria-selected="false" aria-controls="panel-hard" data-tab="hard">Hard: GitHub auto deploy</button>
+      </div>
+
+      <div class="panel on" id="panel-easy" role="tabpanel" aria-labelledby="tab-easy">
+        <div class="flow-wrap"><svg class="flow" data-flow="easy" role="img" aria-label="Easy route flow: Claude Chat writes App.jsx, you download it, upload it in the Gizmos hub, and the app is live."></svg></div>
+        <div class="card">
+          <ol class="steps">
+            <li><div><h4>Ask for a single file</h4><p>Inside your Project, ask Claude to build the dashboard as <strong>one React file named App.jsx with a default export</strong>. That is the same shape as the React artifacts Claude shows in chat, so you can preview it in the side panel before you download it.</p></div></li>
+            <li><div><h4>Review in the chat preview</h4><p>Check numbers against the sheet, click through the pages, and test on a narrow window. Iterate until it is right. Ask Claude to fix anything before you download.</p></div></li>
+            <li><div><h4>Download App.jsx</h4><p>Use the download control on the artifact. If Claude produced index.html and other assets too, download them all and keep the folder structure.</p></div></li>
+            <li><div><h4>Upload in the Gizmos hub</h4><p>At telus.gizmos.run choose <strong>Deploy</strong> (or <strong>New app</strong>), enter your app name, and upload the file or folder. The hub accepts uploads up to 10 MB. Add a description and a favicon if you have one, then publish.</p></div></li>
+            <li><div><h4>Share the link</h4><p>Open <code>&lt;app-name&gt;.telus.gizmos.run</code>, confirm it renders, and set visibility or add viewers. Bookmark the hub page: it is where you will upload the next version.</p></div></li>
+          </ol>
+          <div class="note"><strong>Updating later:</strong> return to the same app in the hub and upload the new file. The previous version stays in the Versions tab, so a bad upload is one click away from a rollback.</div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-mid" role="tabpanel" aria-labelledby="tab-mid">
+        <div class="flow-wrap"><svg class="flow" data-flow="mid" role="img" aria-label="Intermediate route flow: Claude Chat with the Gizmos connector deploys a temporary artifact, you promote it in the hub, and it becomes a permanent app."></svg></div>
+        <div class="card">
+          <ol class="steps">
+            <li><div><h4>Build as usual</h4><p>Same as the Easy route: ask for the page inside your Project and review the preview.</p></div></li>
+            <li><div><h4>Ask Claude to deploy it</h4><p>Say <em>"Deploy this to Gizmos"</em>. Claude calls the connector's <code>deploy_artifact</code> tool with the files and returns a live link under telus.gizmos.run. No API key, no download.</p></div></li>
+            <li><div><h4>Keep the artifact name</h4><p>The result names the artifact (something like <code>art-3f9c1b...</code>) and the org. Claude needs both to update the same page later. Ask Claude to remember them, and paste them into your project instructions.</p></div></li>
+            <li><div><h4>Make it permanent</h4><p>The artifact has a <strong>7 day lease</strong> that each update renews. Open it in the hub and <strong>promote</strong> it, giving it its real name. Do this before sharing widely: renaming retires the old link.</p></div></li>
+            <li><div><h4>Update the same app</h4><p>Next month, say <em>"Update the relstrat app with the new numbers"</em>. If Claude has lost track, ask it to <em>list my Gizmos apps</em> to recover the name and org. Permanent apps can also be edited in Gizmos Studio: ask Claude for the Studio link.</p></div></li>
+          </ol>
+          <div class="warn"><strong>The temporary stage is the trap.</strong> A page shared as an artifact and never promoted disappears after 7 idle days, and the link stops working for everyone who bookmarked it. Promote first, then share.</div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-hard" role="tabpanel" aria-labelledby="tab-hard">
+        <div class="flow-wrap"><svg class="flow" data-flow="hard" role="img" aria-label="Hard route flow: Claude Code commits to GitHub, a push to main runs GitHub Actions, which runs gizmos push, and the app is live."></svg></div>
+        <div class="card">
+          <ol class="steps">
+            <li><div><h4>Open the repo in Claude Code</h4><p>At claude.ai/code pick the repository and start a session. Claude Code has the repo, your connectors and CLAUDE.md. Describe the change: a new page, a data refresh, a design fix.</p></div></li>
+            <li><div><h4>Let Claude Code build and verify</h4><p>It edits <code>site/App.jsx</code>, runs <code>npm run build</code> to prove the site compiles, and commits with a descriptive message on a feature branch.</p></div></li>
+            <li><div><h4>Open a pull request and merge</h4><p>Review the diff in GitHub. Ask Claude Code to open the PR if you want one. Merging to main is the publish action.</p></div></li>
+            <li><div><h4>GitHub Actions publishes</h4><p>The workflow installs dependencies, builds, previews the upload, and runs <code>gizmos push</code> with the version label set to the branch and commit. The Actions log shows the live URL. Typical run time is under two minutes.</p></div></li>
+            <li><div><h4>Nothing else</h4><p>Anyone with write access to the repo can now publish the same way. Use <strong>Run workflow</strong> with <strong>save</strong> when you want a version staged in Gizmos without going live, then make it live from the Versions tab.</p></div></li>
+          </ol>
+          <div class="note"><strong>Local check before merging:</strong> <code>cd site && npm ci && npm run dev</code> serves the dashboard at localhost:5173. Claude Code can run this and screenshot the result for you.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Updates -->
+    <section class="step" id="updates">
+      <div class="step-head">
+        <p class="eyebrow">Step 9</p>
+        <h2>The monthly update loop</h2>
+      </div>
+      <p class="intro">This is what KPI tracking looks like once everything is in place. The first two steps are the same for everyone; only the publish step differs.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Each month</th><th class="easy">Easy</th><th class="mid">Intermediate</th><th class="hard">Hard</th></tr></thead>
+          <tbody>
+            <tr><td class="k">1. Update the source</td><td colspan="3">Add the new month to the workbook tabs. Update commentary in the Doc. Pull Tableau extracts if you use them.</td></tr>
+            <tr><td class="k">2. Ask Claude to refresh</td><td colspan="3">In your Project (or Claude Code): "The workbook now has [month]. Refresh the DATA block only and list every changed number." Spot-check three numbers against the sheet.</td></tr>
+            <tr><td class="k">3. Publish</td><td>Download App.jsx, upload it to the same app in the hub</td><td>"Update the [app] app on Gizmos." Claude deploys. Check the version label appeared.</td><td>Merge the PR. Watch the Actions run turn green.</td></tr>
+            <tr><td class="k">4. Verify</td><td colspan="3">Open the live link in a private window to confirm SSO works and the latest month shows. Check the Versions tab has the new entry.</td></tr>
+            <tr><td class="k">5. Tell people</td><td colspan="3">Send the link and a three-line summary of what moved. Ask Claude to draft it from the changed numbers; with the Gmail connector it can create the draft for you.</td></tr>
+            <tr><td class="k">Time per month</td><td>20 to 30 minutes</td><td>15 to 20 minutes</td><td>10 to 15 minutes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-3">
+        <div class="card tight"><h4>Keep a changelog</h4><p style="font-size:.93rem;color:var(--text-2)">Use the Gizmos version label for it: "Sep 2026 refresh" beats "v12". On the Hard route the commit message is the changelog.</p></div>
+        <div class="card tight"><h4>Freeze the layout</h4><p style="font-size:.93rem;color:var(--text-2)">Ask for data-only changes during refreshes. Save design changes for a separate session so a wrong number is never tangled up with a layout tweak.</p></div>
+        <div class="card tight"><h4>Roll back without fear</h4><p style="font-size:.93rem;color:var(--text-2)">Every route keeps versions. If a refresh is wrong, make the previous version live from the Versions tab, then fix the data.</p></div>
+      </div>
+    </section>
+
+    <!-- 10. Troubleshooting -->
+    <section class="step" id="trouble">
+      <div class="step-head">
+        <p class="eyebrow">Step 10</p>
+        <h2>Troubleshooting</h2>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>What you see</th><th>Why</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td class="k">Link stopped working after a week</td><td>It was an artifact that was never promoted, and the 7 day lease ran out.</td><td>Redeploy from Claude within the following 7 days to restore it, then promote it in the hub.</td></tr>
+            <tr><td class="k">Claude created a second page instead of updating</td><td>It did not pass the artifact's name and org back to the connector.</td><td>Ask Claude to list your Gizmos apps, then say which one to update. Put the name and org in your project instructions.</td></tr>
+            <tr><td class="k">"No files found to deploy" in Actions</td><td>The build folder is gitignored and the CLI lists files with git.</td><td>Copy dist to a folder outside the checkout before pushing. The workflow in step 6 does this.</td></tr>
+            <tr><td class="k">App deploys but shows a 500 or a blank page</td><td>Vite or JSX source was pushed without building.</td><td>Run the build and push the dist output, never the source.</td></tr>
+            <tr><td class="k">400 on deploy</td><td>The app name breaks the rules or is reserved.</td><td>Lowercase letters, numbers, dashes, underscores only. Avoid names like api, admin, hub, dev.</td></tr>
+            <tr><td class="k">401 on deploy</td><td>The API key is missing, mistyped or revoked.</td><td>Generate a new gzm_ key at gizmos.run/settings and update the GitHub secret.</td></tr>
+            <tr><td class="k">403 on deploy</td><td>The app belongs to someone else, or your key is not a member of the org.</td><td>Ask the owner to add you as editor, or pick a different name. Check the org slug is telus.</td></tr>
+            <tr><td class="k">Colleagues get a sign-in error</td><td>The app is private and they are not shared on it.</td><td>Share with their TELUS email or set visibility to organization in the hub.</td></tr>
+            <tr><td class="k">Numbers look stale after a refresh</td><td>The browser cached the old build, or the version was saved but not published.</td><td>Hard refresh. Check the Versions tab and make the newest version live.</td></tr>
+            <tr><td class="k">Claude cannot see the sheet</td><td>The Drive connector is not connected, or the sheet is not shared with you.</td><td>Reconnect Google Drive in Settings. Ask the sheet owner for viewer access.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span>TELUS Proprietary</span>
+      <span>Gizmos Publishing Playbook, Reliability Strategy</span>
+      <span>Based on the relstrat dashboard build, September 2026</span>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var LS_ROUTE = 'gpp-route', LS_CHECK = 'gpp-check';
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  var ROUTE_NAMES = { easy: 'Easy: upload a .jsx file', mid: 'Intermediate: Gizmos connector', hard: 'Hard: GitHub auto deploy' };
+  var route = lsGet(LS_ROUTE) || '';
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
+  }
+
+  /* Route selection */
+  function applyRoute() {
+    document.querySelectorAll('.route-btn').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.pick === route));
+    });
+    document.querySelectorAll('[data-only]').forEach(function (el) {
+      var list = el.dataset.only.split(' ');
+      var on = !route || list.indexOf(route) !== -1;
+      el.classList.toggle('on', on);
+    });
+    document.querySelectorAll('.check li[data-route]').forEach(function (li) {
+      var list = li.dataset.route.split(' ');
+      li.classList.toggle('on', !route || list.indexOf(route) !== -1);
+    });
+    var msg = document.getElementById('pickMsg');
+    msg.textContent = route ? 'Showing steps for: ' + ROUTE_NAMES[route] + '. Click again to show everything.' : 'No route selected yet. All steps are shown.';
+    if (route) selectTab(route);
+    renumber();
+    updateProgress();
+  }
+  document.querySelectorAll('.route-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      route = (route === b.dataset.pick) ? '' : b.dataset.pick;
+      if (route) lsSet(LS_ROUTE, route); else lsDel(LS_ROUTE);
+      applyRoute();
+    });
+  });
+
+  /* Step numbering follows visible sections */
+  function renumber() {
+    var n = 0;
+    document.querySelectorAll('main section.step').forEach(function (s) {
+      var hidden = s.hasAttribute('data-only') && !s.classList.contains('on');
+      if (hidden) return;
+      n += 1;
+      var eb = s.querySelector('.step-head .eyebrow');
+      if (eb) eb.textContent = 'Step ' + n;
+      var link = document.querySelector('#sideNav a[href="#' + s.id + '"]');
+      if (link) {
+        var pct = link.querySelector('.pct');
+        var title = s.querySelector('h2').textContent;
+        link.textContent = n + '. ' + shortTitle(s.id) + ' ';
+        if (pct) link.appendChild(pct);
+      }
+    });
+  }
+  function shortTitle(id) {
+    return { choose: 'Choose a route', claude: 'Claude prerequisites', memory: 'Memory and context', gizmos: 'Gizmos sign-in and app', data: 'Data sources', github: 'GitHub setup', tableau: 'Tableau connector', publish: 'Build and publish', updates: 'Monthly update loop', trouble: 'Troubleshooting' }[id] || id;
+  }
+
+  /* Checklist persistence */
+  var checks = {};
+  try { checks = JSON.parse(lsGet(LS_CHECK) || '{}') || {}; } catch (e) { checks = {}; }
+  document.querySelectorAll('.check input[data-key]').forEach(function (cb) {
+    cb.id = 'cb-' + cb.dataset.key;
+    cb.checked = !!checks[cb.dataset.key];
+    cb.addEventListener('change', function () {
+      checks[cb.dataset.key] = cb.checked;
+      lsSet(LS_CHECK, JSON.stringify(checks));
+      updateProgress();
+    });
+  });
+  function visibleBoxes(scope) {
+    return Array.prototype.filter.call((scope || document).querySelectorAll('.check input[data-key]'), function (cb) {
+      var li = cb.closest('li');
+      if (li.hasAttribute('data-route') && !li.classList.contains('on')) return false;
+      var sec = cb.closest('section');
+      if (sec && sec.hasAttribute('data-only') && !sec.classList.contains('on')) return false;
+      return true;
+    });
+  }
+  function updateProgress() {
+    var all = visibleBoxes(), done = all.filter(function (c) { return c.checked; }).length;
+    var pct = all.length ? Math.round(done / all.length * 100) : 0;
+    document.getElementById('progNum').textContent = pct + '%';
+    document.getElementById('progBar').style.width = pct + '%';
+    document.querySelectorAll('.pct[data-pct]').forEach(function (el) {
+      var sec = document.getElementById(el.dataset.pct);
+      if (!sec) return;
+      var boxes = visibleBoxes(sec), d = boxes.filter(function (c) { return c.checked; }).length;
+      el.textContent = boxes.length ? d + '/' + boxes.length : '';
+    });
+  }
+  document.getElementById('resetProgress').addEventListener('click', function () {
+    checks = {}; lsDel(LS_CHECK);
+    document.querySelectorAll('.check input[data-key]').forEach(function (cb) { cb.checked = false; });
+    updateProgress(); toast('Checklist reset');
+  });
+
+  /* Copy buttons */
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentElement.querySelector('pre');
+      var text = pre.textContent;
+      function ok() { btn.textContent = 'Copied'; btn.classList.add('done'); setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1600); }
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        toast('Text selected. Press Ctrl+C or Cmd+C to copy.');
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else fallback();
+    });
+  });
+
+  /* Quiz */
+  var answers = {};
+  document.querySelectorAll('#quiz .q').forEach(function (q) {
+    q.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        q.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        answers[q.dataset.q] = Number(b.dataset.v);
+        if (Object.keys(answers).length === 3) showVerdict();
+      });
+    });
+  });
+  function showVerdict() {
+    var score = answers.freq + answers.git * 1.5 + answers.team;
+    var pick, why;
+    if (answers.git === 0) {
+      pick = answers.freq === 0 ? 'easy' : 'mid';
+      why = answers.freq === 0
+        ? 'Rare updates and no appetite for GitHub: one file upload in the hub is the least to learn and the least to maintain.'
+        : 'Regular updates without a terminal: let the Gizmos connector publish for you. Promote the first deploy so the link is permanent.';
+    } else if (score >= 4.5 || (answers.team === 2 && answers.git >= 1)) {
+      pick = 'hard';
+      why = 'Frequent updates, several publishers and some comfort with GitHub: the automated route pays back its setup in the first two months, and the repo becomes the shared record.';
+    } else if (score <= 1.5) {
+      pick = 'easy';
+      why = 'Few updates and a single owner: the hub upload is enough, and you can move up a route later without losing the app.';
+    } else {
+      pick = 'mid';
+      why = 'Monthly cadence with a small team: deploying from chat keeps it quick, and the hub keeps the versions. Promote the artifact to a permanent app on day one.';
+    }
+    var v = document.getElementById('verdict');
+    document.getElementById('verdictName').textContent = ROUTE_NAMES[pick];
+    document.getElementById('verdictWhy').textContent = why;
+    v.hidden = false;
+    document.getElementById('verdictApply').onclick = function () {
+      route = pick; lsSet(LS_ROUTE, route); applyRoute();
+      toast('Route set to ' + ROUTE_NAMES[pick]);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  }
+
+  /* Tabs */
+  function selectTab(id) {
+    document.querySelectorAll('.tabs [role="tab"]').forEach(function (t) { t.setAttribute('aria-selected', String(t.dataset.tab === id)); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.toggle('on', p.id === 'panel-' + id); });
+  }
+  document.querySelectorAll('.tabs [role="tab"]').forEach(function (t) {
+    t.addEventListener('click', function () { selectTab(t.dataset.tab); });
+  });
+
+  /* Flow diagrams */
+  var FLOWS = {
+    easy: [
+      { t: 'Claude Chat', s: 'writes App.jsx' },
+      { t: 'Download', s: 'the .jsx file' },
+      { t: 'Gizmos hub', s: 'upload and publish' },
+      { t: 'Live app', s: 'name.telus.gizmos.run', acc: true }
+    ],
+    mid: [
+      { t: 'Claude Chat', s: 'Gizmos connector on' },
+      { t: '"Deploy to Gizmos"', s: 'deploy_artifact' },
+      { t: 'Temporary artifact', s: '7 day lease', tmp: true },
+      { t: 'Promote in hub', s: 'give it a real name' },
+      { t: 'Permanent app', s: 'name.telus.gizmos.run', acc: true }
+    ],
+    hard: [
+      { t: 'Claude Code', s: 'edits and commits' },
+      { t: 'GitHub', s: 'merge to main' },
+      { t: 'GitHub Actions', s: 'build, gizmos push' },
+      { t: 'Live app', s: 'auto published', acc: true }
+    ]
+  };
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  function drawFlow(svg) {
+    var steps = FLOWS[svg.dataset.flow]; if (!steps) return;
+    var W = 150, H = 62, GAP = 44, PAD = 8, TOP = 14;
+    var total = steps.length * W + (steps.length - 1) * GAP + PAD * 2;
+    var height = H + TOP + PAD * 2;
+    var out = [];
+    out.push('<defs><marker id="ah-' + svg.dataset.flow + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" class="flow-head"/></marker></defs>');
+    steps.forEach(function (st, i) {
+      var x = PAD + i * (W + GAP), y = PAD + TOP;
+      var cls = 'flow-box' + (st.acc ? ' acc' : '') + (st.tmp ? ' tmp' : '');
+      out.push('<rect class="' + cls + '" x="' + x + '" y="' + y + '" width="' + W + '" height="' + H + '" rx="8"/>');
+      out.push('<circle class="flow-step" cx="' + (x + 14) + '" cy="' + (y) + '" r="10"/>');
+      out.push('<text class="flow-step-n" x="' + (x + 14) + '" y="' + (y + 3.5) + '" text-anchor="middle">' + (i + 1) + '</text>');
+      out.push('<text class="flow-lbl' + (st.acc ? ' acc' : '') + '" x="' + (x + W / 2) + '" y="' + (y + 28) + '" text-anchor="middle">' + esc(st.t) + '</text>');
+      out.push('<text class="flow-sub' + (st.acc ? ' acc' : '') + '" x="' + (x + W / 2) + '" y="' + (y + 46) + '" text-anchor="middle">' + esc(st.s) + '</text>');
+      if (i < steps.length - 1) {
+        var x1 = x + W + 4, x2 = x + W + GAP - 4, ym = y + H / 2;
+        out.push('<path class="flow-arrow" d="M' + x1 + ',' + ym + ' L' + x2 + ',' + ym + '" marker-end="url(#ah-' + svg.dataset.flow + ')"/>');
+      }
+    });
+    svg.setAttribute('viewBox', '0 0 ' + total + ' ' + height);
+    svg.style.maxWidth = total + 'px';
+    svg.innerHTML = out.join('');
+  }
+  document.querySelectorAll('svg.flow').forEach(drawFlow);
+
+  /* Active nav on scroll */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#sideNav a'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  function setActive() {
+    var y = window.scrollY + 120, cur = sections[0];
+    sections.forEach(function (s) { if (s.offsetParent !== null && s.offsetTop <= y) cur = s; });
+    links.forEach(function (a) { a.classList.toggle('active', cur && a.getAttribute('href') === '#' + cur.id); });
+  }
+  window.addEventListener('scroll', setActive, { passive: true });
+
+  /* Deep link to a route via #easy #mid #hard */
+  var h = (location.hash || '').replace('#', '');
+  if (ROUTE_NAMES[h]) { route = h; lsSet(LS_ROUTE, route); }
+
+  applyRoute();
+  setActive();
+})();
+</script>
