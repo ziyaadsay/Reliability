@@ -956,7 +956,22 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
         )}
       </div>
       {children}
-      {note && <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>{note}</p>}
+      {note && <Disclosure label="About this chart" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>{note}</p></Disclosure>}
+    </div>
+  );
+}
+
+// Explanatory text (sources, method notes, how-to-read hints) is hidden behind a
+// small arrow, matching the product sub-page arrows in the left menu.
+function Disclosure({ label = "Sources & notes", T, children, style, align = "left" }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginTop: 10, textAlign: align, ...style }}>
+      <button onClick={() => setOpen((o) => !o)} aria-expanded={open}
+        style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: FONT, display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10.5, fontWeight: 700, color: T.textMuted, letterSpacing: ".05em", textTransform: "uppercase" }}>
+        <span style={{ display: "inline-block", fontSize: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>{label}
+      </button>
+      {open && <div style={{ marginTop: 6, textAlign: "left" }}>{children}</div>}
     </div>
   );
 }
@@ -1592,6 +1607,172 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ monthly narrative ------------------------------
+  // Plain-language read of the month at the end of the selected range: calls,
+  // tickets and repairs, with the single biggest reason the trend points the way
+  // it does. Churn is left out until the churn model refresh (last reported Jun 2026).
+  const NOTES_ANALYSIS = { HSIA: HSA, TV: TVA };
+  function narrativeFacts(sc) {
+    const i = toIdx;
+    const at = (arr, k) => (arr && k >= 0 && k < arr.length ? arr[k] : null);
+    const pick = (arr) => ({ now: at(arr, i), prev: at(arr, i - 1), yoy: at(arr, i - 12) });
+    const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
+    const bps = (o, k) => (o.now != null && o[k] != null ? Math.round((o.now - o[k]) * 100) : null);
+    const calls = sc === "SH+" ? null : pick(CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc]);
+    const tv = pick(DATA.ticketVolume[sc]), tr = pick(DATA.ticketRate[sc]), rv = pick(DATA.repairVolume[sc]), rr = pick(DATA.repairRate[sc]), base = pick(DATA.subBase[sc]);
+    return {
+      sc, i, month: MONTHS[i], prevMonth: MONTHS[i - 1], calls, tv, tr, rv, rr, base, basePct: pct(base.now, base.prev),
+      trBps: bps(tr, "prev"), rrBps: bps(rr, "prev"), trBpsY: bps(tr, "yoy"), rrBpsY: bps(rr, "yoy"),
+      callsPct: calls ? pct(calls.now, calls.prev) : null, callsPctY: calls ? pct(calls.now, calls.yoy) : null,
+      tvPct: pct(tv.now, tv.prev), tvPctY: pct(tv.now, tv.yoy), rvPct: pct(rv.now, rv.prev), rvPctY: pct(rv.now, rv.yoy),
+      per100: tv.now && rv.now != null ? (rv.now / tv.now) * 100 : null, per100Prev: tv.prev && rv.prev != null ? (rv.prev / tv.prev) * 100 : null,
+      perTicket: calls && calls.now != null && tv.now ? calls.now / tv.now : null, perTicketPrev: calls && calls.prev != null && tv.prev ? calls.prev / tv.prev : null
+    };
+  }
+  // Largest month-over-month category move for a product (HSIA: recategorization pain
+  // points; TV/SHS: Looker Category 1 groups).
+  // `prefer` (+1 / -1) picks the largest move in that direction when one exists, so an
+  // improving month is explained by what fell and a deteriorating month by what rose.
+  function ticketDriver(product, i, prefer = 0) {
+    const L = LOOKER[product];
+    if (!L || !L.cats || i < 1) return null;
+    let rows = L.cats.filter((c) => !/^Other/.test(c.name))
+      .map((c) => ({ name: c.name, now: c.series[i], prev: c.series[i - 1], d: c.series[i] - c.series[i - 1] }))
+      .filter((r) => r.now != null && r.prev != null);
+    if (!rows.length) return null;
+    if (prefer && rows.some((r) => Math.sign(r.d) === prefer)) rows = rows.filter((r) => Math.sign(r.d) === prefer);
+    rows.sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
+    const total = L.monthlyTotal[i] - L.monthlyTotal[i - 1];
+    return { ...rows[0], total, pct: rows[0].prev ? (rows[0].d / rows[0].prev) * 100 : null };
+  }
+  function verdictOf(f) {
+    const t = f.trBps, r = f.rrBps;
+    if (t == null && r == null) return { label: "No read yet", tone: "flat" };
+    if (t > 0 && (r == null || r >= 0)) return { label: "Deteriorating", tone: "bad" };
+    if (t < 0 && (r == null || r <= 0)) return { label: "Improving", tone: "good" };
+    if (t === 0 && (r == null || r === 0)) return { label: "Steady", tone: "flat" };
+    return { label: "Mixed", tone: "flat" };
+  }
+  function MonthlyNarrative({ sc }) {
+    const f = narrativeFacts(sc);
+    if (f.tv.now == null || f.tr.now == null) {
+      return <p style={{ fontSize: 13, color: T.textFaint, margin: 0 }}>{sc} has no reported tickets for {f.month}, so there is no narrative for this month.</p>;
+    }
+    const v = verdictOf(f);
+    const toneColor = v.tone === "good" ? T.good : v.tone === "bad" ? T.bad : T.textMuted;
+    const sPct = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
+    const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " bps");
+    const trDec = 2, rrDec = sc === "SH+" ? 3 : 2;
+    const aPct = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
+    const prefer = v.tone === "good" ? -1 : v.tone === "bad" ? 1 : 0;
+    // rate and volume pointing in opposite directions means the subscriber base moved the rate
+    const baseEffect = f.trBps != null && f.tvPct != null && f.basePct != null && Math.sign(f.trBps) !== 0 && Math.sign(f.tvPct) !== 0 && Math.sign(f.trBps) !== Math.sign(f.tvPct);
+    const upDown = (x, up = "rose", down = "fell", flat = "held") => (x == null ? flat : x > 0 ? up : x < 0 ? down : flat);
+    const label = sc === "All" ? "Across HSIA, TV and SHS" : `For ${sc}`;
+
+    // ----- main reason -----
+    let driverText = null, driverProduct = sc;
+    const catText = (d) => `${d.name} ${d.d >= 0 ? "added" : "shed"} ${Math.abs(d.d).toLocaleString()} tickets (${sPct(d.pct)}) versus ${f.prevMonth}`;
+    if (baseEffect) {
+      // the rate moved against volume: the base did the work
+      driverText = `The ticket rate ${upDown(f.trBps)} because the subscriber base ${upDown(f.basePct, "grew", "shrank")} ${aPct(f.basePct)} while ticket volume ${upDown(f.tvPct)} ${aPct(f.tvPct)}; the underlying ticket count is ${f.tvPct > 0 ? "still rising" : "falling"}.`;
+    }
+    if (sc === "All") {
+      const per = PRODUCTS.map((p) => ({ p, f: narrativeFacts(p) })).filter((x) => x.f.tv.now != null && x.f.tv.prev != null);
+      per.sort((a, b) => Math.abs(b.f.tv.now - b.f.tv.prev) - Math.abs(a.f.tv.now - a.f.tv.prev));
+      if (per.length) {
+        const lead = per[0]; driverProduct = lead.p;
+        const d = ticketDriver(lead.p, f.i, baseEffect ? 0 : prefer);
+        const lt = `${lead.p} was the largest mover: ticket volume ${upDown(lead.f.tv.now - lead.f.tv.prev)} ${Math.abs(lead.f.tv.now - lead.f.tv.prev).toLocaleString()} (${sPct(lead.f.tvPct)}) and its ticket rate ${upDown(lead.f.trBps)} ${Math.abs(lead.f.trBps)} bps`
+          + (d ? `, led by ${d.name} (${d.d > 0 ? "+" : ""}${d.d.toLocaleString()}, ${sPct(d.pct)}).` : ".");
+        driverText = driverText ? `${driverText} ${lt}` : lt;
+      }
+    } else {
+      const d = ticketDriver(sc, f.i, baseEffect ? 0 : prefer);
+      if (d) {
+        const share = d.total && Math.sign(d.d) === Math.sign(d.total) ? `, ${Math.min(100, Math.round((Math.abs(d.d) / Math.abs(d.total)) * 100))}% of the net change` : d.total ? `, against a net ${d.total > 0 ? "rise" : "fall"} of ${Math.abs(d.total).toLocaleString()}` : "";
+        const ct = `${catText(d)}, the largest ${baseEffect ? "" : prefer < 0 ? "downward " : prefer > 0 ? "upward " : ""}category move${share}.`;
+        driverText = driverText ? `${driverText} ${ct}` : ct;
+      } else if (sc === "SH+") {
+        const st = `SH+ has no ticket category breakdown yet, so the read rests on the rate and volume movements.`;
+        driverText = driverText ? `${driverText} ${st}` : st;
+      }
+    }
+    // notes-analysis colour, only for the month the analysis covers
+    let notesText = null, closureText = null;
+    const NA = NOTES_ANALYSIS[driverProduct];
+    if (NA && f.month === NA.months[NA.months.length - 1]) {
+      const r = NA.tickets.rising[0];
+      if (r) notesText = `In the ${driverProduct} agent notes the biggest sub-category mover was ${r.name} (${r.v[1].toLocaleString()} → ${r.v[2].toLocaleString()}, ${sPct(r.pct)}).`;
+      const c = NA.tickets.closure;
+      if (c && c.length >= 2 && c[c.length - 1].field_visit_pct != null) closureText = `Field visits closed ${c[c.length - 1].field_visit_pct}% of ${driverProduct} tickets against ${c[c.length - 2].field_visit_pct}% the month before (notes analysis).`;
+    }
+
+    // ----- sentences -----
+    const tickets = [
+      `Ticket rate ${upDown(f.trBps)} ${f.trBps == null ? "" : Math.abs(f.trBps) + " bps "}to ${fmtPct(f.tr.now, trDec)}${f.trBpsY != null ? ` (${sBps(f.trBpsY)} year over year)` : ""}.`,
+      f.tv.prev != null ? `Volume ${upDown(f.tvPct)} ${aPct(f.tvPct)} to ${fmtNum(f.tv.now)}${f.tvPctY != null ? ` (${sPct(f.tvPctY)} YoY)` : ""}.` : `Volume was ${fmtNum(f.tv.now)}.`,
+      f.basePct != null ? `Subscriber base ${upDown(f.basePct, "grew", "shrank")} ${aPct(f.basePct)}.` : null,
+      notesText
+    ].filter(Boolean).join(" ");
+    const repairs = f.rr.now == null ? "Repairs are not reported for this month." : [
+      `Repair rate ${upDown(f.rrBps)} ${f.rrBps == null ? "" : Math.abs(f.rrBps) + " bps "}to ${fmtPct(f.rr.now, rrDec)}${f.rrBpsY != null ? ` (${sBps(f.rrBpsY)} YoY)` : ""}.`,
+      f.rv.now != null ? `${fmtNum(f.rv.now)} dispatches${f.rvPct != null ? ` (${sPct(f.rvPct)} MoM${f.rvPctY != null ? `, ${sPct(f.rvPctY)} YoY` : ""})` : ""}.` : null,
+      f.per100 != null && f.per100Prev != null
+        ? `${f.per100Prev.toFixed(1)} → ${f.per100.toFixed(1)} dispatches per 100 tickets, so ${f.per100 < f.per100Prev - 0.05 ? "a smaller" : f.per100 > f.per100Prev + 0.05 ? "a larger" : "the same"} share of tickets needed a field visit.`
+        : null,
+      closureText
+    ].filter(Boolean).join(" ");
+    const calls = !f.calls ? null : f.calls.now == null ? "Calls are not reported for this month." : [
+      `Calls offered ${upDown(f.callsPct)} ${aPct(f.callsPct)} to ${fmtNum(f.calls.now)}${f.callsPctY != null ? ` (${sPct(f.callsPctY)} YoY)` : ""}.`,
+      f.perTicket != null && f.perTicketPrev != null
+        ? `${f.perTicketPrev.toFixed(2)} → ${f.perTicket.toFixed(2)} calls per ticket: ${f.callsPct != null && f.tvPct != null && f.callsPct > f.tvPct + 1
+            ? "contacts are growing faster than tickets, which points to repeat and status calls rather than new faults"
+            : f.callsPct != null && f.tvPct != null && f.callsPct < f.tvPct - 1
+              ? "contacts grew more slowly than tickets, so more of the demand is converting into tickets than into repeat calls"
+              : "contacts tracked tickets"}.`
+        : null
+    ].filter(Boolean).join(" ");
+
+    const baseClause = baseEffect ? ` (volume ${upDown(f.tvPct)} ${aPct(f.tvPct)}; the base ${upDown(f.basePct, "grew", "shrank")} ${aPct(f.basePct)})` : "";
+    const headline = v.tone === "bad"
+      ? `${label}, reliability deteriorated in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} bps` : ""}.`
+      : v.tone === "good"
+        ? `${label}, reliability improved in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} bps` : ""}.`
+        : `${label}, the ${f.month} read is mixed: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps while the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps || 0)} bps.`;
+
+    const block = (icon, title, text) => text ? (
+      <div style={{ flex: 1, minWidth: 240, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>
+          <span style={{ color: T.heading, display: "inline-flex" }}><Icon name={icon} size={14} /></span>{title}
+        </div>
+        <p style={{ margin: 0, fontSize: 12.8, lineHeight: 1.6, color: T.textSecondary }}>{text}</p>
+      </div>
+    ) : null;
+
+    return (
+      <div>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ background: toneColor + "1a", border: `1px solid ${toneColor}66`, color: toneColor, borderRadius: 999, padding: "3px 12px", fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", whiteSpace: "nowrap" }}>{v.label}</span>
+          <p style={{ margin: 0, flex: 1, minWidth: 260, fontSize: 14, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
+        </div>
+        {driverText && (
+          <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
+            <b style={{ color: T.heading }}>Main reason · </b>{driverText}
+          </p>
+        )}
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14 }}>
+          {block("tickets", "Tickets", tickets)}
+          {block("repairs", "Repairs / dispatches", repairs)}
+          {block("calls", "Calls", calls)}
+        </div>
+        <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
+          Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported Jun 2026).
+        </p>
+      </div>
+    );
+  }
+
   // ------------------------------ overview: recurring issues ------------------------------
   function RecurringIssuesTable() {
     const thBase = { padding: "10px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
@@ -1819,9 +2000,9 @@ export default function ReliabilityScorecards() {
             ))}
           </div>
         )}
-        <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+        <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>
           Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares Aug 2026 against Aug 2025.
-        </p>
+        </p></Disclosure>
       </>
     );
   }
@@ -2104,34 +2285,38 @@ export default function ReliabilityScorecards() {
               <Icon name="slides" size={13} /> Executive Summary slides →
             </button>
           </div>
-          <p style={{ fontSize: 12.5, color: T.textFaint, marginTop: 14, lineHeight: 1.6, marginBottom: 0 }}>
+          <Disclosure label="How to read this" T={T} style={{ marginTop: 14 }}><p style={{ fontSize: 12.5, color: T.textFaint, margin: 0, lineHeight: 1.6 }}>
             Comparisons are year-over-year at the end of the selected range. Latest reported month: <b style={{ color: T.textSecondary }}>{MONTHS[MONTHS.length - 1]}</b> for calls, tickets, repairs and base; churn (go/national RGU) is reported through <b style={{ color: T.textSecondary }}>Jun 2026</b>.
             {scope === "All" && " All-product rates are blended: total volume over total subscriber base (churn: base-weighted mean); calls are HSIA + TV + SHS contacts offered. SH+ is reported separately (from Jul 2025) and is not yet included in the All rollup."}
             {" "}Annual churn: HSIA {DATA.annualChurn.HSIA.y2026.toFixed(2)}% 2026 YTD vs {DATA.annualChurn.HSIA.y2025.toFixed(2)}% 2025 · TV {DATA.annualChurn.TV.y2026.toFixed(2)}% vs {DATA.annualChurn.TV.y2025.toFixed(2)}% · SHS {DATA.annualChurn.SHS.y2026.toFixed(2)}% vs {DATA.annualChurn.SHS.y2025.toFixed(2)}%.
-          </p>
+          </p></Disclosure>
         </Section>
 
-        <Section num="02" eyebrow="Monthly scorecard" title="Reliability scorecard" icon="tickets" T={T} collapsible>
-          <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+        <Section num="02" eyebrow="Health read" title={`Monthly narrative — ${latestLabel}`} icon="overview" T={T} collapsible>
+          {MonthlyNarrative({ sc: scope })}
+        </Section>
+
+        <Section num="03" eyebrow="Monthly scorecard" title="Reliability scorecard" icon="tickets" T={T} collapsible>
+          <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
             The month at the end of the selected range is shaded and marked as under review. The 2025 column is the 2025 average for rates and the 2025 total for call volumes. “—” means the source has not reported that month.
-          </p>
+          </p></Disclosure>
           <ScorecardTable />
-          <p style={{ fontSize: 12, color: T.textFaint, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
+          <Disclosure label="Sources & notes" T={T} style={{ marginTop: 12 }}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.6 }}>
             Calls are contacts offered. HSIA and TV call series come from the TS Calls Offered by Product workbook (Actuals tabs); SHS calls come from the KPI workbook. Churn rate is first reported for Feb 2025.
-          </p>
+          </p></Disclosure>
         </Section>
 
-        <Section num="03" eyebrow="Ticket analysis" title="Tickets by recurring issue — Aug 2026" icon="issues" T={T} collapsible>
-          <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+        <Section num="04" eyebrow="Ticket analysis" title="Tickets by recurring issue — Aug 2026" icon="issues" T={T} collapsible>
+          <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
             Ticket counts grouped by the five recurring issues from the cross-source reliability synthesis (perception study, VOC, onboarding, CCTS, OpenSignal and ticket/repair analysis). HSIA counts are the customer pain points from the workbook's hsia_ticket_recategorization tab (its Other group, abandoned and uncategorised tickets, sits in the Support row); TV and SHS use the Looker ticket categories. SHS device categories sit outside the 5-issue framework, matching the synthesis. A falling count (▼, green) is favourable.
-          </p>
+          </p></Disclosure>
           <RecurringIssuesTable />
         </Section>
 
-        <Section num="04" eyebrow="Reliability program" title="Initiatives by pillar" icon="initiatives" T={T} collapsible>
-          <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+        <Section num="05" eyebrow="Reliability program" title="Initiatives by pillar" icon="initiatives" T={T} collapsible>
+          <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
             Every initiative from the workbook's Initiatives tab (HSIA, TV and SHS), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
-          </p>
+          </p></Disclosure>
           <PillarInitiatives />
         </Section>
       </>
@@ -2155,14 +2340,14 @@ export default function ReliabilityScorecards() {
     const prodInits = INITIATIVES.filter((it) => it.p === product);
 
     // Sections are numbered sequentially per product; all are collapsible and
-    // only the first starts expanded. Keys force a remount on product change
+    // only the narrative and the first KPI section start expanded. Keys force a remount on product change
     // so each page opens in its default state.
     let secNo = 0;
     const sec = (title, icon, children) => {
       secNo += 1;
       return (
         <Section key={`${product}-${title}`} num={String(secNo).padStart(2, "0")} eyebrow={product} title={title} icon={icon}
-          T={T} collapsible defaultOpen={secNo === 1}>
+          T={T} collapsible defaultOpen={secNo <= 2}>
           {children}
         </Section>
       );
@@ -2191,6 +2376,8 @@ export default function ReliabilityScorecards() {
             SmartHome+ reporting starts Jul 2025 (SH+ reliability KPIs workbook). Calls, churn, ticket categories and improvement initiatives are not yet reported for SH+.
           </p>
         )}
+
+        {sec(`Monthly narrative — ${latestLabel}`, "overview", MonthlyNarrative({ sc: product }))}
 
         {hasCalls && sec("Calls", "calls",
           <ChartCard title={callsTitle} T={T}
@@ -2514,15 +2701,15 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Category 1 › Category 2)</div>
             <MoverCards rising={K.rising} falling={K.falling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). The YouTube app jump (50 → 235) is the only new driver; the rest are shifts inside established categories.</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). The YouTube app jump (50 → 235) is the only new driver; the rest are shifts inside established categories.</p></Disclosure>
           </>
         )}
 
         {sec("Agent vs technician categorisation", "issues",
           <>
-            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+            <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
               Each agent Category 1 maps to a symptom domain, each closure (Resolution 1–2) to a cause domain. <b style={{ color: T.textSecondary }}>Alignment</b> means the closure domain is one the symptom would predict (STB No Boot closing as STB hardware or connectivity, for example); <b style={{ color: T.textSecondary }}>divergence</b> is everything else, with <b style={{ color: T.textSecondary }}>education / no fault</b> broken out because it is the single largest cause. The left panel scores every closed ticket; the right panel scores only tickets with a written technician determination, the purest agent-vs-tech comparison.
-            </p>
+            </p></Disclosure>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14, marginBottom: 16 }}>
               {[["All closures (agent or technician)", dAll, false], ["Field visits only (technician determination)", dF, true]].map(([title, D, isField]) => (
                 <div key={title} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
@@ -2581,7 +2768,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Reading the gap: Channel Issues and Recording Issues carry the widest divergence on all closures (87% and 75%), driven by education closures; on field visits, Recording Issues is the weakest match (60% aligned, technicians most often find STB hardware) and Digital Box has the highest non-TELUS-caused share (30%).</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Reading the gap: Channel Issues and Recording Issues carry the widest divergence on all closures (87% and 75%), driven by education closures; on field visits, Recording Issues is the weakest match (60% aligned, technicians most often find STB hardware) and Digital Box has the highest non-TELUS-caused share (30%).</p></Disclosure>
           </>
         )}
 
@@ -2617,7 +2804,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused visits held at 14.4% of determinations in August (14.6% in July), well above June's 9.5%, so a steady one in seven dispatches reaches a home where the fault is customer equipment or setup.</p>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Non-TELUS-caused visits held at 14.4% of determinations in August (14.6% in July), well above June's 9.5%, so a steady one in seven dispatches reaches a home where the fault is customer equipment or setup.</p></Disclosure>
               </div>
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
@@ -2693,7 +2880,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Legacy Mediaroom equipment (VIP5662W PVR +10%, VIP5602W wireless STB +5%) is mentioned more each month while OPUS mentions are flat (+1%), consistent with the By Platform split where Legacy carries two thirds of TV tickets on a shrinking base.</p>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Legacy Mediaroom equipment (VIP5662W PVR +10%, VIP5602W wireless STB +5%) is mentioned more each month while OPUS mentions are flat (+1%), consistent with the By Platform split where Legacy carries two thirds of TV tickets on a shrinking base.</p></Disclosure>
               </div>
             </div>
           </>
@@ -2785,7 +2972,7 @@ export default function ReliabilityScorecards() {
               </table>
             </div>
             <MoverCards rising={rising} falling={falling} risingTitle="Rising share · Aug vs Jul (bps of respondents)" fallingTitle="Falling share · Aug vs Jul (bps of respondents)" />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third and lost share in August. Internet & Wi-Fi (+180 bps), picture and sound (+90 bps), recording (+60 bps) and channels (+60 bps) gained share against July.</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Customer service and price dominate the reason-for-rating verbatims and carry the most negative mentions; TV reliability sits third and lost share in August. Internet & Wi-Fi (+180 bps), picture and sound (+90 bps), recording (+60 bps) and channels (+60 bps) gained share against July.</p></Disclosure>
           </>
         )}
 
@@ -2836,7 +3023,7 @@ export default function ReliabilityScorecards() {
                 ))}
               </tbody>
             </table>
-            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Comments about the chatbot and digital support run roughly four negative for every positive; the recurring complaint is being unable to reach a person for anything beyond a simple question.</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Comments about the chatbot and digital support run roughly four negative for every positive; the recurring complaint is being unable to reach a person for anything beyond a simple question.</p></Disclosure>
           </>
         )}
 
@@ -3024,15 +3211,15 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Category 1 › 2 › 3)</div>
             <MoverCards rising={K.rising} falling={K.falling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). Incompatible Equipment is being re-coded from the Connectivity sub-category to its own Category 1, so the two lines should be read together (2,993 → 3,488 combined, +17%). No Dataflow › All Devices Affected is the single largest movement in either direction; the outage-tagged sub-categories more than doubled.</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank sub-categories with at least 150 tickets in Jul or Aug by absolute change (Aug vs Jul). Incompatible Equipment is being re-coded from the Connectivity sub-category to its own Category 1, so the two lines should be read together (2,993 → 3,488 combined, +17%). No Dataflow › All Devices Affected is the single largest movement in either direction; the outage-tagged sub-categories more than doubled.</p></Disclosure>
           </>
         )}
 
         {sec("Agent vs technician categorisation", "issues",
           <>
-            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+            <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
               Each agent Category 1 › 2 maps to a symptom domain (access line & ONT, gateway / dataflow, speed, Wi-Fi, equipment compatibility); each closure (Resolution 1–2) maps to a cause domain. <b style={{ color: T.textSecondary }}>Alignment</b> means the closure domain is one the symptom would predict (ONT Not Ranged closing as an access-line, ONT or gateway fault, for example); <b style={{ color: T.textSecondary }}>divergence</b> is everything else, with <b style={{ color: T.textSecondary }}>education / no fault</b> broken out because it is the single largest cause. The left panel scores every closed ticket; the right panel scores only tickets with a written technician determination, the purest agent-vs-tech comparison.
-            </p>
+            </p></Disclosure>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14, marginBottom: 16 }}>
               {[["All closures (agent or technician)", dAll, false], ["Field visits only (technician determination)", dF, true]].map(([title, D, isField]) => (
                 <div key={title} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
@@ -3108,7 +3295,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Reading the gap: on all closures the Wireless categories diverge most (64% to 67%), driven by education closures; on field visits they are still the weakest match (44% to 46% aligned) because technicians find an access-line or gateway fault on about half of the Wi-Fi tickets they attend. ONT Not Ranged and Historical Data are the best-matched categories (92% to 93% aligned on visits) but ONT Not Ranged carries the highest non-TELUS-caused share (21%).</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Reading the gap: on all closures the Wireless categories diverge most (64% to 67%), driven by education closures; on field visits they are still the weakest match (44% to 46% aligned) because technicians find an access-line or gateway fault on about half of the Wi-Fi tickets they attend. ONT Not Ranged and Historical Data are the best-matched categories (92% to 93% aligned on visits) but ONT Not Ranged carries the highest non-TELUS-caused share (21%).</p></Disclosure>
           </>
         )}
 
@@ -3144,7 +3331,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Non-TELUS-caused determinations rose from 13.2% to 13.8% of visits (1,974 → 2,000) while total visits fell 3%, so a growing share of dispatches reach homes where the fault is customer equipment, wiring or setup. Found OK › Not Required closures rose 40% in the same month.</p>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Non-TELUS-caused determinations rose from 13.2% to 13.8% of visits (1,974 → 2,000) while total visits fell 3%, so a growing share of dispatches reach homes where the fault is customer equipment, wiring or setup. Found OK › Not Required closures rose 40% in the same month.</p></Disclosure>
               </div>
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
@@ -3166,7 +3353,7 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Closure movers (Resolution 1 › Resolution 2)</div>
             <MoverCards rising={K.techRising} falling={K.techFalling} />
-            <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Fibre work (ONT, light level, splice) is the largest field fix at about a third of visits (−6% on the month) and Wi-Fi / Boost placement the second at 27%; modem replacements fell 13%. Customer training closures fell 8% while Found OK (+40%) and NetCracker stuck-order closures (+26%) rose, so more tickets are reaching a truck or a back-office queue without a fault being found.</p>
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Fibre work (ONT, light level, splice) is the largest field fix at about a third of visits (−6% on the month) and Wi-Fi / Boost placement the second at 27%; modem replacements fell 13%. Customer training closures fell 8% while Found OK (+40%) and NetCracker stuck-order closures (+26%) rose, so more tickets are reaching a truck or a back-office queue without a fault being found.</p></Disclosure>
           </>
         )}
 
@@ -3222,7 +3409,7 @@ export default function ReliabilityScorecards() {
                     ))}
                   </tbody>
                 </table>
-                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>Fibre-related mentions (ONT, PureFibre, GPON) rose 1% while copper / DSL mentions rose 2.6%, matching the No Sync › No DSL Light growth (+5%). Among Wi-Fi hardware, Boost Wi-Fi 7 (BV3) mentions rose 39% and Boost Wi-Fi 6 10% in a month as the older Wi-Fi Hub fell 16%; legacy Actiontec modem mentions are still rising (+6%).</p>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Fibre-related mentions (ONT, PureFibre, GPON) rose 1% while copper / DSL mentions rose 2.6%, matching the No Sync › No DSL Light growth (+5%). Among Wi-Fi hardware, Boost Wi-Fi 7 (BV3) mentions rose 39% and Boost Wi-Fi 6 10% in a month as the older Wi-Fi Hub fell 16%; legacy Actiontec modem mentions are still rising (+6%).</p></Disclosure>
               </div>
             </div>
           </>
@@ -3548,9 +3735,9 @@ export default function ReliabilityScorecards() {
               style={{ width: i === cur ? 22 : 8, height: 8, borderRadius: 999, border: "none", padding: 0, cursor: "pointer", background: i === cur ? T.heading : T.borderStrong, transition: "width .15s" }} />
           ))}
         </div>
-        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0", lineHeight: 1.6 }}>
+        <Disclosure label="How to use these slides" T={T}><p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0", lineHeight: 1.6 }}>
           Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of Aug 2026 (the HSIA trend line uses the recategorized customer pain points). The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
-        </p>
+        </p></Disclosure>
       </>
     );
   }
@@ -3615,9 +3802,9 @@ export default function ReliabilityScorecards() {
             style={{ width: "100%", background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "7px 12px", fontSize: 12.5, cursor: "pointer", fontFamily: FONT }}>
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
-          <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+          <Disclosure label="Sources" T={T}><div style={{ fontSize: 10.5, color: T.textFaint, lineHeight: 1.5 }}>
             Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes, Optik TV survey verbatims (Jun – Aug 2026, Aug vs Jul) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
-          </div>
+          </div></Disclosure>
         </div>
       </aside>
 
@@ -3699,7 +3886,9 @@ export default function ReliabilityScorecards() {
             : ProductPage({ product: page })}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>
-          Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
+          <Disclosure label="Source" T={T} align="center" style={{ marginTop: 0 }}>
+            Built from the Churn Measurement 2026 workbook · figures reflect the source snapshot, not a live feed
+          </Disclosure>
         </footer>
       </main>
     </div>
