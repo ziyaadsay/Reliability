@@ -284,33 +284,135 @@
   .kv dd { margin: 0; }
   @media (max-width: 520px) { .kv { grid-template-columns: minmax(0, 1fr); gap: 2px; } .kv dd { margin-bottom: 8px; } }
 
+  /* Icons */
+  .ico { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.12em; flex: none; }
+  .step-head h2 { display: flex; align-items: center; gap: .45em; }
+  .step-head h2 .ico { color: var(--green-text); width: .9em; height: .9em; }
+  .route-btn .lvl { display: inline-flex; align-items: center; gap: 6px; }
+  .route-btn .lvl .ico { width: 15px; height: 15px; }
+
+  /* ELI5 walkthrough */
+  .walk { display: grid; gap: 16px; }
+  .walk-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .walk-top .count { font-size: .9rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .dots { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dots button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-2); background: var(--surface); font: inherit; font-weight: 700; font-size: .8rem; color: var(--text-3); cursor: pointer; padding: 0; display: grid; place-items: center; }
+  .dots button:hover { border-color: var(--purple); color: var(--purple); }
+  .dots button.done { border-color: var(--green); background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-text); }
+  .dots button[aria-current="step"] { border-color: var(--purple); background: var(--purple); color: #fff; }
+  .walk-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 22px; align-items: start; }
+  @media (max-width: 960px) { .walk-body { grid-template-columns: minmax(0, 1fr); } }
+  .wstep { display: none; }
+  .wstep.on { display: contents; }
+  .shot { position: relative; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-2); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot.small { display: grid; place-items: center; padding: 28px; }
+  .shot.small img { width: 190px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .shot-cap { font-size: .8rem; color: var(--text-3); padding: 8px 12px; border-top: 1px solid var(--border); background: var(--surface); }
+  .hot { position: absolute; border: 3px solid #66CC02; border-radius: 8px; pointer-events: none; box-shadow: 0 0 0 4px rgba(102,204,2,.35); animation: pulse 1.8s ease-in-out infinite; }
+  .hot::after { content: attr(data-n); position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; border-radius: 50%; background: #66CC02; color: #2C2E30; font-weight: 700; font-size: .8rem; display: grid; place-items: center; border: 2px solid #fff; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(102,204,2,.35); } 50% { box-shadow: 0 0 0 10px rgba(102,204,2,0); } }
+  .walk-text { display: grid; gap: 12px; align-content: start; }
+  .walk-text .big { font-size: 1.4rem; font-weight: 300; color: var(--purple); line-height: 1.25; text-wrap: balance; }
+  .walk-text ol { list-style: none; padding-left: 0; display: grid; gap: 8px; font-size: 1.02rem; }
+  .walk-text ol li { margin: 0; }
+  .walk-text ol li b { color: var(--green-text); font-variant-numeric: tabular-nums; margin-right: 4px; }
+  .walk-text .tip { font-size: .92rem; color: var(--text-2); background: var(--purple-tint); border-radius: 8px; padding: 10px 12px; }
+  .walk-nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .btn { font: inherit; font-weight: 700; font-size: .95rem; border-radius: 4px; padding: 10px 18px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; }
+  .btn-primary { background: var(--purple); color: #fff; }
+  .btn-primary:hover { background: var(--purple-mid); }
+  .btn-ghost { background: var(--surface); color: var(--purple); border-color: var(--border-2); }
+  .btn-ghost:hover { border-color: var(--purple); }
+  .btn[disabled] { opacity: .4; cursor: default; }
+  .done-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: .95rem; cursor: pointer; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); }
+  .done-toggle input { width: 18px; height: 18px; accent-color: #2B8000; margin: 0; }
+
+  /* Recreated Gizmos screens (single-theme, like a photo) */
+  .mock { font-family: var(--font); background: #F4F1F7; color: #2C2E30; font-size: 13px; line-height: 1.4; }
+  .mock * { box-sizing: border-box; }
+  .mock-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #E3E0E8; }
+  .mock-logo { font-weight: 700; font-size: 18px; color: #2C2E30; display: flex; align-items: center; gap: 8px; }
+  .mock-logo i { width: 22px; height: 22px; border-radius: 50%; background: #66CC02; display: inline-block; }
+  .mock-logo span { color: #4B286D; }
+  .mock-user { display: flex; align-items: center; gap: 8px; color: #414547; }
+  .mock-user i { width: 22px; height: 22px; border-radius: 50%; background: #0369A1; color: #fff; font-size: 9px; font-weight: 700; display: grid; place-items: center; font-style: normal; }
+  .mock-grid { display: grid; grid-template-columns: 150px minmax(0, 1fr); }
+  .mock-side { padding: 14px 10px; border-right: 1px solid #E3E0E8; display: grid; gap: 4px; align-content: start; }
+  .mock-side small { font-size: 10px; letter-spacing: .08em; color: #676E73; font-weight: 700; padding: 8px 8px 2px; }
+  .mock-side span { padding: 7px 10px; border-radius: 8px; color: #414547; }
+  .mock-side span.cur { background: #E3D9EE; color: #2C2E30; font-weight: 700; }
+  .mock-main { background: #FAF9FC; padding: 22px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+  .mock-card { background: #fff; border: 1px solid #E3E0E8; border-radius: 10px; padding: 18px; display: grid; gap: 12px; }
+  .mock h5 { margin: 0; font-size: 15px; font-weight: 700; color: #2C2E30; }
+  .mock .h1 { font-size: 24px; font-weight: 700; color: #2C2E30; }
+  .mock .muted { color: #676E73; }
+  .mock .field { border: 1px solid #C9C4D2; border-radius: 8px; padding: 10px 12px; background: #fff; color: #2C2E30; }
+  .mock .field.link { color: #4B286D; }
+  .mock .btn-p { background: #4B286D; color: #fff; border-radius: 6px; padding: 9px 16px; font-weight: 700; display: inline-block; }
+  .mock .btn-p.wide { display: block; text-align: center; }
+  .mock .btn-p.dim { background: #B49BCB; }
+  .mock .btn-o { border: 1px solid #C9C4D2; border-radius: 6px; padding: 9px 14px; display: inline-block; background: #fff; }
+  .mock .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .mock .checks { display: grid; gap: 8px; padding-left: 4px; }
+  .mock .checks div { display: flex; gap: 10px; align-items: center; color: #2B8000; }
+  .mock .checks div::before { content: ""; width: 14px; height: 8px; border-left: 2px solid #2B8000; border-bottom: 2px solid #2B8000; transform: rotate(-45deg) translate(2px, -3px); }
+  .mock .checks div.spin { color: #2C2E30; }
+  .mock .checks div.spin::before { border: 2px solid #C9C4D2; border-top-color: #4B286D; width: 12px; height: 12px; border-radius: 50%; transform: none; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .mock .warnline { color: #B26A00; font-size: 12px; }
+  .mock .bigcheck { width: 52px; height: 52px; border-radius: 50%; border: 4px solid #2B8000; position: relative; }
+  .mock .bigcheck::after { content: ""; position: absolute; left: 14px; top: 10px; width: 12px; height: 22px; border-right: 4px solid #2B8000; border-bottom: 4px solid #2B8000; transform: rotate(45deg); }
+  .mock .aud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .mock .aud div { border: 1px solid #C9C4D2; border-radius: 8px; padding: 10px 6px; text-align: center; background: #fff; }
+  .mock .aud div.sel { background: #E3D9EE; border-color: #2C2E30; }
+  @media (max-width: 600px) { .mock-side { display: none; } .mock-grid { grid-template-columns: minmax(0, 1fr); } .mock .aud { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .mock .hl { position: relative; outline: 3px solid #66CC02; outline-offset: 4px; border-radius: 6px; }
+  .mock .hl::after { content: attr(data-n); position: absolute; left: -16px; top: -16px; width: 26px; height: 26px; border-radius: 50%; background: #66CC02; color: #2C2E30; font-weight: 700; font-size: .8rem; display: grid; place-items: center; border: 2px solid #fff; z-index: 1; }
+
   footer { border-top: 1px solid var(--border); padding-block: 22px 40px; color: var(--text-3); font-size: .86rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
   .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: #fff; padding: 10px 16px; border-radius: 8px; font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></symbol>
+  <symbol id="i-child" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></symbol>
+  <symbol id="i-memory" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8z"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+</svg>
+
 <header class="hero">
   <div class="wrap">
     <div class="brand"><span class="dot"></span> TELUS Reliability Strategy</div>
-    <div>
-      <p class="eyebrow">Interactive tutorial</p>
-      <h1>Publish your work to Gizmos with Claude</h1>
-    </div>
+    <h1>Publish your work to Gizmos with Claude</h1>
     <p class="lede">Build a dashboard or update page in Claude, then get it live at <strong style="color:#fff">telus.gizmos.run</strong> so the team can track KPIs from one link. Pick the route that fits how often you will update it. The page then shows only the steps you need.</p>
     <div class="picker" role="group" aria-label="Choose your route">
       <button class="route-btn" data-pick="easy" aria-pressed="false">
-        <span class="lvl">Easy</span>
+        <span class="lvl"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>Easy</span>
         <span class="nm">Upload a .jsx file</span>
         <span class="sub">Claude Chat writes one React file. You upload it in the Gizmos hub. No connectors, no code tools.</span>
       </button>
       <button class="route-btn" data-pick="mid" aria-pressed="false">
-        <span class="lvl">Intermediate</span>
+        <span class="lvl"><svg class="ico" aria-hidden="true"><use href="#i-plug"/></svg>Intermediate</span>
         <span class="nm">Push through the Gizmos connector</span>
         <span class="sub">Claude Chat deploys for you. The page starts as a temporary artifact and must be made permanent.</span>
       </button>
       <button class="route-btn" data-pick="hard" aria-pressed="false">
-        <span class="lvl">Hard</span>
+        <span class="lvl"><svg class="ico" aria-hidden="true"><use href="#i-branch"/></svg>Hard</span>
         <span class="nm">Claude Code, GitHub, auto deploy</span>
         <span class="sub">Code lives in GitHub. Every merge to main publishes itself. Fully automated once set up.</span>
       </button>
@@ -333,6 +435,7 @@
     </div>
     <nav aria-label="Sections" id="sideNav">
       <a href="#choose">1. Choose a route</a>
+      <a href="#eli5" data-only="easy">2. Easy route, step by step</a>
       <a href="#claude">2. Claude prerequisites <span class="pct" data-pct="claude"></span></a>
       <a href="#memory">3. Memory and context <span class="pct" data-pct="memory"></span></a>
       <a href="#gizmos">4. Gizmos sign-in and app <span class="pct" data-pct="gizmos"></span></a>
@@ -351,7 +454,7 @@
     <section class="step" id="choose">
       <div class="step-head">
         <p class="eyebrow">Step 1</p>
-        <h2>Choose your route</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-route"/></svg>Choose your route</h2>
       </div>
       <p class="intro">All three routes end in the same place: a page on telus.gizmos.run behind TELUS single sign-on. They differ in how much you set up once and how little you do each month afterwards.</p>
 
@@ -410,11 +513,246 @@
       </div>
     </section>
 
+    <!-- ELI5 Easy route walkthrough -->
+    <section class="step" id="eli5" data-only="easy">
+      <div class="step-head">
+        <p class="eyebrow">Step 2</p>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-child"/></svg>The Easy route, explained like you are five</h2>
+        <div class="applies"><span class="tag easy">Easy</span></div>
+      </div>
+      <p class="intro">Eight little steps, one screen at a time. The green circles show exactly where to click. Follow along on your own computer, tick each step when you have done it, and you will have a live page in about ten minutes. The detailed setup sections follow if you want to go deeper.</p>
+
+      <div class="card walk" id="walk" tabindex="0" aria-label="Easy route walkthrough. Use the left and right arrow keys to move between steps.">
+        <div class="walk-top">
+          <div class="dots" id="walkDots" role="tablist" aria-label="Walkthrough steps"></div>
+          <span class="count" id="walkCount">Step 1 of 8</span>
+        </div>
+
+        <div class="walk-body" id="walkBody">
+
+          <div class="wstep" data-title="Open Claude and pick Chat">
+            <div>
+              <div class="shot">
+                <img src="img/step-claude-5.png" alt="The Claude home screen with the Chat tab selected and an empty message box in the middle." loading="lazy">
+                <span class="hot" data-n="1" style="left:.2%;top:6.2%;width:8.7%;height:5.2%"></span>
+                <span class="hot" data-n="2" style="left:38.6%;top:49.6%;width:46.9%;height:19.4%"></span>
+              </div>
+              <div class="shot-cap">Screen 1 of 8: claude.ai home</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Open Claude and pick Chat</p>
+              <ol>
+                <li><b>1</b> Go to <strong>claude.ai</strong> and sign in with your TELUS account. Make sure the <strong>Chat</strong> button in the top left is the one that is lit up, not Code.</li>
+                <li><b>2</b> The big white box in the middle is where you talk to Claude. Click inside it.</li>
+              </ol>
+              <p class="tip">Think of Claude as a helper who can write a whole web page for you. You just have to tell it what you want.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Tell Claude what you want">
+            <div>
+              <div class="shot">
+                <img src="img/step-claude-4.png" alt="A Claude message asking for a reporting dashboard from a Google Sheet, provided as a .jsx file for telus.gizmos.run, with the send arrow highlighted." loading="lazy">
+                <span class="hot" data-n="1" style="left:15%;top:28%;width:64.5%;height:37%"></span>
+                <span class="hot" data-n="2" style="left:74.6%;top:65.8%;width:4%;height:9%"></span>
+              </div>
+              <div class="shot-cap">Screen 2 of 8: your message to Claude</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Tell Claude what you want, in plain words</p>
+              <ol>
+                <li><b>1</b> Type what the page should show. Paste the link to your Google Sheet. Finish with the magic sentence: <em>Provide the site in a .jsx format to upload to telus.gizmos.run</em>.</li>
+                <li><b>2</b> Press the orange arrow. Claude will think for a minute or two and build the page.</li>
+              </ol>
+              <div class="copy-wrap"><span class="cap">Copy this message</span><button class="copy-btn" type="button">Copy</button><pre><code>Create a reporting dashboard site that tracks monthly KPIs and lists
+initiative updates.
+
+Use the following source: [paste your Google Sheet link]
+
+Provide the site in a .jsx format to upload to telus.gizmos.run</code></pre></div>
+              <p class="tip">If the page does not look right, just tell Claude what to change, like "make the charts bigger" or "add a page for TV". It will give you a new file.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Save the file Claude made">
+            <div>
+              <div class="shot small">
+                <img src="img/step-file-3.png" alt="A file card labelled App.jsx, 332.3 KB, with a JSX badge." loading="lazy">
+              </div>
+              <div class="shot-cap">Screen 3 of 8: the file Claude gives you</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Save the file Claude made</p>
+              <ol>
+                <li><b>1</b> Claude answers with a file called <strong>App.jsx</strong>. That one file is your whole web page.</li>
+                <li><b>2</b> Click the file card, then choose <strong>Download</strong>. It lands in your Downloads folder.</li>
+                <li><b>3</b> Leave the Claude tab open. You will come back to it next month.</li>
+              </ol>
+              <p class="tip">A .jsx file is just a text file that describes a web page. Gizmos knows how to turn it into a real site. You never have to open it.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Go to Gizmos and drop the file in">
+            <div>
+              <div class="shot">
+                <img src="img/step-gizmos-2.png" alt="The Gizmos Deploy page with a dashed upload box that accepts .zip or .jsx files up to 10 MB." loading="lazy">
+                <span class="hot" data-n="1" style="left:.2%;top:18%;width:11%;height:6%"></span>
+                <span class="hot" data-n="2" style="left:18.8%;top:43.8%;width:75.9%;height:32.4%"></span>
+              </div>
+              <div class="shot-cap">Screen 4 of 8: telus.gizmos.run, Deploy</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Go to Gizmos and drop the file in</p>
+              <ol>
+                <li><b>1</b> Open a new tab and go to <strong>telus.gizmos.run</strong>. Sign in with your TELUS account if it asks. Click <strong>Deploy</strong> in the left menu.</li>
+                <li><b>2</b> Drag <strong>App.jsx</strong> from your Downloads folder into the dotted box, or click <strong>Choose a file</strong> and pick it.</li>
+              </ol>
+              <p class="tip">Gizmos is the TELUS place where web pages live. Only people at TELUS can open what you put here.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Name it and press Deploy">
+            <div>
+              <div class="shot">
+                <img src="img/step-gizmos-1.png" alt="The Gizmos Configure and Deploy step with the app name myexampleapp, the message Name is available, and a large purple Deploy button." loading="lazy">
+                <span class="hot" data-n="1" style="left:18.5%;top:24%;width:76.3%;height:7%"></span>
+                <span class="hot" data-n="2" style="left:23.2%;top:85.2%;width:71.6%;height:6.3%"></span>
+              </div>
+              <div class="shot-cap">Screen 5 of 8: Configure and Deploy</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Give it a name and press Deploy</p>
+              <ol>
+                <li><b>1</b> Type a short name with small letters and no spaces, like <em>tvreliability</em>. Wait for the green words <strong>Name is available</strong>. The line under it shows your new web address.</li>
+                <li><b>2</b> Skip Description and Secrets. Press the big purple <strong>Deploy</strong> button.</li>
+              </ol>
+              <p class="tip">Pick a name you would be happy to say out loud in a meeting. You cannot rename it later without changing the link.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Wait while Gizmos builds it">
+            <div>
+              <div class="shot">
+                <div class="mock" aria-label="Recreation of the Gizmos deploying screen: a list of build steps with green checkmarks and a spinner on the last one.">
+                  <div class="mock-top"><div class="mock-logo"><i></i><b>gizmos<span>.</span></b></div><div class="mock-user"><i>ME</i>@your-username</div></div>
+                  <div class="mock-grid">
+                    <div class="mock-side"><small>BUILD</small><span>Home</span><span class="cur">Deploy</span><span>Studio</span><small>DISCOVER</small><span>Gizmos</span><span>Bindings</span><span>MCP servers</span></div>
+                    <div class="mock-main">
+                      <div class="mock-card">
+                        <div><strong>Secrets</strong> <span class="muted">(optional)</span></div>
+                        <div><span class="btn-o">Add a secret</span></div>
+                        <div class="checks hl" data-n="1">
+                          <div>Loading build tools</div>
+                          <div>Wrapping artifact</div>
+                          <div>Compiling JSX</div>
+                          <div>Bundling worker</div>
+                          <div>Deploying</div>
+                          <div class="spin">Security and data-classification scan</div>
+                        </div>
+                        <div class="warnline">Checking if your app will run on Gizmos...</div>
+                        <div class="row"><span class="btn-o muted">Back</span><span class="btn-p dim" style="flex:1;text-align:center">Deploying...</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="shot-cap">Screen 6 of 8: Deploying (recreated from the original screen)</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Wait about a minute</p>
+              <ol>
+                <li><b>1</b> Gizmos reads your file, builds the page and puts it online. Each line turns green with a checkmark as it finishes.</li>
+                <li><b>2</b> The last line, the security scan, takes the longest. Do not close the tab.</li>
+              </ol>
+              <p class="tip">If a line turns red, copy the words next to it, paste them to Claude and say "fix this". Then download the new file and start again from step 4.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="It is live! Copy your link">
+            <div>
+              <div class="shot">
+                <div class="mock" aria-label="Recreation of the Gizmos success screen: a green check, the words myexampleapp is live, the live link, and buttons for Open workspace, Review access and Copy URL.">
+                  <div class="mock-top"><div class="mock-logo"><i></i><b>gizmos<span>.</span></b></div><div class="mock-user"><i>ME</i>@your-username</div></div>
+                  <div class="mock-grid">
+                    <div class="mock-side"><small>BUILD</small><span>Home</span><span class="cur">Deploy</span><span>Studio</span><small>DISCOVER</small><span>Gizmos</span><span>Bindings</span><span>MCP servers</span></div>
+                    <div class="mock-main">
+                      <div class="h1">Deploy a gizmo</div>
+                      <div class="mock-card">
+                        <div class="bigcheck"></div>
+                        <div class="h1" style="font-size:20px">myexampleapp is live!</div>
+                        <div class="field link hl" data-n="1">https://myexampleapp.telus.gizmos.run/</div>
+                        <div class="muted">Open your workspace to review the release and choose who can use it. Copying a link does not change access.</div>
+                        <div class="row"><span class="btn-p">Open workspace</span><span class="hl" data-n="3" style="color:#4B286D;padding:4px 6px">Review access</span></div>
+                        <div class="row"><span class="btn-o hl" data-n="2">Copy URL</span><span class="btn-o">Deploy another gizmo</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="shot-cap">Screen 7 of 8: your page is live (recreated from the original screen)</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">It is live! Copy your link</p>
+              <ol>
+                <li><b>1</b> A green check appears with the words <strong>is live</strong>. The box under it is your web address.</li>
+                <li><b>2</b> Click <strong>Copy URL</strong>. Paste it somewhere safe, like a note or your calendar invite.</li>
+                <li><b>3</b> Click <strong>Review access</strong> to choose who can open it. That is the last step.</li>
+              </ol>
+              <p class="tip">Right now only you can see the page. Copying the link does not let anyone else in yet.</p>
+            </div>
+          </div>
+
+          <div class="wstep" data-title="Choose who can see it">
+            <div>
+              <div class="shot">
+                <div class="mock" aria-label="Recreation of the Gizmos Access page: four audience choices Private, Shared, Unlisted and TELUS, a box to add people by email, and a Save access button.">
+                  <div class="mock-top"><div class="mock-logo"><i></i><b>gizmos<span>.</span></b></div><div class="mock-user"><i>ME</i>@your-username</div></div>
+                  <div class="mock-grid">
+                    <div class="mock-side"><small>BUILD</small><span>Home</span><span>Deploy</span><span>Studio</span><small>DISCOVER</small><span>Gizmos</span><span>Bindings</span><span>MCP servers</span></div>
+                    <div class="mock-main">
+                      <div class="row muted" style="gap:16px"><span>On this page</span><span>Identity</span><span style="color:#4B286D;font-weight:700">Access</span><span>Credentials</span><span>Resources</span></div>
+                      <div class="mock-card">
+                        <h5>Access</h5>
+                        <div>Audience</div>
+                        <div class="aud hl" data-n="1"><div>Private</div><div>Shared</div><div>Unlisted</div><div class="sel">TELUS</div></div>
+                        <div class="muted">Everyone in TELUS can find and open it.</div>
+                        <div>People and teams</div>
+                        <div class="row"><div class="field muted hl" data-n="2" style="flex:1">Email or name...</div><span class="btn-o">viewer</span><span class="btn-p dim">Add</span></div>
+                        <div class="muted">Not shared with anyone yet.</div>
+                        <div class="row"><span class="muted">Unsaved changes</span><span class="btn-o">Cancel</span><span class="btn-p hl" data-n="3">Save access</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="shot-cap">Screen 8 of 8: Access (recreated from the original screen)</div>
+            </div>
+            <div class="walk-text">
+              <p class="big">Choose who can see it</p>
+              <ol>
+                <li><b>1</b> Pick an audience. <strong>Private</strong> is just you. <strong>Shared</strong> is the people you add. <strong>Unlisted</strong> is anyone at TELUS who has the link. <strong>TELUS</strong> is everyone at TELUS, and they can find it in the directory.</li>
+                <li><b>2</b> To share with a few people, type their TELUS email, leave the role as <strong>viewer</strong>, and click Add.</li>
+                <li><b>3</b> Press <strong>Save access</strong>. Now send your link. You are done.</li>
+              </ol>
+              <p class="tip"><strong>Next month:</strong> ask Claude for the new numbers, download the new App.jsx, go to Deploy, and use the <em>same name</em>. Gizmos replaces the old page and keeps the old version in case you need it back.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="walk-nav">
+          <button class="btn btn-ghost" type="button" id="walkPrev"><svg class="ico" aria-hidden="true"><use href="#i-left"/></svg> Back</button>
+          <label class="done-toggle"><input type="checkbox" id="walkDone"> I did this step</label>
+          <button class="btn btn-primary" type="button" id="walkNext">Next <svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+      </div>
+    </section>
+
     <!-- 2. Claude prerequisites -->
     <section class="step" id="claude" data-sec="claude">
       <div class="step-head">
         <p class="eyebrow">Step 2</p>
-        <h2>Set up Claude: skills and connectors</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-spark"/></svg>Set up Claude: skills and connectors</h2>
         <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
       </div>
       <p class="intro">Skills teach Claude how TELUS wants things done. Connectors let Claude read and write other systems on your behalf. Set these up once in your Claude account and every future dashboard benefits.</p>
@@ -459,7 +797,7 @@
     <section class="step" id="memory" data-sec="memory">
       <div class="step-head">
         <p class="eyebrow">Step 3</p>
-        <h2>Set up memory and context</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-memory"/></svg>Set up memory and context</h2>
         <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
       </div>
       <p class="intro">The dashboard only stays consistent month to month if Claude remembers the definitions, sources and design decisions you settled on. Write them down once, in a place Claude reads every time.</p>
@@ -522,7 +860,7 @@ Live link: https://[APP NAME].telus.gizmos.run</code></pre></div>
     <section class="step" id="gizmos" data-sec="gizmos">
       <div class="step-head">
         <p class="eyebrow">Step 4</p>
-        <h2>Sign in to telus.gizmos.run and set up your app</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg>Sign in to telus.gizmos.run and set up your app</h2>
         <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
       </div>
       <p class="intro">Gizmos is the TELUS hosting platform for internal web apps. Every app gets its own address, sits behind TELUS SSO, keeps a version history, and can be shared with named people or the whole organization.</p>
@@ -571,7 +909,7 @@ Live link: https://[APP NAME].telus.gizmos.run</code></pre></div>
     <section class="step" id="data" data-sec="data">
       <div class="step-head">
         <p class="eyebrow">Step 5</p>
-        <h2>Set up or reuse data sources</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-table"/></svg>Set up or reuse data sources</h2>
         <div class="applies"><span class="tag easy">Easy</span><span class="tag mid">Intermediate</span><span class="tag hard">Hard</span></div>
       </div>
       <p class="intro">Claude builds the page from whatever you point it at. A tidy Google Sheet is the most reliable source: it is shared, versioned, easy to review, and the Drive connector reads it directly. Keep numbers in Sheets and narrative in Docs.</p>
@@ -618,7 +956,7 @@ changed so I can spot-check it against the sheet.</code></pre></div>
     <section class="step" id="github" data-sec="github" data-only="hard">
       <div class="step-head">
         <p class="eyebrow">Step 6</p>
-        <h2>Set up GitHub for the automated route</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-branch"/></svg>Set up GitHub for the automated route</h2>
         <div class="applies"><span class="tag hard">Hard</span></div>
       </div>
       <p class="intro">On this route the repository is the source of truth and GitHub Actions does the publishing. You set up the repo, one secret and one workflow file. After that, publishing is a side effect of merging.</p>
@@ -723,7 +1061,7 @@ jobs:
     <section class="step" id="tableau" data-sec="tableau">
       <div class="step-head">
         <p class="eyebrow">Step 7</p>
-        <h2>Set up the Tableau connector</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg>Set up the Tableau connector</h2>
         <div class="applies"><span class="tag optional">Optional, all routes</span></div>
       </div>
       <p class="intro">If a KPI already exists as a Tableau view, you do not need to re-export it by hand each month. The Tableau Cloud connector lets Claude find the workbook, read the view's data and drop it into your sheet or straight into the dashboard.</p>
@@ -769,7 +1107,7 @@ workbook, months across. Then tell me the row counts per product.</code></pre></
     <section class="step" id="publish">
       <div class="step-head">
         <p class="eyebrow">Step 8</p>
-        <h2>Build and publish</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-upload"/></svg>Build and publish</h2>
       </div>
       <p class="intro">With the setup done, this is the part you repeat. Each route below shows the flow, the exact steps, and what "done" looks like.</p>
 
@@ -826,7 +1164,7 @@ workbook, months across. Then tell me the row counts per product.</code></pre></
     <section class="step" id="updates">
       <div class="step-head">
         <p class="eyebrow">Step 9</p>
-        <h2>The monthly update loop</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-refresh"/></svg>The monthly update loop</h2>
       </div>
       <p class="intro">This is what KPI tracking looks like once everything is in place. The first two steps are the same for everyone; only the publish step differs.</p>
       <div class="tbl-wrap">
@@ -853,7 +1191,7 @@ workbook, months across. Then tell me the row counts per product.</code></pre></
     <section class="step" id="trouble">
       <div class="step-head">
         <p class="eyebrow">Step 10</p>
-        <h2>Troubleshooting</h2>
+        <h2><svg class="ico" aria-hidden="true"><use href="#i-tool"/></svg>Troubleshooting</h2>
       </div>
       <div class="tbl-wrap">
         <table>
@@ -946,7 +1284,7 @@ workbook, months across. Then tell me the row counts per product.</code></pre></
     });
   }
   function shortTitle(id) {
-    return { choose: 'Choose a route', claude: 'Claude prerequisites', memory: 'Memory and context', gizmos: 'Gizmos sign-in and app', data: 'Data sources', github: 'GitHub setup', tableau: 'Tableau connector', publish: 'Build and publish', updates: 'Monthly update loop', trouble: 'Troubleshooting' }[id] || id;
+    return { choose: 'Choose a route', eli5: 'Easy route, step by step', claude: 'Claude prerequisites', memory: 'Memory and context', gizmos: 'Gizmos sign-in and app', data: 'Data sources', github: 'GitHub setup', tableau: 'Tableau connector', publish: 'Build and publish', updates: 'Monthly update loop', trouble: 'Troubleshooting' }[id] || id;
   }
 
   /* Checklist persistence */
@@ -1103,6 +1441,51 @@ workbook, months across. Then tell me the row counts per product.</code></pre></
     svg.innerHTML = out.join('');
   }
   document.querySelectorAll('svg.flow').forEach(drawFlow);
+
+  /* ELI5 walkthrough */
+  (function () {
+    var LS_WALK = 'gpp-walk';
+    var steps = Array.prototype.slice.call(document.querySelectorAll('#walkBody .wstep'));
+    if (!steps.length) return;
+    var idx = 0, doneMap = {};
+    try { doneMap = JSON.parse(lsGet(LS_WALK) || '{}') || {}; } catch (e) { doneMap = {}; }
+    var dots = document.getElementById('walkDots'), count = document.getElementById('walkCount');
+    var prev = document.getElementById('walkPrev'), next = document.getElementById('walkNext'), done = document.getElementById('walkDone');
+    steps.forEach(function (s, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = i + 1; b.setAttribute('role', 'tab');
+      b.setAttribute('aria-label', 'Step ' + (i + 1) + ': ' + s.dataset.title);
+      b.addEventListener('click', function () { go(i); });
+      dots.appendChild(b);
+    });
+    function go(i) {
+      idx = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach(function (s, k) { s.classList.toggle('on', k === idx); });
+      Array.prototype.forEach.call(dots.children, function (b, k) {
+        if (k === idx) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+        b.classList.toggle('done', !!doneMap[k]);
+      });
+      count.textContent = 'Step ' + (idx + 1) + ' of ' + steps.length + ': ' + steps[idx].dataset.title;
+      prev.disabled = idx === 0;
+      next.innerHTML = idx === steps.length - 1 ? 'All done <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>' : 'Next <svg class="ico" aria-hidden="true"><use href="#i-right"/></svg>';
+      done.checked = !!doneMap[idx];
+    }
+    prev.addEventListener('click', function () { go(idx - 1); });
+    next.addEventListener('click', function () {
+      if (idx === steps.length - 1) { toast('You have finished the Easy route. Nice work.'); return; }
+      go(idx + 1);
+    });
+    done.addEventListener('change', function () {
+      doneMap[idx] = done.checked; lsSet(LS_WALK, JSON.stringify(doneMap)); go(idx);
+      if (done.checked && idx < steps.length - 1) setTimeout(function () { go(idx + 1); }, 350);
+    });
+    document.getElementById('walk').addEventListener('keydown', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+      if (e.key === 'ArrowRight') { go(idx + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { go(idx - 1); e.preventDefault(); }
+    });
+    go(0);
+  })();
 
   /* Active nav on scroll */
   var links = Array.prototype.slice.call(document.querySelectorAll('#sideNav a'));
