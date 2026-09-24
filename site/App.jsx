@@ -1909,6 +1909,103 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ initiative timeline ------------------------------
+  // Gantt-style view of the initiatives list. Timelines in the workbook are free text:
+  // "Sep 2026", "Sep – Oct 2026", "Q1 2027", "2027 capital", "Jun 2026 pilot"; anything
+  // else ("—", "In planning", "Ongoing", "All") is undated and listed under the chart.
+  const monAbs = (mon, yr) => yr * 12 + MON3.indexOf(mon);
+  function parseTimeline(tl) {
+    if (!tl) return null;
+    let m;
+    if ((m = tl.match(/^([A-Z][a-z]{2}) [–-] ([A-Z][a-z]{2}) (\d{4})$/)) && MON3.includes(m[1]) && MON3.includes(m[2])) return { s: monAbs(m[1], +m[3]), e: monAbs(m[2], +m[3]), kind: "range" };
+    if ((m = tl.match(/^([A-Z][a-z]{2}) (\d{4})/)) && MON3.includes(m[1])) { const a = monAbs(m[1], +m[2]); return { s: a, e: a, kind: "month" }; }
+    if ((m = tl.match(/^Q([1-4]) (\d{4})$/))) { const s = +m[2] * 12 + (+m[1] - 1) * 3; return { s, e: s + 2, kind: "quarter" }; }
+    if ((m = tl.match(/^(\d{4})\b/))) { const s = +m[1] * 12; return { s, e: s + 11, kind: "year" }; }
+    return null;
+  }
+  function InitiativeTimeline({ items, showProduct }) {
+    const parsed = items.map((it) => ({ it, t: parseTimeline(it.timeline) }));
+    const dated = parsed.filter((x) => x.t), undated = parsed.filter((x) => !x.t);
+    if (!dated.length) return <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>None of the listed initiatives carries a dated timeline.</p>;
+    const nowAbs = parseTimeline(MONTHS[MONTHS.length - 1]).s; // latest reported month
+    let start = Math.min(nowAbs - 7, ...dated.map((x) => x.t.s)), end = Math.max(nowAbs + 4, ...dated.map((x) => x.t.e));
+    start = Math.max(start, 2025 * 12); end = Math.min(end, 2027 * 12 + 11);
+    const n = end - start + 1, LW = 250, cell = 100 / n;
+    const pctL = (a) => (Math.max(a, start) - start) * cell, pctW = (a, b) => (Math.min(b, end) - Math.max(a, start) + 1) * cell;
+    const nowRight = (nowAbs - start + 1) * cell;
+    const barStyle = (it, color) => it.status === "Launched" ? { background: color, border: `1px solid ${color}` }
+      : it.status === "In flight" ? { background: color + "a6", border: `1px solid ${color}` }
+      : it.status === "Stalled" ? { background: T.borderStrong, border: `1px solid ${T.borderStrong}` }
+      : { background: color + "1f", border: `1.5px dashed ${color}` };
+    const groups = PILLARS.map((pl) => ({ pl, rows: dated.filter((x) => x.it.pillar === pl.n).sort((a, b) => a.t.s - b.t.s || a.t.e - b.t.e || a.it.name.localeCompare(b.it.name)) })).filter((g) => g.rows.length);
+    const months = Array.from({ length: n }, (_, k) => start + k);
+    const years = []; months.forEach((a) => { const y = Math.floor(a / 12); const last = years[years.length - 1]; if (last && last.y === y) last.n += 1; else years.push({ y, n: 1 }); });
+    const track = { flex: 1, position: "relative", height: "100%", backgroundImage: `linear-gradient(to right, ${T.border} 1px, transparent 1px)`, backgroundSize: `${cell}% 100%` };
+    const swatch = (style) => <span style={{ display: "inline-block", width: 18, height: 10, borderRadius: 3, boxSizing: "border-box", ...style }} />;
+    const legendColor = showProduct ? T.textMuted : colors[items[0].p];
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <div style={{ minWidth: 760 }}>
+          <div style={{ display: "flex" }}>
+            <div style={{ width: LW, flex: "none" }} />
+            <div style={{ flex: 1, display: "flex" }}>
+              {years.map((y) => <div key={y.y} style={{ width: `${y.n * cell}%`, fontSize: 11, fontWeight: 700, color: T.textMuted, borderLeft: `1px solid ${T.borderStrong}`, paddingLeft: 6, boxSizing: "border-box" }}>{y.y}</div>)}
+            </div>
+          </div>
+          <div style={{ display: "flex", borderBottom: `1px solid ${T.border}` }}>
+            <div style={{ width: LW, flex: "none", fontSize: 10.5, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em", padding: "4px 0" }}>Initiative</div>
+            <div style={{ flex: 1, display: "flex" }}>
+              {months.map((a) => <div key={a} style={{ width: `${cell}%`, fontSize: 10, textAlign: "center", padding: "4px 0", color: a === nowAbs ? T.heading : T.textFaint, fontWeight: a === nowAbs ? 800 : 500 }}>{MON3[a % 12]}</div>)}
+            </div>
+          </div>
+          {groups.map((g) => (
+            <React.Fragment key={g.pl.n}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 0 3px", fontSize: 12, fontWeight: 800, color: T.heading }}>
+                <Icon name={"pillar" + g.pl.n} size={13} /> {g.pl.n} · {g.pl.name}
+                <span style={{ color: T.textFaint, fontWeight: 600, fontSize: 11 }}>{g.rows.length}</span>
+              </div>
+              {g.rows.map(({ it, t }) => {
+                const color = colors[it.p], labelRoom = t.e < end - 1;
+                return (
+                  <div key={it.p + it.name} title={`${it.name}\n${it.status} · ${it.timeline} · ${it.prime}\n${it.theme}`} style={{ display: "flex", alignItems: "center", height: 24 }}>
+                    <div style={{ width: LW, flex: "none", display: "flex", alignItems: "center", gap: 6, paddingRight: 10, boxSizing: "border-box", fontSize: 12, color: T.textSecondary, minWidth: 0 }}>
+                      {showProduct && <span style={{ width: 8, height: 8, borderRadius: 999, background: color, flex: "none" }} />}
+                      <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name}</span>
+                    </div>
+                    <div style={track}>
+                      <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: `${nowRight}%`, background: T.panel, opacity: 0.55 }} />
+                      <div style={{ position: "absolute", top: 0, bottom: 0, left: `${nowRight}%`, borderLeft: `2px solid ${T.heading}`, opacity: 0.5 }} />
+                      <div style={{ position: "absolute", top: 5, height: 14, left: `calc(${pctL(t.s)}% + 2px)`, width: `calc(${pctW(t.s, t.e)}% - 4px)`, borderRadius: 4, boxSizing: "border-box", ...barStyle(it, color) }} />
+                      {labelRoom
+                        ? <span style={{ position: "absolute", left: `calc(${pctL(t.s) + pctW(t.s, t.e)}% + 6px)`, top: 4, fontSize: 10.5, color: T.textFaint, whiteSpace: "nowrap" }}>{it.timeline}</span>
+                        : <span style={{ position: "absolute", right: `calc(${100 - pctL(t.s)}% + 6px)`, top: 4, fontSize: 10.5, color: T.textFaint, whiteSpace: "nowrap" }}>{it.timeline}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center", marginTop: 12, fontSize: 11.5, color: T.textSecondary }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor, border: `1px solid ${legendColor}` })}Launched</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor + "a6", border: `1px solid ${legendColor}` })}In flight</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor + "1f", border: `1.5px dashed ${legendColor}` })}Ideation</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: T.borderStrong, border: `1px solid ${T.borderStrong}` })}Stalled</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ display: "inline-block", width: 2, height: 12, background: T.heading, opacity: 0.6 }} />Latest reported month ({MONTHS[MONTHS.length - 1]}); shaded months are in the past</span>
+            {showProduct && PRODUCTS.filter((p) => items.some((it) => it.p === p)).map((p) => (
+              <span key={p} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 999, background: colors[p], display: "inline-block" }} />{p}</span>
+            ))}
+          </div>
+          {undated.length > 0 && (
+            <p style={{ fontSize: 12, color: T.textFaint, margin: "10px 0 0", lineHeight: 1.6 }}>
+              <b style={{ color: T.textMuted }}>Not yet dated ({undated.length}) · </b>
+              {undated.map((x) => `${x.it.name} (${x.it.timeline})`).join(" · ")}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ------------------------------ ticket issues (per product) ------------------------------
   function TicketIssuesSection({ product }) {
     const L = LOOKER[product];
@@ -2318,6 +2415,16 @@ export default function ReliabilityScorecards() {
             Every initiative from the workbook's Initiatives tab (HSIA, TV and SHS), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
           </p></Disclosure>
           <PillarInitiatives />
+          {(() => {
+            const prods = scope === "All" ? ["HSIA", "TV", "SHS"] : scope === "SH+" ? [] : [scope];
+            const items = INITIATIVES.filter((it) => prods.includes(it.p));
+            return items.length ? (
+              <div style={{ marginTop: 22 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Initiative timeline{scope === "All" ? " (HSIA, TV and SHS)" : ""}</div>
+                {InitiativeTimeline({ items, showProduct: scope === "All" })}
+              </div>
+            ) : null;
+          })()}
         </Section>
       </>
     );
@@ -2518,6 +2625,10 @@ export default function ReliabilityScorecards() {
                       </span>
                     </div>
                     {InitiativeRows({ items: filtered, filterable: true, allItems: prodInits })}
+                    <div style={{ marginTop: 22 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Initiative timeline{active ? " (filtered)" : ""}</div>
+                      {InitiativeTimeline({ items: filtered, showProduct: false })}
+                    </div>
                   </>
                 );
               })()}
