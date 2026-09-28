@@ -315,6 +315,12 @@ const INITIATIVES = [
     desc: "Proactive campaign targeting set-top boxes with low RSSI and low bitrate before customers notice video quality issues." },
   { p: "TV", pillar: 3, theme: "Onboarding", name: "AI STB Onboarding Videos", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV", "Support"],
     desc: "Six new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
+  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Channel Config Gap Closing", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV"],
+    desc: "Closes channel configuration gaps: 18 channel updates in AVS and 172 in Mediaroom before Sep 30." },
+  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Mediaroom SD Downconvert Removal", status: "In flight", timeline: "Oct 2026", prime: "N. Desrosiers", issues: ["TV"],
+    desc: "Removes the Mediaroom SD downconvert to mitigate the perception of lost channels during migration." },
+  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Subscribed Channel Access Defect Fix", status: "In flight", timeline: "TBC", prime: "C. Carter", issues: ["TV"],
+    desc: "New defect identified temporarily preventing customers from accessing subscribed channels. Fix underway." },
   { p: "TV", pillar: 4, theme: "Video Quality", name: "InSight Conviva Video Quality Metrics & Co-pilot Ingestion", status: "Ideation", timeline: "—", prime: "Z. Sayhebolay", issues: ["TV", "Support"],
     desc: "Updates InSight's Conviva video-quality metrics and feeds them into the agent co-pilot." },
   // ------------------------- SHS -------------------------
@@ -1607,7 +1613,7 @@ export default function ReliabilityScorecards() {
     );
   }
 
-  // ------------------------------ monthly narrative ------------------------------
+  // ------------------------------ health read (monthly narrative) ------------------------------
   // Plain-language read of the month at the end of the selected range: calls,
   // tickets and repairs, with the single biggest reason the trend points the way
   // it does. Churn is left out until the churn model refresh (last reported Jun 2026).
@@ -2389,7 +2395,7 @@ export default function ReliabilityScorecards() {
           </p></Disclosure>
         </Section>
 
-        <Section num="02" eyebrow="Health read" title={`Monthly narrative — ${latestLabel}`} icon="overview" T={T} collapsible>
+        <Section num="02" eyebrow="Monthly summary" title={`Health Read — ${latestLabel}`} icon="overview" T={T} collapsible>
           {MonthlyNarrative({ sc: scope })}
         </Section>
 
@@ -2415,17 +2421,18 @@ export default function ReliabilityScorecards() {
             Every initiative from the workbook's Initiatives tab (HSIA, TV and SHS), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
           </p></Disclosure>
           <PillarInitiatives />
-          {(() => {
-            const prods = scope === "All" ? ["HSIA", "TV", "SHS"] : scope === "SH+" ? [] : [scope];
-            const items = INITIATIVES.filter((it) => prods.includes(it.p));
-            return items.length ? (
-              <div style={{ marginTop: 22 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Initiative timeline{scope === "All" ? " (HSIA, TV and SHS)" : ""}</div>
-                {InitiativeTimeline({ items, showProduct: scope === "All" })}
-              </div>
-            ) : null;
-          })()}
         </Section>
+
+        {(() => {
+          const prods = scope === "All" ? ["HSIA", "TV", "SHS"] : scope === "SH+" ? [] : [scope];
+          const items = INITIATIVES.filter((it) => prods.includes(it.p));
+          if (!items.length) return null;
+          return (
+            <Section num="06" eyebrow="Reliability program" title={`Initiative timeline${scope === "All" ? " — HSIA, TV and SHS" : ` — ${scope}`}`} icon="initiatives" T={T} collapsible defaultOpen={false}>
+              {InitiativeTimeline({ items, showProduct: scope === "All" })}
+            </Section>
+          );
+        })()}
       </>
     );
   }
@@ -2445,9 +2452,14 @@ export default function ReliabilityScorecards() {
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
+    // Header filters drive both the Initiatives list and the Initiative timeline section.
+    const filteredInits = prodInits.filter((it) =>
+      INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])
+    );
+    const initFilterActive = INIT_FILTER_KEYS.some((k) => initFilters[k] !== "All");
 
     // Sections are numbered sequentially per product; all are collapsible and
-    // only the narrative and the first KPI section start expanded. Keys force a remount on product change
+    // only the health read and the first KPI section start expanded. Keys force a remount on product change
     // so each page opens in its default state.
     let secNo = 0;
     const sec = (title, icon, children) => {
@@ -2484,7 +2496,7 @@ export default function ReliabilityScorecards() {
           </p>
         )}
 
-        {sec(`Monthly narrative — ${latestLabel}`, "overview", MonthlyNarrative({ sc: product }))}
+        {sec(`Health Read — ${latestLabel}`, "overview", MonthlyNarrative({ sc: product }))}
 
         {hasCalls && sec("Calls", "calls",
           <ChartCard title={callsTitle} T={T}
@@ -2603,40 +2615,38 @@ export default function ReliabilityScorecards() {
         {sec("Initiatives", "initiatives",
           prodInits.length ? (
             <>
-              {(() => {
-                const filtered = prodInits.filter((it) =>
-                  INIT_FILTER_KEYS.every((k) => initFilters[k] === "All" || (it[k] || "—") === initFilters[k])
-                );
-                const active = INIT_FILTER_KEYS.some((k) => initFilters[k] !== "All");
-                return (
-                  <>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", margin: "0 0 12px" }}>
-                      <p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
-                        {product} initiatives from the workbook's Initiatives tab. Use the column headers to filter by theme, status, timeline or prime.
-                      </p>
-                      <span style={{ fontSize: 12, color: T.textFaint, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 10 }}>
-                        {filtered.length} of {prodInits.length} initiative{prodInits.length > 1 ? "s" : ""}
-                        {active && (
-                          <button onClick={() => setInitFilters(NO_INIT_FILTERS)}
-                            style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12, cursor: "pointer", fontFamily: FONT }}>
-                            Clear filters
-                          </button>
-                        )}
-                      </span>
-                    </div>
-                    {InitiativeRows({ items: filtered, filterable: true, allItems: prodInits })}
-                    <div style={{ marginTop: 22 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Initiative timeline{active ? " (filtered)" : ""}</div>
-                      {InitiativeTimeline({ items: filtered, showProduct: false })}
-                    </div>
-                  </>
-                );
-              })()}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", margin: "0 0 12px" }}>
+                <p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
+                  {product} initiatives from the workbook's Initiatives tab. Use the column headers to filter by theme, status, timeline or prime.
+                </p>
+                <span style={{ fontSize: 12, color: T.textFaint, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 10 }}>
+                  {filteredInits.length} of {prodInits.length} initiative{prodInits.length > 1 ? "s" : ""}
+                  {initFilterActive && (
+                    <button onClick={() => setInitFilters(NO_INIT_FILTERS)}
+                      style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, color: T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12, cursor: "pointer", fontFamily: FONT }}>
+                      Clear filters
+                    </button>
+                  )}
+                </span>
+              </div>
+              {InitiativeRows({ items: filteredInits, filterable: true, allItems: prodInits })}
             </>
           ) : (
             <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>{product} initiatives have not been added to the source workbook yet — this section will populate once they are.</p>
           )
         )}
+
+        {/* Title stays constant so the section keeps its open/closed state when filters change. */}
+        {prodInits.length > 0 && sec("Initiative timeline", "initiatives",
+          <>
+            {initFilterActive && (
+              <div style={{ fontSize: 12, color: T.textMuted, margin: "0 0 10px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 999, padding: "2px 10px", fontWeight: 700, fontSize: 11.5, color: T.heading }}>Filtered</span>
+                Showing {filteredInits.length} of {prodInits.length} initiatives, matching the filters set in the Initiatives section.
+              </div>
+            )}
+            {InitiativeTimeline({ items: filteredInits, showProduct: false })}
+          </>)}
       </>
     );
   }
