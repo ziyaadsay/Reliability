@@ -364,6 +364,17 @@ const INITIATIVES = [
 // Rates are percentages; cxEasy is a score (target 4.0); cxSent is comment sentiment
 // (negative scale, target -0.50, less negative is better).
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// HSIA customer sentiment — CF&R TELUS Internet survey, Jun–Aug 2026
+// (1,914 / 1,934 / 2,518 respondents). Structured ratings plus the open
+// verbatims (v1/v2/v3/v6 reason-for-rating, issue descriptions, chatbot).
+// The performance and importance batteries are rotating modules, so they are
+// point-in-time (performance Aug, importance Jul) rather than a trend.
+// Produced by analysis/hsia/analyze_hsia_survey.py. Unweighted counts.
+// ---------------------------------------------------------------------------
+const HSS = {"months":["Jun 2026","Jul 2026","Aug 2026"],"respondents":[1914,1934,2518],"nps":{"score":[-1.4,1.2,-0.1],"promoters":[33.8,35.3,34.2],"passives":[31.1,30.6,31.4],"detractors":[35.1,34.1,34.4]},"reliability":{"top2":[58.9,55.8,57.3],"good":[23.0,25.5,23.9],"bottom2":[17.9,18.4,18.8],"bottom2N":[342,355,473],"dist":{"Excellent":[449,429,568],"Very good":[679,650,875],"Good":[440,493,601],"Fair":[212,218,288],"Poor":[130,137,185]}},"service":{"top2":[40.6,39.8,40.6],"bottom2":[32.2,32.5,30.9]},"easy":{"agree":[60.3,64.4,65.0],"disagree":[23.3,20.7,20.8],"base":[146,174,197]},"contact":{"contacted":[14.1,15.7,14.1],"issue_no_contact":[15.1,14.8,14.6],"no_issue":[65.9,65.5,66.7],"contactedN":[270,304,356],"issue_no_contactN":[289,286,367]},"churn":{"at_risk":[11.8,12.1,11.4],"downgrade":[4.2,4.6,4.2],"stay":[60.1,59.3,58.5],"upgrade":[5.9,6.8,6.1],"at_riskN":[225,234,288]},"drivers":[{"name":"Frequent loss of connection","v":[140,166,218],"pct":[40.9,46.8,46.1]},{"name":"Inconsistent Internet speeds","v":[133,125,179],"pct":[38.9,35.2,37.8]},{"name":"Slow Internet speeds","v":[119,111,152],"pct":[34.8,31.3,32.1]},{"name":"Home Wi-Fi","v":[114,119,145],"pct":[33.3,33.5,30.7]},{"name":"Interrupted video streaming","v":[83,78,121],"pct":[24.3,22.0,25.6]},{"name":"TELUS customer service","v":[71,96,107],"pct":[20.8,27.0,22.6]},{"name":"Other TELUS services","v":[45,49,85],"pct":[13.2,13.8,18.0]},{"name":"TELUS technical support","v":[52,60,67],"pct":[15.2,16.9,14.2]},{"name":"Other","v":[17,9,22],"pct":[5.0,2.5,4.7]},{"name":"TELUS email problems","v":[9,7,16],"pct":[2.6,2.0,3.4]}],"driverBase":[342,355,473],"attributes":{"perfMonth":"Aug 2026","impMonth":"Jul 2026","rows":[{"name":"Customer service / tech support","bad":643,"base":2059,"pct":31.2,"imp":81.7},{"name":"Wi-Fi performance at home","bad":697,"base":2412,"pct":28.9,"imp":85.8},{"name":"Wi-Fi coverage at home","bad":657,"base":2402,"pct":27.4,"imp":85.4},{"name":"Speed consistency","bad":599,"base":2363,"pct":25.3,"imp":85.6},{"name":"Connection stability","bad":610,"base":2430,"pct":25.1,"imp":89.8},{"name":"Online gaming","bad":216,"base":862,"pct":25.1,"imp":45.6},{"name":"Max upload speed","bad":448,"base":2074,"pct":21.6,"imp":73.3},{"name":"Max download speed","bad":452,"base":2129,"pct":21.2,"imp":76.3},{"name":"Data-usage allowance","bad":300,"base":2118,"pct":14.2,"imp":75.8}]},"verbatimBase":[1877,1887,2460],"polarity":{"positive":[42.9,40.7,40.0],"neutral":[35.9,36.5,35.7],"negative":[21.2,22.8,24.2]},"polarityN":{"positive":[805,768,985],"neutral":[674,689,879],"negative":[398,430,596]},"themes":[{"name":"Positive: satisfied / no issues","v":[984,959,1282],"pct":[52.4,50.8,52.1],"neg":[82,81,150]},{"name":"Price, value & contract increases","v":[616,645,853],"pct":[32.8,34.2,34.7],"neg":[197,220,295]},{"name":"Customer service & support access","v":[586,592,777],"pct":[31.2,31.4,31.6],"neg":[188,192,258]},{"name":"Slow or inconsistent speeds","v":[364,346,492],"pct":[19.4,18.3,20.0],"neg":[100,111,164]},{"name":"Billing & account","v":[352,341,445],"pct":[18.8,18.1,18.1],"neg":[125,142,161]},{"name":"Connection drops & outages","v":[259,268,322],"pct":[13.8,14.2,13.1],"neg":[103,106,143]},{"name":"Chatbot & digital self-serve","v":[217,233,297],"pct":[11.6,12.3,12.1],"neg":[53,60,89]},{"name":"Equipment: modem, router, ONT","v":[181,190,252],"pct":[9.6,10.1,10.2],"neg":[62,75,107]},{"name":"Competitor / switching","v":[147,155,192],"pct":[7.8,8.2,7.8],"neg":[75,67,90]},{"name":"Technician & installation","v":[147,141,184],"pct":[7.8,7.5,7.5],"neg":[56,39,69]},{"name":"Wi-Fi coverage & dead zones","v":[83,103,143],"pct":[4.4,5.5,5.8],"neg":[30,43,55]},{"name":"Email problems","v":[33,28,29],"pct":[1.8,1.5,1.2],"neg":[9,11,14]}],"issueVerbatims":[{"name":"Issue described at contact","v":[526,564,682]},{"name":"Connection / speed","v":[135,143,177]},{"name":"Why never contacted","v":[91,79,100]},{"name":"Customer service / tech support","v":[44,58,71]},{"name":"Home Wi-Fi","v":[47,46,49]},{"name":"Video streaming interrupted","v":[27,32,44]},{"name":"Wi-Fi Plus impact","v":[25,30,33]},{"name":"Other TELUS service issue","v":[21,17,32]}],"issueThemes":[{"name":"Slow or inconsistent speeds","v":[186,161,247]},{"name":"Connection drops & outages","v":[148,159,164]},{"name":"Equipment: modem, router, ONT","v":[99,111,128]},{"name":"Customer service & support access","v":[73,74,103]},{"name":"Billing & account","v":[91,97,100]},{"name":"Wi-Fi coverage & dead zones","v":[60,76,94]},{"name":"Price, value & contract increases","v":[48,55,76]},{"name":"Positive: satisfied / no issues","v":[52,49,66]},{"name":"Technician & installation","v":[41,37,45]},{"name":"Chatbot & digital self-serve","v":[24,34,41]},{"name":"Competitor / switching","v":[16,11,21]}],"chatbot":{"positive":[42,36,49],"neutral":[400,420,576],"negative":[149,182,164]},"reliabilityByContact":{"contacted":{"bad":[86,86,116],"base":[269,302,355],"pct":[32.0,28.5,32.7]},"issue_no_contact":{"bad":[132,133,203],"base":[289,286,367],"pct":[45.7,46.5,55.3]},"no_issue":{"bad":[91,99,113],"base":[1260,1263,1680],"pct":[7.2,7.8,6.7]}},"quotes":{"Competitor / switching":["I had basic cable for two years.  I had many issues and they were never resolved on many calls.  I have now cancelled the cable.","I got apple TV years ago and needed help with setting it up. It was never resolved and I pay for something I don't want and every time I try to cancel it I can't figure out how","Terrible connections and no one wants to do anything about it. Never had these issues with Rogers. Can't wait to get out of my contract."],"Customer service & support access":["Any time we attempt to contact Telus when there's an issue, we wind up on hold for a ridiculous amount of time. Help is slow and often difficult to deal with.","Total lack of humans after business hours, AI has never been able to help with my poor internet. Without internet for days waiting on tech then still having issues spotty internet","Waiting for fibre optic to correct but lots of dropped service in my area and slow"],"Slow or inconsistent speeds":["Any time we attempt to contact Telus when there's an issue, we wind up on hold for a ridiculous amount of time. Help is slow and often difficult to deal with.","Waiting for fibre optic to correct but lots of dropped service in my area and slow","Service is bad human and internet is not reliable. Slow does not keep the speed consistent no help"],"Price, value & contract increases":["Any time we attempt to contact Telus when there's an issue, we wind up on hold for a ridiculous amount of time. Help is slow and often difficult to deal with.","I have never received a proactive call, offering a promotion to bring my fees down or recognizing that my changing needs over time might suit new, less expensive offerings.","Same as the first question I answered. Expensive for what I get. Poor value"],"Wi-Fi coverage & dead zones":["Poor customer and wifi service. Issues never resolved","very poor wifi and internet. none listen to yor request or billing problem. this is very dishonest company.","Expensive, wifi has been slow at times"],"Connection drops & outages":["Waiting for fibre optic to correct but lots of dropped service in my area and slow","Slow performance at peak times and dropped connection while paying for top speed","It’s at times slow for no apparent reasons. There are outages as well."],"Billing & account":["very poor wifi and internet. none listen to yor request or billing problem. this is very dishonest company.","Yes! I’m so frustrated with the lies I feel betrayed! I don’t have the time to sit on long phone calls with agents because bills are not consistent","Rarely have outages… but when there was there was never a billing credit to reflect the lost day."],"Technician & installation":["Total lack of humans after business hours, AI has never been able to help with my poor internet. Without internet for days waiting on tech then still having issues spotty internet","Extremely poor customer service and horrible attitude from your field tech","The tech you sent on July 18th was useless and did not solve my issue.  Internet performance still poor with no ability to connect my smoke alarm, garage opener to wifi"],"Chatbot & digital self-serve":["Total lack of humans after business hours, AI has never been able to help with my poor internet. Without internet for days waiting on tech then still having issues spotty internet","Everyone I deal with is wonderful.   Only one thing hate your AI that answers your calls, they are frustrating and doesn’t matter how you improve it’s still horrible","AI is why Telus gets fair.  There needs to be an easier access to human contact.  Takes too long and frustrating to get help when AI is useless!"],"Equipment: modem, router, ONT":["I had basic cable for two years.  I had many issues and they were never resolved on many calls.  I have now cancelled the cable.","Poor internet performance router is old and drops connection. Peak time receive slow internet even for paying for top package","Again, it never works, has poor connection and I continually have to reset it."]}};
+
 const SWEEPR = {
   resolved: {
     a: [40266, 39898, 43490, 46000, 44336, 47147, 43423, 44346, 51674, 56387, 52820, 50953, 50356, 42781, 53889, 41283, 43179, 45867, 45891, 49069],
@@ -1072,10 +1083,10 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Notes Analysis", hsiacross: "Cross Analysis",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -1450,6 +1461,7 @@ export default function ReliabilityScorecards() {
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
@@ -3247,6 +3259,30 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // Recommendations from the CF&R TELUS Internet survey (Jun–Aug 2026).
+  const HSIA_SENTIMENT_RECS = [
+    { pri: "P1", tag: "Rising", title: "Reach the customers who hit a problem and never call",
+      evidence: "Respondents who had an issue but did not contact TELUS rate reliability fair or poor 55.3% of the time in August, against 32.7% for those who did contact and 6.7% for those with no issue. They are also the only group deteriorating materially, up from 46.5% in July, and they are 14.6% of the base (367 respondents).",
+      action: "Treat proactive detection as a perception programme, not only a ticket-deflection one: measure the GPONe degradation and Wi-Fi campaigns on reach into this silent cohort, and add a post-detection follow-up for faults that were fixed without the customer ever contacting support.",
+      initiatives: ["GPONe Fibre Degradation Proactive Campaign", "Wi-Fi Scaling — Proactive Campaigns", "Fibre Check — Severely Degraded from the OLT"] },
+    { pri: "P1", tag: "Rising", title: "Connection loss is the driver to fix first",
+      evidence: "Among the 473 respondents rating reliability fair or poor in August, frequent loss of connection is selected by 46.1%, ahead of inconsistent speeds (37.8%), slow speeds (32.1%) and home Wi-Fi (30.7%). This matches the ticket data, where Connection Instability and Disconnects is the largest HSIA pain point at 34,889 tickets.",
+      action: "Keep the degraded-fibre and ONT detection work as the top reliability investment, and report it against the survey driver as well as ticket volume so the perception shift is visible.",
+      initiatives: ["Fibre Check — Severely Degraded from the OLT", "Fibre Check — Bit Errors & Critical Alarms", "DIY Revamp Live ONT Check"] },
+    { pri: "P1", tag: "Gap", title: "Close the Wi-Fi importance-versus-performance gap",
+      evidence: "In August 28.9% rate Wi-Fi performance at home fair or poor and 27.4% say the same of Wi-Fi coverage, while the July importance battery puts both above 85%. Connection stability carries the highest importance of any attribute at 89.8% with 25.1% rating it fair or poor.",
+      action: "Prioritise the Wi-Fi attributes in the reliability roadmap: these carry the largest product of importance and dissatisfaction, so each point of improvement moves overall perception more than any other attribute. Online gaming scores as badly but only 45.6% call it important, so it should not compete for the same investment.",
+      initiatives: ["Cloudcheck Fine Tuning", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Technician WiFi Certification Tool"] },
+    { pri: "P2", tag: "Rising", title: "Price and contact friction outweigh network themes in the open comments",
+      evidence: "Price and value appears in 34.7% of reason-for-rating verbatims and customer service in 31.6%, both rising since June, against 20.0% for speeds and 13.1% for connection drops. Negative sentiment has risen in each of the three months, from 21.2% to 24.2%.",
+      action: "Set expectations with the leadership team that reliability work alone will not lift overall sentiment while pricing and contact friction remain the loudest topics; pair the reliability roadmap with the contact-reduction and pricing-transparency work when reporting perception.",
+      initiatives: [] },
+    { pri: "P3", tag: "Falling", title: "Keep the chatbot improvement going, then fix escalation",
+      evidence: "Negative chatbot comments fell from 28.5% of chatbot verbatims in July to 20.8% in August, the clearest improvement in the survey, even as comment volume grew from 638 to 789. The dominant remaining complaint is the inability to reach a person.",
+      action: "Hold the current bot-comprehension gains and shift the next round of work to escalation: a visible, fast path to a human when the bot cannot resolve, which is what the remaining negative comments ask for.",
+      initiatives: [] }
+  ];
+
   const HSIA_RECS = [
     { pri: "P1", tag: "Rising", title: "No Dataflow: automate the ONT and outage checks before the ticket exists",
       evidence: "Connectivity › No Dataflow is the largest category and the largest mover, 11,676 → 13,151 (+13%), with All Devices Affected +14%; outage language in agent comments rose 6,537 → 7,478 (+14%) and the outage-tagged sub-categories jumped (No Sync › Outage 303 → 640, ONT Not Ranged › Outage 825 → 1,016, Losing Sync › Outage +41%). 41% of No Dataflow tickets close as education / no fault while field visits find an access-line or ONT fault 52% of the time.",
@@ -3537,6 +3573,289 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Recommendations", "initiatives", <Recs items={HSIA_RECS.filter((r) => ["P1", "P3"].includes(r.pri))} product="HSIA" />)}
+      </>
+    );
+  }
+
+  // ------------------------------ HSIA customer sentiment ------------------------------
+  function HsiaSentimentPage() {
+    const S = HSS;
+    const sec = secFactory("hss", "HSIA · Customer Sentiment");
+    const A = S.attributes;
+    const chatTot = S.chatbot.positive.map((_, i) => S.chatbot.positive[i] + S.chatbot.neutral[i] + S.chatbot.negative[i]);
+    const chatNegPct = chatTot.map((t, i) => (t ? +(S.chatbot.negative[i] / t * 100).toFixed(1) : 0));
+    const topDriver = S.drivers[0];
+    const bar = (pct, color, max = 100) => (
+      <div style={{ background: T.panel, borderRadius: 4, height: 9, width: 90, display: "inline-block", verticalAlign: "middle", overflow: "hidden" }}>
+        <div style={{ width: `${Math.min(100, (pct / max) * 100)}%`, height: "100%", background: color, opacity: 0.75 }} />
+      </div>
+    );
+    // the mover cards are framed as problems, so the "positive / no issues" theme
+    // is left out: a rise there is good news and would read as a red flag.
+    const themeMovers = S.themes
+      .filter((t) => !t.name.startsWith("Positive"))
+      .map((t) => ({ name: t.name, delta: Math.round((t.pct[2] - t.pct[1]) * 100) }))
+      .filter((t) => t.delta !== 0);
+    const rising = themeMovers.filter((t) => t.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5);
+    const falling = themeMovers.filter((t) => t.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5);
+
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={colors.HSIA} icon="base" label="Survey respondents" value={fmtNum(S.respondents[2])} sub="CF&R TELUS Internet · Aug 2026" deltas={[<Move key="m" v={S.respondents} goodDown={false} />]} />
+          <StatCard T={T} color={colors.HSIA} icon="sentiment" label="Reliability rated fair or poor" value={fmtPct(S.reliability.bottom2[2], 1)} sub={`${fmtNum(S.reliability.bottom2N[2])} of ${fmtNum(S.respondents[2])} respondents · Aug`} deltas={[<Move key="m" v={S.reliability.bottom2} bps />]} />
+          <StatCard T={T} color={colors.HSIA} icon="sentiment" label="Negative verbatims" value={fmtPct(S.polarity.negative[2], 1)} sub={`of ${fmtNum(S.verbatimBase[2])} reason-for-rating comments · Aug`} deltas={[<Move key="m" v={S.polarity.negative} bps />]} />
+          <StatCard T={T} color={colors.HSIA} icon="tickets" label={`Top driver: ${topDriver.name.toLowerCase()}`} value={fmtPct(topDriver.pct[2], 1)} sub={`of the ${fmtNum(S.driverBase[2])} rating reliability fair or poor · Aug`} deltas={[<Move key="m" v={topDriver.pct} bps />]} />
+          <StatCard T={T} color={colors.HSIA} icon="churn" label="Considering switching or cancelling" value={fmtPct(S.churn.at_risk[2], 1)} sub={`${fmtNum(S.churn.at_riskN[2])} respondents · Aug`} deltas={[<Move key="m" v={S.churn.at_risk} bps />]} />
+        </div>
+        <Disclosure label="About this page" T={T} style={{ marginTop: 12 }}>
+          <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0, lineHeight: 1.6 }}>
+            CF&R TELUS Internet survey, Jun to Aug 2026, {fmtNum(S.respondents[0])} / {fmtNum(S.respondents[1])} / {fmtNum(S.respondents[2])} respondents. Unweighted counts: the export carries a survey weight which is not applied, so figures match the raw base. Comparisons are Aug against Jul. Rating questions use the five-point Excellent to Poor scale and "fair or poor" is the bottom two boxes. The performance and importance batteries rotate month to month, so they are shown as single-month readings rather than a trend. Verbatim themes and sentiment are keyword-classified, so treat them as direction rather than precise measurement.
+          </p>
+        </Disclosure>
+
+        {sec("Perceived reliability", "sentiment",
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: 18 }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Rating of HSIA reliability</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th></tr></thead>
+                <tbody>
+                  {/* the middle box is not directionally good or bad: customers can leave
+                      "Good" in either direction, so its movement is shown untoned. */}
+                  {[["Excellent or very good", S.reliability.top2, "good"], ["Good", S.reliability.good, "neutral"], ["Fair or poor", S.reliability.bottom2, "bad"]].map(([lbl, arr, tone]) => (
+                    <tr key={lbl}>
+                      <td style={{ ...anTd, fontWeight: 600, color: tone === "bad" ? T.bad : T.textSecondary }}>{lbl}</td>
+                      {arr.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}%</td>)}
+                      <td style={anNum}>
+                        {tone === "neutral"
+                          ? <span style={{ color: T.textMuted, whiteSpace: "nowrap" }}>{arr[2] > arr[1] ? "+" : ""}{Math.round((arr[2] - arr[1]) * 100)} bps</span>
+                          : <Move v={arr} bps goodDown={tone === "bad"} />}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+                Reliability perception is broadly flat but drifting the wrong way: the fair-or-poor share has risen in each of the three months and the top-two-box share sits below its June level.
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Fair-or-poor reliability by contact behaviour — Aug 2026</div>
+              {[["issue_no_contact", "Had an issue, did not contact"], ["contacted", "Contacted TELUS about an issue"], ["no_issue", "No issue in the past month"]].map(([k, lbl]) => {
+                const r = S.reliabilityByContact[k];
+                return (
+                  <div key={k} style={{ marginBottom: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 12.5, color: T.textSecondary, marginBottom: 4 }}>
+                      <span>{lbl} <span style={{ color: T.textFaint }}>(n={fmtNum(r.base[2])})</span></span>
+                      <span style={{ fontWeight: 700, color: T.text, whiteSpace: "nowrap" }}>{r.pct[2]}% <Move v={r.pct} bps /></span>
+                    </div>
+                    <div style={{ background: T.panel, borderRadius: 5, height: 12, overflow: "hidden" }}>
+                      <div style={{ width: `${r.pct[2]}%`, height: "100%", background: k === "no_issue" ? T.good : T.bad, opacity: 0.8 }} />
+                    </div>
+                  </div>
+                );
+              })}
+              <p style={{ fontSize: 12, color: T.textFaint, marginTop: 8, lineHeight: 1.5 }}>
+                Customers who hit a problem and never called are the most negative group and the only one getting materially worse. They rate reliability fair or poor more often than customers who did contact support, so the ticket queue understates the reliability problem.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {sec("What drives a poor reliability rating", "issues",
+          <>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Driver selected</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th><th style={anTh}></th></tr></thead>
+                <tbody>
+                  {S.drivers.filter((d) => d.name !== "Other").map((d) => (
+                    <tr key={d.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{d.name}</td>
+                      {d.pct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}% <span style={{ color: T.textFaint, fontSize: 11 }}>({d.v[i]})</span></td>)}
+                      <td style={anNum}><Move v={d.pct} bps /></td>
+                      <td style={anTd}>{bar(d.pct[2], colors.HSIA, 50)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+              Asked only of respondents who rated reliability fair or poor ({fmtNum(S.driverBase[0])} / {fmtNum(S.driverBase[1])} / {fmtNum(S.driverBase[2])} in Jun / Jul / Aug). Multi-select, so shares sum above 100%. Connection loss is the single biggest driver, and the connection and speed drivers together dominate, which lines up with Connection Instability and Disconnects being the largest pain point in the ticket data.
+            </p>
+          </>
+        )}
+
+        {sec("Performance against importance", "tickets",
+          <>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>
+                  <th style={anTh}>Service attribute</th>
+                  <th style={{ ...anTh, textAlign: "right" }}>Fair or poor · {A.perfMonth}</th>
+                  <th style={anTh}></th>
+                  <th style={{ ...anTh, textAlign: "right" }}>Important · {A.impMonth}</th>
+                  <th style={anTh}>Priority</th>
+                </tr></thead>
+                <tbody>
+                  {A.rows.map((r) => (
+                    <tr key={r.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{r.name}</td>
+                      <td style={{ ...anNum, fontWeight: 700 }}>{r.pct}% <span style={{ color: T.textFaint, fontSize: 11, fontWeight: 400 }}>(n={fmtNum(r.base)})</span></td>
+                      <td style={anTd}>{bar(r.pct, T.bad, 35)}</td>
+                      <td style={anNum}>{r.imp == null ? "—" : `${r.imp}%`}</td>
+                      <td style={anTd}>
+                        {r.imp != null && r.imp >= 75 && r.pct >= 25 && (
+                          <span style={{ background: T.bad + "1a", border: `1px solid ${T.bad}55`, color: T.bad, borderRadius: 999, padding: "1px 9px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>Close the gap</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+              Performance is the share rating each attribute fair or poor in {A.perfMonth}; importance is the share calling it important in {A.impMonth}. The two batteries rotate, so they come from different months and are read side by side rather than as a trend. "Close the gap" marks attributes that at least 75% call important and at least 25% rate fair or poor. Online gaming scores badly but only 45.6% call it important, so it ranks lower as a priority.
+            </p>
+          </>
+        )}
+
+        {sec("Verbatim sentiment and themes", "sentiment",
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18 }}>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th></tr></thead>
+                  <tbody>
+                    {["positive", "neutral", "negative"].map((pl) => (
+                      <tr key={pl}>
+                        <td style={{ ...anTd, fontWeight: 600, textTransform: "capitalize", color: pl === "positive" ? T.good : pl === "negative" ? T.bad : T.textSecondary }}>{pl}</td>
+                        {S.polarity[pl].map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}% <span style={{ color: T.textFaint, fontSize: 11 }}>({fmtNum(S.polarityN[pl][i])})</span></td>)}
+                        <td style={anNum}><Move v={S.polarity[pl]} bps goodDown={pl !== "positive"} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+                  One classification per respondent across the four reason-for-rating verbatims. Sentiment has worsened in each month: negative comments are up 300 bps since June and positive comments down 290 bps.
+                </p>
+              </div>
+              <div>
+                {AN_MONTHS.map((m, i) => (
+                  <div key={m} style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 700, marginBottom: 4 }}>{m} 2026</div>
+                    <div style={{ display: "flex", height: 16, borderRadius: 6, overflow: "hidden", border: `1px solid ${T.border}` }}>
+                      <div style={{ width: `${S.polarity.positive[i]}%`, background: T.good }} title={`positive ${S.polarity.positive[i]}%`} />
+                      <div style={{ width: `${S.polarity.neutral[i]}%`, background: T.borderStrong }} title={`neutral ${S.polarity.neutral[i]}%`} />
+                      <div style={{ width: `${S.polarity.negative[i]}%`, background: T.bad }} title={`negative ${S.polarity.negative[i]}%`} />
+                    </div>
+                  </div>
+                ))}
+                <div style={{ display: "flex", gap: 14, fontSize: 11.5, color: T.textSecondary, marginTop: 4, flexWrap: "wrap" }}>
+                  {[["Positive", T.good], ["Neutral", T.borderStrong], ["Negative", T.bad]].map(([l, c]) => (
+                    <span key={l} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ width: 12, height: 10, background: c, borderRadius: 3, display: "inline-block" }} />{l}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", margin: "18px 0 4px" }}>
+              {[["Rising themes · Aug vs Jul", rising, "up"], ["Falling themes · Aug vs Jul", falling, "down"]].map(([title, rows, tone]) => (
+                <div key={title} style={{ flex: 1, minWidth: 260, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${tone === "up" ? T.bad : T.good}`, borderRadius: 10, padding: "12px 16px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
+                  {rows.length ? rows.map((r) => (
+                    <div key={r.name} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5, padding: "3px 0" }}>
+                      <span style={{ color: T.textSecondary }}>{r.name}</span>
+                      <span style={{ fontWeight: 700, color: tone === "up" ? T.bad : T.good, whiteSpace: "nowrap" }}>{r.delta > 0 ? "▲ +" : "▼ "}{Math.abs(r.delta)} bps</span>
+                    </div>
+                  )) : <span style={{ fontSize: 12.5, color: T.textFaint }}>No material movement</span>}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ overflowX: "auto", marginTop: 14 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Theme mentioned</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th><th style={{ ...anTh, textAlign: "right" }}>Negative in Aug</th></tr></thead>
+                <tbody>
+                  {S.themes.map((t) => (
+                    <tr key={t.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{t.name}</td>
+                      {t.pct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{x}%</td>)}
+                      <td style={anNum}><Move v={t.pct} bps goodDown={!t.name.startsWith("Positive")} /></td>
+                      <td style={anNum}>{fmtNum(t.neg[2])} <span style={{ color: T.textFaint, fontSize: 11 }}>({t.v[2] ? Math.round(t.neg[2] / t.v[2] * 100) : 0}%)</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+              Share of respondents whose reason-for-rating comments mention each theme; a comment can carry several themes, so shares sum above 100%. Price and customer service dominate the open comments and both are still rising, while the network themes are steadier. The last column is how often the theme appears in a comment scored negative overall.
+            </p>
+          </>
+        )}
+
+        {sec("Issue descriptions and digital support", "cx",
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18 }}>
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Themes in the issue descriptions</div>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Theme</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}<th style={{ ...anTh, textAlign: "right" }}>Aug vs Jul</th></tr></thead>
+                <tbody>
+                  {S.issueThemes.map((t) => (
+                    <tr key={t.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{t.name}</td>
+                      {t.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={anNum}><Move v={t.v} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+                Issue-description verbatims mentioning each theme, across the contact, Wi-Fi, connection, streaming, support and Wi-Fi Plus deep-dive questions. Speed and connection complaints lead and both grew in August.
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginBottom: 8 }}>Chatbot and digital support comments</div>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={anTh}>Polarity</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}</tr></thead>
+                <tbody>
+                  {["positive", "neutral", "negative"].map((pl) => (
+                    <tr key={pl}>
+                      <td style={{ ...anTd, fontWeight: 600, textTransform: "capitalize", color: pl === "positive" ? T.good : pl === "negative" ? T.bad : T.textSecondary }}>{pl}</td>
+                      {S.chatbot[pl].map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                    </tr>
+                  ))}
+                  <tr>
+                    <td style={{ ...anTd, fontWeight: 700, color: T.heading }}>Negative share</td>
+                    {chatNegPct.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: 700, color: i === 2 ? T.good : T.text }}>{x}%</td>)}
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ fontSize: 12, color: T.textFaint, marginTop: 10, lineHeight: 1.5 }}>
+                Chatbot comments grew with the sample but turned less negative: the negative share fell from {chatNegPct[1]}% in July to {chatNegPct[2]}% in August, the clearest improvement on this page. Needing to reach a person remains the dominant complaint.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {sec("What customers said", "sentiment",
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
+              {Object.entries(S.quotes).map(([theme, qs]) => (
+                <div key={theme} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>{theme}</div>
+                  {qs.map((q, i) => (
+                    <p key={i} style={{ margin: "0 0 8px", fontSize: 12.5, lineHeight: 1.55, color: T.textSecondary, borderLeft: `2px solid ${T.borderStrong}`, paddingLeft: 10 }}>{q}</p>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 12, color: T.textFaint, marginTop: 12, lineHeight: 1.5 }}>
+              August 2026 verbatims that scored clearly negative and match the theme shown, quoted as written including typing errors. No customer identifiers are held in this dashboard.
+            </p>
+          </>
+        )}
+
+        {sec("Recommendations", "initiatives", <Recs items={HSIA_SENTIMENT_RECS} product="HSIA" />)}
       </>
     );
   }
@@ -3871,6 +4190,8 @@ export default function ReliabilityScorecards() {
       ? "Executive summary"
       : page === "hsiatickets"
       ? "HSIA notes analysis"
+      : page === "hsiasentiment"
+      ? "HSIA customer sentiment analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
       : page === "tvplatforms"
@@ -3942,6 +4263,8 @@ export default function ReliabilityScorecards() {
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
               : page === "hsiatickets"
               ? "HSIA notes analysis · Aug vs Jul 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+              : page === "hsiasentiment"
+              ? "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "tvplatforms"
@@ -3999,6 +4322,7 @@ export default function ReliabilityScorecards() {
             : page === "selfserve" ? SelfServePage()
             : page === "execsummary" ? <ExecSummaryPage />
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
+            : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
             : page === "tvplatforms" ? TvPlatformsPage()
             : page === "tvtickets" ? TvTicketAnalysisPage()
