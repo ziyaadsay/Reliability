@@ -2,11 +2,11 @@ import json
 d = json.load(open('hsia_notes_analysis.json'))
 M = d['months']
 def v3(tbl, k): return tbl[k]
-def pct(v): return None if not v[1] else round((v[2]-v[1])/v[1]*100, 1)  # Aug vs Jul
-def rows(tbl, n=None, skip=()):
-    out = [{'name': k, 'v': v, 'pct': pct(v)} for k, v in tbl.items() if k not in skip]
+def pct(v): return None if not v[1] else round((v[2]-v[1])/v[1]*100, 1)  # latest vs prior month (Sep vs Aug)
+def rows(tbl, n=None, skip=(), floor=0):
+    out = [{'name': k, 'v': v, 'pct': pct(v)} for k, v in tbl.items() if k not in skip and sum(v) >= floor]
     return out[:n] if n else out
-def mv(items): return [{'name': i['key'], 'v': [i['jun'], i['jul'], i['aug']], 'delta': i['delta'], 'pct': i['pct']} for i in items]
+def mv(items): return [{'name': i['key'], 'v': [i['m0'], i['m1'], i['m2']], 'delta': i['delta'], 'pct': i['pct']} for i in items]
 def divrows(D, field):
     out = []
     for m in M:
@@ -15,22 +15,22 @@ def divrows(D, field):
         r['visits' if field else 'closed'] = x['closed']
         out.append(r)
     return out
-pc = d['divergence']['2026-08']['per_cat']
+pc = d['divergence'][M[-1]]['per_cat']
 perCat = sorted([{'cat': k, 'n': v['n'], 'alignment': v['alignment_pct'], 'nofault': v['nofault_pct'], 'techTop': [t[0] for t in v['tech_top'][:2]]} for k, v in pc.items()], key=lambda r: -r['n'])
-pcf = d['divergence_fieldvisit']['2026-08']['per_cat']
+pcf = d['divergence_fieldvisit'][M[-1]]['per_cat']
 perCatField = sorted([{'cat': k, 'n': v['n'], 'alignment': v['alignment_pct'], 'nofault': v['nofault_pct'], 'nontelus': v['nontelus_pct'], 'techTop': v['tech_top'][0][0]} for k, v in pcf.items()], key=lambda r: -r['n'])
 det = [[d['tech_determination'][m].get('TELUS caused', 0), d['tech_determination'][m].get('Non-TELUS caused', 0)] for m in M]
 closure = [{'tickets': d['closure_mix'][m]['tickets'], 'field_visit_pct': d['closure_mix'][m]['field_visit_pct'],
             'agent_education_closure_pct': d['closure_mix'][m]['agent_education_closure_pct'], 'no_closure_code_pct': d['closure_mix'][m]['no_closure_code_pct']} for m in M]
-mix = d['domain_mix']['2026-08']
+mix = d['domain_mix'][M[-1]]
 AD = ['Gateway / dataflow', 'Access line & ONT', 'Speed', 'Wi-Fi', 'Equipment compatibility']
 TD = ['Access line / fibre / ONT', 'Modem / gateway', 'Wi-Fi / extenders', 'Provisioning / back office', 'Outage', 'Customer / non-TELUS equipment', 'Education / no fault', 'Other product']
 domainMix = [{'agent': a, 'n': sum(mix.get(a, {}).values()), 'v': [mix.get(a, {}).get(t, 0) for t in TD]} for a in AD]
 HSA = {
-  'months': ['Jun 2026', 'Jul 2026', 'Aug 2026'],
+  'months': ['Jul 2026', 'Aug 2026', 'Sep 2026'],
   'tickets': {
     'total': [d['total'][m] for m in M],
-    'c1': rows(d['agent_c1'], skip=('Wi-Fi connection', 'DSL', 'Calling Features')),
+    'c1': rows(d['agent_c1'], skip=('Wi-Fi connection', 'DSL', 'Calling Features'), floor=100),  # floor drops one-off stray category values
     'agentCat': rows(d['agent_c12_top'], skip=('NWH › Not Required',)),
     'rising': mv(d['agent_c123_rising']), 'falling': mv(d['agent_c123_falling']),
     'techR1': rows(d['tech_r1'], 12),

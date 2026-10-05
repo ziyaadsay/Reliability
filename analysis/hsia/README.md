@@ -11,7 +11,8 @@ Scripts that produce the aggregated data behind the HSIA "Notes Analysis",
   agent-vs-closure categorisation divergence (all closures and field visits
   only), technician determinations and fix themes, agent-comment themes,
   device mentions and fibre vs copper access mentions. Movers compare the
-  latest month with the prior month (Aug vs Jul 2026).
+  latest month with the prior month (Sep vs Aug 2026). The window is the three
+  most recent months (Jul to Sep 2026).
 
 Agent symptom domains: Access line & ONT (ONT Not Ranged, No Sync, Losing
 Sync, Historical Data), Gateway / dataflow (No Dataflow, No IP), Speed,
@@ -26,7 +27,7 @@ Customer / non-TELUS equipment, Education / no fault, Other product.
   the reliability drivers (Q1C_INT, asked only of those rating reliability fair
   or poor), the performance and importance batteries, contact behaviour, churn
   intention, verbatim sentiment and themes, issue-description themes, chatbot
-  sentiment and example quotes. Comparisons are Aug vs Jul 2026.
+  sentiment and example quotes. Comparisons are Aug vs Jul 2026 (the survey window is Jun to Aug 2026 and has not been refreshed for September).
 
   Two things to know about the source. The performance (iqpf1_*) and importance
   (iqim1_*) batteries are rotating modules: performance is asked in August only

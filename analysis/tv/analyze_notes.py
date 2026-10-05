@@ -1,6 +1,6 @@
 import json, collections, re, statistics
 rows = json.load(open('notes_all.json'))
-MONTHS = ['2026-06', '2026-07', '2026-08']
+MONTHS = ['2026-07', '2026-08', '2026-09']
 
 def month(r):
     d = r['Ticket Created Date']
@@ -32,13 +32,13 @@ def monthly(keyfn, min_total=0):
     return {k: v for k, v in c.items() if sum(v) >= min_total}
 
 def movers(tbl, floor=150):
-    # Aug vs Jul (latest month vs prior month)
+    # latest month vs prior month (Sep vs Aug 2026)
     items = []
     for k, v in tbl.items():
         if v[1] >= floor or v[2] >= floor:
             d = v[2] - v[1]
             pct = (d / v[1] * 100) if v[1] else None
-            items.append({'key': k, 'jun': v[0], 'jul': v[1], 'aug': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
+            items.append({'key': k, 'm0': v[0], 'm1': v[1], 'm2': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
     rising = sorted([i for i in items if i['delta'] > 0], key=lambda i: -i['delta'])[:8]
     falling = sorted([i for i in items if i['delta'] < 0], key=lambda i: i['delta'])[:8]
     return rising, falling
@@ -270,8 +270,8 @@ print('TECH R1›R2 falling'); [print('  ', i) for i in out['tech_r12_falling']]
 print('\nDIVERGENCE')
 for m in MONTHS:
     d = div[m]; print(f"  {m}: closed={d['closed']} alignment={d['alignment_pct']}% nofault={d['nofault_pct']}% reattribution={d['reattribution_pct']}%")
-print('  per-cat (Aug):')
-for k, v in div['2026-08']['per_cat'].items(): print(f"    {k:20s} n={v['n']} closed={v['closed']} align={v['alignment_pct']} nofault={v['nofault_pct']} tech={v['tech_top']}")
+print('  per-cat (latest month):')
+for k, v in div[MONTHS[-1]]['per_cat'].items(): print(f"    {k:20s} n={v['n']} closed={v['closed']} align={v['alignment_pct']} nofault={v['nofault_pct']} tech={v['tech_top']}")
 print('\nDETERMINATION', out['tech_determination'])
 print('STRUCTURED TECH NOTES', out['structured_tech_notes'])
 print('\nFIX THEMES'); [print(f'  {k:48s} {v}') for k, v in out['tech_fix_themes'].items()]
@@ -280,7 +280,7 @@ print('\nAGENT THEMES'); [print(f'  {k:52s} {v}') for k, v in out['agent_themes'
 print('\nFIELD-VISIT DIVERGENCE')
 for m in MONTHS:
     d = fv[m]; print(f"  {m}: visits={d['visits']} alignment={d['alignment_pct']}% nofault={d['nofault_pct']}% nonTELUS={d['nontelus_pct']}% reattribution={d['reattribution_pct']}%")
-for k, v in fv['2026-08']['per_cat'].items(): print(f"    {k:20s} {v}")
+for k, v in fv[MONTHS[-1]]['per_cat'].items(): print(f"    {k:20s} {v}")
 print('\nDEVICES'); [print(f'  {k:32s} {v}') for k, v in out['devices'].items()]
 print('PLATFORM', platform_m)
 print('\nCLOSURE MIX', disp)

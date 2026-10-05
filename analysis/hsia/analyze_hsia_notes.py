@@ -1,4 +1,4 @@
-"""HSIA agent vs technician ticket-notes analysis (Jun - Aug 2026).
+"""HSIA agent vs technician ticket-notes analysis (Jul - Sep 2026).
 
 Reads the weekly HSIA notes exports (raw/hsia_notes_<Mon>_W*.xlsx), aggregates
 agent categorisation (Category 1-3, Agent Notes) against closure categorisation
@@ -9,7 +9,7 @@ are never committed.
 import glob, json, collections, re, sys
 import openpyxl
 
-MONTHS = ['2026-06', '2026-07', '2026-08']
+MONTHS = ['2026-07', '2026-08', '2026-09']
 FILES = sorted(glob.glob('raw/hsia_notes_*.xlsx'))
 
 rows = []
@@ -64,13 +64,13 @@ def monthly(keyfn, min_total=0):
     return {k: v for k, v in c.items() if sum(v) >= min_total}
 
 def movers(tbl, floor=150, n=8):
-    # Aug vs Jul (latest month vs prior month)
+    # latest month vs prior month (Sep vs Aug 2026)
     items = []
     for k, v in tbl.items():
         if v[1] >= floor or v[2] >= floor:
             d = v[2] - v[1]
             pct = (d / v[1] * 100) if v[1] else None
-            items.append({'key': k, 'jun': v[0], 'jul': v[1], 'aug': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
+            items.append({'key': k, 'm0': v[0], 'm1': v[1], 'm2': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
     rising = sorted([i for i in items if i['delta'] > 0], key=lambda i: -i['delta'])[:n]
     falling = sorted([i for i in items if i['delta'] < 0], key=lambda i: i['delta'])[:n]
     return rising, falling
@@ -322,13 +322,13 @@ print('\nDIVERGENCE (all closures)')
 for m in MONTHS:
     d = out['divergence'][m]
     if d['closed']: print(f"  {m}: closed={d['closed']} alignment={d['alignment_pct']}% nofault={d['nofault_pct']}% nonTELUS={d['nontelus_pct']}% reattribution={d['reattribution_pct']}%")
-for k, v in out['divergence']['2026-08'].get('per_cat', {}).items(): print(f"    {k:36s} n={v['n']} closed={v['closed']} align={v['alignment_pct']} nofault={v['nofault_pct']} tech={v['tech_top']}")
+for k, v in out['divergence'][MONTHS[-1]].get('per_cat', {}).items(): print(f"    {k:36s} n={v['n']} closed={v['closed']} align={v['alignment_pct']} nofault={v['nofault_pct']} tech={v['tech_top']}")
 print('\nDIVERGENCE (field visits)')
 for m in MONTHS:
     d = out['divergence_fieldvisit'][m]
     if d['closed']: print(f"  {m}: visits={d['closed']} alignment={d['alignment_pct']}% nofault={d['nofault_pct']}% nonTELUS={d['nontelus_pct']}% reattribution={d['reattribution_pct']}%")
-for k, v in out['divergence_fieldvisit']['2026-08'].get('per_cat', {}).items(): print(f"    {k:36s} {v}")
-print('\nDOMAIN MIX Aug', json.dumps(out['domain_mix']['2026-08'], indent=1))
+for k, v in out['divergence_fieldvisit'][MONTHS[-1]].get('per_cat', {}).items(): print(f"    {k:36s} {v}")
+print('\nDOMAIN MIX latest month', json.dumps(out['domain_mix'][MONTHS[-1]], indent=1))
 print('\nDETERMINATION', out['tech_determination'])
 print('\nFIX THEMES'); [print(f'  {k:52s} {v}') for k, v in out['tech_fix_themes'].items()]
 print('\nCOMMENT COVERAGE', comment_cov)
