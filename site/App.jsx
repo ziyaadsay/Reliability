@@ -9,8 +9,10 @@ import React, { useState, useEffect, useRef } from "react";
     workbook. Reporting window Jan 2025 – Aug 2026; churn (go/national RGU)
     reported through Jun 2026.
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
-    ticket counts by category, Jan 2025 – Aug 2026 (replaces the earlier
-    Tableau DRD feed). For HSIA the category volumes come from the
+    ticket counts by category, Jan 2025 – Sep 2026 (replaces the earlier
+    Tableau DRD feed). Issue-level views (top issues, risers/fallers, the
+    recurring-issue grid, biggest monthly riser) are at Sep 2026; the monthly
+    series and KPI totals stay at Aug 2026 until the September totals land. For HSIA the category volumes come from the
     "hsia_ticket_recategorization" tab (A9:U13: Looker ticket types rolled up
     to customer pain points); the HSIA Looker tab is used for issue-level
     context only (top issues, risers/fallers, biggest monthly riser).
@@ -92,7 +94,8 @@ const DATA = {
 };
 
 // ---------------------------------------------------------------------------
-// Looker ticket categories (workbook tabs, Jan 2025 – Aug 2026). Issues are
+// Looker ticket categories (workbook tabs, Jan 2025 – Sep 2026; monthly series
+// through Aug 2026, issue-level movers and the overview grid at Sep 2026). Issues are
 // grouped by the five recurring issues from the cross-source synthesis
 // (Connectivity · TV · Speed · WiFi · Support); SHS device categories sit in
 // their own bucket, matching the synthesis note that SHS-specific issues are
@@ -116,90 +119,90 @@ const LOOKER = {
     topCat: { name: "Connection Instability & Disconnects", series: [26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889] },
     catSource: "recategorization",
     topIssues: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305 },
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536 },
-      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6707, a25: 6525 },
-      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6521, a25: 5931 },
-      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5774, a25: 5334 },
-      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4522, a25: 4104 },
-      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4159, a25: 3591 },
-      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3283, a25: 2948 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614 },
+      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6792, a25: 5975 },
+      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6646, a25: 6269 },
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027 },
+      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5201, a25: 4764 },
+      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4274, a25: 3492 },
+      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4058, a25: 3774 },
+      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3158, a25: 2899 }
     ],
     rising: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305, delta: 3035 },
-      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2037, a25: 0, delta: 2037 },
-      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1522, a25: 0, delta: 1522 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614, delta: 3805 },
+      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2162, a25: 0, delta: 2162 },
+      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1379, a25: 0, delta: 1379 }
     ],
     falling: [
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536, delta: -1320 },
-      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2611, a25: 3020, delta: -409 },
-      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1946, a25: 1949, delta: -3 }
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027, delta: -1575 },
+      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2616, a25: 3211, delta: -595 },
+      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1755, a25: 1911, delta: -156 }
     ]
   },
   TV: {
     monthlyTotal: [38203,37850,41374,41718,41538,36431,36644,35205,34178,41446,41064,38433,38961,33097,32600,34609,30737,32173,31355,32801],
     topCat: { name: "STB No Boot", series: [8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203] },
     topIssues: [
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920 },
-      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 4149, a25: 4283 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238 },
-      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2077, a25: 2310 },
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186 },
-      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1477, a25: 1283 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747 },
+      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3403, a25: 3537 },
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982 },
+      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2307, a25: 2103 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1926, a25: 1244 }
     ],
     rising: [
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238, delta: 883 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186, delta: 481 },
-      { issue: "Recordings › Functionality", grp: "TV", a26: 516, a25: 280, delta: 236 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717, delta: 1518 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118, delta: 1025 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228, delta: 1022 }
     ],
     falling: [
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738, delta: -1851 },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920, delta: -1670 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505, delta: -386 }
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982, delta: -2563 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747, delta: -997 },
+      { issue: "Apps › Netflix", grp: "Support", a26: 220, a25: 413, delta: -193 }
     ]
   },
   SHS: {
     monthlyTotal: [35888,35833,43965,46504,45961,44223,50684,50121,48962,48838,44322,45432,43986,36977,34961,36722,34900,38993,40749,38702],
     topCat: { name: "Main Panel", series: [6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273] },
     topIssues: [
-      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985 },
-      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2126, a25: 2305 },
-      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2040, a25: 2217 },
-      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1807, a25: 2091 },
-      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1590, a25: 2280 },
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610 },
-      { issue: "Outdoor Camera › Wi-Fi connection", grp: "SHS Hardware", a26: 1110, a25: 1396 },
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672 }
+      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2223, a25: 2390 },
+      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2017, a25: 2177 },
+      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2005, a25: 2845 },
+      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1710, a25: 2188 },
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959 },
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646 }
     ],
     rising: [
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672, delta: 431 },
-      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 860, a25: 616, delta: 244 },
-      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 967, a25: 728, delta: 239 }
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703, delta: 533 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646, delta: 407 },
+      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 1043, a25: 704, delta: 339 }
     ],
     falling: [
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610, delta: -2178 },
-      { issue: "CMS inquiry › Event history", grp: "Support", a26: 829, a25: 1666, delta: -837 },
-      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985, delta: -830 }
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501, delta: -2010 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959, delta: -1547 },
+      { issue: "CMS inquiry › Event history", grp: "Support", a26: 783, a25: 1704, delta: -921 }
     ]
   }
 };
 // HSIA: hsia_ticket_recategorization pain points (Connection Instability & Disconnects → Connectivity,
 // Slow Speeds → Speed, WiFi Coverage Gaps → WiFi, Other → Support). TV/SHS: Looker Category 1 groups.
 const OVERVIEW_ISSUES = [
-  { grp: "Connectivity", HSIA: [34889, 33263], TV: null, SHS: null },
-  { grp: "TV", HSIA: null, TV: [30980, 33224], SHS: null },
-  { grp: "Speed", HSIA: [13094, 8723], TV: null, SHS: null },
-  { grp: "WiFi", HSIA: [9880, 8825], TV: null, SHS: null },
-  { grp: "Support", HSIA: [926, 470], TV: [1821, 1981], SHS: [6108, 9715] },
-  { grp: "SHS Hardware", HSIA: null, TV: null, SHS: [32594, 40406] }
+  { grp: "Connectivity", HSIA: [33402, 31698], TV: null, SHS: null },
+  { grp: "TV", HSIA: null, TV: [35849, 32391], SHS: null },
+  { grp: "Speed", HSIA: [13190, 8710], TV: null, SHS: null },
+  { grp: "WiFi", HSIA: [9417, 8193], TV: null, SHS: null },
+  { grp: "Support", HSIA: [755, 482], TV: [1686, 1787], SHS: [5410, 10625] },
+  { grp: "SHS Hardware", HSIA: null, TV: null, SHS: [32811, 38337] }
 ];
 // Category stacks: HSIA uses the four customer pain points from the hsia_ticket_recategorization
 // tab; TV and SHS use the Looker Category 1 groups (top 5 by Aug 2026 + other). Risers are the biggest
 // month-over-month percentage riser among Looker Category 1 › 2 issues with at least 100 tickets in
 // the prior month (2026); for HSIA these remain Looker context.
-const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7748,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12854,13302,12813,13094]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10705,9470,9365,10018,10061,10583,10058,9880]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,813,917,1034,926]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5014,5998,5978,5236,6260,5393,5360,5394,4255,4074,4673,4676]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5208,6248,8295,7488,7572,6369,6136,6286,5546,5760,5813,6305]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103}}}};
+const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7748,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12854,13302,12813,13094]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10705,9470,9365,10018,10061,10583,10058,9880]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,813,917,1034,926]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037},"Sep 2026":{"issue":"Incompatible Equipment › Incompatible","pct":6.1,"from":2037,"to":2162}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5014,5998,5978,5236,6260,5393,5360,5394,4255,4074,4673,4676]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5208,6248,8295,7488,7572,6369,6136,6286,5546,5760,5813,6305]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159},"Sep 2026":{"issue":"Channel Issues › Channel Not Working","pct":35.0,"from":1667,"to":2250}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103},"Sep 2026":{"issue":"Smart thermostat › Troubleshoot","pct":67.6,"from":145,"to":243}}}};
 Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], x));
 
 // ---------------------------------------------------------------------------
@@ -1545,7 +1548,7 @@ export default function ReliabilityScorecards() {
             <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, background: T.panel, border: `1px solid ${T.border}`, borderLeft: `3px solid ${colors[p]}`, borderRadius: 10, padding: "10px 14px" }}>
               <span style={{ color: colors[p], display: "inline-flex", marginTop: 2 }}><Icon name={PRODUCT_ICON[p]} size={15} /></span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{p} · top ticket issue — Aug'26</div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{p} · top ticket issue — Sep'26</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginTop: 2 }}>{t.issue}</div>
                 <div style={{ fontSize: 12, color: T.textMuted, marginTop: 2 }}>
                   {t.a26.toLocaleString()} tickets
@@ -1806,9 +1809,9 @@ export default function ReliabilityScorecards() {
           <thead>
             <tr>
               <th style={{ ...thBase, textAlign: "left" }}>Recurring issue</th>
-              {prods.map((p) => <th key={p} style={{ ...thBase, textAlign: "right" }}>{p} · Aug'26</th>)}
-              <th style={{ ...thBase, textAlign: "right" }}>Total · Aug'26</th>
-              <th style={{ ...thBase, textAlign: "right" }}>YoY (vs Aug'25)</th>
+              {prods.map((p) => <th key={p} style={{ ...thBase, textAlign: "right" }}>{p} · Sep'26</th>)}
+              <th style={{ ...thBase, textAlign: "right" }}>Total · Sep'26</th>
+              <th style={{ ...thBase, textAlign: "right" }}>YoY (vs Sep'25)</th>
             </tr>
           </thead>
           <tbody>
@@ -2046,10 +2049,10 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>
-          {moverCard("Top rising issues · Aug'26 vs Aug'25", L.rising, "up")}
-          {moverCard("Top falling issues · Aug'26 vs Aug'25", L.falling, "down")}
+          {moverCard("Top rising issues · Sep'26 vs Sep'25", L.rising, "up")}
+          {moverCard("Top falling issues · Sep'26 vs Sep'25", L.falling, "down")}
         </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Top issues by ticket volume — Aug 2026</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Top issues by ticket volume — Sep 2026</div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -2057,7 +2060,7 @@ export default function ReliabilityScorecards() {
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Issue (Category › Sub-category)</th>
                 {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
-                <th style={{ ...thBase, textAlign: "right" }}>Aug'26</th>
+                <th style={{ ...thBase, textAlign: "right" }}>Sep'26</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
@@ -2421,7 +2424,7 @@ export default function ReliabilityScorecards() {
           </p></Disclosure>
         </Section>
 
-        <Section num="04" eyebrow="Ticket analysis" title="Tickets by recurring issue — Aug 2026" icon="issues" T={T} collapsible>
+        <Section num="04" eyebrow="Ticket analysis" title="Tickets by recurring issue — Sep 2026" icon="issues" T={T} collapsible>
           <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
             Ticket counts grouped by the five recurring issues from the cross-source reliability synthesis (perception study, VOC, onboarding, CCTS, OpenSignal and ticket/repair analysis). HSIA counts are the customer pain points from the workbook's hsia_ticket_recategorization tab (its Other group, abandoned and uncategorised tickets, sits in the Support row); TV and SHS use the Looker ticket categories. SHS device categories sit outside the 5-issue framework, matching the synthesis. A falling count (▼, green) is favourable.
           </p></Disclosure>
@@ -3962,7 +3965,7 @@ export default function ReliabilityScorecards() {
         return { label: t.label.replace(/\s*\(.*\)$/, ""), value: t.fmt(f.latest), month: f.latestMonth ? shortMonth(f.latestMonth) : "", yoy: D(f.yoy) };
       })
     }));
-    const asOf = "Aug'26", compare = "Aug'26 vs Aug'25";
+    const asOf = "Sep'26", compare = "Sep'26 vs Sep'25";
     const issues = PRODUCTS.filter((p) => LOOKER[p]).map((p) => {
       const L = LOOKER[p], t = L.topIssues[0], worse = t.a25 != null && t.a26 > t.a25;
       const mv = (r) => ({ name: r.issue, text: `${r.delta > 0 ? "+" : ""}${r.delta.toLocaleString()} (${yoyPctText(r.a26, r.a25)})` });
