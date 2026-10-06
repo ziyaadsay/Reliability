@@ -96,7 +96,14 @@ const DATA = {
   },
   // "HSIA Fibre Line Repairs" tab: repairs coded severely degraded line as % of HSIA repairs
   hsiaFibreMonths: ["Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"],
-  hsiaFibrePct: [6.23,13.32,15.09,17.79,14.60,14.76,14.37,13.85,13.15,13.46,13.57,12.21,11.59,10.08,9.96]
+  hsiaFibrePct: [6.23,13.32,15.09,17.79,14.60,14.76,14.37,13.85,13.15,13.46,13.57,12.21,11.59,10.08,9.96],
+  // Voice of Customer (B2B), "Reliability B2B" rows, HSIA West TCS PLT Charter and Toolkit
+  // workbook, "HSIA West Scorecard" tab (rows 46-48, columns I:AO). Not yet posted for Sep 2026.
+  b2bVoC: {
+    HSIA: [20.0,19.9,18.6,16.7,17.5,18.4,20.2,17.7,18.1,18.1,18.2,16.5,21.0,20.0,20.0,19.0,20.0,20.0,20.0,20.0,null],
+    TV:   [24.0,25.0,22.0,21.0,23.0,24.0,23.0,23.0,20.0,21.0,25.0,21.0,23.0,22.0,23.0,25.0,22.0,22.0,23.0,22.0,null],
+    SHS:  [29.0,32.0,26.0,27.0,30.0,27.0,31.0,28.0,32.0,32.0,29.0,27.0,28.0,28.0,22.0,28.0,30.0,28.0,24.0,29.0,null]
+  }
 };
 
 // ---------------------------------------------------------------------------
@@ -589,7 +596,11 @@ function delta(curr, prev, unit, decimals, goodWhenDown = true) {
   const good = goodWhenDown ? diff <= 0 : diff >= 0;
   const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
   const mag = Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  return { text: `${arrow} ${mag}${unit}`, tone: flat ? "flat" : good ? "good" : "bad" };
+  // relative % change; scale-invariant, so it reads the same whether curr/prev are raw
+  // values or (as deltaBps passes in) a rate already multiplied by 100
+  const pct = prev ? (diff / Math.abs(prev)) * 100 : null;
+  const pctText = pct == null || flat ? "" : ` (${pct > 0 ? "+" : ""}${pct.toFixed(1)}%)`;
+  return { text: `${arrow} ${mag}${unit}${pctText}`, tone: flat ? "flat" : good ? "good" : "bad" };
 }
 
 // Percentage-point movements on rate KPIs are reported in basis points (1 pt = 100 bps)
@@ -1515,7 +1526,8 @@ export default function ReliabilityScorecards() {
       { icon: "tickets", label: "Ticket rate", data: DATA.ticketRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "churn", label: "Churn rate", data: DATA.churnRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
-      { icon: "base", label: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: false }
+      { icon: "base", label: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: false },
+      ...(DATA.b2bVoC[sc] ? [{ icon: "sentiment", label: "Voice of Customer (B2B)", data: DATA.b2bVoC[sc], fmt: fmtPct, dec: 1, color: colors[sc], goodDown: false }] : [])
     ];
   }
 
@@ -1771,6 +1783,20 @@ export default function ReliabilityScorecards() {
         ? `${label}, reliability improved in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} bps` : ""}.`
         : `${label}, the ${f.month} read is mixed: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps while the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps || 0)} bps.`;
 
+    const topIssuesText = (() => {
+      const yoy = (a26, a25) => (a25 ? sPct(((a26 - a25) / a25) * 100) : null);
+      if (sc === "All") {
+        const all = PRODUCTS.filter((p) => LOOKER[p] && LOOKER[p].topIssues.length)
+          .map((p) => ({ ...LOOKER[p].topIssues[0], p }));
+        all.sort((a, b) => b.a26 - a.a26);
+        if (!all.length) return null;
+        return all.slice(0, 3).map((t, idx) => `${idx + 1}. ${t.p} · ${t.issue} — ${t.a26.toLocaleString()} tickets${yoy(t.a26, t.a25) ? ` (${yoy(t.a26, t.a25)} YoY)` : ""}.`).join(" ");
+      }
+      const L = LOOKER[sc];
+      if (!L || !L.topIssues || !L.topIssues.length) return null;
+      return L.topIssues.slice(0, 3).map((t, idx) => `${idx + 1}. ${t.issue} — ${t.a26.toLocaleString()} tickets${yoy(t.a26, t.a25) ? ` (${yoy(t.a26, t.a25)} YoY)` : ""}.`).join(" ");
+    })();
+
     const block = (icon, title, text) => text ? (
       <div style={{ flex: 1, minWidth: 240, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>
@@ -1795,6 +1821,7 @@ export default function ReliabilityScorecards() {
           {block("tickets", "Tickets", tickets)}
           {block("repairs", "Repairs / dispatches", repairs)}
           {block("calls", "Calls", calls)}
+          {block("issues", `Top issues — ${LATEST_SHORT}`, topIssuesText)}
         </div>
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
           Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
@@ -2103,7 +2130,7 @@ export default function ReliabilityScorecards() {
                     </td>
                     <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
                       {cov.length ? (
-                        <span style={{ color: T.textSecondary }}>
+                        <span title={cov.map((c) => c.name).join("\n")} style={{ color: T.textSecondary, cursor: "help", borderBottom: `1px dotted ${T.textFaint}` }}>
                           <b style={{ color: T.heading }}>{cov.length}</b> — {cov.slice(0, 2).map((c) => c.name).join("; ")}{cov.length > 2 ? ` +${cov.length - 2} more` : ""}
                         </span>
                       ) : (
@@ -2403,7 +2430,7 @@ export default function ReliabilityScorecards() {
                 sub={`${dea.latestMonth} · Sweepr workflows`}
                 deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
             ] : null;
-            return <TileRow tiles={scopeTiles(scope)} deltaMode="yoy" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
+            return <TileRow tiles={scopeTiles(scope)} deltaMode="both" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
           })()}
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <div style={{ marginTop: 12 }}>
@@ -2523,15 +2550,14 @@ export default function ReliabilityScorecards() {
         {sec(`Health Read — ${latestLabel}`, "overview", MonthlyNarrative({ sc: product }))}
 
         {hasCalls && sec("Calls", "calls",
-          <ChartCard title={callsTitle} T={T}
+          <ChartCard title={`${callsTitle} — offered (bars) and answered (line)`} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
-            <LineChart labels={rangeMonths} seriesDefs={[
-              { key: product, label: "Offered", data: sliceR(callsOffered) },
-              { key: product, label: "Answered", data: sliceR(callsAnswered), dash: "7 5" }
-            ]} yFmt={fmtNum} colors={colors} T={T} />
+            <ComboChart labels={rangeMonths} T={T}
+              bar={{ label: "Offered", data: sliceR(callsOffered), color: colors[product], fmt: fmtNum }}
+              line={{ label: "Answered", data: sliceR(callsAnswered), color: colors[product], fmt: fmtNum }} />
             <Legend items={[
-              { label: "Offered", color: colors[product] },
-              { label: "Answered", color: colors[product], dash: true }
+              { label: "Offered (bars)", color: colors[product], bar: true },
+              { label: "Answered (line)", color: colors[product] }
             ]} T={T} />
             {openTables[product + "-calls"] && <DataTable labels={rangeMonths} seriesDefs={[
               { key: product, label: "Offered", data: sliceR(callsOffered) },
@@ -2633,6 +2659,15 @@ export default function ReliabilityScorecards() {
             note={`Churn runs behind the other indicators in the source (reported through ${CHURN_THRU}; Jan 2025 was never reported).`}>
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
             {openTables[product + "-ch"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+          </ChartCard>
+        )}
+
+        {DATA.b2bVoC[product] && sec("Voice of Customer (B2B)", "sentiment",
+          <ChartCard title="Reliability B2B score" T={T}
+            tableOpen={!!openTables[product + "-b2b"]} onToggleTable={() => toggleTable(product + "-b2b")}
+            note="HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab (Reliability B2B rows). Not yet posted for Sep 2026.">
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.b2bVoC[product]) }]} yFmt={(v) => fmtPct(v, 1)} colors={colors} T={T} />
+            {openTables[product + "-b2b"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.b2bVoC[product]) }]} fmt={(v) => fmtPct(v, 1)} T={T} />}
           </ChartCard>
         )}
 
