@@ -6,12 +6,12 @@ import React, { useState, useEffect, useRef } from "react";
 
   Sources:
   - "Reliability Deact KPIs" tab (main KPI table), Churn Measurement 2026
-    workbook. Reporting window Jan 2025 – Aug 2026; churn (go/national RGU)
-    reported through Jun 2026.
+    workbook (tab now named "ReliabilityDeact KPIs"). Reporting window
+    Jan 2025 – Sep 2026; churn (go/national RGU) reported through Aug 2026.
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
-    ticket counts by category, Jan 2025 – Aug 2026 (replaces the earlier
+    ticket counts by category, Jan 2025 – Sep 2026 (replaces the earlier
     Tableau DRD feed). For HSIA the category volumes come from the
-    "hsia_ticket_recategorization" tab (A9:U13: Looker ticket types rolled up
+    "hsia_ticket_recategorization" tab (A9:V13: Looker ticket types rolled up
     to customer pain points); the HSIA Looker tab is used for issue-level
     context only (top issues, risers/fallers, biggest monthly riser).
   - "Initiatives" tab, same workbook — HSIA, TV and SHS initiatives grouped
@@ -32,67 +32,75 @@ import React, { useState, useEffect, useRef } from "react";
 const MONTHS = [
   "Jan 2025","Feb 2025","Mar 2025","Apr 2025","May 2025","Jun 2025",
   "Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025",
-  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026"
+  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"
 ];
+// Latest reported month and its labels; the notes and survey analyses keep their own
+// window (Jun to Aug 2026) and say so on their pages.
+const LATEST = "Sep 2026", LATEST_PRIOR = "Sep 2025", LATEST_SHORT = "Sep'26", LATEST_PRIOR_SHORT = "Sep'25";
+const LATEST_YOY = `${LATEST_SHORT} vs ${LATEST_PRIOR_SHORT}`;
+const CHURN_THRU = "Aug 2026";
 
 const DATA = {
   callsOffered: {
-    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179],
-    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978],
-    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179,151541],
+    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978,56737],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   callsAnswered: {
-    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856],
-    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636],
-    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856,131589],
+    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636,52997],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   ticketRate: {
-    HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99,3.06],
-    TV:   [3.71,3.68,4.02,4.10,4.05,3.54,3.57,3.44,3.35,4.05,4.03,3.77,3.81,3.36,3.78,3.53,3.04,3.10,3.22,3.03],
-    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08],
-    "SH+": [null,null,null,null,null,null,3.30,3.12,2.83,2.81,2.58,2.97,2.95,3.20,3.42,2.86,2.37,3.16,2.77,2.22]
+    HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99,3.06,2.97],
+    TV:   [3.71,3.68,4.02,4.10,4.05,3.54,3.57,3.44,3.35,4.05,4.03,3.77,3.41,3.02,3.40,3.16,2.90,2.96,2.88,2.92,3.35],
+    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01],
+    "SH+": [null,null,null,null,null,null,3.30,3.12,2.83,2.81,2.58,2.97,2.95,3.20,3.42,2.86,2.37,3.16,2.77,2.22,null]
   },
   ticketVolume: {
-    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789],
-    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,34055],
-    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724],
-    "SH+": [null,null,null,null,null,null,748,783,757,789,782,958,1023,1143,1387,1234,1092,1558,1498,1322]
+    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789,56764],
+    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591],
+    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152],
+    "SH+": [null,null,null,null,null,null,748,783,757,789,782,958,1023,1143,1387,1234,1092,1558,1498,1322,null]
   },
   repairRate: {
-    HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91,0.79],
-    TV:   [0.21,0.17,0.22,0.20,0.18,0.15,0.16,0.15,0.16,0.19,0.18,0.17,0.16,0.15,0.17,0.20,0.18,0.13,0.16,0.12],
-    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39],
-    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.089]
+    HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91,0.79,0.83],
+    TV:   [0.21,0.17,0.22,0.20,0.18,0.15,0.16,0.15,0.16,0.19,0.18,0.17,0.16,0.15,0.17,0.18,0.17,0.13,0.14,0.12,0.15],
+    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42],
+    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.089,null]
   },
   repairVolume: {
-    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445,15082],
-    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390],
-    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653],
-    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53]
+    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445,15082,15798],
+    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390,1672],
+    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653,3884],
+    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,null]
   },
   churnRate: {
-    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,null,null],
-    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,null,null],
-    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,null,null],
-    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,null],
+    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,1.44,1.42,null],
+    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,1.44,1.42,null],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
-    HSIA: [1882545,1884654,1886869,1886034,1886940,1894103,1892708,1894469,1902829,1905345,1905574,1909753,1902859,1904760,1908112,1906873,1907916,1912608,1914753,1920616],
-    TV:   [1023254,1023001,1023592,1012348,1021021,1022003,1019316,1016784,1014448,1014746,1013761,1013837,1017435,1018970,1020171,1012595,1074046,1073827,1004848,1124369],
-    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508],
-    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,59600]
+    HSIA: [1882545,1884654,1886869,1886034,1886940,1894103,1892708,1894469,1902829,1905345,1905574,1909753,1902859,1904760,1908112,1906873,1907916,1912608,1914753,1920616,1914379],
+    TV:   [1023254,1023001,1023592,1012348,1021021,1022003,1019316,1016784,1014448,1014746,1013761,1013837,1134780,1133937,1133213,1130045,1127915,1126455,1125269,1124369,1121753],
+    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318],
+    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,59600,null]
   },
+  // "consolidated national results" rows of the KPI tab (2026 YTD vs 2025). HSIA is the
+  // West wired line, matching this dashboard's base; TV and SHS carry national lines only.
   annualChurn: {
-    HSIA: { y2026: 0.95, y2025: 1.13, yoyPts: -0.18 },
-    TV:   { y2026: 1.17, y2025: 1.36, yoyPts: -0.19 },
-    SHS:  { y2026: 1.37, y2025: 1.67, yoyPts: -0.30 }
+    HSIA: { y2026: 1.10, y2025: 1.15, yoyPts: -0.05 },
+    TV:   { y2026: 1.87, y2025: 1.51, yoyPts: 0.36 },
+    SHS:  { y2026: 1.39, y2025: 1.46, yoyPts: -0.07 }
   },
-  hsiaFibreMonths: ["Jun 2025","Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026"],
-  hsiaFibrePct: [4.51,6.13,12.92,15.12,18.85,15.42,16.19,15.50,15.07,14.11,14.56,13.31]
+  // "HSIA Fibre Line Repairs" tab: repairs coded severely degraded line as % of HSIA repairs
+  hsiaFibreMonths: ["Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"],
+  hsiaFibrePct: [6.23,13.32,15.09,17.79,14.60,14.76,14.37,13.85,13.15,13.46,13.57,12.21,11.59,10.08,9.96]
 };
 
 // ---------------------------------------------------------------------------
-// Looker ticket categories (workbook tabs, Jan 2025 – Aug 2026). Issues are
+// Looker ticket categories (workbook tabs, Jan 2025 – Sep 2026). Issues are
 // grouped by the five recurring issues from the cross-source synthesis
 // (Connectivity · TV · Speed · WiFi · Support); SHS device categories sit in
 // their own bucket, matching the synthesis note that SHS-specific issues are
@@ -110,96 +118,98 @@ const ISSUE_ORDER = ["Connectivity", "TV", "Speed", "WiFi", "Support", "SHS Hard
 
 const LOOKER = {
   HSIA: {
-    // Volume by customer pain point: hsia_ticket_recategorization tab (A9:U13),
-    // Jan 2025 – Aug 2026. The Looker tab below is kept for issue-level context only.
-    monthlyTotal: [41132,39847,45993,47181,48037,47358,50984,51281,49083,50410,51679,51903,52276,45642,48031,52495,55892,57273,57173,58789],
-    topCat: { name: "Connection Instability & Disconnects", series: [26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889] },
+    // Volume by customer pain point: hsia_ticket_recategorization tab (A9:V13),
+    // Jan 2025 – Sep 2026. The Looker tab below is kept for issue-level context only.
+    monthlyTotal: [41132,39847,45993,47181,48037,47358,50984,51281,49083,50410,51679,51903,52276,45642,48031,52495,55892,57273,57173,58789,56764],
+    topCat: { name: "Connection Instability & Disconnects", series: [26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889,33402] },
     catSource: "recategorization",
     topIssues: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305 },
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536 },
-      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6707, a25: 6525 },
-      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6521, a25: 5931 },
-      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5774, a25: 5334 },
-      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4522, a25: 4104 },
-      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4159, a25: 3591 },
-      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3283, a25: 2948 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614 },
+      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6792, a25: 5975 },
+      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6646, a25: 6269 },
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027 },
+      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5201, a25: 4764 },
+      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4274, a25: 3492 },
+      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4058, a25: 3774 },
+      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3158, a25: 2899 }
     ],
     rising: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13340, a25: 10305, delta: 3035 },
-      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2037, a25: 0, delta: 2037 },
-      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1522, a25: 0, delta: 1522 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614, delta: 3805 },
+      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2162, a25: 0, delta: 2162 },
+      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1379, a25: 0, delta: 1379 }
     ],
     falling: [
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 7216, a25: 8536, delta: -1320 },
-      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2611, a25: 3020, delta: -409 },
-      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1946, a25: 1949, delta: -3 }
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027, delta: -1575 },
+      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2616, a25: 3211, delta: -595 },
+      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1755, a25: 1911, delta: -156 }
     ]
   },
   TV: {
-    monthlyTotal: [38203,37850,41374,41718,41538,36431,36644,35205,34178,41446,41064,38433,38961,33097,32600,34609,30737,32173,31355,32801],
-    topCat: { name: "STB No Boot", series: [8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203] },
+    monthlyTotal: [38203,37850,41374,41718,41538,36431,36644,35205,34178,41446,41064,38433,38961,33097,32600,34609,30737,32173,31355,32801,37535],
+    topCat: { name: "STB No Boot", series: [8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8624] },
     topIssues: [
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920 },
-      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 4149, a25: 4283 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238 },
-      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2077, a25: 2310 },
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186 },
-      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1477, a25: 1283 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747 },
+      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3403, a25: 3537 },
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982 },
+      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2307, a25: 2103 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1926, a25: 1244 }
     ],
     rising: [
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2121, a25: 1238, delta: 883 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 1667, a25: 1186, delta: 481 },
-      { issue: "Recordings › Functionality", grp: "TV", a26: 516, a25: 280, delta: 236 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717, delta: 1518 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118, delta: 1025 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228, delta: 1022 }
     ],
     falling: [
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 1887, a25: 3738, delta: -1851 },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4250, a25: 5920, delta: -1670 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3119, a25: 3505, delta: -386 }
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982, delta: -2563 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747, delta: -997 },
+      { issue: "Apps › Netflix", grp: "Support", a26: 220, a25: 413, delta: -193 }
     ]
   },
   SHS: {
-    monthlyTotal: [35888,35833,43965,46504,45961,44223,50684,50121,48962,48838,44322,45432,43986,36977,34961,36722,34900,38993,40749,38702],
-    topCat: { name: "Main Panel", series: [6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273] },
+    monthlyTotal: [35888,35833,43965,46504,45961,44223,50684,50121,48962,48838,44322,45432,43986,36977,34961,36722,34900,38993,40749,38702,38221],
+    topCat: { name: "Main Panel", series: [6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273,7089] },
     topIssues: [
-      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985 },
-      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2126, a25: 2305 },
-      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2040, a25: 2217 },
-      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1807, a25: 2091 },
-      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1590, a25: 2280 },
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610 },
-      { issue: "Outdoor Camera › Wi-Fi connection", grp: "SHS Hardware", a26: 1110, a25: 1396 },
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672 }
+      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2223, a25: 2390 },
+      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2017, a25: 2177 },
+      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2005, a25: 2845 },
+      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1710, a25: 2188 },
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959 },
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646 }
     ],
     rising: [
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1103, a25: 672, delta: 431 },
-      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 860, a25: 616, delta: 244 },
-      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 967, a25: 728, delta: 239 }
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703, delta: 533 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646, delta: 407 },
+      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 1043, a25: 704, delta: 339 }
     ],
     falling: [
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1432, a25: 3610, delta: -2178 },
-      { issue: "CMS inquiry › Event history", grp: "Support", a26: 829, a25: 1666, delta: -837 },
-      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2155, a25: 2985, delta: -830 }
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501, delta: -2010 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959, delta: -1547 },
+      { issue: "CMS inquiry › Event history", grp: "Support", a26: 783, a25: 1704, delta: -921 }
     ]
   }
 };
 // HSIA: hsia_ticket_recategorization pain points (Connection Instability & Disconnects → Connectivity,
 // Slow Speeds → Speed, WiFi Coverage Gaps → WiFi, Other → Support). TV/SHS: Looker Category 1 groups.
+// Values are [Sep 2026, Sep 2025]. TV Support = Apps + Abandon + Mobile App; SHS Support =
+// Mobile App Self-Serve + CMS inquiry + Abandon + Webpage Portal Self-Serve + Repair appointment.
 const OVERVIEW_ISSUES = [
-  { grp: "Connectivity", HSIA: [34889, 33263], TV: null, SHS: null },
-  { grp: "TV", HSIA: null, TV: [30980, 33224], SHS: null },
-  { grp: "Speed", HSIA: [13094, 8723], TV: null, SHS: null },
-  { grp: "WiFi", HSIA: [9880, 8825], TV: null, SHS: null },
-  { grp: "Support", HSIA: [926, 470], TV: [1821, 1981], SHS: [6108, 9715] },
-  { grp: "SHS Hardware", HSIA: null, TV: null, SHS: [32594, 40406] }
+  { grp: "Connectivity", HSIA: [33402, 31698], TV: null, SHS: null },
+  { grp: "TV", HSIA: null, TV: [35849, 32391], SHS: null },
+  { grp: "Speed", HSIA: [13190, 8710], TV: null, SHS: null },
+  { grp: "WiFi", HSIA: [9417, 8193], TV: null, SHS: null },
+  { grp: "Support", HSIA: [755, 482], TV: [1686, 1787], SHS: [5410, 10625] },
+  { grp: "SHS Hardware", HSIA: null, TV: null, SHS: [32811, 38337] }
 ];
 // Category stacks: HSIA uses the four customer pain points from the hsia_ticket_recategorization
-// tab; TV and SHS use the Looker Category 1 groups (top 5 by Aug 2026 + other). Risers are the biggest
+// tab; TV and SHS use the Looker Category 1 groups (top 5 by Sep 2026 + other). Risers are the biggest
 // month-over-month percentage riser among Looker Category 1 › 2 issues with at least 100 tickets in
 // the prior month (2026); for HSIA these remain Looker context.
-const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7748,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12854,13302,12813,13094]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10705,9470,9365,10018,10061,10583,10058,9880]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,813,917,1034,926]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5014,5998,5978,5236,6260,5393,5360,5394,4255,4074,4673,4676]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5208,6248,8295,7488,7572,6369,6136,6286,5546,5760,5813,6305]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103}}}};
+const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889,33402]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7748,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12854,13302,12813,13094,13190]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10705,9470,9365,10018,10061,10583,10058,9880,9417]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,813,917,1034,926,755]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037},"Sep 2026":{"issue":"Incompatible Equipment › Incompatible","pct":6.1,"from":2037,"to":2162}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8624]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6740,7559]},{"name":"Recording Issues","series":[6674,6508,7897,7251,6668,5351,5449,5034,5008,5988,5973,5227,6249,5386,5352,5389,4249,4068,4673,4675,5116]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4723,4647,5286,6400,7885,7189,6630,5494,4293,3903,3950,3699,4335,3806,4373,4923]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504,4559]},{"name":"Other categories","series":[6276,6580,7141,7145,7396,6073,6259,5784,5214,6258,8300,7497,7583,6376,6144,6291,5552,5766,5813,6306,6754]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159},"Sep 2026":{"issue":"Channel Issues › Channel Not Working","pct":35.0,"from":1667,"to":2250}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273,7089]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588,4819]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324,4715]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034,4555]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643,3820]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21339,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840,13223]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103},"Sep 2026":{"issue":"Smart thermostat › Troubleshoot","pct":67.6,"from":145,"to":243}}}};
 Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], x));
 
 // ---------------------------------------------------------------------------
@@ -359,7 +369,8 @@ const INITIATIVES = [
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // Self-serve customer workflows (Sweepr) — HSIA West Scorecard workbook, rows 49-55.
-// Arrays align with MONTHS (Jan 2025 – Aug 2026). a = actuals; t = 2026 monthly targets
+// Arrays align with MONTHS (Jan 2025 – Sep 2026). a = actuals; t = 2026 monthly targets.
+// September 2026 actuals were not yet posted in the source at the time of the pull (only CX Easy).
 // (the source sets targets for 2026 only; churn impact and deacts saved carry no target).
 // Rates are percentages; cxEasy is a score (target 4.0); cxSent is comment sentiment
 // (negative scale, target -0.50, less negative is better).
@@ -377,38 +388,39 @@ const HSS = {"months":["Jun 2026","Jul 2026","Aug 2026"],"respondents":[1914,193
 
 const SWEEPR = {
   resolved: {
-    a: [40266, 39898, 43490, 46000, 44336, 47147, 43423, 44346, 51674, 56387, 52820, 50953, 50356, 42781, 53889, 41283, 43179, 45867, 45891, 49069],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, 47551, 47439, 47595, 46384, 45971, 45988, 45989, 45987]
+    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,47551,47439,47595,46384,45971,45988,45989,45987,46075]
   },
   webAppRate: {
-    a: [58.1, 59.5, 59.2, 59.1, 58.7, 59.9, 56.3, 61.3, 52.9, 54.4, 56.8, 54.0, 59.6, 61.3, 64.2, 61.1, 64.2, 63.8, 63.5, 64.1],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, 59.4, 59.7, 60.1, 60.4, 60.7, 61.0, 61.4, 61.7]
+    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,59.4,59.7,60.1,60.4,60.7,61.0,61.4,61.7,62.0]
   },
   ivrRate: {
-    a: [null, null, null, null, null, null, null, null, null, null, null, null, 13.9, 12.7, 12.5, 12.4, null, null, null, null],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,13.9,12.7,12.5,12.4,null,null,null,null,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0]
   },
   cxEasy: {
-    a: [null, null, null, null, null, null, null, null, null, 3.29, 3.35, 3.43, 3.43, 3.49, 3.45, 3.51, 3.45, 3.49, 3.48, 3.44],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]
+    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.49],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00]
   },
   cxSent: {
-    a: [null, null, null, null, null, null, null, null, null, -0.68, -0.66, -0.55, -0.61, -0.57, -0.63, -0.64, -0.61, -0.58, -0.64, -0.67],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5]
+    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50]
   },
   churn: {
-    a: [null, null, null, null, null, null, null, null, null, null, null, null, 2.25, 2.34, 1.93, 1.96, 1.89, 1.81, 1.81, 1.81],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,2.25,2.34,1.93,1.96,1.89,1.81,1.81,1.81,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   deacts: {
-    a: [null, null, null, null, null, null, null, null, null, null, null, null, 749, 742, 691, 879, 716, 845, 881, 899],
-    t: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,749,742,691,879,716,845,881,883,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   }
 };
 
 // ---------------------------------------------------------------------------
 // FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
-// Arrays align with MONTHS (Jan 2025 – Aug 2026).
+// Arrays align with MONTHS (Jan 2025 – Sep 2026); the whole series is re-read each month
+// because the source restates earlier months.
 // HSIA = every field containing "HSIA" (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA).
 // TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
 // These series also drive the overview scorecard's call rows and the derived
@@ -417,18 +429,18 @@ const SWEEPR = {
 // ---------------------------------------------------------------------------
 const CALLS_SPLIT = {
   HSIA: {
-    offered:  [71682, 62931, 62987, 62533, 65485, 65903, 70864, 75668, 87327, 80838, 74636, 79127, 74019, 61328, 77629, 73862, 83488, 87411, 92079, 93496],
-    answered: [62721, 53784, 58862, 58588, 59487, 60466, 65898, 65375, 61542, 56697, 62221, 62803, 63365, 57406, 69218, 66333, 75192, 78792, 80390, 78374]
+    offered:  [71683,62931,62986,62532,65485,65903,70866,75667,87327,80838,74636,79126,73968,61292,77567,73609,82934,87199,91756,92975,85329],
+    answered: [62721,53784,58863,58588,59488,60466,65899,65376,61542,56698,62221,62803,63318,57377,69168,66119,74837,78649,80243,78238,74993]
   },
   TV: {
-    offered:  [70986, 63302, 60180, 57649, 60110, 53867, 53371, 55743, 64459, 73649, 65301, 65045, 60826, 48557, 56815, 52649, 49389, 50181, 51497, 53370],
-    answered: [62745, 54822, 55965, 53508, 54033, 48853, 49214, 47720, 45778, 52570, 55079, 52475, 52737, 45730, 51223, 47806, 44898, 45464, 45329, 45193]
+    offered:  [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53102,58357],
+    answered: [62745,54821,55965,53508,54032,48853,49214,47720,45777,52571,55079,52475,52707,45712,51195,47674,44732,45382,45249,45127,51607]
   }
 };
 
 // ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
-// Arrays align with MONTHS (Jan 2025 – Aug 2026).
+// Arrays align with MONTHS (Jan 2025 – Sep 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
 //   (Optik TV (Legacy) = Legacy; TV Evolution = OPUS).
 // Repairs & base: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
@@ -436,23 +448,23 @@ const CALLS_SPLIT = {
 //   The source reports the split for 2026 onward only (2025 = null).
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
-//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; September is excluded
-//   as a partial month at the time of the pull.
+//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September pull was not yet available from the
+//   dashboard at the time of this update.
 // ---------------------------------------------------------------------------
 const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
-    tickets: [28724, 28040, 30652, 30984, 31535, 26335, 26637, 24474, 22010, 26283, 25560, 24547, 26833, 23176, 23159, 23715, 20858, 20917, 21489, 22123],
-    repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 1581, 1418, 1590, 1663, 1605, 1105, 1263, 1240],
-    base: [null, null, null, null, null, null, null, null, null, null, null, null, 821723, 816290, 811279, 798308, 788806, 784491, 761917, 744256],
-    swaps2026: [null, null, null, null, null, null, null, null, null, null, null, null, 2003, 1686, 1764, 1443, 1178, 977, 698, 596]
+    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775],
+    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468],
+    base: [null,null,null,null,null,null,null,null,null,null,null,null,821951,816639,811821,799110,790134,786450,765908,754891,741611],
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
-    tickets: [9480, 9810, 10722, 10734, 10003, 10096, 10007, 10731, 12168, 15164, 15504, 13886, 12128, 9921, 9441, 10894, 9879, 11256, 9867, 10678],
-    repairs: [null, null, null, null, null, null, null, null, null, null, null, null, 307, 310, 329, 330, 336, 307, 309, 305],
-    base: [null, null, null, null, null, null, null, null, null, null, null, null, 313057, 317647, 321934, 331737, 339109, 341964, 363352, 380113],
-    swaps2026: [null, null, null, null, null, null, null, null, null, null, null, null, 1352, 1141, 1080, 954, 701, 727, 231, 226]
+    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760],
+    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390],
+    base: [null,null,null,null,null,null,null,null,null,null,null,null,313057,317647,321934,331737,339109,341964,359647,367866,380142],
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null]
   }
 ];
 // Per-platform rates derived where both volume and base are reported
@@ -1545,7 +1557,7 @@ export default function ReliabilityScorecards() {
             <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, background: T.panel, border: `1px solid ${T.border}`, borderLeft: `3px solid ${colors[p]}`, borderRadius: 10, padding: "10px 14px" }}>
               <span style={{ color: colors[p], display: "inline-flex", marginTop: 2 }}><Icon name={PRODUCT_ICON[p]} size={15} /></span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{p} · top ticket issue — Aug'26</div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{p} · top ticket issue — {LATEST_SHORT}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: T.textSecondary, marginTop: 2 }}>{t.issue}</div>
                 <div style={{ fontSize: 12, color: T.textMuted, marginTop: 2 }}>
                   {t.a26.toLocaleString()} tickets
@@ -1628,7 +1640,7 @@ export default function ReliabilityScorecards() {
   // ------------------------------ health read (monthly narrative) ------------------------------
   // Plain-language read of the month at the end of the selected range: calls,
   // tickets and repairs, with the single biggest reason the trend points the way
-  // it does. Churn is left out until the churn model refresh (last reported Jun 2026).
+  // it does. Churn is left out until the churn model refresh (it runs a month behind).
   const NOTES_ANALYSIS = { HSIA: HSA, TV: TVA };
   function narrativeFacts(sc) {
     const i = toIdx;
@@ -1785,7 +1797,7 @@ export default function ReliabilityScorecards() {
           {block("calls", "Calls", calls)}
         </div>
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
-          Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported Jun 2026).
+          Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
         </p>
       </div>
     );
@@ -1806,9 +1818,9 @@ export default function ReliabilityScorecards() {
           <thead>
             <tr>
               <th style={{ ...thBase, textAlign: "left" }}>Recurring issue</th>
-              {prods.map((p) => <th key={p} style={{ ...thBase, textAlign: "right" }}>{p} · Aug'26</th>)}
-              <th style={{ ...thBase, textAlign: "right" }}>Total · Aug'26</th>
-              <th style={{ ...thBase, textAlign: "right" }}>YoY (vs Aug'25)</th>
+              {prods.map((p) => <th key={p} style={{ ...thBase, textAlign: "right" }}>{p} · {LATEST_SHORT}</th>)}
+              <th style={{ ...thBase, textAlign: "right" }}>Total · {LATEST_SHORT}</th>
+              <th style={{ ...thBase, textAlign: "right" }}>YoY (vs {LATEST_PRIOR_SHORT})</th>
             </tr>
           </thead>
           <tbody>
@@ -2046,10 +2058,10 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>
-          {moverCard("Top rising issues · Aug'26 vs Aug'25", L.rising, "up")}
-          {moverCard("Top falling issues · Aug'26 vs Aug'25", L.falling, "down")}
+          {moverCard(`Top rising issues · ${LATEST_YOY}`, L.rising, "up")}
+          {moverCard(`Top falling issues · ${LATEST_YOY}`, L.falling, "down")}
         </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Top issues by ticket volume — Aug 2026</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Top issues by ticket volume — {LATEST}</div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -2057,7 +2069,7 @@ export default function ReliabilityScorecards() {
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Issue (Category › Sub-category)</th>
                 {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
-                <th style={{ ...thBase, textAlign: "right" }}>Aug'26</th>
+                <th style={{ ...thBase, textAlign: "right" }}>{LATEST_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
@@ -2116,7 +2128,7 @@ export default function ReliabilityScorecards() {
           </div>
         )}
         <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>
-          Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares Aug 2026 against Aug 2025.
+          Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares {LATEST} against {LATEST_PRIOR}.
         </p></Disclosure>
       </>
     );
@@ -2174,7 +2186,7 @@ export default function ReliabilityScorecards() {
           })}
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "10px 2px 16px", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate above. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; September is excluded as a partial month.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate above. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
         <ChartCard title="Ticket volume by platform" T={T}
           tableOpen={!!openTables["tvp-tk"]} onToggleTable={() => toggleTable("tvp-tk")}>
@@ -2421,7 +2433,7 @@ export default function ReliabilityScorecards() {
           </p></Disclosure>
         </Section>
 
-        <Section num="04" eyebrow="Ticket analysis" title="Tickets by recurring issue — Aug 2026" icon="issues" T={T} collapsible>
+        <Section num="04" eyebrow="Ticket analysis" title={`Tickets by recurring issue — ${LATEST}`} icon="issues" T={T} collapsible>
           <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
             Ticket counts grouped by the five recurring issues from the cross-source reliability synthesis (perception study, VOC, onboarding, CCTS, OpenSignal and ticket/repair analysis). HSIA counts are the customer pain points from the workbook's hsia_ticket_recategorization tab (its Other group, abandoned and uncategorised tickets, sits in the Support row); TV and SHS use the Looker ticket categories. SHS device categories sit outside the 5-issue framework, matching the synthesis. A falling count (▼, green) is favourable.
           </p></Disclosure>
@@ -2559,7 +2571,7 @@ export default function ReliabilityScorecards() {
                 tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
                 note={L.catSource === "recategorization"
                   ? `hsia_ticket_recategorization tab, Churn Measurement 2026 workbook. Looker ticket types rolled up to customer pain points: Connection Instability & Disconnects (can't connect, no data flow, losing sync, no IP, no sync, ONT not ranged), Slow Speeds (wireless and wired slow speeds, incompatible equipment), WiFi Coverage Gaps (wireless disconnects, wireless can't connect) and Other. ${L.topCat.name} sits at the base of each bar.`
-                  : `Looker ticket categories, Churn Measurement 2026 workbook. Bars stack the five largest Category 1 groups (by Aug 2026 volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar.`}>
+                  : `Looker ticket categories, Churn Measurement 2026 workbook. Bars stack the five largest Category 1 groups (by ${LATEST} volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar.`}>
                 {(() => {
                   const shades = [1, 0.72, 0.52, 0.38, 0.26];
                   const stacks = L.cats.map((c, ci) => /^Other/.test(c.name)
@@ -2618,7 +2630,7 @@ export default function ReliabilityScorecards() {
         {product !== "SH+" && sec("Churn", "churn",
           <ChartCard title="Churn rate (go/national RGU)" T={T}
             tableOpen={!!openTables[product + "-ch"]} onToggleTable={() => toggleTable(product + "-ch")}
-            note="Churn runs behind the other indicators in the source (reported through Jun 2026; Jan 2025 was never reported).">
+            note={`Churn runs behind the other indicators in the source (reported through ${CHURN_THRU}; Jan 2025 was never reported).`}>
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
             {openTables[product + "-ch"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
           </ChartCard>
@@ -3962,7 +3974,7 @@ export default function ReliabilityScorecards() {
         return { label: t.label.replace(/\s*\(.*\)$/, ""), value: t.fmt(f.latest), month: f.latestMonth ? shortMonth(f.latestMonth) : "", yoy: D(f.yoy) };
       })
     }));
-    const asOf = "Aug'26", compare = "Aug'26 vs Aug'25";
+    const asOf = LATEST_SHORT, compare = LATEST_YOY;
     const issues = PRODUCTS.filter((p) => LOOKER[p]).map((p) => {
       const L = LOOKER[p], t = L.topIssues[0], worse = t.a25 != null && t.a26 > t.a25;
       const mv = (r) => ({ name: r.issue, text: `${r.delta > 0 ? "+" : ""}${r.delta.toLocaleString()} (${yoyPctText(r.a26, r.a25)})` });
@@ -4176,7 +4188,7 @@ export default function ReliabilityScorecards() {
           ))}
         </div>
         <Disclosure label="How to use these slides" T={T}><p style={{ fontSize: 12.5, color: T.textFaint, margin: "14px 2px 0", lineHeight: 1.6 }}>
-          Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of Aug 2026 (the HSIA trend line uses the recategorized customer pain points). The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
+          Scroll sideways, use the arrows or the ← → keys to move between slides. Slides follow the end of the selected date range ({deck.month}); the top-issue slide uses the Looker ticket categories as of {LATEST} (the HSIA trend line uses the recategorized customer pain points). The .pptx opens in Google Slides (upload it to Drive and open, or use File › Import slides) and in PowerPoint; the PDF option uses the browser print dialog, where you choose Save as PDF.
         </p></Disclosure>
       </>
     );
@@ -4279,7 +4291,7 @@ export default function ReliabilityScorecards() {
                   ? "SH+: tickets, repairs/dispatches, base (from Jul 2025)"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives`}</span>
             <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
-            <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: Jun 2026)</span>
+            <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>
           </div>
 
           {/* filters */}
