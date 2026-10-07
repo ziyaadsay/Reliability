@@ -129,76 +129,77 @@ const LOOKER = {
   HSIA: {
     // Volume by customer pain point: hsia_ticket_recategorization tab (A9:V13),
     // Jan 2025 – Sep 2026. The Looker tab below is kept for issue-level context only.
+    // Issue rows: a26 = Sep 2026, a25 = Sep 2025, prev = Aug 2026 (Looker Ticket Categories tabs).
     monthlyTotal: [41132,39847,45993,47181,48037,47358,50984,51281,49083,50410,51679,51903,52276,45642,48031,52495,55892,57273,57173,58789,56764],
     topCat: { name: "Connection Instability & Disconnects", series: [26791,25602,29215,30068,31235,30631,33203,33263,31698,31839,31559,30713,28745,25000,26958,29916,32164,32471,33268,34889,33402] },
     catSource: "recategorization",
     topIssues: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614 },
-      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6792, a25: 5975 },
-      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6646, a25: 6269 },
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027 },
-      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5201, a25: 4764 },
-      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4274, a25: 3492 },
-      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4058, a25: 3774 },
-      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3158, a25: 2899 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614, prev: 13340 },
+      { issue: "Connectivity › Slow Speeds", grp: "Speed", a26: 6792, a25: 5975, prev: 6521 },
+      { issue: "Connectivity › Losing Sync", grp: "Connectivity", a26: 6646, a25: 6269, prev: 6707 },
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027, prev: 7216 },
+      { issue: "Wireless › Can't Connect", grp: "WiFi", a26: 5201, a25: 4764, prev: 5774 },
+      { issue: "Wireless › Disconnects", grp: "WiFi", a26: 4274, a25: 3492, prev: 4159 },
+      { issue: "Connectivity › No Sync", grp: "Connectivity", a26: 4058, a25: 3774, prev: 4522 },
+      { issue: "Wireless › Slow Speeds", grp: "Speed", a26: 3158, a25: 2899, prev: 3283 }
     ],
     rising: [
-      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614, delta: 3805 },
-      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2162, a25: 0, delta: 2162 },
-      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1379, a25: 0, delta: 1379 }
+      { issue: "Connectivity › No Dataflow", grp: "Connectivity", a26: 13419, a25: 9614, prev: 13340, delta: 3805 },
+      { issue: "Incompatible Equipment › Incompatible", grp: "Speed", a26: 2162, a25: 0, prev: 2037, delta: 2162 },
+      { issue: "Connectivity › Incompatible Equipment", grp: "Speed", a26: 1379, a25: 0, prev: 1522, delta: 1379 }
     ],
     falling: [
-      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027, delta: -1575 },
-      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2616, a25: 3211, delta: -595 },
-      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1755, a25: 1911, delta: -156 }
+      { issue: "Connectivity › ONT Not Ranged", grp: "Connectivity", a26: 6452, a25: 8027, prev: 7216, delta: -1575 },
+      { issue: "Connectivity › Historical Data", grp: "Connectivity", a26: 2616, a25: 3211, prev: 2611, delta: -595 },
+      { issue: "Connectivity › No IP", grp: "Connectivity", a26: 1755, a25: 1911, prev: 1946, delta: -156 }
     ]
   },
   TV: {
     monthlyTotal: [38203,37850,41374,41718,41538,36431,36644,35205,34178,41446,41064,38433,38961,33097,32600,34609,30737,32173,31355,32801,37535],
     topCat: { name: "STB No Boot", series: [8480,7806,8505,8568,8455,8005,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8624] },
     topIssues: [
-      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717 },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747 },
-      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3403, a25: 3537 },
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982 },
-      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2307, a25: 2103 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118 },
-      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1926, a25: 1244 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717, prev: 4149 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747, prev: 4250 },
+      { issue: "Recording Issues › Cannot Set Recordings", grp: "TV", a26: 3403, a25: 3537, prev: 3119 },
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982, prev: 1887 },
+      { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2307, a25: 2103, prev: 2077 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228, prev: 1667 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118, prev: 2121 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 1926, a25: 1244, prev: 1477 }
     ],
     rising: [
-      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717, delta: 1518 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118, delta: 1025 },
-      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228, delta: 1022 }
+      { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5235, a25: 3717, prev: 4149, delta: 1518 },
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2143, a25: 1118, prev: 2121, delta: 1025 },
+      { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2250, a25: 1228, prev: 1667, delta: 1022 }
     ],
     falling: [
-      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982, delta: -2563 },
-      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747, delta: -997 },
-      { issue: "Apps › Netflix", grp: "Support", a26: 220, a25: 413, delta: -193 }
+      { issue: "Digital Box › No Boot", grp: "TV", a26: 2419, a25: 4982, prev: 1887, delta: -2563 },
+      { issue: "Video Issues › No Video", grp: "TV", a26: 4750, a25: 5747, prev: 4250, delta: -997 },
+      { issue: "Apps › Netflix", grp: "Support", a26: 220, a25: 413, prev: 248, delta: -193 }
     ]
   },
   SHS: {
     monthlyTotal: [35888,35833,43965,46504,45961,44223,50684,50121,48962,48838,44322,45432,43986,36977,34961,36722,34900,38993,40749,38702,38221],
     topCat: { name: "Main Panel", series: [6940,6526,8168,8443,8119,7973,9412,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273,7089] },
     topIssues: [
-      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2223, a25: 2390 },
-      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2017, a25: 2177 },
-      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2005, a25: 2845 },
-      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1710, a25: 2188 },
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501 },
-      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959 },
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703 },
-      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646 }
+      { issue: "Door/Window Sensor › Troubleshoot", grp: "SHS Hardware", a26: 2223, a25: 2390, prev: 2126 },
+      { issue: "Smoke Detector › Troubleshoot", grp: "SHS Hardware", a26: 2017, a25: 2177, prev: 2040 },
+      { issue: "Main Panel › Education", grp: "SHS Hardware", a26: 2005, a25: 2845, prev: 2155 },
+      { issue: "Main Panel › Panel status", grp: "SHS Hardware", a26: 1710, a25: 2188, prev: 1590 },
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501, prev: 1432 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959, prev: 1807 },
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703, prev: 1103 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646, prev: 860 }
     ],
     rising: [
-      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703, delta: 533 },
-      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646, delta: 407 },
-      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 1043, a25: 704, delta: 339 }
+      { issue: "Smoke Detector › Power issues", grp: "SHS Hardware", a26: 1236, a25: 703, prev: 1103, delta: 533 },
+      { issue: "Door/Window Sensor › Power issues", grp: "SHS Hardware", a26: 1053, a25: 646, prev: 860, delta: 407 },
+      { issue: "Smoke Detector › Education", grp: "SHS Hardware", a26: 1043, a25: 704, prev: 967, delta: 339 }
     ],
     falling: [
-      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501, delta: -2010 },
-      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959, delta: -1547 },
-      { issue: "CMS inquiry › Event history", grp: "Support", a26: 783, a25: 1704, delta: -921 }
+      { issue: "Legacy Equipment › Legacy equipment support", grp: "SHS Hardware", a26: 1491, a25: 3501, prev: 1432, delta: -2010 },
+      { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1412, a25: 2959, prev: 1807, delta: -1547 },
+      { issue: "CMS inquiry › Event history", grp: "Support", a26: 783, a25: 1704, prev: 829, delta: -921 }
     ]
   }
 };
@@ -236,67 +237,71 @@ const PILLARS = [
 
 const INITIATIVES = [
   // ------------------------- HSIA -------------------------
-  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "Cloudcheck Fine Tuning", status: "Launched", timeline: "Aug 2026", prime: "A. Schmidt", issues: ["WiFi"],
+  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "Cloudcheck Fine Tuning", status: "Launched", timeline: "Aug 2026", prime: "A. Schmidt", impact: "M", issues: ["WiFi"],
     desc: "Improves the CloudCheck Wi-Fi QoE score's ability to accurately detect customers experiencing Wi-Fi degradation." },
-  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "CloudCheck Speed Test Server Capacity", status: "In flight", timeline: "Sep 2026", prime: "J. Thompson", issues: ["WiFi", "Speed"],
+  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "CloudCheck Speed Test Server Capacity", status: "In flight", timeline: "Sep 2026", prime: "J. Thompson", impact: "L", issues: ["WiFi", "Speed"],
     desc: "Raises speed-test server capacity to 1.5 Gbps and improves accuracy in the SmartHome+ app and agent test tools." },
-  { p: "HSIA", pillar: 1, theme: "Speed & equipment", name: "Cloudcheck Server Upgrades & Speed Test Improvements", status: "In flight", timeline: "Oct 2026", prime: "J. Thompson", issues: ["Speed"],
+  { p: "HSIA", pillar: 1, theme: "Speed & equipment", name: "Cloudcheck Server Upgrades & Speed Test Improvements", status: "In flight", timeline: "Oct 2026", prime: "J. Thompson", impact: "L", issues: ["Speed"],
     desc: "Major and minor CloudCheck server upgrades improving the accuracy of speed-test capabilities." },
-  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Severely Degraded from the OLT", status: "In flight", timeline: "Sep 2026", prime: "Z. Sayhebolay", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Severely Degraded from the OLT", status: "In flight", timeline: "Sep 2026", prime: "Z. Sayhebolay", impact: "L", issues: ["Connectivity"],
     desc: "Integrates 24-hour OLT severely-degraded status into Fibre Check to resolve chronic line drops." },
-  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "HSIA Churn Prediction (LLM Model)", status: "In flight", timeline: "Feb 2026", prime: "I. Kochergin", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "HSIA Churn Prediction (LLM Model)", status: "In flight", timeline: "Feb 2026", prime: "I. Kochergin", impact: "M", issues: ["Connectivity"],
     desc: "LLM-powered predictive churn scoring combining network telemetry and customer ticket patterns." },
-  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "GPONe Geographic Analysis & Infrastructure Optimization", status: "In flight", timeline: "Jun 2026 pilot", prime: "D. Wright / Soheila / Errol", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "GPONe Geographic Analysis & Infrastructure Optimization", status: "In flight", timeline: "Jun 2026 pilot", prime: "D. Wright / Soheila / Errol", impact: "M", issues: ["Connectivity"],
     desc: "Clustering analysis of OLT/FDH degradation hotspots to guide preventive outside-plant repairs." },
-  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Bit Errors & Critical Alarms", status: "Ideation", timeline: "2027 capital", prime: "Z. Sayhebolay", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Bit Errors & Critical Alarms", status: "Ideation", timeline: "2027 capital", prime: "Z. Sayhebolay", impact: "M", issues: ["Connectivity"],
     desc: "Incorporates physical bit errors and critical optical telemetry alarms into Fibre Check diagnostics." },
-  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "Fibre Check Visual — Wi-Fi CC Recommendations", status: "Ideation", timeline: "2027 capital", prime: "Z. Sayhebolay", issues: ["WiFi"],
+  { p: "HSIA", pillar: 1, theme: "Wi-Fi", name: "Fibre Check Visual — Wi-Fi CC Recommendations", status: "Ideation", timeline: "2027 capital", prime: "Z. Sayhebolay", impact: "M", issues: ["WiFi"],
     desc: "Integrates Wi-Fi Coverage & Connectivity Index guidance directly into the Fibre Check portal." },
   { p: "HSIA", pillar: 1, theme: "Speed & equipment", name: "Enhanced Speed Test up to 10 Gbps", status: "Ideation", timeline: "2027 capital", prime: "J. Thompson", issues: ["Speed"],
     desc: "New speed-test capability to complete and prove 10 Gbps speed delivery." },
-  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "Fix Auto Channel Disabled — Firmware", status: "In flight", timeline: "Jun 2026", prime: "Rooshil", issues: ["WiFi"],
+  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "Fix Auto Channel Disabled — Firmware", status: "In flight", timeline: "Jun 2026", prime: "Rooshil", impact: "L", issues: ["WiFi"],
     desc: "Firmware remediation for the Arcadyan Boost Wi-Fi 6 auto-channel disabling defect." },
-  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "SH+ App Migration for Internet Management", status: "In flight", timeline: "Jul 2026", prime: "A. Dhanani", issues: ["WiFi", "Support"],
+  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "SH+ App Migration for Internet Management", status: "In flight", timeline: "Jul 2026", prime: "A. Dhanani", impact: "L", issues: ["WiFi", "Support"],
     desc: "Customer self-serve tools in the SH+ app for outage alerts, Wi-Fi management and password resets." },
-  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "HSIA Legacy Hardware Upgrades", status: "Ideation", timeline: "2027 capital", prime: "Not resourced", issues: ["WiFi", "Speed"],
+  { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "HSIA Legacy Hardware Upgrades", status: "Ideation", timeline: "2027 capital", prime: "Not resourced", impact: "L", issues: ["WiFi", "Speed"],
     desc: "Targeted hardware replacement program migrating legacy Wi-Fi extenders to Wi-Fi 6 hardware." },
   { p: "HSIA", pillar: 2, theme: "Wi-Fi", name: "Wi-Fi Problematic Device Mitigation", status: "Ideation", timeline: "—", prime: "Not resourced", issues: ["WiFi"],
     desc: "Targeted telemetry investigations and firmware adjustments addressing the top ten troubled Wi-Fi devices." },
-  { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "3 Gig Upgrade on TELUS.com", status: "Launched", timeline: "Aug 2026", prime: "D. Evans", issues: ["Speed"],
+  { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "3 Gig Upgrade on TELUS.com", status: "Launched", timeline: "Aug 2026", prime: "D. Evans", impact: "L", issues: ["Speed"],
     desc: "System fix ensuring 3Gbps web orders trigger fielded XGSPON port swaps instead of software-only drops." },
-  { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "DIY Revamp Live ONT Check", status: "In flight", timeline: "Nov 2026", prime: "D. Wearmouth", issues: ["Speed", "Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "DIY Revamp Live ONT Check", status: "In flight", timeline: "Nov 2026", prime: "D. Wearmouth", impact: "H", issues: ["Speed", "Connectivity"],
     desc: "Automated removal of the Quick Connect flag when no optical light is observed for 7 consecutive days." },
   { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "Speed Upgrade No Charge", status: "Ideation", timeline: "—", prime: "TBD", issues: ["Speed"],
     desc: "Software speed-upgrade program for congested cohorts to defend against competitor churn." },
   { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "XGSPON Light Requirements Enhancement", status: "Stalled", timeline: "Jul 2026", prime: "A. Broten", issues: ["Connectivity"],
     desc: "Refines optical-loss thresholds for XGSPON based on cable distance and bends." },
-  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "NGMR Build Quality Assurance", status: "Ideation", timeline: "—", prime: "A. Broten", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "NGMR Build Quality Assurance", status: "Ideation", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
     desc: "Re-establishes suite-level optical attenuation QA standards for new growth-market builds." },
-  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "Professional Installs at Degraded-Fibre Addresses", status: "Ideation", timeline: "—", prime: "A. Broten", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "Professional Installs at Degraded-Fibre Addresses", status: "Ideation", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
     desc: "Enforces professional technician installs and move orders at addresses identified with severely degraded fibre." },
-  { p: "HSIA", pillar: 2, theme: "Copper strategy", name: "Copper to Fibre Repair Intercept", status: "Launched", timeline: "Oct 2026", prime: "L. Nichols", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "Copper strategy", name: "Copper to Fibre Repair Intercept", status: "Launched", timeline: "Oct 2026", prime: "L. Nichols", impact: "L", issues: ["Connectivity"],
     desc: "Intercepts copper repair tickets for fibre-eligible premises and dispatches them as fibre migrations." },
-  { p: "HSIA", pillar: 2, theme: "Copper strategy", name: "Copper to WHSIA Technology Change in CSR", status: "In flight", timeline: "Sep 2026", prime: "A. Tirthani", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "Copper strategy", name: "Copper to WHSIA Technology Change in CSR", status: "In flight", timeline: "Sep 2026", prime: "A. Tirthani", impact: "M", issues: ["Connectivity"],
     desc: "System solution for copper-to-wireless HSIA, then targeted transition of low-speed copper subscribers to Fixed Wireless during service calls." },
-  { p: "HSIA", pillar: 2, theme: "Outage", name: "Service Guarantee: Internet Backup to Cellular", status: "Launched", timeline: "Jul 2026", prime: "J. Harrison", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "Outage", name: "Service Guarantee: Internet Backup to Cellular", status: "Launched", timeline: "Jul 2026", prime: "J. Harrison", impact: "M", issues: ["Connectivity"],
     desc: "Automatic cellular failover backup during fibre outages, restoring seamlessly on recovery." },
-  { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", status: "In flight", timeline: "Jul 2026", prime: "F. Ahmed", issues: ["WiFi"],
+  { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", status: "Launched", timeline: "Jul 2026", prime: "F. Ahmed", impact: "L", issues: ["WiFi"],
     desc: "Scales the proactive program using RouteThis RAVA diagnostics to resolve home Wi-Fi issues before contact." },
-  { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi Scaling — Proactive Campaigns", status: "In flight", timeline: "In planning", prime: "Wi-Fi team", issues: ["WiFi"],
+  { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi Scaling — Proactive Campaigns", status: "Launched", timeline: "Jun 2026", prime: "J. Silva", impact: "M", issues: ["WiFi"],
     desc: "Scales automated customer communications for identified Wi-Fi interference and dead zones." },
-  { p: "HSIA", pillar: 3, theme: "GPON degraded fibre", name: "GPONe Fibre Degradation Proactive Campaign", status: "In flight", timeline: "Aug 2026", prime: "J. Silva", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "How Speed Works Campaign", status: "Ideation", timeline: "—", prime: "Not resourced", issues: ["Speed", "WiFi"],
+    desc: "How speed works and Internet quality campaign, carried from sales through to support." },
+  { p: "HSIA", pillar: 3, theme: "GPON degraded fibre", name: "GPONe Fibre Degradation Proactive Campaign", status: "In flight", timeline: "Aug 2026", prime: "J. Silva", impact: "M", issues: ["Connectivity"],
     desc: "Revamped proactive outreach program targeting severe degradation signatures." },
-  { p: "HSIA", pillar: 3, theme: "Speed & equipment", name: "Gigabit Speed Compatibility ICU Intervention", status: "In flight", timeline: "Jun 2026", prime: "A. Broten / B. Weir", issues: ["Speed"],
+  { p: "HSIA", pillar: 3, theme: "Speed & equipment", name: "Gigabit Speed Compatibility ICU Intervention", status: "Launched", timeline: "Jun 2026", prime: "A. Broten / B. Weir", issues: ["Speed"],
     desc: "ICU outbound outreach upgrading customers on 3Gbps+ profiles to XGS-PON equipment." },
-  { p: "HSIA", pillar: 3, theme: "Copper strategy", name: "Proactive Intervention C2F Migration", status: "Launched", timeline: "Feb 2027", prime: "A. Tirthani", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 3, theme: "Copper strategy", name: "Proactive Intervention C2F Migration", status: "Launched", timeline: "Feb 2027", prime: "A. Tirthani", impact: "L", issues: ["Connectivity"],
     desc: "Proactive migration campaign converting chronic trouble-ticket copper lines to pure fibre." },
-  { p: "HSIA", pillar: 3, theme: "Outage", name: "Pulse Cluster GUI for Outages", status: "Launched", timeline: "Feb 2026", prime: "Errol / C. Neuman", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 3, theme: "Outage", name: "Pulse Cluster GUI for Outages", status: "Launched", timeline: "Feb 2026", prime: "Errol / C. Neuman", impact: "M", issues: ["Connectivity"],
     desc: "Outage-clustering interface grouping 5–10 customer disconnect events for proactive manual triage." },
-  { p: "HSIA", pillar: 4, theme: "Wi-Fi", name: "Technician WiFi Certification Tool", status: "Launched", timeline: "Jun 2026", prime: "M. Webber", issues: ["WiFi"],
+  { p: "HSIA", pillar: 4, theme: "Wi-Fi", name: "Technician WiFi Certification Tool", status: "Launched", timeline: "Jun 2026", prime: "M. Webber", impact: "M", issues: ["WiFi"],
     desc: "Grows use and quality of the mobile field app guiding access-point placement, coverage mapping and Wi-Fi certification." },
-  { p: "HSIA", pillar: 4, theme: "GPON degraded fibre", name: "KIT Test Tool Mandatory Pass on All Jobs", status: "Ideation", timeline: "—", prime: "M. Webber", issues: ["Connectivity"],
-    desc: "Reinstates mandatory test validation with distance metrics to reduce repeat truck rolls." },
-  { p: "HSIA", pillar: 4, theme: "Speed & equipment", name: "Improve Provisioning Checks for 3 Gig in InSight", status: "In flight", timeline: "In planning", prime: "A. Broten", issues: ["Speed", "Support"],
+  { p: "HSIA", pillar: 4, theme: "GPON degraded fibre", name: "Auto Test Tools", status: "Ideation", timeline: "2027 capital", prime: "M. Webber", impact: "H", issues: ["Connectivity"],
+    desc: "Automated test tool run on every job to prove quality before the technician leaves, reducing repeat truck rolls." },
+  { p: "HSIA", pillar: 4, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA on TELUS.com", status: "Ideation", timeline: "Q4 2026", prime: "A. Broten", issues: ["WiFi", "Support"],
+    desc: "Exposes the RouteThis RAVA Wi-Fi AI diagnostics in the support pages on TELUS.com." },
+  { p: "HSIA", pillar: 4, theme: "Speed & equipment", name: "Improve Provisioning Checks for 3 Gig in InSight", status: "In flight", timeline: "In planning", prime: "A. Broten", impact: "L", issues: ["Speed", "Support"],
     desc: "Consolidates six provisioning checks into a single clear validation flag in the agent InSight portal." },
 
   // ------------------------- TV -------------------------
@@ -807,19 +812,11 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra, sharedAx
   const tooltipLeft = hoverPct == null ? 0 : Math.min(88, Math.max(2, hoverPct));
   const tooltipAlignRight = hoverPct != null && hoverPct > 62;
   const linePts = line.data.map((v, i) => (v == null ? null : { x: xCenter(i), y: yLine(v), v, i })).filter(Boolean);
-  // Data labels: bar label above its bar, line label above its point. When the line runs through
-  // the bar label both stack above the higher of the two; when only the labels collide the line
-  // label drops below its point.
-  const labelPos = labels.map((_, i) => {
-    const barTop = bar.data[i] != null ? yBar(bar.data[i]) : null;
-    const lineY = line.data[i] != null ? yLine(line.data[i]) : null;
-    let barY = barTop != null ? barTop - 5 : null, lineLabelY = lineY != null ? lineY - 7 : null;
-    if (barTop != null && lineY != null) {
-      if (Math.abs(lineY - barY) < 10) { const topY = Math.min(barTop, lineY); lineLabelY = topY - 6; barY = topY - 17; }
-      else if (Math.abs(lineLabelY - barY) < 11) lineLabelY = lineY + 13;
-    }
-    return { barY, lineY: lineLabelY };
-  });
+  // Data labels: bar label centred inside its bar (clear of the line), line label above its point
+  const labelPos = labels.map((_, i) => ({
+    barY: bar.data[i] != null ? (yBar(bar.data[i]) + top + plotH) / 2 : null,
+    lineY: line.data[i] != null ? yLine(line.data[i]) - 7 : null
+  }));
 
   return (
     <div ref={wrapRef} style={{ position: "relative", width: "100%", aspectRatio: `${VIEW_W} / ${height}` }} onMouseMove={handleMove} onMouseLeave={() => setHoverI(null)}>
@@ -846,7 +843,7 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra, sharedAx
             fill={bar.color} opacity={hoverI === i ? 0.75 : 0.38} />
         ))}
         {bar.data.map((v, i) => v == null ? null : (
-          <text key={i} x={xCenter(i)} y={labelPos[i].barY} fontSize="9" fontWeight="600" fill={bar.color} textAnchor="middle">{bar.fmt(v)}</text>
+          <text key={i} x={xCenter(i)} y={labelPos[i].barY} fontSize="9" fontWeight="600" fill={bar.color} textAnchor="middle" dominantBaseline="middle">{bar.fmt(v)}</text>
         ))}
         {linePts.length > 0 && (
           <g>
@@ -1312,7 +1309,7 @@ function deckToPptxSlides(deck) {
         { t: t.label.toUpperCase(), sz: 7.5, b: true, color: C.muted },
         { t: t.value, sz: 20, b: true, color: C.heading, space: 4 },
         { t: t.month, sz: 7.5, color: C.faint },
-        { t: t.yoy ? `${t.yoy.text} vs prior yr.` : "—", sz: 9, b: true, color: t.yoy ? toneCol(t.yoy.tone) : C.faint, space: 4 }
+        { t: t.yoy ? `${t.yoy.text} YoY` : "—", sz: 9, b: true, color: t.yoy ? toneCol(t.yoy.tone) : C.faint, space: 4 }
       ] }));
     });
   });
@@ -1407,7 +1404,7 @@ function deckToHtml(deck) {
   const C = DECK_LIGHT, e = xmlEsc;
   const tone = (t) => (t === "good" ? C.good : t === "bad" ? C.bad : C.muted);
   const chrome = (n, title, body) => `<section class="slide"><header><div class="eyebrow">Reliability Strategy · Executive summary · ${e(deck.month)}</div><div class="row"><h1>${e(title)}</h1><span class="num">${n} / 4</span></div></header><div class="body">${body}</div><footer>${e(DECK_SOURCE)}</footer></section>`;
-  const s1 = `<div class="cols">${deck.kpis.map((k) => `<div class="card"><div class="prod" style="color:${k.color}">${e(k.product)}</div><div class="tiles">${k.tiles.map((t) => `<div class="tile"><div class="lbl">${e(t.label)}</div><div class="val">${e(t.value)}</div><div class="sub">${e(t.month)}</div><div class="d" style="color:${t.yoy ? tone(t.yoy.tone) : C.faint}">${t.yoy ? e(t.yoy.text) + " vs prior yr." : "—"}</div></div>`).join("")}</div></div>`).join("")}</div>`;
+  const s1 = `<div class="cols">${deck.kpis.map((k) => `<div class="card"><div class="prod" style="color:${k.color}">${e(k.product)}</div><div class="tiles">${k.tiles.map((t) => `<div class="tile"><div class="lbl">${e(t.label)}</div><div class="val">${e(t.value)}</div><div class="sub">${e(t.month)}</div><div class="d" style="color:${t.yoy ? tone(t.yoy.tone) : C.faint}">${t.yoy ? e(t.yoy.text) + " YoY" : "—"}</div></div>`).join("")}</div></div>`).join("")}</div>`;
   const spark = (k) => { const w = 300, h = 66, pts = sparkPoints(k.trend, w, h); return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="${k.color}" stroke-width="2" stroke-linejoin="round" points="${pts.map((p) => p.join(",")).join(" ")}"/></svg>`; };
   const s2 = `<div class="cols">${deck.issues.map((k) => `<div class="card"><div class="lbl" style="color:${k.color}">${e(k.product)} · top ticket issue — ${e(k.asOf)}</div><div class="issue">${e(k.issue)}</div><div class="sub2">${k.volume.toLocaleString()} tickets · <b style="color:${tone(k.tone)}">${e(k.yoy)}</b></div><div class="spark">${spark(k)}<div class="cap">${e(k.trendName)} tickets · ${e(k.trendFrom)} – ${e(k.trendTo)} (${e(k.trendSrc)})</div></div>${[["Rising", k.rising, C.bad], ["Falling", k.falling, C.good]].map(([t, rows, col]) => `<div class="mv"><div class="lbl" style="color:${col}">${t} · ${e(k.compare)}</div>${rows.map((r) => `<div class="mvr"><span>${e(r.name)}</span><b style="color:${col}">${e(r.text)}</b></div>`).join("")}</div>`).join("")}</div>`).join("")}</div>`;
   const s3 = deck.milestones.length
@@ -1549,10 +1546,10 @@ export default function ReliabilityScorecards() {
           const f = rowFigures(tile.data, tile.dec, tile.goodDown, tile.fmt === fmtPct);
           const deltas = [];
           if (deltaMode === "yoy") {
-            deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="vs prior yr." />);
+            deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="YoY" />);
           } else {
-            deltas.push(<DeltaText key="m" d={f.mom} T={T} suffix="vs prior mo." />);
-            deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="vs prior yr." />);
+            deltas.push(<DeltaText key="m" d={f.mom} T={T} suffix="MoM" />);
+            deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="YoY" />);
           }
           return (
             <StatCard key={i} T={T} color={tile.color} icon={tile.icon}
@@ -1893,6 +1890,9 @@ export default function ReliabilityScorecards() {
     const thBase = { padding: "8px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, textAlign: "left", whiteSpace: "nowrap", verticalAlign: "bottom" };
     const pool = allItems || items;
     const uniq = (k) => Array.from(new Set(pool.map((it) => it[k] || "—"))).sort();
+    // Impact is rated in the source for HSIA only, so the column appears on HSIA-only lists
+    const showImpact = pool.every((it) => it.p === "HSIA");
+    const IMPACT = { H: ["High", T.bad], M: ["Medium", T.heading], L: ["Low", T.textMuted] };
     const filterTh = (k, label) => (
       <th style={thBase}>
         {filterable ? (
@@ -1916,11 +1916,12 @@ export default function ReliabilityScorecards() {
               {filterTh("status", "Status")}
               {filterTh("timeline", "Timeline")}
               {filterTh("prime", "Prime")}
+              {showImpact && <th style={thBase}>Impact</th>}
             </tr>
           </thead>
           <tbody>
             {items.length === 0 && (
-              <tr><td colSpan={6} style={{ ...tdBase, color: T.textFaint }}>No initiatives match the selected filters.</td></tr>
+              <tr><td colSpan={showImpact ? 7 : 6} style={{ ...tdBase, color: T.textFaint }}>No initiatives match the selected filters.</td></tr>
             )}
             {items.map((it) => (
               <tr key={it.p + it.name}>
@@ -1937,6 +1938,13 @@ export default function ReliabilityScorecards() {
                 <td style={{ ...tdBase, whiteSpace: "nowrap" }}><StatusChip status={it.status} T={T} /></td>
                 <td style={{ ...tdBase, whiteSpace: "nowrap", color: T.textMuted }}>{it.timeline}</td>
                 <td style={{ ...tdBase, whiteSpace: "nowrap", color: T.textMuted }}>{it.prime}</td>
+                {showImpact && (
+                  <td style={{ ...tdBase, whiteSpace: "nowrap" }}>
+                    {IMPACT[it.impact]
+                      ? <span style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: IMPACT[it.impact][1], borderRadius: 999, padding: "1px 9px", fontSize: 11, fontWeight: 700 }}>{IMPACT[it.impact][0]}</span>
+                      : <span style={{ color: T.textFaint }}>—</span>}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -2079,16 +2087,22 @@ export default function ReliabilityScorecards() {
     const L = LOOKER[product];
     const thBase = { padding: "9px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
     const tdBase = { padding: "8px 12px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5 };
+    const lbl = { color: T.textFaint, fontSize: 10, fontWeight: 700, letterSpacing: ".04em" };
     const maxA26 = Math.max(...L.topIssues.map((r) => r.a26));
+    // Volume change with its relative %: MoM is Sep vs Aug 2026, YoY is Sep 2026 vs Sep 2025
+    const momYoy = (r) => (
+      <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: 1, whiteSpace: "nowrap", fontSize: 12 }}>
+        <span><span style={lbl}>MoM</span> <DeltaText d={delta(r.a26, r.prev ?? null, "", 0, true)} T={T} /></span>
+        <span><span style={lbl}>YoY</span> {r.a25 ? <DeltaText d={delta(r.a26, r.a25, "", 0, true)} T={T} /> : <span style={{ color: T.bad, fontWeight: 600 }}>▲ {r.a26.toLocaleString()} (new in 2026)</span>}</span>
+      </span>
+    );
     const moverCard = (title, rows, tone) => (
       <div style={{ flex: 1, minWidth: 260, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${tone === "up" ? T.bad : T.good}`, borderRadius: 10, padding: "12px 16px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
         {rows.map((r) => (
           <div key={r.issue} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5, padding: "3px 0" }}>
             <span style={{ color: T.textSecondary }}>{r.issue}{product === "HSIA" && <span style={{ color: T.textFaint, fontSize: 11 }}> · {hsiaPainPoint(r.issue)}</span>}</span>
-            <span style={{ fontWeight: 700, color: tone === "up" ? T.bad : T.good, whiteSpace: "nowrap" }}>
-              {r.delta > 0 ? "▲ +" : "▼ "}{r.delta.toLocaleString()} <span style={{ color: T.textFaint, fontWeight: 400 }}>({yoyPctText(r.a26, r.a25)})</span>
-            </span>
+            {momYoy(r)}
           </div>
         ))}
       </div>
@@ -2109,7 +2123,7 @@ export default function ReliabilityScorecards() {
                 {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
                 <th style={{ ...thBase, textAlign: "right" }}>{LATEST_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
-                <th style={{ ...thBase, textAlign: "right" }}>Δ (MoM / YoY)</th>
+                <th style={{ ...thBase, textAlign: "right" }}>MoM / YoY</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>
               </tr>
@@ -2118,8 +2132,6 @@ export default function ReliabilityScorecards() {
               {L.topIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
                 const cov = initiativesByTheme(product, themes);
-                const d_mom = r.a26_prior ? delta(r.a26, r.a26_prior, "", 0, true) : null;
-                const d_yoy = delta(r.a26, r.a25 || null, "", 0, true);
                 return (
                   <tr key={r.issue}>
                     <td style={{ ...tdBase, color: T.textFaint, fontWeight: 700 }}>{i + 1}</td>
@@ -2132,14 +2144,7 @@ export default function ReliabilityScorecards() {
                     <td style={{ ...tdBase, padding: "8px 6px" }}>
                       <div style={{ width: `${(r.a26 / maxA26) * 100}%`, minWidth: 2, height: 9, background: colors[product], borderRadius: 3, opacity: 0.7 }} />
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap", fontSize: 12 }}>
-                      {r.a25 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                          {d_mom ? <><DeltaText d={d_mom} T={T} /> <span style={{ color: T.textFaint, fontSize: 10.5 }}>({r.a26_prior ? ((r.a26 / r.a26_prior - 1) * 100).toFixed(1) : "—"}%)</span></> : null}
-                          <><DeltaText d={d_yoy} T={T} /> <span style={{ color: T.textFaint, fontSize: 10.5 }}>({yoyPctText(r.a26, r.a25)})</span></>
-                        </div>
-                      ) : <span style={{ color: T.textFaint }}>new</span>}
-                    </td>
+                    <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}>{momYoy(r)}</td>
                     <td style={{ ...tdBase, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.7 }}>
                       {themes.length
                         ? themes.map((t) => <span key={t} style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: T.textSecondary, borderRadius: 999, padding: "0 8px", marginRight: 4, fontWeight: 600, whiteSpace: "nowrap", fontSize: 11.5 }}>{t}</span>)
@@ -2172,7 +2177,7 @@ export default function ReliabilityScorecards() {
           </div>
         )}
         <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>
-          Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. YoY compares {LATEST} against {LATEST_PRIOR}.
+          Looker ticket categories from the Churn Measurement 2026 workbook{" · each issue is mapped to the theme(s) used by the product's initiatives; initiative coverage counts the initiatives carrying those themes"}{product === "SHS" ? " (SHS themes are the pillar sub-themes from the workbook)" : ""}. MoM compares {LATEST} against the prior month; YoY compares {LATEST} against {LATEST_PRIOR}. Rising and falling issues are ranked on the YoY volume change.
         </p></Disclosure>
       </>
     );
@@ -2333,19 +2338,19 @@ export default function ReliabilityScorecards() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
           <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtNum(res.latest)}
             sub={`${res.latestMonth} · target ${fmtNum(res.target)}`}
-            deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="vs prior yr." />]} />
+            deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="YoY" />]} />
           <StatCard T={T} color={col} icon="tickets" label="Web/App resolution rate" value={fmtPct(web.latest, 1)}
             sub={`${web.latestMonth} · target ${fmtPct(web.target, 1)}`}
-            deltas={[<DeltaText key="t" d={web.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={web.yoy} T={T} suffix="vs prior yr." />]} />
+            deltas={[<DeltaText key="t" d={web.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={web.yoy} T={T} suffix="YoY" />]} />
           <StatCard T={T} color={col} icon="cx" label="CX 'Easy to follow'" value={easy.latest == null ? "—" : easy.latest.toFixed(2)}
             sub={easy.latest == null ? undefined : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`}
             deltas={[<DeltaText key="t" d={easy.vsTarget} T={T} suffix="vs target" />]} />
           <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn" value={fmtPct(chn.latest, 2)}
             sub={chn.latestMonth}
-            deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="vs prior mo." />]} />
+            deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="MoM" />]} />
           <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
             sub={dea.latestMonth}
-            deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
+            deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
           Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
@@ -2445,7 +2450,7 @@ export default function ReliabilityScorecards() {
                 deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />,
               <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
                 sub={`${dea.latestMonth} · Sweepr workflows`}
-                deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="vs prior mo." />]} />
+                deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
             ] : null;
             return <TileRow tiles={scopeTiles(scope)} deltaMode="both" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
           })()}
@@ -4052,11 +4057,11 @@ export default function ReliabilityScorecards() {
     }));
     const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, true), dea = sweeprFig("deacts", 0);
     const selfServe = [
-      { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "vs prior yr."]] },
-      { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "vs prior yr."]] },
+      { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
+      { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "YoY"]] },
       { icon: "cx", label: "CX 'Easy to follow'", value: easy.latest == null ? "—" : easy.latest.toFixed(2), sub: easy.latest == null ? "" : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`, deltas: [[D(easy.vsTarget), "vs target"]] },
-      { icon: "churn", label: "Sweepr involved churn", value: fmtPct(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "vs prior mo."]] },
-      { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "vs prior mo."]] }
+      { icon: "churn", label: "Sweepr involved churn", value: fmtPct(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "MoM"]] },
+      { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
     ];
     return {
       month, kpis, issues, milestones, selfServe,
@@ -4128,7 +4133,7 @@ export default function ReliabilityScorecards() {
                   <div style={lbl}>{t.label}</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: T.heading, lineHeight: 1.1, marginTop: 4 }}>{t.value}</div>
                   <div style={{ fontSize: 10, color: T.textFaint, marginTop: 2 }}>{t.month}</div>
-                  <div style={{ fontSize: 11.5, fontWeight: 700, marginTop: 4, color: t.yoy ? toneCol(t.yoy.tone) : T.textFaint }}>{t.yoy ? `${t.yoy.text} vs prior yr.` : "—"}</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 700, marginTop: 4, color: t.yoy ? toneCol(t.yoy.tone) : T.textFaint }}>{t.yoy ? `${t.yoy.text} YoY` : "—"}</div>
                 </div>
               ))}
             </div>
