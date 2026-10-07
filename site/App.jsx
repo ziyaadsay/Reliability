@@ -98,10 +98,12 @@ const DATA = {
   hsiaFibreMonths: ["Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"],
   hsiaFibrePct: [6.23,13.32,15.09,17.79,14.60,14.76,14.37,13.85,13.15,13.46,13.57,12.21,11.59,10.08,9.96],
   // Voice of Customer (B2B), "Reliability B2B" rows, HSIA West TCS PLT Charter and Toolkit
-  // workbook, "HSIA West Scorecard" tab (rows 46-48, columns I:AO). Not yet posted for Sep 2026.
+  // workbook, "HSIA West Scorecard" tab (rows 46-48: Internet West, SmartHome, TV; 2025 actuals in
+  // I:T, 2026 actuals in AG:AO). Lower is better. SmartHome is not yet restated in the source, so
+  // SHS keeps the earlier pull until that row is populated.
   b2bVoC: {
-    HSIA: [20.0,19.9,18.6,16.7,17.5,18.4,20.2,17.7,18.1,18.1,18.2,16.5,21.0,20.0,20.0,19.0,20.0,20.0,20.0,20.0,null],
-    TV:   [24.0,25.0,22.0,21.0,23.0,24.0,23.0,23.0,20.0,21.0,25.0,21.0,23.0,22.0,23.0,25.0,22.0,22.0,23.0,22.0,null],
+    HSIA: [23.7,23.2,20.8,19.5,20.4,22.2,22.3,21.6,18.7,20.3,21.9,18.4,22.1,20.8,21.6,20.4,20.9,20.9,20.7,21.1,20.9],
+    TV:   [23.9,25.2,22.2,20.7,23.0,23.6,22.6,22.8,20.2,21.2,25.1,21.4,23.3,22.3,22.9,24.5,22.5,21.5,22.8,21.7,21.5],
     SHS:  [29.0,32.0,26.0,27.0,30.0,27.0,31.0,28.0,32.0,32.0,29.0,27.0,28.0,28.0,22.0,28.0,30.0,28.0,24.0,29.0,null]
   }
 };
@@ -586,31 +588,29 @@ function niceCeil(v) {
   const exp = Math.floor(Math.log10(v));
   const base = Math.pow(10, exp);
   const frac = v / base;
-  const nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 2.5 ? 2.5 : frac <= 5 ? 5 : 10;
+  const nice = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find((s) => frac <= s);
   return nice * base;
 }
 
 // goodWhenDown: reliability metrics improve when they fall; base improves up
-function delta(curr, prev, unit, decimals, goodWhenDown = true) {
+function delta(curr, prev, unit, decimals, goodWhenDown = true, withPct = true) {
   if (curr == null || prev == null) return null;
   const diff = curr - prev;
   const flat = Math.abs(diff) < 1e-9;
   const good = goodWhenDown ? diff <= 0 : diff >= 0;
   const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
   const mag = Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  // relative % change; scale-invariant, so it reads the same whether curr/prev are raw
-  // values or (as deltaBps passes in) a rate already multiplied by 100
   const pct = prev ? (diff / Math.abs(prev)) * 100 : null;
-  const pctText = pct == null || flat ? "" : ` (${pct > 0 ? "+" : ""}${pct.toFixed(1)}%)`;
+  const pctText = !withPct || pct == null || flat ? "" : ` (${pct > 0 ? "+" : ""}${pct.toFixed(1)}%)`;
   return { text: `${arrow} ${mag}${unit}${pctText}`, tone: flat ? "flat" : good ? "good" : "bad" };
 }
 
 // Percentage-point movements on rate KPIs are reported in basis points (1 pt = 100 bps)
-// `pctDecimals` is the precision the rate itself is shown at: a rate shown to
-// 3 decimals (e.g. 0.167%) keeps one decimal of bps so small moves stay visible.
+// with no relative % change. `pctDecimals` is the precision the rate itself is shown at:
+// a rate shown to 3 decimals (e.g. 0.167%) keeps one decimal of bps so small moves stay visible.
 function deltaBps(curr, prev, goodWhenDown = true, pctDecimals = 2) {
   if (curr == null || prev == null) return null;
-  return delta(curr * 100, prev * 100, " bps", Math.max(0, pctDecimals - 2), goodWhenDown);
+  return delta(curr * 100, prev * 100, " bps", Math.max(0, pctDecimals - 2), goodWhenDown, false);
 }
 
 function yoyPctText(a26, a25) {
@@ -726,27 +726,26 @@ function LineChart({ labels, seriesDefs, height = 240, yFmt, colors, T }) {
         {hoverI != null && (
           <line x1={xScale(hoverI)} x2={xScale(hoverI)} y1={top} y2={height - bottom} stroke={T.borderStrong} strokeWidth="1" strokeDasharray="3 3" />
         )}
-        {(() => { const placedLabelYs = []; return seriesDefs.map((s, si) => {
-          const pts = s.data.map((v, i) => (v == null ? null : { x: xScale(i), y: yScale(v), v })).filter(Boolean);
+        {seriesDefs.map((s, si) => {
+          const pts = s.data.map((v, i) => (v == null ? null : { x: xScale(i), y: yScale(v), v, i })).filter(Boolean);
           if (!pts.length) return null;
           const d = "M " + pts.map((p) => `${p.x},${p.y}`).join(" L ");
-          const last = pts[pts.length - 1];
           const col = seriesColor(s);
-          let labelY = last.y;
-          for (const py of placedLabelYs) {
-            if (Math.abs(labelY - py) < 13) labelY = py + (labelY >= py ? 13 : -13);
-          }
-          placedLabelYs.push(labelY);
+          // label above the point unless another series sits higher that month (ties: lower index wins)
+          const above = (p) => seriesDefs.every((o, oi) => oi === si || o.data[p.i] == null || o.data[p.i] < p.v || (o.data[p.i] === p.v && oi > si));
           return (
             <g key={si}>
               <path d={d} fill="none" stroke={col} strokeWidth="2.5" strokeDasharray={s.dash || undefined} />
-              <text x={last.x + 5} y={labelY} fontSize="11.5" fontWeight="600" fill={col} dominantBaseline="middle">{yFmt(last.v)}</text>
+              {pts.map((p) => (
+                <text key={p.i} x={p.x} y={above(p) ? p.y - 7 : p.y + 13} fontSize="9.5" fontWeight="600" fill={col}
+                  textAnchor={p.x <= left + 1 ? "start" : p.x >= VIEW_W - right - 1 ? "end" : "middle"}>{yFmt(p.v)}</text>
+              ))}
               {hoverI != null && s.data[hoverI] != null && (
                 <circle cx={xScale(hoverI)} cy={yScale(s.data[hoverI])} r="3.5" fill={col} stroke={T.surface} strokeWidth="1.5" />
               )}
             </g>
           );
-        }); })()}
+        })}
       </svg>
       {hoverI != null && (
         <div style={{
@@ -779,15 +778,17 @@ function DeltaText({ d, T, suffix }) {
 }
 
 // Bars (volume, left axis) with a line (rate, right axis) on one chart.
-// bar/line: { label, data, color, fmt }
-function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra }) {
+// bar/line: { label, data, color, fmt }. sharedAxis plots both on the left axis.
+function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra, sharedAxis = false }) {
   const wrapRef = useRef(null);
   const [hoverI, setHoverI] = useState(null);
-  const left = 56, right = 64, top = 16, bottom = 22;
+  const left = 56, right = sharedAxis ? 24 : 64, top = 16, bottom = 22;
   const plotW = VIEW_W - left - right, plotH = height - top - bottom;
   const bVals = bar.data.filter((v) => v != null), lVals = line.data.filter((v) => v != null);
-  const bMax = bVals.length ? niceCeil(Math.max(...bVals) * 1.15) : 1;
-  const lMax = lVals.length ? niceCeil(Math.max(...lVals) * 1.15) : 1;
+  const bMax0 = bVals.length ? niceCeil(Math.max(...bVals) * 1.15) : 1;
+  const lMax0 = lVals.length ? niceCeil(Math.max(...lVals) * 1.15) : 1;
+  const bMax = sharedAxis ? Math.max(bMax0, lMax0) : bMax0;
+  const lMax = sharedAxis ? bMax : lMax0;
   const n = Math.max(1, labels.length);
   const slot = plotW / n;
   const xCenter = (i) => left + slot * i + slot / 2;
@@ -805,8 +806,20 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra }) {
   const hoverPct = hoverI != null ? (xCenter(hoverI) / VIEW_W) * 100 : null;
   const tooltipLeft = hoverPct == null ? 0 : Math.min(88, Math.max(2, hoverPct));
   const tooltipAlignRight = hoverPct != null && hoverPct > 62;
-  const linePts = line.data.map((v, i) => (v == null ? null : { x: xCenter(i), y: yLine(v), v })).filter(Boolean);
-  const lastBarI = bar.data.reduce((a, v, i) => (v == null ? a : i), -1);
+  const linePts = line.data.map((v, i) => (v == null ? null : { x: xCenter(i), y: yLine(v), v, i })).filter(Boolean);
+  // Data labels: bar label above its bar, line label above its point. When the line runs through
+  // the bar label both stack above the higher of the two; when only the labels collide the line
+  // label drops below its point.
+  const labelPos = labels.map((_, i) => {
+    const barTop = bar.data[i] != null ? yBar(bar.data[i]) : null;
+    const lineY = line.data[i] != null ? yLine(line.data[i]) : null;
+    let barY = barTop != null ? barTop - 5 : null, lineLabelY = lineY != null ? lineY - 7 : null;
+    if (barTop != null && lineY != null) {
+      if (Math.abs(lineY - barY) < 10) { const topY = Math.min(barTop, lineY); lineLabelY = topY - 6; barY = topY - 17; }
+      else if (Math.abs(lineLabelY - barY) < 11) lineLabelY = lineY + 13;
+    }
+    return { barY, lineY: lineLabelY };
+  });
 
   return (
     <div ref={wrapRef} style={{ position: "relative", width: "100%", aspectRatio: `${VIEW_W} / ${height}` }} onMouseMove={handleMove} onMouseLeave={() => setHoverI(null)}>
@@ -817,7 +830,7 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra }) {
             <g key={t}>
               <line x1={left} x2={VIEW_W - right} y1={y} y2={y} stroke={T.border} strokeWidth="1" />
               <text x={left - 8} y={y} fontSize="10.5" fill={T.textMuted} textAnchor="end" dominantBaseline="middle">{bar.fmt((bMax * t) / 4)}</text>
-              <text x={VIEW_W - right + 8} y={y} fontSize="10.5" fill={T.textMuted} textAnchor="start" dominantBaseline="middle">{line.fmt((lMax * t) / 4)}</text>
+              {!sharedAxis && <text x={VIEW_W - right + 8} y={y} fontSize="10.5" fill={T.textMuted} textAnchor="start" dominantBaseline="middle">{line.fmt((lMax * t) / 4)}</text>}
             </g>
           );
         })}
@@ -832,21 +845,16 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra }) {
           <rect key={i} x={xCenter(i) - bw / 2} y={yBar(v)} width={bw} height={Math.max(0, top + plotH - yBar(v))} rx="3"
             fill={bar.color} opacity={hoverI === i ? 0.75 : 0.38} />
         ))}
-        {lastBarI >= 0 && (() => {
-          // keep the bar label clear of the line's end label when the two meet
-          const by = yBar(bar.data[lastBarI]) - 6;
-          const ly = line.data[lastBarI] != null ? yLine(line.data[lastBarI]) : null;
-          const clash = ly != null && Math.abs(ly - by) < 14;
-          return clash
-            ? <text x={xCenter(lastBarI) - bw / 2 - 6} y={by} fontSize="11" fontWeight="600" fill={bar.color} textAnchor="end">{bar.fmt(bar.data[lastBarI])}</text>
-            : <text x={xCenter(lastBarI)} y={by} fontSize="11" fontWeight="600" fill={bar.color} textAnchor="middle">{bar.fmt(bar.data[lastBarI])}</text>;
-        })()}
+        {bar.data.map((v, i) => v == null ? null : (
+          <text key={i} x={xCenter(i)} y={labelPos[i].barY} fontSize="9" fontWeight="600" fill={bar.color} textAnchor="middle">{bar.fmt(v)}</text>
+        ))}
         {linePts.length > 0 && (
           <g>
             <path d={"M " + linePts.map((p) => `${p.x},${p.y}`).join(" L ")} fill="none" stroke={line.color} strokeWidth="2.5" />
             {linePts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={hoverI != null && xCenter(hoverI) === p.x ? 4 : 2.5} fill={line.color} stroke={T.surface} strokeWidth="1.5" />)}
-            <text x={linePts[linePts.length - 1].x + 8} y={linePts[linePts.length - 1].y} fontSize="11.5" fontWeight="600" fill={line.color} dominantBaseline="middle"
-              textAnchor={linePts[linePts.length - 1].x > VIEW_W - right - 40 ? "start" : "start"}>{line.fmt(linePts[linePts.length - 1].v)}</text>
+            {linePts.map((p) => (
+              <text key={p.i} x={p.x} y={labelPos[p.i].lineY} fontSize="9.5" fontWeight="600" fill={line.color} textAnchor="middle">{line.fmt(p.v)}</text>
+            ))}
           </g>
         )}
       </svg>
@@ -891,7 +899,6 @@ function StackedBarChart({ labels, stacks, height = 240, yFmt, T }) {
   const hoverPct = hoverI != null ? (xCenter(hoverI) / VIEW_W) * 100 : null;
   const tooltipLeft = hoverPct == null ? 0 : Math.min(88, Math.max(2, hoverPct));
   const tooltipAlignRight = hoverPct != null && hoverPct > 62;
-  const lastI = hasData.reduce((a, h, i) => (h ? i : a), -1);
   return (
     <div ref={wrapRef} style={{ position: "relative", width: "100%", aspectRatio: `${VIEW_W} / ${height}` }} onMouseMove={handleMove} onMouseLeave={() => setHoverI(null)}>
       <svg width="100%" height="100%" viewBox={`0 0 ${VIEW_W} ${height}`}>
@@ -920,7 +927,9 @@ function StackedBarChart({ labels, stacks, height = 240, yFmt, T }) {
             </g>
           );
         })}
-        {lastI >= 0 && <text x={xCenter(lastI)} y={yOf(totals[lastI]) - 6} fontSize="11" fontWeight="600" fill={T.heading} textAnchor="middle">{yFmt(totals[lastI])}</text>}
+        {labels.map((_, i) => hasData[i] ? (
+          <text key={i} x={xCenter(i)} y={yOf(totals[i]) - 5} fontSize="9" fontWeight="600" fill={T.heading} textAnchor="middle">{yFmt(totals[i])}</text>
+        ) : null)}
       </svg>
       {hoverI != null && hasData[hoverI] && (
         <div style={{
@@ -2565,7 +2574,7 @@ export default function ReliabilityScorecards() {
         {hasCalls && sec("Calls", "calls",
           <ChartCard title={`${callsTitle} — offered (bars) and answered (line)`} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
-            <ComboChart labels={rangeMonths} T={T}
+            <ComboChart labels={rangeMonths} T={T} sharedAxis
               bar={{ label: "Offered", data: sliceR(callsOffered), color: colors[product], fmt: fmtNum }}
               line={{ label: "Answered", data: sliceR(callsAnswered), color: colors[product], fmt: fmtNum }} />
             <Legend items={[
@@ -2678,7 +2687,7 @@ export default function ReliabilityScorecards() {
         {DATA.b2bVoC[product] && sec("Voice of Customer (B2B)", "sentiment",
           <ChartCard title="Reliability B2B score" T={T}
             tableOpen={!!openTables[product + "-b2b"]} onToggleTable={() => toggleTable(product + "-b2b")}
-            note="HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab (Reliability B2B rows). Not yet posted for Sep 2026.">
+            note="HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab (Reliability B2B rows). Lower is better.">
             <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.b2bVoC[product]) }]} yFmt={(v) => fmtPct(v, 1)} colors={colors} T={T} />
             {openTables[product + "-b2b"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.b2bVoC[product]) }]} fmt={(v) => fmtPct(v, 1)} T={T} />}
           </ChartCard>
