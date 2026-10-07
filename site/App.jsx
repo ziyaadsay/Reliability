@@ -1529,7 +1529,7 @@ export default function ReliabilityScorecards() {
       { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "churn", label: "Churn rate", data: DATA.churnRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
       { icon: "base", label: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: false },
-      ...(DATA.b2bVoC[sc] ? [{ icon: "sentiment", label: "Voice of Customer (B2B)", data: DATA.b2bVoC[sc], fmt: fmtPct, dec: 1, color: colors[sc], goodDown: false }] : [])
+      ...(DATA.b2bVoC[sc] ? [{ icon: "sentiment", label: "Voice of Customer (B2B)", data: DATA.b2bVoC[sc], fmt: fmtPct, dec: 1, color: colors[sc], goodDown: true }] : [])
     ];
   }
 
@@ -2100,7 +2100,7 @@ export default function ReliabilityScorecards() {
                 {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
                 <th style={{ ...thBase, textAlign: "right" }}>{LATEST_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
-                <th style={{ ...thBase, textAlign: "right" }}>YoY</th>
+                <th style={{ ...thBase, textAlign: "right" }}>Δ (MoM / YoY)</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
                 <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>
               </tr>
@@ -2109,7 +2109,8 @@ export default function ReliabilityScorecards() {
               {L.topIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
                 const cov = initiativesByTheme(product, themes);
-                const d = delta(r.a26, r.a25 || null, "", 0, true);
+                const d_mom = r.a26_prior ? delta(r.a26, r.a26_prior, "", 0, true) : null;
+                const d_yoy = delta(r.a26, r.a25 || null, "", 0, true);
                 return (
                   <tr key={r.issue}>
                     <td style={{ ...tdBase, color: T.textFaint, fontWeight: 700 }}>{i + 1}</td>
@@ -2122,8 +2123,13 @@ export default function ReliabilityScorecards() {
                     <td style={{ ...tdBase, padding: "8px 6px" }}>
                       <div style={{ width: `${(r.a26 / maxA26) * 100}%`, minWidth: 2, height: 9, background: colors[product], borderRadius: 3, opacity: 0.7 }} />
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}>
-                      {r.a25 ? <><DeltaText d={d} T={T} /> <span style={{ color: T.textFaint, fontSize: 11.5 }}>({yoyPctText(r.a26, r.a25)})</span></> : <span style={{ color: T.textFaint }}>new</span>}
+                    <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap", fontSize: 12 }}>
+                      {r.a25 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                          {d_mom ? <><DeltaText d={d_mom} T={T} /> <span style={{ color: T.textFaint, fontSize: 10.5 }}>({r.a26_prior ? ((r.a26 / r.a26_prior - 1) * 100).toFixed(1) : "—"}%)</span></> : null}
+                          <><DeltaText d={d_yoy} T={T} /> <span style={{ color: T.textFaint, fontSize: 10.5 }}>({yoyPctText(r.a26, r.a25)})</span></>
+                        </div>
+                      ) : <span style={{ color: T.textFaint }}>new</span>}
                     </td>
                     <td style={{ ...tdBase, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.7 }}>
                       {themes.length
@@ -2546,6 +2552,11 @@ export default function ReliabilityScorecards() {
         {product === "SH+" && (
           <p style={{ fontSize: 12.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.6 }}>
             SmartHome+ reporting starts Jul 2025 (SH+ reliability KPIs workbook). Calls, churn, ticket categories and improvement initiatives are not yet reported for SH+.
+          </p>
+        )}
+        {product === "HSIA" && (
+          <p style={{ fontSize: 12.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.6 }}>
+            Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA.
           </p>
         )}
 
