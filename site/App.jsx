@@ -51,13 +51,19 @@ const HEALTH_COMMENTARY = {
     "TV+ growth is led by Digital Box power issues (+378) and channel errors (+57%).",
     "Ticket rate fell from 3.41% (Jan) to 2.92% (Aug), the second lowest of 2026, with a rise back to 3.35% in Sep. Overall 2026 performance is favourable to 2025 over the same period."
   ],
+  // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
   HSIA: [
-    { t: "Connection Instability & Disconnects, specifically fibre degradation, outages and the new 'no dataflow provisioning' bucket of work.",
-      inits: "GPONe Fibre Degradation Proactive Campaign, OLT clustering fibre degradation pilot, Pulse, no dataflow defects (Sep 2026)" },
-    { t: "Slow speeds, specifically incompatible equipment and speed plans, and helping customers understand their speeds.",
-      inits: "CloudCheck server upgrades, DIY Revamp Live ONT Check, Gigabit Speed Compatibility ICU Intervention Program" },
-    { t: "Wi-Fi coverage gaps.",
-      inits: "CloudCheck Wi-Fi QoE fine tuning, proactive add-Boost and poor-Wi-Fi campaigns" }
+    { t: "Connection Instability & Disconnects", share: "58% of all HSIA tickets",
+      causes: ["Fibre degradation", "New bucket of work: 'no dataflow provisioning'", "Outages"],
+      inits: ["OLT clustering fibre degradation pilot", { t: "No dataflow defects", sub: ["GPON/XGSPON mis-tagging", "Warm Home Condition"] }, "GPONe Fibre Degradation Proactive Campaign", "Pulse & initial customer comms"],
+      note: "MoM drop of ~4% in tickets for September" },
+    { t: "Slow speeds", share: "23% of all HSIA tickets",
+      causes: ["Incompatible equipment / speed plans", "Customer education"],
+      inits: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention Program", "Server upgrades"] },
+    { t: "Wi-Fi coverage gaps", share: "18% of all HSIA tickets",
+      causes: ["Gateway location (customer education)", "Additional boosts"],
+      inits: ["WAN Connectivity proactive campaign", "Wi-Fi Boost Down proactive campaign", "CloudCheck Wi-Fi QoE fine tuning", "Proactive add boost & poor Wi-Fi"],
+      note: "MoM drop of ~5% in September" }
   ],
   SHS: [],
   "SH+": []
@@ -1463,6 +1469,7 @@ export default function ReliabilityScorecards() {
   const [scope, setScope] = useState("All");
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
+  const [issueFilter, setIssueFilter] = useState({});
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
   const [navOpen, setNavOpen] = useState({}); // per-product nav subsections, collapsed by default
   const NO_INIT_FILTERS = { theme: "All", status: "All", timeline: "All", prime: "All" };
@@ -1868,11 +1875,23 @@ export default function ReliabilityScorecards() {
                   {items.map((t, i) => <li key={i}>{t}</li>)}
                 </ul>
               ) : (
-                <ol style={{ margin: 0, paddingLeft: 20, fontSize: 12.8, lineHeight: 1.65, color: T.textSecondary }}>
+                <ol style={{ margin: 0, paddingLeft: 20, fontSize: 12.8, lineHeight: 1.6, color: T.textSecondary }}>
                   {items.map((it, i) => (
-                    <li key={i} style={{ marginBottom: 6 }}>
-                      <span style={{ fontWeight: 600, color: T.text }}>{it.t}</span>
-                      {it.inits && <div style={{ fontSize: 12.3, color: T.textMuted }}><b style={{ color: T.heading }}>Initiatives · </b>{it.inits}</div>}
+                    <li key={i} style={{ marginBottom: 10 }}>
+                      <span style={{ fontWeight: 700, color: T.text }}>{it.t}</span>
+                      {it.share && <span style={{ color: T.textFaint }}> · {it.share}</span>}
+                      {it.causes && <ul style={{ margin: "3px 0 0", paddingLeft: 18 }}>{it.causes.map((c, j) => <li key={j}>{c}</li>)}</ul>}
+                      {it.inits && (
+                        <div style={{ marginTop: 5 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.heading }}>Initiatives focused on these root causes</div>
+                          <ul style={{ margin: "2px 0 0", paddingLeft: 18, color: T.textMuted }}>
+                            {it.inits.map((x, j) => typeof x === "string" ? <li key={j}>{x}</li> : (
+                              <li key={j}>{x.t}<ul style={{ margin: 0, paddingLeft: 18 }}>{x.sub.map((s, k) => <li key={k}>{s}</li>)}</ul></li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {it.note && <div style={{ marginTop: 4, fontStyle: "italic", color: T.textMuted }}>{it.note}</div>}
                     </li>
                   ))}
                 </ol>
@@ -2138,6 +2157,11 @@ export default function ReliabilityScorecards() {
     const tdBase = { padding: "8px 12px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5 };
     const lbl = { color: T.textFaint, fontSize: 10, fontWeight: 700, letterSpacing: ".04em" };
     const maxA26 = Math.max(...L.topIssues.map((r) => r.a26));
+    // Issue header filter: Looker Category 1 (the part before ›), kept per product in App state
+    const cat1 = (issue) => issue.split(" › ")[0].trim();
+    const issueCats = Array.from(new Set(L.topIssues.map((r) => cat1(r.issue)))).sort();
+    const issueSel = issueFilter[product] || "All";
+    const shownIssues = L.topIssues.filter((r) => issueSel === "All" || cat1(r.issue) === issueSel);
     // Volume change with its relative %: MoM is Sep vs Aug 2026, YoY is Sep 2026 vs Sep 2025
     const momYoy = (r) => (
       <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: 1, whiteSpace: "nowrap", fontSize: 12 }}>
@@ -2168,7 +2192,14 @@ export default function ReliabilityScorecards() {
             <thead>
               <tr>
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
-                <th style={{ ...thBase, textAlign: "left" }}>Issue (Category › Sub-category)</th>
+                <th style={{ ...thBase, textAlign: "left" }}>
+                  <select value={issueSel} onChange={(e) => setIssueFilter((f) => ({ ...f, [product]: e.target.value }))}
+                    aria-label="Filter issues by category"
+                    style={{ ...selectStyle, padding: "3px 6px", fontSize: 11.5, fontWeight: issueSel === "All" ? 700 : 600, color: issueSel === "All" ? T.textMuted : T.heading, textTransform: issueSel === "All" ? "uppercase" : "none", letterSpacing: issueSel === "All" ? ".05em" : 0, maxWidth: 260 }}>
+                    <option value="All">Issue (Category › Sub-category) · all</option>
+                    {issueCats.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </th>
                 {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
                 <th style={{ ...thBase, textAlign: "right" }}>{LATEST_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
@@ -2178,7 +2209,10 @@ export default function ReliabilityScorecards() {
               </tr>
             </thead>
             <tbody>
-              {L.topIssues.map((r, i) => {
+              {shownIssues.length === 0 && (
+                <tr><td colSpan={product === "HSIA" ? 8 : 7} style={{ ...tdBase, color: T.textFaint }}>No issues match the selected category.</td></tr>
+              )}
+              {shownIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
                 const cov = initiativesByTheme(product, themes);
                 return (
