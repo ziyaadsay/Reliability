@@ -346,8 +346,11 @@ const INITIATIVES = [
     desc: "New deepdive strategy leveraging Claude to connect platform telemetry, account provisioning and call data for TELUS TV+ channel-issue tickets." },
   { p: "TV", pillar: 1, theme: "Hardware", name: "Shipping Telemetry Automation", status: "In flight", timeline: "Nov 2026", prime: "A. Kozyniak", issues: ["TV", "Support"],
     desc: "Automates shipping telemetry to proactively identify new trends in shipment failures." },
-  { p: "TV", pillar: 2, theme: "Hardware", name: "PSU Replacement Campaign", status: "Launched", timeline: "Sep 2025", prime: "D. Culp", issues: ["TV"],
+  // notFor / pinFor: per-issue overrides of the theme-based initiative coverage in the ticket issues table
+  { p: "TV", pillar: 2, theme: "Hardware", name: "PSU Replacement Campaign", status: "Launched", timeline: "Sep 2025", prime: "D. Culp", issues: ["TV"], notFor: ["STB No Boot › Stuck on Initializing"],
     desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets." },
+  { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "Ideation", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
+    desc: "Sequential reboot procedure for Optik TV (Legacy) set-top boxes stuck on Initializing." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Shipment Notification Redesign", status: "Launched", timeline: "Feb 2026", prime: "K. Liu", issues: ["TV", "Support"],
     desc: "Redesigns equipment-shipment notifications to reduce fulfilment confusion and missed activations." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "UUID Auto Sync — Blocking Channels Fix", status: "Launched", timeline: "Mar 2026", prime: "J. Homsavath", issues: ["TV"],
@@ -368,6 +371,8 @@ const INITIATIVES = [
     desc: "Enhances recording-deletion behaviour." },
   { p: "TV", pillar: 3, theme: "Video Quality", name: "Low RSSI + Low Bitrate Proactive Campaign", status: "Launched", timeline: "Aug 2026", prime: "G. Sawa", issues: ["TV", "WiFi"],
     desc: "Proactive campaign targeting set-top boxes with low RSSI and low bitrate before customers notice video quality issues." },
+  { p: "TV", pillar: 3, theme: "Video Quality", name: "Mediaroom OVQ Campaign Restart", status: "In flight", timeline: "Oct 2026", prime: "G. Sawa", issues: ["TV"],
+    desc: "Restarts the Mediaroom (Optik TV Legacy) video-quality proactive campaign." },
   { p: "TV", pillar: 3, theme: "Onboarding", name: "AI STB Onboarding Videos", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV", "Support"],
     desc: "Six new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Channel Config Gap Closing", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV"],
@@ -1213,8 +1218,11 @@ function issueThemes(product, issue) {
   }
   return [];
 }
-function initiativesByTheme(product, themes) {
-  return INITIATIVES.filter((it) => it.p === product && themes.includes(it.theme));
+function initiativesByTheme(product, themes, issue) {
+  const pinned = (it) => issue && it.pinFor && it.pinFor.includes(issue);
+  return INITIATIVES
+    .filter((it) => it.p === product && themes.includes(it.theme) && !(issue && it.notFor && it.notFor.includes(issue)))
+    .sort((a, b) => (pinned(b) ? 1 : 0) - (pinned(a) ? 1 : 0));
 }
 
 // ---------------------------------------------------------------------------
@@ -2214,7 +2222,7 @@ export default function ReliabilityScorecards() {
               )}
               {shownIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
-                const cov = initiativesByTheme(product, themes);
+                const cov = initiativesByTheme(product, themes, r.issue);
                 return (
                   <tr key={r.issue}>
                     <td style={{ ...tdBase, color: T.textFaint, fontWeight: 700 }}>{i + 1}</td>
