@@ -2348,6 +2348,19 @@ export default function ReliabilityScorecards() {
             { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].tickets) }
           ]} fmt={fmtNum} T={T} />}
         </ChartCard>
+        <ChartCard title="Ticket rate by platform (% of platform base)" T={T}
+          tableOpen={!!openTables["tvp-trt"]} onToggleTable={() => toggleTable("tvp-trt")}
+          note="Platform tickets over the platform subscriber base; the base split is reported for 2026 onward.">
+          <LineChart labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].ticketRate) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].ticketRate) }
+          ]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
+          <Legend items={[{ label: "Optik TV Legacy", color: colors.LEGACY }, { label: "TV Evolution", color: colors.OPUS }]} T={T} />
+          {openTables["tvp-trt"] && <DataTable labels={rangeMonths} seriesDefs={[
+            { key: "LEGACY", label: "Optik TV Legacy", data: sliceR(TV_PLATFORMS[0].ticketRate) },
+            { key: "OPUS", label: "TV Evolution", data: sliceR(TV_PLATFORMS[1].ticketRate) }
+          ]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+        </ChartCard>
         <ChartCard title="Repair volume by platform" T={T}
           tableOpen={!!openTables["tvp-rp"]} onToggleTable={() => toggleTable("tvp-rp")}
           note="Repair split reported for 2026 onward.">
