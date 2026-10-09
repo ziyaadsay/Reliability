@@ -1888,7 +1888,12 @@ export default function ReliabilityScorecards() {
                     <li key={i} style={{ marginBottom: 10 }}>
                       <span style={{ fontWeight: 700, color: T.text }}>{it.t}</span>
                       {it.share && <span style={{ color: T.textFaint }}> · {it.share}</span>}
-                      {it.causes && <ul style={{ margin: "3px 0 0", paddingLeft: 18 }}>{it.causes.map((c, j) => <li key={j}>{c}</li>)}</ul>}
+                      {it.causes && (
+                        <div style={{ marginTop: 4 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.heading }}>Root causes</div>
+                          <ul style={{ margin: "2px 0 0", paddingLeft: 18 }}>{it.causes.map((c, j) => <li key={j}>{c}</li>)}</ul>
+                        </div>
+                      )}
                       {it.inits && (
                         <div style={{ marginTop: 5 }}>
                           <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.heading }}>Initiatives focused on these root causes</div>
@@ -2169,7 +2174,17 @@ export default function ReliabilityScorecards() {
     const cat1 = (issue) => issue.split(" › ")[0].trim();
     const issueCats = Array.from(new Set(L.topIssues.map((r) => cat1(r.issue)))).sort();
     const issueSel = issueFilter[product] || "All";
-    const shownIssues = L.topIssues.filter((r) => issueSel === "All" || cat1(r.issue) === issueSel);
+    // HSIA only: second filter on the customer pain point grouping
+    const ppSel = issueFilter[product + "-pp"] || "All";
+    const ppOptions = product === "HSIA" ? Array.from(new Set(L.topIssues.map((r) => hsiaPainPoint(r.issue)))).sort() : [];
+    const shownIssues = L.topIssues.filter((r) => (issueSel === "All" || cat1(r.issue) === issueSel) && (ppSel === "All" || hsiaPainPoint(r.issue) === ppSel));
+    const headerSelect = (value, key, allLabel, options, label) => (
+      <select value={value} onChange={(e) => setIssueFilter((f) => ({ ...f, [key]: e.target.value }))} aria-label={label}
+        style={{ ...selectStyle, padding: "3px 6px", fontSize: 11.5, fontWeight: value === "All" ? 700 : 600, color: value === "All" ? T.textMuted : T.heading, textTransform: value === "All" ? "uppercase" : "none", letterSpacing: value === "All" ? ".05em" : 0, maxWidth: 260 }}>
+        <option value="All">{allLabel} · all</option>
+        {options.map((c) => <option key={c} value={c}>{c}</option>)}
+      </select>
+    );
     // Volume change with its relative %: MoM is Sep vs Aug 2026, YoY is Sep 2026 vs Sep 2025
     const momYoy = (r) => (
       <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: 1, whiteSpace: "nowrap", fontSize: 12 }}>
@@ -2200,15 +2215,8 @@ export default function ReliabilityScorecards() {
             <thead>
               <tr>
                 <th style={{ ...thBase, textAlign: "left" }}>#</th>
-                <th style={{ ...thBase, textAlign: "left" }}>
-                  <select value={issueSel} onChange={(e) => setIssueFilter((f) => ({ ...f, [product]: e.target.value }))}
-                    aria-label="Filter issues by category"
-                    style={{ ...selectStyle, padding: "3px 6px", fontSize: 11.5, fontWeight: issueSel === "All" ? 700 : 600, color: issueSel === "All" ? T.textMuted : T.heading, textTransform: issueSel === "All" ? "uppercase" : "none", letterSpacing: issueSel === "All" ? ".05em" : 0, maxWidth: 260 }}>
-                    <option value="All">Issue (Category › Sub-category) · all</option>
-                    {issueCats.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </th>
-                {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>Customer pain point</th>}
+                <th style={{ ...thBase, textAlign: "left" }}>{headerSelect(issueSel, product, "Issue (Category › Sub-category)", issueCats, "Filter issues by category")}</th>
+                {product === "HSIA" && <th style={{ ...thBase, textAlign: "left" }}>{headerSelect(ppSel, product + "-pp", "Customer pain point", ppOptions, "Filter issues by customer pain point")}</th>}
                 <th style={{ ...thBase, textAlign: "right" }}>{LATEST_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>MoM / YoY</th>
@@ -2218,7 +2226,7 @@ export default function ReliabilityScorecards() {
             </thead>
             <tbody>
               {shownIssues.length === 0 && (
-                <tr><td colSpan={product === "HSIA" ? 8 : 7} style={{ ...tdBase, color: T.textFaint }}>No issues match the selected category.</td></tr>
+                <tr><td colSpan={product === "HSIA" ? 8 : 7} style={{ ...tdBase, color: T.textFaint }}>No issues match the selected filters.</td></tr>
               )}
               {shownIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
