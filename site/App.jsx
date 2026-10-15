@@ -493,9 +493,14 @@ const CALLS_SPLIT = {
 // Arrays align with MONTHS (Jan 2025 – Sep 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
 //   (Optik TV (Legacy) = Legacy; TV Evolution = OPUS).
-// Repairs & base: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
-//   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV.
-//   The source reports the split for 2026 onward only (2025 = null).
+// Base: TV Customer Base Breakdown workbook, "Customer Base - Provisioned" tab
+//   (month-end provisioned subscribers; all regions except BTV and SPLUS).
+//   Legacy = Total MR (MediaRoom only); OPUS = Total TTV+ (TTV+ only); mixed-usage
+//   customers (both platforms) are tracked separately in TV_MIXED. The three sum
+//   to the TV subscriber base in DATA.
+// Repairs: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
+//   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV; reported for
+//   2026 onward only (2025 = null).
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
 //   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September pull was not yet available from the
@@ -506,17 +511,20 @@ const TV_PLATFORMS = [
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
     tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468],
-    base: [null,null,null,null,null,null,null,null,null,null,null,null,821951,816639,811821,799110,790134,786450,765908,754891,741611],
+    base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390],
-    base: [null,null,null,null,null,null,null,null,null,null,null,null,313057,317647,321934,331737,339109,341964,359647,367866,380142],
+    base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null]
   }
 ];
+// Mixed usage: customers provisioned on both Mediaroom and TTV+ (same source as the
+// platform bases); subscriber count only for now.
+const TV_MIXED = { id: "mixed", name: "Mixed usage", sub: "MR + TTV+", base: [7032,7520,7574,8320,8534,9516,8862,8429,9507,9390,10965,11191,10720,10064,10012,11740,16639,21847,15667,14998,30129] };
 // Per-platform rates derived where both volume and base are reported
 TV_PLATFORMS.forEach((p) => {
   p.ticketRate = p.tickets.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(2) : null));
@@ -540,8 +548,8 @@ const TVA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[311
 // analysis/hsia/analyze_hsia_notes.py; aggregates only, no customer data)
 const HSA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[57173,58787,56761],"c1":[{"name":"Connectivity","v":[41039,42732,41325],"pct":-3.3},{"name":"Wireless","v":[13445,13135,12565],"pct":-4.3},{"name":"Incompatible Equipment","v":[1656,1994,2118],"pct":6.2},{"name":"Abandon","v":[937,848,702],"pct":-17.2},{"name":"NWH","v":[93,75,46],"pct":-38.7}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[11676,13151,13255],"pct":0.8},{"name":"Connectivity › ONT Not Ranged","v":[7205,7117,6358],"pct":-10.7},{"name":"Connectivity › Slow Speeds","v":[6433,6348,6574],"pct":3.6},{"name":"Connectivity › Losing Sync","v":[6269,6391,6307],"pct":-1.3},{"name":"Wireless › Can't Connect","v":[5788,5728,5162],"pct":-9.9},{"name":"Wireless › Disconnects","v":[4270,4149,4253],"pct":2.5},{"name":"Connectivity › No Sync","v":[3262,3717,3170],"pct":-14.7},{"name":"Wireless › Slow Speeds","v":[3387,3258,3149],"pct":-3.3},{"name":"Connectivity › Historical Data","v":[2917,2593,2600],"pct":0.3},{"name":"Incompatible Equipment › Incompatible","v":[1656,1994,2117],"pct":6.2},{"name":"Connectivity › No IP","v":[1939,1920,1710],"pct":-10.9},{"name":"Connectivity › Incompatible Equipment","v":[1337,1494,1349],"pct":-9.7},{"name":"Abandon › Abandon","v":[937,848,702],"pct":-17.2}],"rising":[{"name":"Incompatible Equipment › Incompatible › Not Applicable","v":[1651,1983,2114],"delta":131,"pct":6.6},{"name":"Connectivity › Slow Speeds › All Devices Affected","v":[5133,5038,5163],"delta":125,"pct":2.5},{"name":"Connectivity › No Dataflow › All Devices Affected","v":[10420,11925,12026],"delta":101,"pct":0.8},{"name":"Connectivity › Slow Speeds › Single Device Affected","v":[519,555,648],"delta":93,"pct":16.8},{"name":"Wireless › Disconnects › Some Devices Affected","v":[973,870,955],"delta":85,"pct":9.8},{"name":"Wireless › Disconnects › All Devices Affected","v":[2981,2972,2990],"delta":18,"pct":0.6},{"name":"Connectivity › Historical Data › Severe Line Issues","v":[2914,2593,2599],"delta":6,"pct":0.2},{"name":"Connectivity › Slow Speeds › Some Devices Affected","v":[688,654,659],"delta":5,"pct":0.8}],"falling":[{"name":"Wireless › Can't Connect › All Devices Affected","v":[3332,3521,3054],"delta":-467,"pct":-13.3},{"name":"Connectivity › No Sync › No DSL Light","v":[2461,2595,2273],"delta":-322,"pct":-12.4},{"name":"Connectivity › ONT Not Ranged › Outage","v":[825,1016,713],"delta":-303,"pct":-29.8},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[4238,3988,3688],"delta":-300,"pct":-7.5},{"name":"Connectivity › No Sync › Outage","v":[303,640,450],"delta":-190,"pct":-29.7},{"name":"Connectivity › No IP › No Internet Light","v":[1792,1691,1543],"delta":-148,"pct":-8.8},{"name":"Abandon › Abandon › Abandon","v":[936,845,700],"delta":-145,"pct":-17.2},{"name":"Connectivity › ONT Not Ranged › No Power","v":[2041,2003,1861],"delta":-142,"pct":-7.1}],"techR1":[{"name":"Education","v":[11813,12410,11990],"pct":-3.4},{"name":"Connectivity","v":[10346,10663,10390],"pct":-2.6},{"name":"(no closure code)","v":[7099,7843,8061],"pct":2.8},{"name":"GPON","v":[7555,7544,7612],"pct":0.9},{"name":"HSIA","v":[7723,7490,7030],"pct":-6.1},{"name":"Customer","v":[5336,4986,4666],"pct":-6.4},{"name":"Cancel Ticket","v":[1378,1370,1281],"pct":-6.5},{"name":"Outside Plant","v":[1299,1243,1190],"pct":-4.3},{"name":"Found OK","v":[1119,1451,1138],"pct":-21.6},{"name":"IPTV","v":[789,753,771],"pct":2.4},{"name":"Network Service Wire","v":[756,689,691],"pct":0.3},{"name":"NetCracker","v":[552,702,460],"pct":-34.5}],"techRising":[{"name":"HSIA › Boost Wireless Extender","v":[514,481,642],"delta":161,"pct":33.5},{"name":"Connectivity › STB/PVR","v":[313,328,460],"delta":132,"pct":40.2},{"name":"GPON › Inside Premise Equipment","v":[5006,5130,5200],"delta":70,"pct":1.4},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[163,125,182],"delta":57,"pct":45.6},{"name":"Network Service Wire › Drop/Serv Wire (Incl Bonding)","v":[621,564,593],"delta":29,"pct":5.1},{"name":"Education › IPTV","v":[216,252,276],"delta":24,"pct":9.5}],"techFalling":[{"name":"Education › HSIA","v":[11054,11583,11174],"delta":-409,"pct":-3.5},{"name":"Customer › Customer Training/Education/Inquiry Only","v":[4681,4311,4029],"delta":-282,"pct":-6.5},{"name":"Found OK › Not Required","v":[690,965,705],"delta":-260,"pct":-26.9},{"name":"NetCracker › Stuck","v":[511,645,411],"delta":-234,"pct":-36.3},{"name":"Connectivity › ONT","v":[965,983,807],"delta":-176,"pct":-17.9},{"name":"HSIA › Modem/Gateway","v":[4565,4410,4241],"delta":-169,"pct":-3.8}],"divergence":{"all":[{"alignment":55.3,"nofault":39.2,"nontelus":4.0,"reattribution":44.7,"closed":49133},{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118},{"alignment":54.9,"nofault":39.0,"nontelus":4.1,"reattribution":45.1,"closed":48025}],"field":[{"alignment":86.1,"nofault":6.1,"nontelus":13.2,"reattribution":13.9,"visits":14937},{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452},{"alignment":83.6,"nofault":6.9,"nontelus":13.4,"reattribution":16.4,"visits":14636}],"perCat":[{"cat":"Connectivity › No Dataflow","n":13255,"alignment":55.2,"nofault":38.5,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6574,"alignment":52.3,"nofault":45.4,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › ONT Not Ranged","n":6358,"alignment":70.7,"nofault":26.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Losing Sync","n":6307,"alignment":61.6,"nofault":31.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Can't Connect","n":5162,"alignment":33.1,"nofault":58.2,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4253,"alignment":36.0,"nofault":52.3,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":3170,"alignment":67.0,"nofault":28.3,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Wireless › Slow Speeds","n":3149,"alignment":30.6,"nofault":58.0,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Historical Data","n":2600,"alignment":80.4,"nofault":15.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":2117,"alignment":73.5,"nofault":22.6,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1710,"alignment":51.1,"nofault":43.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1349,"alignment":57.1,"nofault":38.5,"techTop":["Education / no fault","Access line / fibre / ONT"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":3275,"alignment":91.7,"nofault":4.7,"nontelus":21.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":2021,"alignment":80.9,"nofault":7.4,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1972,"alignment":84.1,"nofault":8.6,"nontelus":11.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1683,"alignment":91.4,"nofault":4.2,"nontelus":14.0,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1264,"alignment":88.7,"nofault":6.9,"nontelus":6.1,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1153,"alignment":88.5,"nofault":5.6,"nontelus":9.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1110,"alignment":83.3,"nofault":11.4,"nontelus":13.6,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":659,"alignment":50.4,"nofault":9.3,"nontelus":10.9,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":460,"alignment":88.3,"nofault":7.2,"nontelus":10.0,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":406,"alignment":45.4,"nofault":12.6,"nontelus":17.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":365,"alignment":85.4,"nofault":8.0,"nontelus":15.7,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":298,"alignment":45.0,"nofault":7.4,"nontelus":12.4,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":57173,"field_visit_pct":26.3,"agent_education_closure_pct":29.3,"no_closure_code_pct":12.4},{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3},{"tickets":56761,"field_visit_pct":25.9,"agent_education_closure_pct":28.4,"no_closure_code_pct":14.2}],"determination":[[13021,1974],[12490,2000],[12704,1969]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4941,4631,4647],"pct":0.3},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3846,3887,4167],"pct":7.2},{"name":"Drop / service wire / outside plant","v":[1882,1733,1597],"pct":-7.8},{"name":"Inside wiring / jack / ethernet","v":[1318,1352,1350],"pct":-0.1},{"name":"Modem / gateway replaced","v":[1337,1160,1109],"pct":-4.4},{"name":"Provisioning / profile / port fix","v":[1119,1114,1046],"pct":-6.1},{"name":"Education / no fault found / working on arrival","v":[836,799,817],"pct":2.3},{"name":"Power cycle / factory reset / firmware","v":[684,675,733],"pct":8.6},{"name":"Power supply / power","v":[201,157,151],"pct":-3.8},{"name":"Customer-owned equipment / third-party router","v":[66,74,64],"pct":-13.5}],"commentCoverage":[45159,45489,43185],"themes":[{"name":"ONT / fibre / light level","v":[15729,15321,14339],"pct":-6.4},{"name":"Slow speed / buffering","v":[12547,11736,10884],"pct":-7.3},{"name":"No internet / all devices down","v":[10606,11426,10453],"pct":-8.5},{"name":"Dispatch / technician booked","v":[9812,9936,9720],"pct":-2.2},{"name":"Boost / Wi-Fi extender","v":[8990,9214,8564],"pct":-7.1},{"name":"Intermittent drops / disconnects","v":[9323,8267,7882],"pct":-4.7},{"name":"Firmware / settings / factory reset","v":[7990,7861,7194],"pct":-8.5},{"name":"Work from home / streaming / gaming impact","v":[6691,7098,7014],"pct":-1.2},{"name":"Outage / active network event","v":[6537,7478,6666],"pct":-10.9},{"name":"DSL / copper line","v":[6471,6582,5932],"pct":-9.9},{"name":"Red / alarm light / LOS on ONT or modem","v":[6123,5862,5306],"pct":-9.5},{"name":"Repeat / recurring issue","v":[5539,5399,4871],"pct":-9.8},{"name":"Wi-Fi: cannot connect / single device","v":[2821,3058,2823],"pct":-7.7},{"name":"No power / dead equipment","v":[3046,2837,2616],"pct":-7.8},{"name":"Modem / gateway swap shipped","v":[1088,1141,1131],"pct":-0.9},{"name":"Customer wants tech / refuses troubleshooting","v":[893,846,918],"pct":8.5},{"name":"Third-party / customer-owned router","v":[399,399,407],"pct":2.0}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37386,37555,35238],"pct":-6.2},{"name":"NH20 / NAH (Network Access Hub)","v":[15541,15519,14383],"pct":-7.3},{"name":"T3200M gateway","v":[10477,10778,10304],"pct":-4.4},{"name":"Actiontec / legacy modem","v":[5084,5395,5211],"pct":-3.4},{"name":"Boost Wi-Fi 6","v":[3019,3313,2948],"pct":-11.0},{"name":"Wi-Fi Hub / WFH","v":[2203,1852,1639],"pct":-11.5},{"name":"Boost Wi-Fi 7 (BV3)","v":[1113,1551,1645],"pct":6.1},{"name":"Boost Lite (BLite)","v":[551,610,613],"pct":0.5}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[41813,42320,39955],"pct":-5.6},{"name":"Copper (DSL / bonded)","v":[27079,27785,27108],"pct":-2.4}],"domainMix":[{"agent":"Gateway / dataflow","n":13143,"v":[2272,3970,604,801,23,120,5137,206]},{"agent":"Access line & ONT","n":15658,"v":[6587,3181,342,839,93,181,4211,216]},{"agent":"Speed","n":5584,"v":[713,1735,274,193,3,51,2533,79]},{"agent":"Wi-Fi","n":10657,"v":[815,2814,659,116,1,90,5989,170]},{"agent":"Equipment compatibility","n":2983,"v":[951,851,111,80,1,50,864,72]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926" };
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
 const SCOPES = ["All", "HSIA", "TV", "SHS", "SH+"];
 
@@ -2337,18 +2345,38 @@ export default function ReliabilityScorecards() {
             </div>
           );
         })}
+        {(() => {
+          const mx = rowFigures(TV_MIXED.base, 0, false, false, LAST);
+          return (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 2px 8px" }}>
+                <span style={{ color: colors.MIXED, display: "inline-flex" }}><Icon name="tv" size={15} /></span>
+                <span style={{ fontWeight: 800, color: T.heading, fontSize: 14 }}>{TV_MIXED.name}</span>
+                <span style={{ fontSize: 11.5, color: T.textFaint }}>· {TV_MIXED.sub} · subscriber count only</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14, maxWidth: 420 }}>
+                <StatCard T={T} color={colors.MIXED} icon="base" label="Subscriber base" value={fmtBig(mx.latest)} sub={mx.latestMonth} deltas={[d(mx.mom, "MoM"), d(mx.yoy, "YoY")].filter(Boolean)} />
+              </div>
+            </div>
+          );
+        })()}
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Repairs and base: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair and base split is reported for 2026 onward, and repair figures are West-scope so rates can differ from the rolled-up TV repair rate on the TV page. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is reported for 2026 onward and is West-scope, so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
 
         {sec("Subscriber base", "base",
-          platChart("tvp-bs", "Subscriber base by platform", "base", fmtBig, "Base split reported for 2026 onward. The migration from Mediaroom to OPUS is visible in the crossing trends.", fmtNum)
+          <ChartCard title="Subscriber base by platform" T={T} tableOpen={!!openTables["tvp-bs"]} onToggleTable={() => toggleTable("tvp-bs")}
+            note="Month-end provisioned subscribers (Customer Base - Provisioned). The migration from Mediaroom to TTV+ is visible in the diverging trends; mixed-usage customers are counted separately from either platform.">
+            <LineChart labels={rangeMonths} seriesDefs={[...platSeries("base"), { key: "MIXED", label: TV_MIXED.name, data: sliceR(TV_MIXED.base) }]} yFmt={fmtBig} colors={colors} T={T} />
+            <Legend items={[...TV_PLATFORMS.map((p) => ({ label: p.name, color: colors[platKey(p)] })), { label: TV_MIXED.name, color: colors.MIXED }]} T={T} />
+            {openTables["tvp-bs"] && <DataTable labels={rangeMonths} seriesDefs={[...platSeries("base"), { key: "MIXED", label: TV_MIXED.name, data: sliceR(TV_MIXED.base) }]} fmt={fmtNum} T={T} />}
+          </ChartCard>
         )}
 
         {sec("Tickets", "tickets",
           <>
             {platChart("tvp-tk", "Ticket volume by platform", "tickets", fmtNum)}
-            {platChart("tvp-trt", "Ticket rate by platform (% of platform base)", "ticketRate", (v) => fmtPct(v, 2), "Platform tickets over the platform subscriber base; the base split is reported for 2026 onward.")}
+            {platChart("tvp-trt", "Ticket rate by platform (% of platform base)", "ticketRate", (v) => fmtPct(v, 2), "Platform tickets over the platform's provisioned subscriber base (Customer Base - Provisioned).")}
           </>
         )}
 
@@ -2364,9 +2392,13 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Mixed usage", "base",
-          <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0, lineHeight: 1.6 }}>
-            Mixed-usage subscriber tracking (customers provisioned on both Mediaroom and OPUS) will populate from the TV Customer Base Breakdown workbook (Customer Base - Provisioned tab) once that source is loaded; only the subscriber count will be shown for now.
-          </p>
+          <>
+            <ChartCard title="Mixed-usage subscribers (MR + TTV+)" T={T} tableOpen={!!openTables["tvp-mx"]} onToggleTable={() => toggleTable("tvp-mx")}
+              note="Customers provisioned on both Mediaroom and TTV+ at month end (Customer Base - Provisioned). Subscriber count only; tickets and repairs are not yet split for this group.">
+              <LineChart labels={rangeMonths} seriesDefs={[{ key: "MIXED", label: TV_MIXED.name, data: sliceR(TV_MIXED.base) }]} yFmt={fmtNum} colors={colors} T={T} />
+              {openTables["tvp-mx"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "MIXED", label: TV_MIXED.name, data: sliceR(TV_MIXED.base) }]} fmt={fmtNum} T={T} />}
+            </ChartCard>
+          </>
         )}
       </>
     );
@@ -4404,7 +4436,7 @@ export default function ReliabilityScorecards() {
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "tvplatforms"
-                ? "TV platforms · Optik TV Legacy vs TV Evolution: base, tickets, repairs, swaps"
+                ? "TV platforms · Optik TV Legacy vs TV Evolution vs Mixed usage: base, tickets, repairs, swaps"
                 : page === "tvtickets"
                   ? "TV notes analysis · Sep vs Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
                   : page === "tvsentiment"
