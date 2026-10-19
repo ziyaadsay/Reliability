@@ -642,6 +642,8 @@ function fmtBig(v) {
   return v.toLocaleString();
 }
 function fmtPct(v, d = 2) { return v == null ? "—" : v.toFixed(d) + "%"; }
+// Ticket, repair and churn rates are reported per 100 subscribers (same figure as the old % of base)
+function fmtRate(v, d = 2) { return v == null ? "—" : v.toFixed(d); }
 function lastIdxUpTo(arr, upTo) { for (let i = Math.min(upTo, arr.length - 1); i >= 0; i--) if (arr[i] != null) return i; return -1; }
 function shortMonth(m) { const [mo, y] = m.split(" "); return mo.toUpperCase() + "'" + y.slice(2); }
 
@@ -673,6 +675,12 @@ function delta(curr, prev, unit, decimals, goodWhenDown = true, withPct = true) 
 function deltaBps(curr, prev, goodWhenDown = true, pctDecimals = 2) {
   if (curr == null || prev == null) return null;
   return delta(curr * 100, prev * 100, " bps", Math.max(0, pctDecimals - 2), goodWhenDown, false);
+}
+
+// Per-100-subscriber rate movements are shown as the absolute change in that unit (e.g. 0.05)
+function deltaRate(curr, prev, goodWhenDown = true, decimals = 2) {
+  if (curr == null || prev == null) return null;
+  return delta(curr, prev, "", decimals, goodWhenDown, false);
 }
 
 function yoyPctText(a26, a25) {
@@ -1147,15 +1155,15 @@ const INDICATORS = [
     ]
   },
   {
-    id: "tickets", name: "Ticket rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
+    id: "tickets", name: "Ticket rate (per 100 subs)", decimals: 2, fmt: (v) => fmtRate(v, 2), agg2025: "avg",
     rows: [...PRODUCTS, "SH+"].map((p) => ({ key: p, label: p, data: DATA.ticketRate[p] }))
   },
   {
-    id: "repairs", name: "Repair / dispatch rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
+    id: "repairs", name: "Repair / dispatch rate (per 100 subs)", decimals: 2, fmt: (v) => fmtRate(v, 2), agg2025: "avg",
     rows: [...PRODUCTS, "SH+"].map((p) => ({ key: p, label: p, data: DATA.repairRate[p] }))
   },
   {
-    id: "churn", name: "Churn rate", decimals: 2, fmt: (v) => fmtPct(v, 2), agg2025: "avg",
+    id: "churn", name: "Churn rate (per 100 subs)", decimals: 2, fmt: (v) => fmtRate(v, 2), agg2025: "avg",
     rows: PRODUCTS.map((p) => ({ key: p, label: p, data: DATA.churnRate[p] }))
   }
 ];
@@ -1255,7 +1263,7 @@ function initiativesByTheme(product, themes, issue) {
 // ---------------------------------------------------------------------------
 const DECK_W = 1120, DECK_H = 630;
 const DECK_LIGHT = { bg: "#FFFFFF", band: "#4B286D", bandText: "#C9A9E8", green: "#66CC02", panel: "#F6F2FA", border: "#E7E3EC", text: "#2C2E30", muted: "#676E73", faint: "#9A93A6", heading: "#4B286D", good: "#2B8000", bad: "#B3261E" };
-const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · TCS PLT Charter scorecard (Sweepr) · movements on rates are in bps";
+const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · TCS PLT Charter scorecard (Sweepr) · ticket, repair and churn rates are per 100 subscribers";
 
 function sparkPoints(series, w, h) {
   const idx = series.map((v, i) => [i, v]).filter(([, v]) => v != null);
@@ -1539,7 +1547,7 @@ export default function ReliabilityScorecards() {
   function rowFigures(data, decimals, goodWhenDown = true, bps = false, upTo = toIdx) {
     const li = lastIdxUpTo(data, upTo);
     if (li < 0) return { latest: null };
-    const D = bps ? (a, b) => deltaBps(a, b, goodWhenDown, decimals) : (a, b) => delta(a, b, "", decimals, goodWhenDown);
+    const D = bps === "rate" ? (a, b) => deltaRate(a, b, goodWhenDown, decimals) : bps ? (a, b) => deltaBps(a, b, goodWhenDown, decimals) : (a, b) => delta(a, b, "", decimals, goodWhenDown);
     return {
       latest: data[li], latestMonth: MONTHS[li],
       mom: li >= 1 ? D(data[li], data[li - 1]) : null,
@@ -1582,9 +1590,9 @@ export default function ReliabilityScorecards() {
       return [
         { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
-        { icon: "tickets", label: "Ticket rate", data: DATA.ticketRate["SH+"], fmt: fmtPct, dec: 2, color: colors["SH+"], goodDown: true },
+        { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
         { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
-        { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate["SH+"], fmt: fmtPct, dec: 2, color: colors["SH+"], goodDown: true },
+        { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
         { icon: "base", label: "Subscriber base", data: DATA.subBase["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: false }
       ];
     }
@@ -1594,9 +1602,9 @@ export default function ReliabilityScorecards() {
     return [
       { icon: "calls", label: callsLabel, data: callsData, fmt: fmtNum, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
       { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNum, dec: 0, color: colors[sc], goodDown: true },
-      { icon: "tickets", label: "Ticket rate", data: DATA.ticketRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
-      { icon: "repairs", label: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
-      { icon: "churn", label: "Churn rate", data: DATA.churnRate[sc], fmt: fmtPct, dec: 2, color: colors[sc], goodDown: true },
+      { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
+      { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
+      { icon: "churn", label: "Churn rate per 100 subs", data: DATA.churnRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "base", label: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: false },
       ...(DATA.b2bVoC[sc] ? [{ icon: "sentiment", label: "Voice of Customer (B2B)", data: DATA.b2bVoC[sc], fmt: fmtPct, dec: 1, color: colors[sc], goodDown: true }] : [])
     ];
@@ -1606,7 +1614,7 @@ export default function ReliabilityScorecards() {
     return (
       <div style={{ display: "grid", gridTemplateColumns: columns ? `repeat(${columns}, 1fr)` : "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {tiles.map((tile, i) => {
-          const f = rowFigures(tile.data, tile.dec, tile.goodDown, tile.fmt === fmtPct);
+          const f = rowFigures(tile.data, tile.dec, tile.goodDown, tile.fmt === fmtPct ? true : tile.fmt === fmtRate ? "rate" : false);
           const deltas = [];
           if (deltaMode === "yoy") {
             deltas.push(<DeltaText key="y" d={f.yoy} T={T} suffix="YoY" />);
@@ -1730,7 +1738,7 @@ export default function ReliabilityScorecards() {
     const at = (arr, k) => (arr && k >= 0 && k < arr.length ? arr[k] : null);
     const pick = (arr) => ({ now: at(arr, i), prev: at(arr, i - 1), yoy: at(arr, i - 12) });
     const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
-    const bps = (o, k) => (o.now != null && o[k] != null ? Math.round((o.now - o[k]) * 100) : null);
+    const bps = (o, k) => (o.now != null && o[k] != null ? +(o.now - o[k]).toFixed(3) : null);
     const calls = pick(CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc]);
     const tv = pick(DATA.ticketVolume[sc]), tr = pick(DATA.ticketRate[sc]), rv = pick(DATA.repairVolume[sc]), rr = pick(DATA.repairRate[sc]), base = pick(DATA.subBase[sc]);
     return {
@@ -1774,7 +1782,7 @@ export default function ReliabilityScorecards() {
     const v = verdictOf(f);
     const toneColor = v.tone === "good" ? T.good : v.tone === "bad" ? T.bad : T.textMuted;
     const sPct = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
-    const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " bps");
+    const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " per 100");
     const trDec = 2, rrDec = sc === "SH+" ? 3 : 2;
     const aPct = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
     const prefer = v.tone === "good" ? -1 : v.tone === "bad" ? 1 : 0;
@@ -1796,7 +1804,7 @@ export default function ReliabilityScorecards() {
       if (per.length) {
         const lead = per[0]; driverProduct = lead.p;
         const d = ticketDriver(lead.p, f.i, baseEffect ? 0 : prefer);
-        const lt = `${lead.p} was the largest mover: ticket volume ${upDown(lead.f.tv.now - lead.f.tv.prev)} ${Math.abs(lead.f.tv.now - lead.f.tv.prev).toLocaleString()} (${sPct(lead.f.tvPct)}) and its ticket rate ${upDown(lead.f.trBps)} ${Math.abs(lead.f.trBps)} bps`
+        const lt = `${lead.p} was the largest mover: ticket volume ${upDown(lead.f.tv.now - lead.f.tv.prev)} ${Math.abs(lead.f.tv.now - lead.f.tv.prev).toLocaleString()} (${sPct(lead.f.tvPct)}) and its ticket rate ${upDown(lead.f.trBps)} ${Math.abs(lead.f.trBps)} per 100`
           + (d ? `, led by ${d.name} (${d.d > 0 ? "+" : ""}${d.d.toLocaleString()}, ${sPct(d.pct)}).` : ".");
         driverText = driverText ? `${driverText} ${lt}` : lt;
       }
@@ -1823,13 +1831,13 @@ export default function ReliabilityScorecards() {
 
     // ----- sentences -----
     const tickets = [
-      `Ticket rate ${upDown(f.trBps)} ${f.trBps == null ? "" : Math.abs(f.trBps) + " bps "}to ${fmtPct(f.tr.now, trDec)}${f.trBpsY != null ? ` (${sBps(f.trBpsY)} year over year)` : ""}.`,
+      `Ticket rate ${upDown(f.trBps)} ${f.trBps == null ? "" : Math.abs(f.trBps) + " per 100 subs "}to ${fmtRate(f.tr.now, trDec)} per 100 subs${f.trBpsY != null ? ` (${sBps(f.trBpsY)} year over year)` : ""}.`,
       f.tv.prev != null ? `Volume ${upDown(f.tvPct)} ${aPct(f.tvPct)} to ${fmtNum(f.tv.now)}${f.tvPctY != null ? ` (${sPct(f.tvPctY)} YoY)` : ""}.` : `Volume was ${fmtNum(f.tv.now)}.`,
       f.basePct != null ? `Subscriber base ${upDown(f.basePct, "grew", "shrank")} ${aPct(f.basePct)}.` : null,
       notesText
     ].filter(Boolean).join(" ");
     const repairs = f.rr.now == null ? "Repairs are not reported for this month." : [
-      `Repair rate ${upDown(f.rrBps)} ${f.rrBps == null ? "" : Math.abs(f.rrBps) + " bps "}to ${fmtPct(f.rr.now, rrDec)}${f.rrBpsY != null ? ` (${sBps(f.rrBpsY)} YoY)` : ""}.`,
+      `Repair rate ${upDown(f.rrBps)} ${f.rrBps == null ? "" : Math.abs(f.rrBps) + " per 100 subs "}to ${fmtRate(f.rr.now, rrDec)} per 100 subs${f.rrBpsY != null ? ` (${sBps(f.rrBpsY)} YoY)` : ""}.`,
       f.rv.now != null ? `${fmtNum(f.rv.now)} dispatches${f.rvPct != null ? ` (${sPct(f.rvPct)} MoM${f.rvPctY != null ? `, ${sPct(f.rvPctY)} YoY` : ""})` : ""}.` : null,
       f.per100 != null && f.per100Prev != null
         ? `${f.per100Prev.toFixed(1)} → ${f.per100.toFixed(1)} dispatches per 100 tickets, so ${f.per100 < f.per100Prev - 0.05 ? "a smaller" : f.per100 > f.per100Prev + 0.05 ? "a larger" : "the same"} share of tickets needed a field visit.`
@@ -1849,10 +1857,10 @@ export default function ReliabilityScorecards() {
 
     const baseClause = baseEffect ? ` (volume ${upDown(f.tvPct)} ${aPct(f.tvPct)}; the base ${upDown(f.basePct, "grew", "shrank")} ${aPct(f.basePct)})` : "";
     const headline = v.tone === "bad"
-      ? `${label}, reliability deteriorated in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} bps` : ""}.`
+      ? `${label}, reliability deteriorated in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} per 100${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} per 100` : ""}.`
       : v.tone === "good"
-        ? `${label}, reliability improved in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} bps` : ""}.`
-        : `${label}, the ${f.month} read is mixed: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} bps while the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps || 0)} bps.`;
+        ? `${label}, reliability improved in ${f.month}: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} per 100${baseClause}${f.rrBps != null ? ` and the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps)} per 100` : ""}.`
+        : `${label}, the ${f.month} read is mixed: the ticket rate ${upDown(f.trBps)} ${Math.abs(f.trBps || 0)} per 100 while the repair rate ${upDown(f.rrBps)} ${Math.abs(f.rrBps || 0)} per 100.`;
 
     const topIssuesText = (() => {
       const yoy = (a26, a25) => (a25 ? sPct(((a26 - a25) / a25) * 100) : null);
@@ -1880,9 +1888,9 @@ export default function ReliabilityScorecards() {
     // ----- metric switcher (hero statement + chart) -----
     const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
     const metricDefs = [
-      { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate", data: DATA.ticketRate[sc], fmt: (x) => fmtPct(x, trDec), bps: true, goodDown: true },
+      { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: (x) => fmtRate(x, trDec), rate: true, goodDown: true },
       { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNumK, goodDown: true },
-      { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: (x) => fmtPct(x, rrDec), bps: true, goodDown: true },
+      { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: (x) => fmtRate(x, rrDec), rate: true, goodDown: true },
       { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtNumK, goodDown: true },
       { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtNumK, goodDown: true },
       { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtNumK, goodDown: false },
@@ -1890,12 +1898,12 @@ export default function ReliabilityScorecards() {
     ].filter((m) => m.data && m.data[f.i] != null);
     const metric = metricDefs.find((m) => m.key === healthMetric[sc]) || metricDefs[0];
     const mNow = metric.data[f.i], mPrev = metric.data[f.i - 1], mYoy = metric.data[f.i - 12];
-    const mDelta = mPrev == null ? null : metric.bps ? Math.round((mNow - mPrev) * 100) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
-    const mDeltaY = mYoy == null ? null : metric.bps ? Math.round((mNow - mYoy) * 100) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
+    const mDelta = mPrev == null ? null : metric.rate ? +(mNow - mPrev).toFixed(3) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
+    const mDeltaY = mYoy == null ? null : metric.rate ? +(mNow - mYoy).toFixed(3) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
     const chg = (d) => {
       if (d == null) return null;
-      if (d === 0 || (!metric.bps && Math.abs(d) < 0.05)) return "flat";
-      const amt = metric.bps ? `${Math.abs(d)} bps` : metric.pts ? `${Math.abs(d).toFixed(1)} pts` : `${Math.abs(d).toFixed(1)}%`;
+      if (d === 0 || (!metric.rate && Math.abs(d) < 0.05)) return "flat";
+      const amt = metric.rate ? `${Math.abs(d)} per 100` : metric.pts ? `${Math.abs(d).toFixed(1)} pts` : `${Math.abs(d).toFixed(1)}%`;
       return `${amt} ${d > 0 ? "higher" : "lower"}`;
     };
     const favourable = mDelta == null || mDelta === 0 ? null : (mDelta < 0) === metric.goodDown;
@@ -2453,9 +2461,9 @@ export default function ReliabilityScorecards() {
           const col = colors[platKey(p)];
           const bs = rowFigures(p.base, 0, false, false, LAST);
           const tk = rowFigures(p.tickets, 0, true, false, LAST);
-          const tr = rowFigures(p.ticketRate, 2, true, true, LAST);
+          const tr = rowFigures(p.ticketRate, 2, true, "rate", LAST);
           const rp = rowFigures(p.repairs, 0, true, false, LAST);
-          const rr = rowFigures(p.repairRate, 3, true, true, LAST);
+          const rr = rowFigures(p.repairRate, 3, true, "rate", LAST);
           const sw = rowFigures(p.swaps2026 || [], 0, true, false, LAST);
           const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
           return (
@@ -2468,9 +2476,9 @@ export default function ReliabilityScorecards() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
                 <StatCard T={T} color={col} icon="base" label="Subscriber base" value={fmtBig(bs.latest)} sub={bs.latestMonth} deltas={[d(bs.mom, "MoM"), d(bs.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtNum(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="tickets" label="Ticket rate" value={fmtPct(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="tickets" label="Ticket rate per 100 subs" value={fmtRate(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtNum(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair rate" value={fmtPct(rr.latest, 3)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 3)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtNum(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
               </div>
             </div>
@@ -2507,14 +2515,14 @@ export default function ReliabilityScorecards() {
         {sec("Tickets", "tickets",
           <>
             {platChart("tvp-tk", "Ticket volume by platform", "tickets", fmtNum)}
-            {platChart("tvp-trt", "Ticket rate by platform (% of platform base)", "ticketRate", (v) => fmtPct(v, 2), "Platform tickets over the platform's provisioned subscriber base (Customer Base - Provisioned).")}
+            {platChart("tvp-trt", "Ticket rate by platform (per 100 platform subs)", "ticketRate", (v) => fmtRate(v, 2), "Platform tickets over the platform's provisioned subscriber base (Customer Base - Provisioned).")}
           </>
         )}
 
         {sec("Repairs / Dispatches", "repairs",
           <>
             {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Repair split reported for 2026 onward.")}
-            {platChart("tvp-rr", "Repair rate by platform (% of platform base)", "repairRate", (v) => fmtPct(v, 2), undefined, (v) => fmtPct(v, 3))}
+            {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 3))}
           </>
         )}
 
@@ -2541,7 +2549,7 @@ export default function ReliabilityScorecards() {
     const s = SWEEPR[key];
     const li = lastIdxUpTo(s.a, toIdx);
     if (li < 0) return { latest: null };
-    const D = bps ? (a, b) => deltaBps(a, b, goodDown, dec) : (a, b) => delta(a, b, "", dec, goodDown);
+    const D = bps === "rate" ? (a, b) => deltaRate(a, b, goodDown, dec) : bps ? (a, b) => deltaBps(a, b, goodDown, dec) : (a, b) => delta(a, b, "", dec, goodDown);
     return {
       latest: s.a[li], latestMonth: MONTHS[li], target: s.t[li],
       vsTarget: s.t[li] != null ? D(s.a[li], s.t[li]) : null,
@@ -2555,7 +2563,7 @@ export default function ReliabilityScorecards() {
     const res = sweeprFig("resolved", 0);
     const web = sweeprFig("webAppRate", 1, false, true);
     const easy = sweeprFig("cxEasy", 2);
-    const chn = sweeprFig("churn", 2, true, true);
+    const chn = sweeprFig("churn", 2, true, "rate");
     const dea = sweeprFig("deacts", 0);
     const targetSeries = (key, label) => [
       { key: "SWEEPR", label, data: sliceR(SWEEPR[key].a) },
@@ -2576,7 +2584,7 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={col} icon="cx" label="CX 'Easy to follow'" value={easy.latest == null ? "—" : easy.latest.toFixed(2)}
             sub={easy.latest == null ? undefined : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`}
             deltas={[<DeltaText key="t" d={easy.vsTarget} T={T} suffix="vs target" />]} />
-          <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn" value={fmtPct(chn.latest, 2)}
+          <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn per 100 subs" value={fmtRate(chn.latest, 2)}
             sub={chn.latestMonth}
             deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="MoM" />]} />
           <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
@@ -2647,11 +2655,11 @@ export default function ReliabilityScorecards() {
         </Section>
 
         <Section num="04" eyebrow="Self-serve" title="Churn impact" icon="saved" T={T} collapsible defaultOpen={false}>
-          <ChartCard title="Sweepr involved churn rate" T={T}
+          <ChartCard title="Sweepr involved churn rate (per 100 subs)" T={T}
             tableOpen={!!openTables["ss-chn"]} onToggleTable={() => toggleTable("ss-chn")}
             note="Churn rate among customers whose journey involved a Sweepr workflow. Reported for 2026 only; no target is set in the source.">
-            <LineChart labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-            {openTables["ss-chn"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} yFmt={(v) => fmtRate(v, 2)} colors={colors} T={T} />
+            {openTables["ss-chn"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Churn rate", data: sliceR(SWEEPR.churn.a) }]} fmt={(v) => fmtRate(v, 2)} T={T} />}
           </ChartCard>
           <ChartCard title="Deacts saved" T={T}
             tableOpen={!!openTables["ss-dea"]} onToggleTable={() => toggleTable("ss-dea")}
@@ -2783,7 +2791,7 @@ export default function ReliabilityScorecards() {
         <TileRow tiles={scopeTiles(product)} deltaMode="both" />
         {yoyChurn && (
           <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
-            Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.round(Math.abs(yoyChurn.yoyPts) * 100)} bps YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)}% vs 2025 {yoyChurn.y2025.toFixed(2)}%
+            Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)} per 100 subs YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)} vs 2025 {yoyChurn.y2025.toFixed(2)} per 100 subs
           </div>
         )}
         {CHILD_PAGES[product] && (
@@ -2823,12 +2831,12 @@ export default function ReliabilityScorecards() {
 
         {sec("Tickets", "tickets",
           <>
-            <ChartCard title="Tickets — volume (bars) and rate (line, % of sub base)" T={T}
+            <ChartCard title="Tickets — volume (bars) and rate (line, per 100 subs)" T={T}
               tableOpen={!!openTables[product + "-tr"]} onToggleTable={() => toggleTable(product + "-tr")}
               note={product === "SH+" ? "SH+ ticket volume from Jan 2025 and ticket rate from Jul 2025 (SH+ reliability KPIs workbook). Volume on the left axis, rate on the right." : "Ticket volume on the left axis, ticket rate on the right axis (Reliability Deact KPIs tab)."}>
               <ComboChart labels={rangeMonths} T={T}
                 bar={{ label: "Ticket volume", data: sliceR(DATA.ticketVolume[product]), color: colors[product], fmt: fmtNumK }}
-                line={{ label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), color: colors[product], fmt: (v) => fmtPct(v, 2) }}
+                line={{ label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), color: colors[product], fmt: (v) => fmtRate(v, 2) }}
                 tooltipExtra={hasLooker ? (i) => {
                   // biggest month-over-month % riser among Looker Category 1 › 2 issues (2026 only)
                   const m = rangeMonths[i];
@@ -2844,7 +2852,7 @@ export default function ReliabilityScorecards() {
               <Legend items={[{ label: "Ticket volume (bars, left axis)", color: colors[product], bar: true }, { label: "Ticket rate (line, right axis)", color: colors[product] }]} T={T} />
               {openTables[product + "-tr"] && <DataTable labels={rangeMonths} seriesDefs={[
                 { key: product, label: "Ticket volume", data: sliceR(DATA.ticketVolume[product]), fmt: fmtNum },
-                { key: product, label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), fmt: (v) => fmtPct(v, 2) }
+                { key: product, label: "Ticket rate", data: sliceR(DATA.ticketRate[product]), fmt: (v) => fmtRate(v, 2) }
               ]} fmt={fmtNum} T={T} />}
             </ChartCard>
             {hasLooker && (
@@ -2884,16 +2892,16 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <>
-            <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, % of sub base)" T={T}
+            <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T}
               tableOpen={!!openTables[product + "-rr"]} onToggleTable={() => toggleTable(product + "-rr")}
               note={product === "SH+" ? "SH+ repairs are reported from Jul 2025 (SH+ reliability KPIs workbook). Volume on the left axis, rate on the right." : "Repair (dispatch) volume on the left axis, repair rate on the right axis."}>
               <ComboChart labels={rangeMonths} T={T}
                 bar={{ label: "Repair volume", data: sliceR(DATA.repairVolume[product]), color: colors[product], fmt: fmtNumK }}
-                line={{ label: "Repair rate", data: sliceR(DATA.repairRate[product]), color: colors[product], fmt: (v) => fmtPct(v, 2) }} />
+                line={{ label: "Repair rate", data: sliceR(DATA.repairRate[product]), color: colors[product], fmt: (v) => fmtRate(v, 2) }} />
               <Legend items={[{ label: "Repair volume (bars, left axis)", color: colors[product], bar: true }, { label: "Repair rate (line, right axis)", color: colors[product] }]} T={T} />
               {openTables[product + "-rr"] && <DataTable labels={rangeMonths} seriesDefs={[
                 { key: product, label: "Repair volume", data: sliceR(DATA.repairVolume[product]), fmt: fmtNum },
-                { key: product, label: "Repair rate", data: sliceR(DATA.repairRate[product]), fmt: (v) => fmtPct(v, 2) }
+                { key: product, label: "Repair rate", data: sliceR(DATA.repairRate[product]), fmt: (v) => fmtRate(v, 2) }
               ]} fmt={fmtNum} T={T} />}
             </ChartCard>
             {product === "HSIA" && (
@@ -2909,11 +2917,11 @@ export default function ReliabilityScorecards() {
         )}
 
         {product !== "SH+" && sec("Churn", "churn",
-          <ChartCard title="Churn rate (go/national RGU)" T={T}
+          <ChartCard title="Churn rate per 100 subs (go/national RGU)" T={T}
             tableOpen={!!openTables[product + "-ch"]} onToggleTable={() => toggleTable(product + "-ch")}
             note={`Churn runs behind the other indicators in the source (reported through ${CHURN_THRU}; Jan 2025 was never reported).`}>
-            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} yFmt={(v) => fmtPct(v, 2)} colors={colors} T={T} />
-            {openTables[product + "-ch"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} fmt={(v) => fmtPct(v, 2)} T={T} />}
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} yFmt={(v) => fmtRate(v, 2)} colors={colors} T={T} />
+            {openTables[product + "-ch"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: product, data: sliceR(DATA.churnRate[product]) }]} fmt={(v) => fmtRate(v, 2)} T={T} />}
           </ChartCard>
         )}
 
@@ -4257,7 +4265,7 @@ export default function ReliabilityScorecards() {
     const kpis = PRODUCTS.map((p) => ({
       product: p, color: colors[p],
       tiles: scopeTiles(p).map((t) => {
-        const f = rowFigures(t.data, t.dec, t.goodDown, t.fmt === fmtPct);
+        const f = rowFigures(t.data, t.dec, t.goodDown, t.fmt === fmtPct ? true : t.fmt === fmtRate ? "rate" : false);
         return { label: t.label.replace(/\s*\(.*\)$/, ""), value: t.fmt(f.latest), month: f.latestMonth ? shortMonth(f.latestMonth) : "", yoy: D(f.yoy) };
       })
     }));
@@ -4276,12 +4284,12 @@ export default function ReliabilityScorecards() {
       product: it.p, color: colors[it.p], name: it.name, theme: it.theme, status: it.status, timeline: it.timeline, prime: it.prime,
       pillar: (PILLARS.find((pl) => pl.n === it.pillar) || {}).name
     }));
-    const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, true), dea = sweeprFig("deacts", 0);
+    const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, "rate"), dea = sweeprFig("deacts", 0);
     const selfServe = [
       { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
       { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "YoY"]] },
       { icon: "cx", label: "CX 'Easy to follow'", value: easy.latest == null ? "—" : easy.latest.toFixed(2), sub: easy.latest == null ? "" : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`, deltas: [[D(easy.vsTarget), "vs target"]] },
-      { icon: "churn", label: "Sweepr involved churn", value: fmtPct(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "MoM"]] },
+      { icon: "churn", label: "Sweepr involved churn per 100 subs", value: fmtRate(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "MoM"]] },
       { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
     ];
     return {

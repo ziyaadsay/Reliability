@@ -15,10 +15,10 @@ const METRICS = {
   callsOffered: { label: "Calls offered", unit: "count", goodWhenDown: true },
   callsAnswered: { label: "Calls answered", unit: "count", goodWhenDown: true },
   ticketVolume: { label: "Ticket volume", unit: "count", goodWhenDown: true },
-  ticketRate: { label: "Ticket rate", unit: "% of subscriber base", goodWhenDown: true, rate: true },
+  ticketRate: { label: "Ticket rate", unit: "per 100 subscribers", goodWhenDown: true, per100: true },
   repairVolume: { label: "Repair / dispatch volume", unit: "count", goodWhenDown: true },
-  repairRate: { label: "Repair / dispatch rate", unit: "% of subscriber base", goodWhenDown: true, rate: true },
-  churnRate: { label: "Churn rate", unit: "% of subscriber base", goodWhenDown: true, rate: true },
+  repairRate: { label: "Repair / dispatch rate", unit: "per 100 subscribers", goodWhenDown: true, per100: true },
+  churnRate: { label: "Churn rate", unit: "per 100 subscribers", goodWhenDown: true, per100: true },
   subBase: { label: "Subscriber base", unit: "count", goodWhenDown: false },
   b2bVoC: { label: "Voice of Customer (B2B) score", unit: "% (lower is better)", goodWhenDown: true, rate: true }
 };
@@ -42,7 +42,7 @@ function change(curr, prev, meta) {
   const diff = curr - prev;
   const out = { from: prev, to: curr, direction: diff > 0 ? "up" : diff < 0 ? "down" : "flat" };
   out.assessment = diff === 0 ? "flat" : (meta.goodWhenDown ? diff < 0 : diff > 0) ? "improving" : "deteriorating";
-  if (meta.rate) out.bps = Math.round(diff * 100); else { out.abs = diff; out.pct = prev ? round((diff / Math.abs(prev)) * 100, 1) : null; }
+  if (meta.per100) out.per100 = round(diff, 3); else if (meta.rate) out.bps = Math.round(diff * 100); else { out.abs = diff; out.pct = prev ? round((diff / Math.abs(prev)) * 100, 1) : null; }
   return out;
 }
 function figures(series, meta, upTo) {
@@ -119,7 +119,7 @@ function callTool(name, args = {}) {
         if (f.latest != null) kpis[k] = { label: meta.label, unit: meta.unit, ...f };
       }
       const annual = DATA.annualChurn && DATA.annualChurn[args.product];
-      return text({ product: args.product, asOf: MONTHS[upTo], kpis, annualChurn: annual || null, notes: ["MoM and YoY compare the reported month with the prior month and the same month a year earlier.", "Rates move in basis points (1 pt = 100 bps).", `Churn is reported through ${CHURN_THRU}.`] });
+      return text({ product: args.product, asOf: MONTHS[upTo], kpis, annualChurn: annual || null, notes: ["MoM and YoY compare the reported month with the prior month and the same month a year earlier.", "Ticket, repair and churn rates are per 100 subscribers; their changes are absolute differences in that unit (per100). The B2B score still moves in basis points (1 pt = 100 bps).", `Churn is reported through ${CHURN_THRU}.`] });
     }
     case "get_ticket_issues": {
       requireProduct(args.product, ["HSIA", "TV", "SHS"]);
