@@ -42,14 +42,27 @@ const LATEST_PREV_SHORT = "Aug'26";
 const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 
 // Health Read commentary per product (hand-written each month; empty = none yet).
-// Plain strings render as bullets; { t, inits } entries render as a numbered theme
-// with its initiatives underneath.
+// Plain strings render as bullets. Theme entries { t, share, causes, inits, note }
+// render as a card with the root causes called out first; `inits` entries that
+// match an INITIATIVES name are rendered as live initiative chips (status, prime,
+// timeline pulled from the register), anything else as plain text.
+// `context` strings (prefixed with "@") render as the lead bullets above the themes.
 const HEALTH_COMMENTARY = {
   TV: [
-    "Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume.",
-    "Legacy growth is concentrated in STB No Boot / Stuck on Initializing (+774 on All STBs Affected alone).",
-    "TV+ growth is led by Digital Box power issues (+378) and channel errors (+57%).",
-    "Ticket rate fell from 3.41% (Jan) to 2.92% (Aug), the second lowest of 2026, with a rise back to 3.35% in Sep. Overall 2026 performance is favourable to 2025 over the same period."
+    "@Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume.",
+    "@Legacy growth is concentrated in STB No Boot / Stuck on Initializing; TV+ growth is led by Digital Box power issues (+378) and channel errors (+57%).",
+    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets · 14% of TV tickets · +1,086 MoM",
+      causes: ["Legacy Mediaroom set-top boxes stalling on the Initializing screen (+774 tickets on All STBs Affected alone)", "Legacy still carries about two-thirds of TV volume, so STB boot faults dominate the mix"],
+      inits: ["Sequential Reboot for Stuck on Initializing", "Revamped OPUS Migration Process"],
+      note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
+    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets · +532 MoM",
+      causes: ["OPUS digital box power-supply unit failures", "Digital Box power issues added +378 tickets in September"],
+      inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
+      note: "+28% MoM but still 51% below Sep'25, so the PSU campaign is holding most of its gains" },
+    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+583 MoM) · Missing Channels 1,926 (+449 MoM)",
+      causes: ["NetCracker vs Optik identity (Option82) and UUID mismatches that block channels", "Channel configuration gaps: 18 AVS and 172 Mediaroom channel updates outstanding", "A defect temporarily preventing access to subscribed channels", "Perceived channel loss from the Mediaroom SD downconvert during migration"],
+      inits: ["Option82 Sync", "UUID Auto Sync — Blocking Channels Fix", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix", "Mediaroom SD Downconvert Removal", "Automated Missing TV Channel Audit", "Claude-Powered Channel-Issue Deepdive"],
+      note: "Channel errors up 57% MoM across TV+" }
   ],
   // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
   HSIA: [
@@ -1055,8 +1068,8 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 
 // Explanatory text (sources, method notes, how-to-read hints) is hidden behind a
 // small arrow, matching the product sub-page arrows in the left menu.
-function Disclosure({ label = "Sources & notes", T, children, style, align = "left" }) {
-  const [open, setOpen] = useState(false);
+function Disclosure({ label = "Sources & notes", T, children, style, align = "left", defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{ marginTop: 10, textAlign: align, ...style }}>
       <button onClick={() => setOpen((o) => !o)} aria-expanded={open}
@@ -1486,6 +1499,7 @@ export default function ReliabilityScorecards() {
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
   const [issueFilter, setIssueFilter] = useState({});
+  const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
   const [navOpen, setNavOpen] = useState({}); // per-product nav subsections, collapsed by default
   const NO_INIT_FILTERS = { theme: "All", status: "All", timeline: "All", prime: "All" };
@@ -1863,63 +1877,180 @@ export default function ReliabilityScorecards() {
       </div>
     ) : null;
 
+    // ----- metric switcher (hero statement + chart) -----
+    const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
+    const metricDefs = [
+      { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate", data: DATA.ticketRate[sc], fmt: (x) => fmtPct(x, trDec), bps: true, goodDown: true },
+      { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNumK, goodDown: true },
+      { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate", data: DATA.repairRate[sc], fmt: (x) => fmtPct(x, rrDec), bps: true, goodDown: true },
+      { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtNumK, goodDown: true },
+      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtNumK, goodDown: true },
+      { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtNumK, goodDown: false },
+      { key: "b2bVoC", eyebrow: "B2B VoC", name: "B2B reliability score", data: DATA.b2bVoC[sc], fmt: (x) => (x == null ? "—" : x.toFixed(1)), goodDown: true, pts: true }
+    ].filter((m) => m.data && m.data[f.i] != null);
+    const metric = metricDefs.find((m) => m.key === healthMetric[sc]) || metricDefs[0];
+    const mNow = metric.data[f.i], mPrev = metric.data[f.i - 1], mYoy = metric.data[f.i - 12];
+    const mDelta = mPrev == null ? null : metric.bps ? Math.round((mNow - mPrev) * 100) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
+    const mDeltaY = mYoy == null ? null : metric.bps ? Math.round((mNow - mYoy) * 100) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
+    const chg = (d) => {
+      if (d == null) return null;
+      if (d === 0 || (!metric.bps && Math.abs(d) < 0.05)) return "flat";
+      const amt = metric.bps ? `${Math.abs(d)} bps` : metric.pts ? `${Math.abs(d).toFixed(1)} pts` : `${Math.abs(d).toFixed(1)}%`;
+      return `${amt} ${d > 0 ? "higher" : "lower"}`;
+    };
+    const favourable = mDelta == null || mDelta === 0 ? null : (mDelta < 0) === metric.goodDown;
+    const favColor = favourable == null ? T.textMuted : favourable ? T.good : T.bad;
+    // 2026 run so far: min / max months, against the same months of 2025
+    const yearStart = Math.floor(f.i / 12) * 12;
+    const run = metric.data.slice(yearStart, f.i + 1).map((x, k) => ({ x, m: MONTHS[yearStart + k] })).filter((r) => r.x != null);
+    const runMin = run.length ? run.reduce((a, b) => (b.x < a.x ? b : a)) : null;
+    const runMax = run.length ? run.reduce((a, b) => (b.x > a.x ? b : a)) : null;
+    const shortM = (m) => m.replace(/ \d{2}(\d{2})$/, "'$1");
+    const supporting = [
+      run.length > 1 && runMin && runMax ? `${run.length} months of ${MONTHS[f.i].slice(-4)} have run between ${metric.fmt(runMin.x)} in ${shortM(runMin.m)} and ${metric.fmt(runMax.x)} in ${shortM(runMax.m)}.` : null,
+      mYoy != null ? `${shortM(f.month)} sits ${chg(mDeltaY)} than ${shortM(MONTHS[f.i - 12])} (${metric.fmt(mYoy)}), which is ${(mDeltaY < 0) === metric.goodDown ? "favourable" : mDeltaY === 0 ? "level" : "unfavourable"} year over year.` : null,
+      metric.eyebrow === "Tickets" ? driverText : metric.eyebrow === "Repairs" ? repairs : metric.eyebrow === "Calls" ? calls : null
+    ].filter(Boolean).join(" ");
+    const chartLabels = rangeMonths;
+    const actualSeries = sliceR(metric.data);
+    const priorSeries = fromIdx >= 12 ? metric.data.slice(fromIdx - 12, toIdx + 1 - 12) : null;
+    const lineColor = colors[sc] || T.heading;
+    const seriesDefs = [{ key: "actual", label: "Actual", data: actualSeries, color: lineColor }];
+    if (priorSeries && priorSeries.some((x) => x != null)) seriesDefs.push({ key: "prior", label: String(+MONTHS[f.i].slice(-4) - 1), data: priorSeries, color: T.heading, dash: "2 4" });
+    const metricNo = String(metricDefs.indexOf(metric) + 1).padStart(2, "0");
+    const chip = (on, onClick, children, key) => (
+      <button key={key} onClick={onClick}
+        style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "6px 14px", borderRadius: 999, cursor: "pointer", fontFamily: FONT, fontSize: 12.5, fontWeight: 700,
+          border: `1px solid ${on ? "transparent" : T.border}`, background: on ? T.good : T.surface, color: on ? "#fff" : T.text }}>
+        {children}
+      </button>
+    );
+    const dot = (c) => <span style={{ width: 7, height: 7, borderRadius: "50%", background: c, display: "inline-block" }} />;
+    const metricTone = (m) => {
+      const a = m.data[f.i], b = m.data[f.i - 1];
+      if (a == null || b == null || a === b) return T.textFaint;
+      return (a < b) === m.goodDown ? T.good : T.bad;
+    };
+
+    // ----- commentary -----
+    const byName = (name) => INITIATIVES.find((it) => it.p === sc && it.name === name);
+    const initChip = (x, j) => {
+      const it = typeof x === "string" ? byName(x) : null;
+      if (!it) return typeof x === "string"
+        ? <div key={j} style={{ display: "flex", gap: 8 }}><span style={{ color: T.textFaint }}>•</span><span>{x}</span></div>
+        : <div key={j} style={{ display: "flex", gap: 8 }}><span style={{ color: T.textFaint }}>•</span><span>{x.t}<ul style={{ margin: "2px 0 0", paddingLeft: 18 }}>{x.sub.map((s, k) => <li key={k}>{s}</li>)}</ul></span></div>;
+      return (
+        <div key={j} style={{ display: "grid", gridTemplateColumns: "auto 1fr", columnGap: 8, alignItems: "center" }}>
+          <StatusChip status={it.status} T={T} />
+          <span style={{ fontWeight: 600, color: T.text }}>{it.name}</span>
+          <span style={{ gridColumn: 2, color: T.textFaint, fontSize: 11.5, lineHeight: 1.3 }}>{it.timeline} · {it.prime}</span>
+        </div>
+      );
+    };
+    const commentary = sc === "All" ? null : (() => {
+      const items = HEALTH_COMMENTARY[sc] || [];
+      const lead = items.filter((x) => typeof x === "string" && x.startsWith("@")).map((x) => x.slice(1));
+      const bullets = items.filter((x) => typeof x === "string" && !x.startsWith("@"));
+      const themes = items.filter((x) => typeof x !== "string");
+      if (!items.length) return <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>Add commentary for {sc} · {f.month}...</p>;
+      return (
+        <div>
+          {(lead.length > 0 || bullets.length > 0) && (
+            <ul style={{ margin: "0 0 10px", paddingLeft: 20, fontSize: 13, lineHeight: 1.65, color: T.textSecondary }}>
+              {[...lead, ...bullets].map((t, i) => <li key={i}>{t}</li>)}
+            </ul>
+          )}
+          {themes.length > 0 && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 12 }}>
+              {themes.map((it, i) => (
+                <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderLeft: `3px solid ${T.heading}`, borderRadius: 10, padding: "12px 14px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: T.textFaint, letterSpacing: ".05em" }}>{String(i + 1).padStart(2, "0")}</span>
+                    <span style={{ fontWeight: 700, fontSize: 13.5, color: T.text }}>{it.t}</span>
+                  </div>
+                  {it.share && <div style={{ marginTop: 2, fontSize: 12, color: T.textMuted }}>{it.share}</div>}
+                  {it.causes && (
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.bad }}>Root causes</div>
+                      <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 13.2, lineHeight: 1.55, color: T.text, fontWeight: 600 }}>
+                        {it.causes.map((c, j) => <li key={j} style={{ marginBottom: 3 }}>{c}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {it.inits && it.inits.length > 0 && (
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.heading }}>Related initiatives</div>
+                      <div style={{ margin: "6px 0 0", fontSize: 12.5, lineHeight: 1.6, color: T.textSecondary, display: "grid", gap: 5 }}>
+                        {it.inits.map(initChip)}
+                      </div>
+                    </div>
+                  )}
+                  {it.note && <div style={{ marginTop: 8, fontSize: 12, fontStyle: "italic", color: T.textMuted }}>{it.note}</div>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    })();
+
+    const headlineNode = (
+      <>
+        {metric.name} was <span style={{ color: favColor, fontWeight: 700 }}>{metric.fmt(mNow)}</span> in {shortM(f.month)}
+        {mDelta != null ? <>, {chg(mDelta)} MoM{favourable == null ? "" : favourable ? ", which is favourable." : ", which is unfavourable."}</> : "."}
+      </>
+    );
+
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ background: toneColor + "1a", border: `1px solid ${toneColor}66`, color: toneColor, borderRadius: 999, padding: "3px 12px", fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", whiteSpace: "nowrap" }}>{v.label}</span>
-          <p style={{ margin: 0, flex: 1, minWidth: 260, fontSize: 14, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(300px, 0.85fr)", gap: 28, alignItems: "start" }}>
+          <div style={{ display: "flex", gap: 22, minWidth: 0 }}>
+            <div style={{ borderLeft: `3px solid ${T.heading}`, paddingLeft: 14, minWidth: 96, flexShrink: 0 }}>
+              <div style={{ fontSize: 42, lineHeight: 1, fontWeight: 300, color: T.heading, opacity: 0.45, letterSpacing: ".02em" }}>{metricNo}</div>
+              <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: T.heading, lineHeight: 1.5 }}>{sc === "All" ? "All products" : sc}<br />{metric.eyebrow}</div>
+              <span style={{ display: "inline-block", marginTop: 12, background: toneColor + "1a", border: `1px solid ${toneColor}66`, color: toneColor, borderRadius: 999, padding: "2px 9px", fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", whiteSpace: "nowrap" }}>{v.label}</span>
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <h3 style={{ margin: 0, fontSize: 24, lineHeight: 1.3, fontWeight: 500, color: T.text, letterSpacing: "-.01em" }}>{headlineNode}</h3>
+              {supporting && <p style={{ margin: "12px 0 0", fontSize: 13.5, lineHeight: 1.65, color: T.textSecondary }}>{supporting}</p>}
+            </div>
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.heading }}>{metric.name}</div>
+              <div style={{ fontSize: 11.5, color: T.textFaint }}>{shortM(chartLabels[0])} – {shortM(chartLabels[chartLabels.length - 1])}</div>
+            </div>
+            <LineChart labels={chartLabels} seriesDefs={seriesDefs} height={270} yFmt={metric.fmt} colors={colors} T={T} />
+            <Legend items={seriesDefs.map((s) => ({ label: s.label, color: s.color, dash: !!s.dash }))} T={T} />
+          </div>
         </div>
-        {driverText && (
-          <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
-            <b style={{ color: T.heading }}>Main reason · </b>{driverText}
-          </p>
+        {sc !== "All" && (
+          <Disclosure label="Commentary" T={T} defaultOpen style={{ marginTop: 22, paddingLeft: 17 }}>
+            {commentary}
+          </Disclosure>
         )}
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14 }}>
-          {block("tickets", "Tickets", tickets)}
-          {block("repairs", "Repairs / dispatches", repairs)}
-          {block("calls", "Calls", calls)}
-          {block("issues", `Top issues — ${LATEST_SHORT}`, topIssuesText)}
+
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: T.textFaint, paddingTop: 8, minWidth: 96 }}>Switch metric</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1 }}>
+            {metricDefs.map((m) => chip(m.key === metric.key, () => setHealthMetric((s) => ({ ...s, [sc]: m.key })), <>{dot(m.key === metric.key ? "#fff" : metricTone(m))}{m.name}</>, m.key))}
+          </div>
         </div>
-        {sc !== "All" && (() => {
-          const items = HEALTH_COMMENTARY[sc] || [];
-          return (
-            <Disclosure label="Commentary" T={T} style={{ margin: "14px 0 0" }}>
-              {items.length === 0 ? (
-                <p style={{ margin: 0, fontSize: 12.8, color: T.textFaint }}>No commentary has been added for {f.month} yet.</p>
-              ) : typeof items[0] === "string" ? (
-                <ul style={{ margin: 0, paddingLeft: 20, fontSize: 12.8, lineHeight: 1.65, color: T.textSecondary }}>
-                  {items.map((t, i) => <li key={i}>{t}</li>)}
-                </ul>
-              ) : (
-                <ol style={{ margin: 0, paddingLeft: 20, fontSize: 12.8, lineHeight: 1.6, color: T.textSecondary }}>
-                  {items.map((it, i) => (
-                    <li key={i} style={{ marginBottom: 10 }}>
-                      <span style={{ fontWeight: 700, color: T.text }}>{it.t}</span>
-                      {it.share && <span style={{ color: T.textFaint }}> · {it.share}</span>}
-                      {it.causes && (
-                        <div style={{ marginTop: 4 }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.heading }}>Root causes</div>
-                          <ul style={{ margin: "2px 0 0", paddingLeft: 18 }}>{it.causes.map((c, j) => <li key={j}>{c}</li>)}</ul>
-                        </div>
-                      )}
-                      {it.inits && (
-                        <div style={{ marginTop: 5 }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.heading }}>Initiatives focused on these root causes</div>
-                          <ul style={{ margin: "2px 0 0", paddingLeft: 18, color: T.textMuted }}>
-                            {it.inits.map((x, j) => typeof x === "string" ? <li key={j}>{x}</li> : (
-                              <li key={j}>{x.t}<ul style={{ margin: 0, paddingLeft: 18 }}>{x.sub.map((s, k) => <li key={k}>{s}</li>)}</ul></li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {it.note && <div style={{ marginTop: 4, fontStyle: "italic", color: T.textMuted }}>{it.note}</div>}
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </Disclosure>
-          );
-        })()}
+
+        <Disclosure label={`Show all ${sc === "All" ? "" : sc + " "}metrics (${metricDefs.length})`} T={T} style={{ marginTop: 18 }}>
+          <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
+          {driverText && (
+            <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
+              <b style={{ color: T.heading }}>Main reason · </b>{driverText}
+            </p>
+          )}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {block("tickets", "Tickets", tickets)}
+            {block("repairs", "Repairs / dispatches", repairs)}
+            {block("calls", "Calls", calls)}
+            {block("issues", `Top issues — ${LATEST_SHORT}`, topIssuesText)}
+          </div>
+        </Disclosure>
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
           Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
         </p>

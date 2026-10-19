@@ -167,8 +167,17 @@ function callTool(name, args = {}) {
     case "get_health_commentary": {
       requireProduct(args.product, ["HSIA", "TV", "SHS", "SH+"]);
       const items = HEALTH_COMMENTARY[args.product] || [];
+      // "@" marks a lead (context) bullet in the dashboard source; theme entries carry
+      // root causes and initiative names, which are resolved against the register here.
+      const bullets = items.filter((x) => typeof x === "string").map((x) => x.replace(/^@/, ""));
+      const resolveInit = (x) => {
+        if (typeof x !== "string") return { name: x.t, detail: x.sub };
+        const it = INITIATIVES.find((i) => i.p === args.product && i.name === x);
+        return it ? { name: it.name, status: it.status, timeline: it.timeline, prime: it.prime, theme: it.theme, impact: it.impact || null } : { name: x };
+      };
+      const themes = items.filter((x) => typeof x !== "string").map((t) => ({ theme: t.t, share: t.share || null, rootCauses: t.causes || [], relatedInitiatives: (t.inits || []).map(resolveInit), note: t.note || null }));
       const overview = OVERVIEW_ISSUES.filter((r) => r[args.product]).map((r) => ({ issue: ISSUE_META[r.grp] ? ISSUE_META[r.grp].label : r.grp, latest: r[args.product][0], priorYear: r[args.product][1], yoy: change(r[args.product][0], r[args.product][1], { goodWhenDown: true }) }));
-      return text({ product: args.product, month: LATEST, commentary: items.length ? items : "No commentary has been added for this month.", recurringIssues: overview });
+      return text({ product: args.product, month: LATEST, commentary: items.length ? { bullets, themes } : "No commentary has been added for this month.", recurringIssues: overview });
     }
     case "get_sources":
       return text({ dashboard: DASHBOARD_URL, latestMonth: LATEST, sources: SOURCES });
