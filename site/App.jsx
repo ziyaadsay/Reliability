@@ -49,20 +49,19 @@ const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 // `context` strings (prefixed with "@") render as the lead bullets above the themes.
 const HEALTH_COMMENTARY = {
   TV: [
-    "@Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume.",
-    "@Legacy growth is concentrated in STB No Boot / Stuck on Initializing; TV+ growth is led by Digital Box power issues (+378) and channel errors (+57%).",
-    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets · 14% of TV tickets · +1,086 MoM",
-      causes: ["Legacy Mediaroom set-top boxes stalling on the Initializing screen (+774 tickets on All STBs Affected alone)", "Legacy still carries about two-thirds of TV volume, so STB boot faults dominate the mix"],
-      inits: ["Sequential Reboot for Stuck on Initializing", "Revamped OPUS Migration Process"],
-      note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
-    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets · +532 MoM",
-      causes: ["OPUS digital box power-supply unit failures", "Digital Box power issues added +378 tickets in September"],
-      inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
-      note: "+28% MoM but still 51% below Sep'25, so the PSU campaign is holding most of its gains" },
-    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+583 MoM) · Missing Channels 1,926 (+449 MoM)",
-      causes: ["NetCracker vs Optik identity (Option82) and UUID mismatches that block channels", "Channel configuration gaps: 18 AVS and 172 Mediaroom channel updates outstanding", "A defect temporarily preventing access to subscribed channels", "Perceived channel loss from the Mediaroom SD downconvert during migration"],
-      inits: ["Option82 Sync", "UUID Auto Sync — Blocking Channels Fix", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix", "Mediaroom SD Downconvert Removal", "Automated Missing TV Channel Audit", "Claude-Powered Channel-Issue Deepdive"],
-      note: "Channel errors up 57% MoM across TV+" }
+    "@Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume, and Legacy growth is concentrated in STB No Boot / Stuck on Initializing.",
+    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets · 14% of TV tickets · +1,086 MoM · the top driver in September",
+      causes: [
+        "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (+774 tickets on All STBs Affected alone)",
+        "The rise coincides with the CloudCheck agent upgrade rolled out from 6 July to 16 August",
+        "Legacy still carries about two-thirds of TV volume, so STB boot faults dominate the mix"
+      ],
+      next: [
+        "Investigating whether any firmware or software updates are responsible for the increase",
+        "Scoping a sequential reboot proactive campaign so affected gateways are cycled before customers are impacted"
+      ],
+      inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix", "Revamped OPUS Migration Process"],
+      note: "+26% MoM and +41% YoY; the single largest TV mover in September" }
   ],
   // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
   HSIA: [
@@ -364,6 +363,8 @@ const INITIATIVES = [
     desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "Ideation", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
     desc: "Sequential reboot procedure for Optik TV (Legacy) set-top boxes stuck on Initializing." },
+  { p: "TV", pillar: 2, theme: "Hardware", name: "InSight TV Hardware Check fix", status: "In flight", timeline: "Oct 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"],
+    desc: "Fixes the InSight TV Hardware Check diagnostic used on set-top box and gateway faults." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Shipment Notification Redesign", status: "Launched", timeline: "Feb 2026", prime: "K. Liu", issues: ["TV", "Support"],
     desc: "Redesigns equipment-shipment notifications to reduce fulfilment confusion and missed activations." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "UUID Auto Sync — Blocking Channels Fix", status: "Launched", timeline: "Mar 2026", prime: "J. Homsavath", issues: ["TV"],
@@ -1076,15 +1077,24 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 
 // Explanatory text (sources, method notes, how-to-read hints) is hidden behind a
 // small arrow, matching the product sub-page arrows in the left menu.
-function Disclosure({ label = "Sources & notes", T, children, style, align = "left", defaultOpen = false }) {
+// variant "button" renders the toggle as a lavender pill (purple label, chevron that
+// turns when open), matching the deacts-report style; the default is the small caps link.
+function Disclosure({ label = "Sources & notes", T, children, style, align = "left", defaultOpen = false, variant = "link", count }) {
   const [open, setOpen] = useState(defaultOpen);
+  const isBtn = variant === "button";
   return (
     <div style={{ marginTop: 10, textAlign: align, ...style }}>
       <button onClick={() => setOpen((o) => !o)} aria-expanded={open}
-        style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: FONT, display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10.5, fontWeight: 700, color: T.textMuted, letterSpacing: ".05em", textTransform: "uppercase" }}>
-        <span style={{ display: "inline-block", fontSize: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>{label}
+        style={isBtn
+          ? { background: T.band, border: "none", borderRadius: 10, padding: "9px 16px 9px 12px", cursor: "pointer", fontFamily: FONT, display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, color: T.heading }
+          : { background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: FONT, display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10.5, fontWeight: 700, color: T.textMuted, letterSpacing: ".05em", textTransform: "uppercase" }}>
+        {isBtn
+          ? <span style={{ display: "inline-block", fontSize: 11, transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}>▶</span>
+          : <span style={{ display: "inline-block", fontSize: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>}
+        {label}
+        {isBtn && count != null && <span style={{ fontWeight: 500, color: T.textMuted }}>({count})</span>}
       </button>
-      {open && <div style={{ marginTop: 6, textAlign: "left" }}>{children}</div>}
+      {open && <div style={{ marginTop: isBtn ? 14 : 6, textAlign: "left" }}>{children}</div>}
     </div>
   );
 }
@@ -1508,6 +1518,7 @@ export default function ReliabilityScorecards() {
   const [openTables, setOpenTables] = useState({});
   const [issueFilter, setIssueFilter] = useState({});
   const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
+  const [expandedChart, setExpandedChart] = useState(null); // { title, labels, seriesDefs, fmt } shown in an overlay
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
   const [navOpen, setNavOpen] = useState({}); // per-product nav subsections, collapsed by default
   const NO_INIT_FILTERS = { theme: "All", status: "All", timeline: "All", prime: "All" };
@@ -1985,6 +1996,14 @@ export default function ReliabilityScorecards() {
                       </ul>
                     </div>
                   )}
+                  {it.next && it.next.length > 0 && (
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.heading }}>What the team is doing</div>
+                      <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 12.8, lineHeight: 1.55, color: T.textSecondary }}>
+                        {it.next.map((c, j) => <li key={j} style={{ marginBottom: 2 }}>{c}</li>)}
+                      </ul>
+                    </div>
+                  )}
                   {it.inits && it.inits.length > 0 && (
                     <div style={{ marginTop: 10 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.heading }}>Related initiatives</div>
@@ -2028,24 +2047,31 @@ export default function ReliabilityScorecards() {
               <div style={{ fontSize: 13, fontWeight: 700, color: T.heading }}>{metric.name}</div>
               <div style={{ fontSize: 11.5, color: T.textFaint }}>{shortM(chartLabels[0])} – {shortM(chartLabels[chartLabels.length - 1])}</div>
             </div>
-            <LineChart labels={chartLabels} seriesDefs={seriesDefs} height={270} yFmt={metric.fmt} colors={colors} T={T} />
-            <Legend items={seriesDefs.map((s) => ({ label: s.label, color: s.color, dash: !!s.dash }))} T={T} />
+            <div role="button" title="Click to expand" style={{ cursor: "zoom-in" }}
+              onClick={() => setExpandedChart({ title: `${sc === "All" ? "All products" : sc} · ${metric.name}`, sub: `${shortM(chartLabels[0])} – ${shortM(chartLabels[chartLabels.length - 1])}`, labels: chartLabels, seriesDefs, fmt: metric.fmt })}>
+              <LineChart labels={chartLabels} seriesDefs={seriesDefs} height={270} yFmt={metric.fmt} colors={colors} T={T} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <Legend items={seriesDefs.map((s) => ({ label: s.label, color: s.color, dash: !!s.dash }))} T={T} />
+              <span style={{ fontSize: 11, color: T.textFaint, marginTop: 8 }}>Click the chart to expand</span>
+            </div>
           </div>
         </div>
-        {sc !== "All" && (
-          <Disclosure label="Commentary" T={T} defaultOpen style={{ marginTop: 22, paddingLeft: 17 }}>
-            {commentary}
-          </Disclosure>
-        )}
 
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
           <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: T.textFaint, paddingTop: 8, minWidth: 96 }}>Switch metric</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1 }}>
             {metricDefs.map((m) => chip(m.key === metric.key, () => setHealthMetric((s) => ({ ...s, [sc]: m.key })), <>{dot(m.key === metric.key ? "#fff" : metricTone(m))}{m.name}</>, m.key))}
           </div>
         </div>
 
-        <Disclosure label={`Show all ${sc === "All" ? "" : sc + " "}metrics (${metricDefs.length})`} T={T} style={{ marginTop: 18 }}>
+        {sc !== "All" && (
+          <Disclosure label="Commentary" variant="button" T={T} defaultOpen style={{ marginTop: 22 }}>
+            {commentary}
+          </Disclosure>
+        )}
+
+        <Disclosure label="Additional Monthly Context" variant="button" count={metricDefs.length} T={T} style={{ marginTop: 14 }}>
           <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
           {driverText && (
             <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
@@ -4513,6 +4539,23 @@ export default function ReliabilityScorecards() {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg, color: T.text, fontFamily: FONT }}>
+      {expandedChart && (
+        <div onClick={() => setExpandedChart(null)} role="dialog" aria-label={`${expandedChart.title} expanded`}
+          style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(20,16,26,.62)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "min(1200px, 100%)", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16, padding: "18px 22px 14px", boxShadow: "0 24px 64px rgba(0,0,0,.35)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: T.heading }}>{expandedChart.title}</div>
+                <div style={{ fontSize: 12, color: T.textFaint }}>{expandedChart.sub}</div>
+              </div>
+              <button onClick={() => setExpandedChart(null)} aria-label="Close"
+                style={{ background: "transparent", border: `1px solid ${T.borderStrong}`, borderRadius: 8, color: T.textSecondary, fontFamily: FONT, fontSize: 12.5, fontWeight: 600, padding: "5px 12px", cursor: "pointer" }}>Close ✕</button>
+            </div>
+            <LineChart labels={expandedChart.labels} seriesDefs={expandedChart.seriesDefs} height={420} yFmt={expandedChart.fmt} colors={colors} T={T} />
+            <Legend items={expandedChart.seriesDefs.map((s) => ({ label: s.label, color: s.color, dash: !!s.dash }))} T={T} />
+          </div>
+        </div>
+      )}
       {/* Sidebar */}
       <aside style={{ width: 224, flexShrink: 0, background: T.surface, borderRight: `1px solid ${T.border}`, display: "flex", flexDirection: "column", position: "sticky", top: 0, height: "100vh" }}>
         <div style={{ padding: "22px 20px 16px", borderBottom: `1px solid ${T.border}` }}>

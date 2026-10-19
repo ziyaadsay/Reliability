@@ -175,7 +175,7 @@ function callTool(name, args = {}) {
         const it = INITIATIVES.find((i) => i.p === args.product && i.name === x);
         return it ? { name: it.name, status: it.status, timeline: it.timeline, prime: it.prime, theme: it.theme, impact: it.impact || null } : { name: x };
       };
-      const themes = items.filter((x) => typeof x !== "string").map((t) => ({ theme: t.t, share: t.share || null, rootCauses: t.causes || [], relatedInitiatives: (t.inits || []).map(resolveInit), note: t.note || null }));
+      const themes = items.filter((x) => typeof x !== "string").map((t) => ({ theme: t.t, share: t.share || null, rootCauses: t.causes || [], inProgress: t.next || [], relatedInitiatives: (t.inits || []).map(resolveInit), note: t.note || null }));
       const overview = OVERVIEW_ISSUES.filter((r) => r[args.product]).map((r) => ({ issue: ISSUE_META[r.grp] ? ISSUE_META[r.grp].label : r.grp, latest: r[args.product][0], priorYear: r[args.product][1], yoy: change(r[args.product][0], r[args.product][1], { goodWhenDown: true }) }));
       return text({ product: args.product, month: LATEST, commentary: items.length ? { bullets, themes } : "No commentary has been added for this month.", recurringIssues: overview });
     }
