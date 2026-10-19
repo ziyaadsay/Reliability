@@ -24,6 +24,34 @@ npm run dev      # http://localhost:5173
 npm run build    # writes site/dist
 ```
 
+## MCP server
+
+`mcp/` is a Model Context Protocol server that exposes the dashboard's data to
+other agents and tools (`https://relstrat-mcp.telus.gizmos.run/mcp`, Streamable
+HTTP, JSON-RPC 2.0). `mcp/build.mjs` slices the data constants straight out of
+`site/App.jsx` and appends `mcp/src/server.js`, so the server always carries the
+same numbers as the deployed dashboard; it has no dependencies and no bundler.
+
+Tools: `list_products`, `get_kpi_series`, `get_kpi_summary`,
+`get_ticket_issues`, `get_initiatives`, `get_tv_platforms`, `get_self_serve`,
+`get_health_commentary`, `get_sources`.
+
+```bash
+node mcp/build.mjs        # writes mcp/dist (gitignored)
+```
+
+`.github/workflows/deploy-mcp.yml` builds and pushes `mcp/dist` to the
+`relstrat-mcp` app with `gizmos push --mcp` whenever `mcp/` or `site/App.jsx`
+changes on `main` (or on demand). The app runs in Dev Keys mode: issue a key in
+the Gizmos hub under the app's Developer access → API keys (binding `MCP`), or
+switch the app to User Auth in its Connect card so colleagues sign in instead.
+Connect from Claude Code with:
+
+```bash
+claude mcp add --transport http relstrat https://relstrat-mcp.telus.gizmos.run/mcp \
+  --header "Authorization: Bearer gzak_..."
+```
+
 ## Analysis scripts
 
 `analysis/` holds the scripts that turn the raw agent/technician notes and

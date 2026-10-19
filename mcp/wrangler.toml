@@ -1,0 +1,8 @@
+name = "relstrat-mcp"
+
+# Dev Keys mode: the loader validates the bearer key before the worker runs,
+# so the paths must cover the MCP endpoint or every call 401s.
+[[gizmos_api_keys]]
+name = "MCP"
+description = "MCP client access to the Reliability Strategy dashboard data (Streamable HTTP transport)"
+paths = ["/mcp", "/mcp/*"]

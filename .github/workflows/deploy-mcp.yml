@@ -1,0 +1,53 @@
+# Builds the Relstrat MCP server (mcp/) and deploys it to Gizmos as the
+# relstrat-mcp app (app_type=mcp). Runs on pushes to main that touch the MCP
+# worker or the dashboard data it is built from, and on demand from the Actions
+# tab. Uses the same GIZMOS_API_KEY repository secret as deploy-gizmos.yml.
+name: Deploy MCP server to Gizmos
+
+on:
+  push:
+    branches: [main]
+    paths: ["mcp/**", "site/App.jsx", ".github/workflows/deploy-mcp.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-mcp
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GIZMOS_URL: https://gizmos.run
+      GIZMOS_APP: relstrat-mcp
+      GIZMOS_ORG: telus
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build MCP worker
+        run: node mcp/build.mjs
+
+      - name: Install gizmos CLI
+        run: |
+          curl -fsSL https://gizmos.run/skills/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # The CLI lists files with `git ls-files`, so the gitignored mcp/dist must
+      # be pushed from a copy outside the repository.
+      - name: Stage build output outside the repository
+        run: |
+          rm -rf "$RUNNER_TEMP/mcp-deploy"
+          cp -r mcp/dist "$RUNNER_TEMP/mcp-deploy"
+          echo "DEPLOY_DIR=$RUNNER_TEMP/mcp-deploy" >> "$GITHUB_ENV"
+
+      - name: Preview upload
+        run: gizmos push --dry-run --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
+
+      - name: Deploy
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: gizmos push --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
