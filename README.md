@@ -42,15 +42,36 @@ node mcp/build.mjs        # writes mcp/dist (gitignored)
 
 `.github/workflows/deploy-mcp.yml` builds and pushes `mcp/dist` to the
 `relstrat-mcp` app with `gizmos push --mcp` whenever `mcp/` or `site/App.jsx`
-changes on `main` (or on demand). The app runs in Dev Keys mode: issue a key in
-the Gizmos hub under the app's Developer access → API keys (binding `MCP`), or
-switch the app to User Auth in its Connect card so colleagues sign in instead.
-Connect from Claude Code with:
+changes on `main` (or on demand). The app is visible to everyone in the TELUS
+org and runs in Dev Keys mode: keys are issued in the Gizmos hub under the
+app's Settings → API keys (binding `MCP`). Share a key over a secure channel,
+never in this repo.
+
+Connect from Claude Code:
 
 ```bash
 claude mcp add --transport http relstrat https://relstrat-mcp.telus.gizmos.run/mcp \
   --header "Authorization: Bearer gzak_..."
 ```
+
+Connect from Claude Desktop (needs Node.js; add to
+`claude_desktop_config.json` and restart the app):
+
+```json
+{
+  "mcpServers": {
+    "relstrat": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://relstrat-mcp.telus.gizmos.run/mcp", "--header", "Authorization:${GZAK_TOKEN}"],
+      "env": { "GZAK_TOKEN": "Bearer gzak_..." }
+    }
+  }
+}
+```
+
+claude.ai custom connectors require OAuth and cannot use a Dev Keys server.
+A colleague can also connect with their own personal `gzm_` platform key from
+https://telus.gizmos.run/settings instead of a shared `gzak_` key.
 
 ## Analysis scripts
 
