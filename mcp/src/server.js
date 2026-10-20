@@ -161,7 +161,7 @@ function callTool(name, args = {}) {
       });
     }
     case "get_self_serve": {
-      const labels = { resolved: "Resolved sessions (blended v2)", webAppRate: "Web/App resolution rate (%)", ivrRate: "CCAI IVR resolution rate (%)", cxEasy: "CX 'Easy to follow' score", cxSent: "CX comment sentiment score", churn: "Sweepr-involved churn rate (%)", deacts: "Deacts saved" };
+      const labels = { resolved: "Resolved sessions (blended v2)", webAppRate: "Web/App resolution rate (%)", ivrRate: "CCAI IVR resolution rate (%)", cxEasy: "CX 'Easy to follow' score", cxSent: "CX comment sentiment score", churn: "Sweepr-involved churn rate (per 100 subs)", deacts: "Deacts saved" };
       return text({ months: MONTHS, metrics: Object.fromEntries(Object.entries(SWEEPR).map(([k, s]) => [k, { label: labels[k] || k, actuals: s.a, targets2026: s.t || null }])), source: SOURCES.selfServe });
     }
     case "get_health_commentary": {

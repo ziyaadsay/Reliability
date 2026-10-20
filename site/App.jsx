@@ -442,7 +442,8 @@ const INITIATIVES = [
 // ---------------------------------------------------------------------------
 // Self-serve customer workflows (Sweepr) — HSIA West Scorecard workbook, rows 49-55.
 // Arrays align with MONTHS (Jan 2025 – Sep 2026). a = actuals; t = 2026 monthly targets.
-// September 2026 actuals were not yet posted in the source at the time of the pull (only CX Easy).
+// Re-read in full each month because the source restates earlier 2026 months (the Oct 2026 pull
+// restated Sweepr involved churn and deacts saved for Jan–Aug 2026).
 // (the source sets targets for 2026 only; churn impact and deacts saved carry no target).
 // Rates are percentages; cxEasy is a score (target 4.0); cxSent is comment sentiment
 // (negative scale, target -0.50, less negative is better).
@@ -460,11 +461,11 @@ const HSS = {"months":["Jun 2026","Jul 2026","Aug 2026"],"respondents":[1914,193
 
 const SWEEPR = {
   resolved: {
-    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,null],
+    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,48614],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,47551,47439,47595,46384,45971,45988,45989,45987,46075]
   },
   webAppRate: {
-    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,null],
+    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,65.4],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,59.4,59.7,60.1,60.4,60.7,61.0,61.4,61.7,62.0]
   },
   ivrRate: {
@@ -472,19 +473,19 @@ const SWEEPR = {
     t: [null,null,null,null,null,null,null,null,null,null,null,null,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0]
   },
   cxEasy: {
-    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.49],
+    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.50],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00]
   },
   cxSent: {
-    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,null],
+    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,-0.64],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50]
   },
   churn: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,2.25,2.34,1.93,1.96,1.89,1.81,1.81,1.81,null],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.89,2.16,1.98,2.12,2.12,1.98,2.06,2.56,2.40],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   deacts: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,749,742,691,879,716,845,881,883,null],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   }
 };
