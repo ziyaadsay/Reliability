@@ -50,11 +50,11 @@ const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 const HEALTH_COMMENTARY = {
   TV: [
     "@Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume, and Legacy growth is concentrated in STB No Boot / Stuck on Initializing.",
-    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets · 14% of TV tickets · +1,086 MoM · the top driver in September",
+    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets (+26.2% MoM) · 14% of TV tickets · +1,086 MoM · the top driver in September",
       causes: [
         "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (+774 tickets on All STBs Affected alone)",
         "The rise coincides with the CloudCheck agent upgrade rolled out from 6 July to 16 August",
-        "Legacy still carries about two-thirds of TV volume, so STB boot faults dominate the mix"
+        "The issue is strongly tied to the T3200M gateway: about 70% of All STBs Affected tickets"
       ],
       next: [
         "Investigating whether any firmware or software updates are responsible for the increase",
@@ -62,11 +62,11 @@ const HEALTH_COMMENTARY = {
       ],
       inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix", "Revamped OPUS Migration Process"],
       note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
-    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets · +532 MoM",
+    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets (+28.2% MoM) · +532 MoM",
       causes: ["OPUS digital box power-supply unit failures", "Digital Box power issues added +378 tickets in September"],
       inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
       note: "+28% MoM but still 51% below Sep'25, so the PSU campaign is holding most of its gains" },
-    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+583 MoM) · Missing Channels 1,926 (+449 MoM)",
+    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+35.0% MoM, +583) · Missing Channels 1,926 (+30.4% MoM, +449)",
       causes: ["NetCracker vs Optik identity (Option82) and UUID mismatches that block channels", "Channel configuration gaps: 18 AVS and 172 Mediaroom channel updates outstanding", "A defect temporarily preventing access to subscribed channels", "Perceived channel loss from the Mediaroom SD downconvert during migration"],
       inits: ["Option82 Sync", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix"],
       note: "Channel errors up 57% MoM across TV+" }
