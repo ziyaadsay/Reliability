@@ -61,7 +61,15 @@ const HEALTH_COMMENTARY = {
         "Scoping a sequential reboot proactive campaign so affected gateways are cycled before customers are impacted"
       ],
       inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix", "Revamped OPUS Migration Process"],
-      note: "+26% MoM and +41% YoY; the single largest TV mover in September" }
+      note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
+    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets · +532 MoM",
+      causes: ["OPUS digital box power-supply unit failures", "Digital Box power issues added +378 tickets in September"],
+      inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
+      note: "+28% MoM but still 51% below Sep'25, so the PSU campaign is holding most of its gains" },
+    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+583 MoM) · Missing Channels 1,926 (+449 MoM)",
+      causes: ["NetCracker vs Optik identity (Option82) and UUID mismatches that block channels", "Channel configuration gaps: 18 AVS and 172 Mediaroom channel updates outstanding", "A defect temporarily preventing access to subscribed channels", "Perceived channel loss from the Mediaroom SD downconvert during migration"],
+      inits: ["Option82 Sync", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix"],
+      note: "Channel errors up 57% MoM across TV+" }
   ],
   // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
   HSIA: [
@@ -1990,7 +1998,7 @@ export default function ReliabilityScorecards() {
                   {it.share && <div style={{ marginTop: 2, fontSize: 12, color: T.textMuted }}>{it.share}</div>}
                   {it.causes && (
                     <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.bad }}>Root causes</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.bad }}>{sc === "TV" ? "Possible root causes" : "Root causes"}</div>
                       <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 13.2, lineHeight: 1.55, color: T.text, fontWeight: 600 }}>
                         {it.causes.map((c, j) => <li key={j} style={{ marginBottom: 3 }}>{c}</li>)}
                       </ul>
@@ -2032,7 +2040,7 @@ export default function ReliabilityScorecards() {
       <div>
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(300px, 0.85fr)", gap: 28, alignItems: "start" }}>
           <div style={{ display: "flex", gap: 22, minWidth: 0 }}>
-            <div style={{ borderLeft: `3px solid ${T.heading}`, paddingLeft: 14, minWidth: 96, flexShrink: 0 }}>
+            <div style={{ paddingLeft: 4, minWidth: 96, flexShrink: 0 }}>
               <div style={{ fontSize: 42, lineHeight: 1, fontWeight: 300, color: T.heading, opacity: 0.45, letterSpacing: ".02em" }}>{metricNo}</div>
               <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: T.heading, lineHeight: 1.5 }}>{sc === "All" ? "All products" : sc}<br />{metric.eyebrow}</div>
               <span style={{ display: "inline-block", marginTop: 12, background: toneColor + "1a", border: `1px solid ${toneColor}66`, color: toneColor, borderRadius: 999, padding: "2px 9px", fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", whiteSpace: "nowrap" }}>{v.label}</span>
@@ -2071,7 +2079,7 @@ export default function ReliabilityScorecards() {
           </Disclosure>
         )}
 
-        <Disclosure label="Additional Monthly Context" variant="button" count={metricDefs.length} T={T} style={{ marginTop: 14 }}>
+        <Disclosure label="Additional Monthly Context" variant="button" T={T} style={{ marginTop: 14 }}>
           <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
           {driverText && (
             <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
@@ -2086,7 +2094,7 @@ export default function ReliabilityScorecards() {
           </div>
         </Disclosure>
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
-          Month-over-month against {f.prevMonth}; rates move in basis points. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
+          Month-over-month against {f.prevMonth}; rate movements are per 100 subscribers. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
         </p>
       </div>
     );
