@@ -492,6 +492,75 @@ const SWEEPR = {
 };
 
 // ---------------------------------------------------------------------------
+// Friction Free Product Systems (FFPS) program — transcribed from the "Friction Free
+// Product Systems Program Update - August 2026" deck (Google Slides). Dollar values are
+// in dollars unless the field name says K or M; CR benefit run-rates are $K per month.
+// ---------------------------------------------------------------------------
+const FFPS = {
+  asOf: "Aug 2026", period: "Jan – Aug 2026 (YTD)",
+  source: "Friction Free Product Systems Program Update - August 2026 (Google Slides deck)",
+  burndown: {
+    crs: { label: "Change Requests (CRs)", sub: "Open CR volume across the year",
+      points: [{ label: "Start of year (Jan)", v: 20 }, { label: "End of Q2 (Jun)", v: 47, net: 27, opened: 37, closed: 10 }, { label: "End of Aug", v: 42, net: -5, opened: 3, closed: 8 }],
+      ytd: { net: 22, opened: 40, closed: 18 } },
+    tickets: { label: "Tickets: billing + non-billing (combined)", sub: "Total open ticket volume across the year",
+      points: [{ label: "Start of year (Jan)", v: 292 }, { label: "End of Q2 (Jun)", v: 407, net: 115 }, { label: "End of Aug", v: 418, net: 11 }],
+      ytd: { net: 126, opened: 1144, openedTickets: 876, openedProactive: 268, closed: 391, cancelled: 326 },
+      note: "Billing tracking began in June." }
+  },
+  benefits: {
+    headline: "Change request, non-billing and billing defect fix benefits are all compounding through Q3: $3.7M recurring benefit at end of Q3 against $4M spent.",
+    sub: "Cumulative benefit tracking by quarter, sourced from monthly reporting data",
+    crs: { title: "CRs: benefit by quarter", labels: ["Q1", "Q2", "Q3"],
+      churn: [18541, 336664, 1375541], calls: [0, 77499, 272226], sbc: [0, 0, 234163],
+      notes: ["Q1: Churn $18,541 (100%), 240 customers saved", "Q2: Churn $336,664 (81%), 4,142 customers saved · Calls $77,499 (19%), 7,000 calls", "Q3: Churn $1,375,541 (73%) · Calls $272,226 (15%), 25,000 calls · SBC $234,163 (12%)"] },
+    nonBilling: { title: "Non-billing defects: benefit by quarter", labels: ["Q2", "Q3"], total: [75244, 529560],
+      notes: ["Q2 (Apr–Jun): $75,244 cumulative (72% calls, 5,000 / 28% TRs, 108)", "Q3 (Jul–Sep): $529,560 cumulative (65% calls, 25,000 / 35% TRs, 810)"] },
+    billing: { title: "Billing defects: cumulative EBITDA benefit, Jun–Aug", labels: ["Jun", "Jul", "Aug"], ebitda: [330000, 520000, 1000000],
+      drivers: [{ m: "June", calls: 3800, contra: 268000 }, { m: "July", calls: 9700, contra: 400000 }, { m: "August", calls: 19500, contra: 728000 }],
+      note: "Calls = call/ticket volume (count). Contra = $ value, not part of the EBITDA total." },
+    totals: [{ v: 1881930, label: "CRs benefit (Q3 cumulative)" }, { v: 529560, label: "Non-billing benefit (Q3 cumulative)" }, { v: 1000000, label: "Billing EBITDA benefit (August)" }]
+  },
+  billingTickets: { period: "June to August", start: { m: "June", v: 107 }, end: { m: "August", v: 206 }, delta: 99, closed: 104, cancelled: 61 },
+  finance: { // $M unless noted
+    month: "August", monthSpend: 1.08, monthForecast: 1.04, spendToDate: { q1: 0.372, q2: 1.82, q3: 1.75, ytd: 4.0 },
+    h2Forecast: { q3: 2.3, q4: 1.1 }, remaining: 1.6, remainingPct: 28,
+    h1: { spend: 2.19, benefits: 0.46 }, h2: { spend: 3.4, benefits: 3.7 },
+    projects: [ // $K: August spend, spend to date, allocation, remaining
+      { name: "HSIA/wHSIA/Home Phone", aug: 337, toDate: 1600, alloc: 2180, remaining: 590 },
+      { name: "FIFA Defects Squad", aug: 704, toDate: 1700, alloc: 2660, remaining: 975 },
+      { name: "BO Optimization", aug: 36, toDate: 550, alloc: 567, remaining: 14 },
+      { name: "Systems Health - Green", aug: -7, toDate: 65, alloc: 129, remaining: 64 },
+      { name: "TV", aug: 9, toDate: 61, alloc: 69, remaining: 8 }
+    ],
+    projectTotal: { name: "Total", aug: 1080, toDate: 4000, alloc: 5600, remaining: 1600 },
+    quarterly: [ // $K [spend, receipts]; Q3 and Q4 are forecasts; null = TBD
+      { name: "HSIA/wHSIA/Home Phone / TV", q1: [176, 63], q2: [840, 396], q3: [814, 1500], q4: [417, 2200] },
+      { name: "FIFA Defects Squad", q1: [0, 0], q2: [790, null], q3: [1200, null], q4: [670, null] },
+      { name: "BO Optimization", q1: [196, null], q2: [148, null], q3: [220, null], q4: [0, null] },
+      { name: "Systems Health - Green", q1: [0, null], q2: [44, null], q3: [70, null], q4: [15, null] }
+    ],
+    quarterlyTotal: { name: "Total", q1: [372, 63], q2: [1820, 396], q3: [2300, 1500], q4: [1100, 2200] }
+  },
+  delivered: [ // CRs delivered Feb–Aug 2026; add = run-rate added that month, rate = monthly run-rate, cum = cumulative benefit ($K)
+    { m: "February", add: null, rate: 18.5, cum: 18.5, crs: [{ id: "ITSS-8027", t: "Customer is left waiting for a DIY assist appointment.", tag: "8% churn" }, { id: "ITSS-7828", t: "Customer address not correct due to no MDU unit numbers.", tag: "Churn" }] },
+    { m: "March", add: 26, rate: 42, cum: 63, crs: [{ id: "ITSS-7715", t: "Customer appointments are never on time.", tag: "Call avoidance" }, { id: "ITSS-7874", t: "OPTIK on wHSIA delivery issue.", tag: "Enables 50-80 RGUs" }] },
+    { m: "April", add: 0, rate: 42, cum: 107.5, crs: [{ id: "OF-5606", t: "Customer receives wrong appointment email." }] },
+    { m: "May", add: 74, rate: 116, cum: 415, crs: [{ id: "ITSS-7929", t: "Blocking clearance issue affects communication with outgoing customer.", tag: "Churn" }, { id: "ITSS-7995", t: "Provisioning issue when Optik TV and wHSIA ordered together.", tag: "400 RGUs/month" }, { id: "BAU-4892", t: "Customer is being billed for unlimited data when it is included in plan.", tag: "Revenue leakage" }] },
+    { m: "June", add: 142, rate: 258, cum: 864.5, crs: [{ id: "ITSS-7891", t: "Customer receives equipment that is not required.", tag: "SBC savings - Boost Lite" }, { id: "ITSS-8126", t: "HS3 blocking clearance issue affects communication with outgoing customer.", tag: "Churn" }, { id: "OF-6231", t: "Customers in QC receive different shipping emails to the rest of Canada." }, { id: "OF-3689/1526/2784/3676", t: "Customer has service disconnected as soon as a move is requested.", tag: "Churn" }] },
+    { m: "July", add: 59, rate: 317, cum: 1370, crs: [{ id: "ITSS-8168", t: "Customer unable to log into TV+ app or view VOD/TELUS content.", tag: "Call avoidance" }, { id: "ITSS-7658 & CIO-543", t: "XGS vs GPON check: customer does not have equipment to support speeds.", tag: "Call reduction" }, { id: "ITSS-8159", t: "Customer cancelled accounts have new charges appear up to 2 years later." }, { id: "Moves Gap & T.com Functionality", t: "Customer unable to create move order, fills out a form instead for an agent to complete.", tag: "Agent time" }] },
+    { m: "August", add: 4, rate: 321, cum: 1890, crs: [{ id: "ITSS-7981", t: "Customer has price re-rate due to GPON/XGS on move.", tag: "Call avoidance / churn" }] }
+  ],
+  pipeline: [ // CR delivery timeline Sep–Dec 2026; rate = expected monthly benefit ($K)
+    { m: "September", rate: 36, crs: [{ id: "BAU-5258", t: "Customer cannot complete certain day 2 transactions" }, { id: "ITSS-8433", t: "Customer can order TV when it is not available to them" }, { id: "ITSS-8234", t: "Customer doesn't get DIY assist appointment" }, { id: "BAU-6313", t: "Customer receives incremental NAH when not required" }] },
+    { m: "October", rate: 32, crs: [{ id: "OF-4761", t: "Customer picks wrong TV tier combo, doesn't get what they wanted" }, { id: "CIO-622", name: "Project Flicker: TechHub Integration", t: "Customer experiences a service interruption that we can prevent" }] },
+    { m: "November", rate: 217, crs: [{ id: "ITSS-8277", name: "1G for Boost Lite in NGM units", t: "Customer receives Boost7 when not required; maintain instant NGM customer activations" }, { id: "ITSS-8049", name: "DIY Revamp", t: "Customer gets told they have a new service when they do not" }, { id: "ITSS-8145", name: "EasyPay transfer after TOWN", t: "Customer gets invalid credit" }, { id: "ITSS-6945", name: "Billing fallout: move orders", t: "Customer delays in refund cheque" }, { id: "ITSS-8252", name: "SHS install-credit email quotes", t: "Customer quote is confusing" }] },
+    { m: "December", rate: 475, crs: [{ id: "ITSS-8286", name: "Records reconciliation", t: "Customer has wrong device for install / activation" }, { id: "ITSS-7790", name: "HSIA business rule modernization", t: "Customer gets sent multiples of the same hardware" }, { id: "ITSS-8141", name: "Credit automation", t: "Customer has to call in for Custom Home equipment credit" }, { id: "OF-7580", name: "FIFA F2F quoting tool rounding fix", t: "Customer gets incorrect quote for services" }, { id: "ITSS-8256", t: "Customer has to wait unnecessarily for Custom Home install" }, { id: "ITSS-8111", name: "SHSSAVE coupon discount fix", t: "Customer does not get expected discounts" }] }
+  ],
+  pipelineNote: "Source: CR/Defect Priority List. Target delivery dates reflect current planning and may shift with prioritization and funding."
+};
+
+// ---------------------------------------------------------------------------
 // FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
 // Arrays align with MONTHS (Jan 2025 – Sep 2026); the whole series is re-read each month
 // because the source restates earlier months.
@@ -572,8 +641,8 @@ const TVA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[311
 // analysis/hsia/analyze_hsia_notes.py; aggregates only, no customer data)
 const HSA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[57173,58787,56761],"c1":[{"name":"Connectivity","v":[41039,42732,41325],"pct":-3.3},{"name":"Wireless","v":[13445,13135,12565],"pct":-4.3},{"name":"Incompatible Equipment","v":[1656,1994,2118],"pct":6.2},{"name":"Abandon","v":[937,848,702],"pct":-17.2},{"name":"NWH","v":[93,75,46],"pct":-38.7}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[11676,13151,13255],"pct":0.8},{"name":"Connectivity › ONT Not Ranged","v":[7205,7117,6358],"pct":-10.7},{"name":"Connectivity › Slow Speeds","v":[6433,6348,6574],"pct":3.6},{"name":"Connectivity › Losing Sync","v":[6269,6391,6307],"pct":-1.3},{"name":"Wireless › Can't Connect","v":[5788,5728,5162],"pct":-9.9},{"name":"Wireless › Disconnects","v":[4270,4149,4253],"pct":2.5},{"name":"Connectivity › No Sync","v":[3262,3717,3170],"pct":-14.7},{"name":"Wireless › Slow Speeds","v":[3387,3258,3149],"pct":-3.3},{"name":"Connectivity › Historical Data","v":[2917,2593,2600],"pct":0.3},{"name":"Incompatible Equipment › Incompatible","v":[1656,1994,2117],"pct":6.2},{"name":"Connectivity › No IP","v":[1939,1920,1710],"pct":-10.9},{"name":"Connectivity › Incompatible Equipment","v":[1337,1494,1349],"pct":-9.7},{"name":"Abandon › Abandon","v":[937,848,702],"pct":-17.2}],"rising":[{"name":"Incompatible Equipment › Incompatible › Not Applicable","v":[1651,1983,2114],"delta":131,"pct":6.6},{"name":"Connectivity › Slow Speeds › All Devices Affected","v":[5133,5038,5163],"delta":125,"pct":2.5},{"name":"Connectivity › No Dataflow › All Devices Affected","v":[10420,11925,12026],"delta":101,"pct":0.8},{"name":"Connectivity › Slow Speeds › Single Device Affected","v":[519,555,648],"delta":93,"pct":16.8},{"name":"Wireless › Disconnects › Some Devices Affected","v":[973,870,955],"delta":85,"pct":9.8},{"name":"Wireless › Disconnects › All Devices Affected","v":[2981,2972,2990],"delta":18,"pct":0.6},{"name":"Connectivity › Historical Data › Severe Line Issues","v":[2914,2593,2599],"delta":6,"pct":0.2},{"name":"Connectivity › Slow Speeds › Some Devices Affected","v":[688,654,659],"delta":5,"pct":0.8}],"falling":[{"name":"Wireless › Can't Connect › All Devices Affected","v":[3332,3521,3054],"delta":-467,"pct":-13.3},{"name":"Connectivity › No Sync › No DSL Light","v":[2461,2595,2273],"delta":-322,"pct":-12.4},{"name":"Connectivity › ONT Not Ranged › Outage","v":[825,1016,713],"delta":-303,"pct":-29.8},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[4238,3988,3688],"delta":-300,"pct":-7.5},{"name":"Connectivity › No Sync › Outage","v":[303,640,450],"delta":-190,"pct":-29.7},{"name":"Connectivity › No IP › No Internet Light","v":[1792,1691,1543],"delta":-148,"pct":-8.8},{"name":"Abandon › Abandon › Abandon","v":[936,845,700],"delta":-145,"pct":-17.2},{"name":"Connectivity › ONT Not Ranged › No Power","v":[2041,2003,1861],"delta":-142,"pct":-7.1}],"techR1":[{"name":"Education","v":[11813,12410,11990],"pct":-3.4},{"name":"Connectivity","v":[10346,10663,10390],"pct":-2.6},{"name":"(no closure code)","v":[7099,7843,8061],"pct":2.8},{"name":"GPON","v":[7555,7544,7612],"pct":0.9},{"name":"HSIA","v":[7723,7490,7030],"pct":-6.1},{"name":"Customer","v":[5336,4986,4666],"pct":-6.4},{"name":"Cancel Ticket","v":[1378,1370,1281],"pct":-6.5},{"name":"Outside Plant","v":[1299,1243,1190],"pct":-4.3},{"name":"Found OK","v":[1119,1451,1138],"pct":-21.6},{"name":"IPTV","v":[789,753,771],"pct":2.4},{"name":"Network Service Wire","v":[756,689,691],"pct":0.3},{"name":"NetCracker","v":[552,702,460],"pct":-34.5}],"techRising":[{"name":"HSIA › Boost Wireless Extender","v":[514,481,642],"delta":161,"pct":33.5},{"name":"Connectivity › STB/PVR","v":[313,328,460],"delta":132,"pct":40.2},{"name":"GPON › Inside Premise Equipment","v":[5006,5130,5200],"delta":70,"pct":1.4},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[163,125,182],"delta":57,"pct":45.6},{"name":"Network Service Wire › Drop/Serv Wire (Incl Bonding)","v":[621,564,593],"delta":29,"pct":5.1},{"name":"Education › IPTV","v":[216,252,276],"delta":24,"pct":9.5}],"techFalling":[{"name":"Education › HSIA","v":[11054,11583,11174],"delta":-409,"pct":-3.5},{"name":"Customer › Customer Training/Education/Inquiry Only","v":[4681,4311,4029],"delta":-282,"pct":-6.5},{"name":"Found OK › Not Required","v":[690,965,705],"delta":-260,"pct":-26.9},{"name":"NetCracker › Stuck","v":[511,645,411],"delta":-234,"pct":-36.3},{"name":"Connectivity › ONT","v":[965,983,807],"delta":-176,"pct":-17.9},{"name":"HSIA › Modem/Gateway","v":[4565,4410,4241],"delta":-169,"pct":-3.8}],"divergence":{"all":[{"alignment":55.3,"nofault":39.2,"nontelus":4.0,"reattribution":44.7,"closed":49133},{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118},{"alignment":54.9,"nofault":39.0,"nontelus":4.1,"reattribution":45.1,"closed":48025}],"field":[{"alignment":86.1,"nofault":6.1,"nontelus":13.2,"reattribution":13.9,"visits":14937},{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452},{"alignment":83.6,"nofault":6.9,"nontelus":13.4,"reattribution":16.4,"visits":14636}],"perCat":[{"cat":"Connectivity › No Dataflow","n":13255,"alignment":55.2,"nofault":38.5,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6574,"alignment":52.3,"nofault":45.4,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › ONT Not Ranged","n":6358,"alignment":70.7,"nofault":26.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Losing Sync","n":6307,"alignment":61.6,"nofault":31.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Can't Connect","n":5162,"alignment":33.1,"nofault":58.2,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4253,"alignment":36.0,"nofault":52.3,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":3170,"alignment":67.0,"nofault":28.3,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Wireless › Slow Speeds","n":3149,"alignment":30.6,"nofault":58.0,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Historical Data","n":2600,"alignment":80.4,"nofault":15.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":2117,"alignment":73.5,"nofault":22.6,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1710,"alignment":51.1,"nofault":43.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1349,"alignment":57.1,"nofault":38.5,"techTop":["Education / no fault","Access line / fibre / ONT"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":3275,"alignment":91.7,"nofault":4.7,"nontelus":21.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":2021,"alignment":80.9,"nofault":7.4,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1972,"alignment":84.1,"nofault":8.6,"nontelus":11.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1683,"alignment":91.4,"nofault":4.2,"nontelus":14.0,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1264,"alignment":88.7,"nofault":6.9,"nontelus":6.1,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1153,"alignment":88.5,"nofault":5.6,"nontelus":9.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1110,"alignment":83.3,"nofault":11.4,"nontelus":13.6,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":659,"alignment":50.4,"nofault":9.3,"nontelus":10.9,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":460,"alignment":88.3,"nofault":7.2,"nontelus":10.0,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":406,"alignment":45.4,"nofault":12.6,"nontelus":17.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":365,"alignment":85.4,"nofault":8.0,"nontelus":15.7,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":298,"alignment":45.0,"nofault":7.4,"nontelus":12.4,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":57173,"field_visit_pct":26.3,"agent_education_closure_pct":29.3,"no_closure_code_pct":12.4},{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3},{"tickets":56761,"field_visit_pct":25.9,"agent_education_closure_pct":28.4,"no_closure_code_pct":14.2}],"determination":[[13021,1974],[12490,2000],[12704,1969]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4941,4631,4647],"pct":0.3},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3846,3887,4167],"pct":7.2},{"name":"Drop / service wire / outside plant","v":[1882,1733,1597],"pct":-7.8},{"name":"Inside wiring / jack / ethernet","v":[1318,1352,1350],"pct":-0.1},{"name":"Modem / gateway replaced","v":[1337,1160,1109],"pct":-4.4},{"name":"Provisioning / profile / port fix","v":[1119,1114,1046],"pct":-6.1},{"name":"Education / no fault found / working on arrival","v":[836,799,817],"pct":2.3},{"name":"Power cycle / factory reset / firmware","v":[684,675,733],"pct":8.6},{"name":"Power supply / power","v":[201,157,151],"pct":-3.8},{"name":"Customer-owned equipment / third-party router","v":[66,74,64],"pct":-13.5}],"commentCoverage":[45159,45489,43185],"themes":[{"name":"ONT / fibre / light level","v":[15729,15321,14339],"pct":-6.4},{"name":"Slow speed / buffering","v":[12547,11736,10884],"pct":-7.3},{"name":"No internet / all devices down","v":[10606,11426,10453],"pct":-8.5},{"name":"Dispatch / technician booked","v":[9812,9936,9720],"pct":-2.2},{"name":"Boost / Wi-Fi extender","v":[8990,9214,8564],"pct":-7.1},{"name":"Intermittent drops / disconnects","v":[9323,8267,7882],"pct":-4.7},{"name":"Firmware / settings / factory reset","v":[7990,7861,7194],"pct":-8.5},{"name":"Work from home / streaming / gaming impact","v":[6691,7098,7014],"pct":-1.2},{"name":"Outage / active network event","v":[6537,7478,6666],"pct":-10.9},{"name":"DSL / copper line","v":[6471,6582,5932],"pct":-9.9},{"name":"Red / alarm light / LOS on ONT or modem","v":[6123,5862,5306],"pct":-9.5},{"name":"Repeat / recurring issue","v":[5539,5399,4871],"pct":-9.8},{"name":"Wi-Fi: cannot connect / single device","v":[2821,3058,2823],"pct":-7.7},{"name":"No power / dead equipment","v":[3046,2837,2616],"pct":-7.8},{"name":"Modem / gateway swap shipped","v":[1088,1141,1131],"pct":-0.9},{"name":"Customer wants tech / refuses troubleshooting","v":[893,846,918],"pct":8.5},{"name":"Third-party / customer-owned router","v":[399,399,407],"pct":2.0}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37386,37555,35238],"pct":-6.2},{"name":"NH20 / NAH (Network Access Hub)","v":[15541,15519,14383],"pct":-7.3},{"name":"T3200M gateway","v":[10477,10778,10304],"pct":-4.4},{"name":"Actiontec / legacy modem","v":[5084,5395,5211],"pct":-3.4},{"name":"Boost Wi-Fi 6","v":[3019,3313,2948],"pct":-11.0},{"name":"Wi-Fi Hub / WFH","v":[2203,1852,1639],"pct":-11.5},{"name":"Boost Wi-Fi 7 (BV3)","v":[1113,1551,1645],"pct":6.1},{"name":"Boost Lite (BLite)","v":[551,610,613],"pct":0.5}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[41813,42320,39955],"pct":-5.6},{"name":"Copper (DSL / bonded)","v":[27079,27785,27108],"pct":-2.4}],"domainMix":[{"agent":"Gateway / dataflow","n":13143,"v":[2272,3970,604,801,23,120,5137,206]},{"agent":"Access line & ONT","n":15658,"v":[6587,3181,342,839,93,181,4211,216]},{"agent":"Speed","n":5584,"v":[713,1735,274,193,3,51,2533,79]},{"agent":"Wi-Fi","n":10657,"v":[815,2814,659,116,1,90,5989,170]},{"agent":"Equipment compatibility","n":2983,"v":[951,851,111,80,1,50,864,72]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2" };
+const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5", FFPS: "#A3268A" };
+const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2", FFPS: "#D77BC4" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
 const SCOPES = ["All", "HSIA", "TV", "SHS", "SH+"];
 
@@ -623,6 +692,7 @@ const ICON_PATHS = {
   pillar3: "M21 3 10 14M21 3l-7 18-3-8-8-3z",
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
+  program: "M4 20h16M4 16l5-5 4 3 7-7M15 7h5v5",
   notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
   slides: "M3 5h18v12H3zM8 21h8M12 17v4M7 9h6M7 12h10",
   sentiment: "M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01",
@@ -950,7 +1020,7 @@ function ComboChart({ labels, bar, line, height = 240, T, tooltipExtra, sharedAx
 }
 
 // Stacked bars: stacks = [{ name, data, color }], one segment per series per month
-function StackedBarChart({ labels, stacks, height = 240, yFmt, T }) {
+function StackedBarChart({ labels, stacks, height = 240, yFmt, T, unit = "tickets" }) {
   const wrapRef = useRef(null);
   const [hoverI, setHoverI] = useState(null);
   const left = 56, right = 64, top = 16, bottom = 22;
@@ -1010,7 +1080,7 @@ function StackedBarChart({ labels, stacks, height = 240, yFmt, T }) {
           background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 10px", fontSize: 12, color: T.text,
           boxShadow: "0 4px 16px rgba(0,0,0,.14)", pointerEvents: "none", whiteSpace: "nowrap", zIndex: 2
         }}>
-          <div style={{ fontWeight: 700, marginBottom: 4 }}>{labels[hoverI]} · {yFmt(totals[hoverI])} tickets</div>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>{labels[hoverI]} · {yFmt(totals[hoverI])}{unit ? ` ${unit}` : ""}</div>
           {stacks.map((st, si) => (st.data[hoverI] || 0) > 0 && (
             <div key={si} style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ width: 9, height: 9, borderRadius: 2, background: st.color, opacity: st.opacity == null ? 1 : st.opacity, display: "inline-block" }} />
@@ -1592,7 +1662,8 @@ export default function ReliabilityScorecards() {
     { id: "tvcross", label: "Cross Analysis", icon: "cross", color: colors.TV, child: true, parent: "TV" },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
-    { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR }
+    { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
+    { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS }
   ];
 
   const selectStyle = {
@@ -2703,6 +2774,309 @@ export default function ReliabilityScorecards() {
             <LineChart labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Deacts saved", data: sliceR(SWEEPR.deacts.a) }]} yFmt={fmtNum} colors={colors} T={T} />
             {openTables["ss-dea"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: "SWEEPR", label: "Deacts saved", data: sliceR(SWEEPR.deacts.a) }]} fmt={fmtNum} T={T} />}
           </ChartCard>
+        </Section>
+      </>
+    );
+  }
+
+  // ------------------------------ Friction Free Product Systems program ------------------------------
+  // Static program update transcribed from the monthly FFPS deck (see FFPS). No month range
+  // filter applies; figures are as reported for the deck's period.
+  function FfpsPage() {
+    const col = colors.FFPS;
+    const AMBER = isDark ? "#F0B35A" : "#B86E00";
+    const F = FFPS, B = F.benefits, FIN = F.finance;
+    const money = (v) => v == null ? "—" : Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : Math.abs(v) >= 1000 ? `$${Math.round(v / 1000).toLocaleString()}K` : `$${v.toLocaleString()}`;
+    const moneyM = (v) => `$${(v / 1e6).toFixed(2)}M`;
+    const kFmt = (k) => k == null ? "TBD" : Math.abs(k) >= 1000 ? `$${(k / 1000).toFixed(k % 1000 === 0 ? 0 : 2)}M` : `$${k}K`;
+    const signed = (v, fmt = (x) => x) => v == null ? null : (v > 0 ? "+" : v < 0 ? "−" : "") + fmt(Math.abs(v));
+    const card = (children, style) => <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 20px", ...style }}>{children}</div>;
+    const cardTitle = (title, sub) => (
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ width: 5, height: 22, borderRadius: 3, background: "#66CC02", display: "inline-block" }} />
+          <span style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>{title}</span>
+        </div>
+        {sub && <div style={{ fontSize: 12, color: T.textMuted, marginTop: 4, marginLeft: 15 }}>{sub}</div>}
+      </div>
+    );
+    const tile = (value, label, sub, valueColor) => (
+      <div style={{ flex: 1, minWidth: 120, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px", textAlign: "center" }}>
+        <div style={{ fontSize: 22, fontWeight: 700, color: valueColor || T.heading, lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontSize: 11.5, color: valueColor || T.textMuted, marginTop: 4, fontWeight: 600 }}>{label}</div>
+        {sub && <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 3 }}>{sub}</div>}
+      </div>
+    );
+    const sectionLabel = (t) => <div style={{ fontSize: 12.5, fontWeight: 700, color: T.heading, margin: "14px 0 10px", paddingTop: 12, borderTop: `1px solid ${T.border}` }}>{t}</div>;
+    // burndown: start → mid → end with the net move under each step
+    const flow = (points, { showOpenClosed } = {}) => (
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        {points.map((p, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={{ alignSelf: "center", color: T.textFaint, fontSize: 20, padding: "0 2px", lineHeight: 1 }}>→</div>}
+            <div style={{ textAlign: "center", flex: 1, minWidth: 110 }}>
+              <div style={{ fontSize: 36, fontWeight: 700, color: T.heading, lineHeight: 1 }}>{p.v.toLocaleString()}</div>
+              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>{p.label}</div>
+              {p.net != null && (showOpenClosed
+                ? <div style={{ marginTop: 6, fontSize: 12, fontWeight: 700, lineHeight: 1.5 }}>
+                    <div style={{ color: p.net > 0 ? T.bad : T.good }}>{signed(p.net)}</div>
+                    <div style={{ color: AMBER }}>{p.opened} new</div>
+                    <div style={{ color: T.good }}>{p.closed} closed</div>
+                  </div>
+                : <span style={{ display: "inline-block", marginTop: 8, background: (p.net > 0 ? T.bad : T.good) + "1a", color: p.net > 0 ? T.bad : T.good, borderRadius: 6, padding: "2px 12px", fontSize: 12.5, fontWeight: 700 }}>{signed(p.net)}</span>)}
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    );
+    const crStack = [
+      { name: "Churn", color: col, data: B.crs.churn },
+      { name: "Calls", color: col, opacity: 0.65, data: B.crs.calls },
+      { name: "SBC", color: col, opacity: 0.35, data: B.crs.sbc }
+    ];
+    // Compact stacked bars sized for a card (the dashboard charts assume a full-width viewBox)
+    const miniBars = (labels, stacks, fmt) => {
+      const W = 360, H = 200, left = 10, right = 10, top = 26, bottom = 24;
+      const plotW = W - left - right, plotH = H - top - bottom;
+      const totals = labels.map((_, i) => stacks.reduce((a, s) => a + (s.data[i] || 0), 0));
+      const max = Math.max(1, ...totals) * 1.08;
+      const slot = plotW / labels.length, bw = Math.min(64, slot * 0.55);
+      const y = (v) => top + (1 - v / max) * plotH;
+      return (
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: "block" }}>
+          <line x1={left} x2={W - right} y1={top + plotH} y2={top + plotH} stroke={T.borderStrong} strokeWidth="1" />
+          {labels.map((l, i) => {
+            const cx = left + slot * i + slot / 2; let acc = 0;
+            return (
+              <g key={i}>
+                {stacks.map((s, si) => { const v = s.data[i] || 0; if (v <= 0) return null; const y0 = y(acc), y1 = y(acc + v); acc += v;
+                  return <rect key={si} x={cx - bw / 2} y={y1} width={bw} height={Math.max(0.5, y0 - y1)} fill={s.color} opacity={s.opacity == null ? 1 : s.opacity} />; })}
+                {totals[i] > 0 && <text x={cx} y={y(totals[i]) - 6} fontSize="12" fontWeight="700" fill={T.text} textAnchor="middle">{fmt(totals[i])}</text>}
+                <text x={cx} y={H - 7} fontSize="12" fontWeight="600" fill={T.textSecondary} textAnchor="middle">{l}</text>
+              </g>
+            );
+          })}
+        </svg>
+      );
+    };
+    const notes = (items) => (
+      <ul style={{ margin: "10px 0 0", paddingLeft: 18, fontSize: 12.3, lineHeight: 1.6, color: T.textSecondary }}>
+        {items.map((t, i) => <li key={i}>{t}</li>)}
+      </ul>
+    );
+    const th = { padding: "8px 10px", fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
+    const td = { padding: "8px 10px", fontSize: 12.5, borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
+    // CR timeline (delivered and pipeline share the layout)
+    const timeline = (months, { footer }) => (
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${months.length}, minmax(${months.length > 5 ? 126 : 150}px, 1fr))`, gap: months.length > 5 ? 9 : 12, overflowX: "auto", paddingBottom: 4 }}>
+        {months.map((mo, i) => (
+          <div key={i} style={{ minWidth: 0 }}>
+            <div style={{ textAlign: "center", paddingBottom: 10, marginBottom: 10, borderBottom: `2px solid ${col}`, position: "relative" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>{mo.m}</div>
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: T.good }}>{mo.crs.length} CR{mo.crs.length === 1 ? "" : "s"}</div>
+              <span style={{ position: "absolute", left: "50%", bottom: -7, transform: "translateX(-50%)", width: 12, height: 12, borderRadius: "50%", background: "#66CC02", border: `2px solid ${T.surface}` }} />
+            </div>
+            <div style={{ display: "grid", gap: 8 }}>
+              {mo.crs.map((c, j) => (
+                <div key={j} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 10px", fontSize: 11.8, lineHeight: 1.45 }}>
+                  <div style={{ fontWeight: 700, color: T.good }}>{c.id}{c.name ? <span style={{ color: T.textSecondary, fontWeight: 600 }}> · {c.name}</span> : null}</div>
+                  <div style={{ color: T.text, fontStyle: "italic", marginTop: 2 }}>{c.t}</div>
+                  {c.tag && <div style={{ color: T.textMuted, fontSize: 11, marginTop: 2, fontWeight: 600 }}>{c.tag}</div>}
+                </div>
+              ))}
+            </div>
+            {footer && footer(mo, i)}
+          </div>
+        ))}
+      </div>
+    );
+    const deliveredFooter = (mo, i) => (
+      <div style={{ marginTop: 12, textAlign: "center" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: T.good, lineHeight: 1.4 }}>
+          {mo.add != null && <div>{signed(mo.add, (x) => `$${x}K`)}</div>}
+          <div>{`$${mo.rate}K/mo`}</div>
+        </div>
+        <div style={{ marginTop: 8, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 6px", fontSize: i === F.delivered.length - 1 ? 18 : 15, fontWeight: 700, color: T.heading }}>
+          {mo.cum >= 1000 ? `$${(mo.cum / 1000).toFixed(2)}M` : `$${mo.cum}K`}
+        </div>
+        {i === F.delivered.length - 1 && <div style={{ fontSize: 11, color: T.textFaint, marginTop: 4 }}>Cumulative total</div>}
+      </div>
+    );
+    const lastDelivered = F.delivered[F.delivered.length - 1];
+    const crsEnd = F.burndown.crs.points[2], crsMid = F.burndown.crs.points[1], crsStart = F.burndown.crs.points[0];
+    const tkEnd = F.burndown.tickets.points[2], tkMid = F.burndown.tickets.points[1], tkStart = F.burndown.tickets.points[0];
+    const dl = (v, label, goodDown = true) => <span style={{ color: v === 0 ? T.textMuted : (v < 0) === goodDown ? T.good : T.bad, fontWeight: 600 }}>{signed(v)} {label}</span>;
+    const totalBenefit = B.totals.reduce((a, t) => a + t.v, 0);
+
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={col} icon="issues" label="Open CRs" value={crsEnd.v} sub={`${crsEnd.label} · ${crsStart.v} at start of year`}
+            deltas={[dl(crsEnd.net, "vs end of Q2"), dl(F.burndown.crs.ytd.net, "YTD")]} />
+          <StatCard T={T} color={col} icon="tickets" label="Open tickets" value={tkEnd.v} sub={`${tkEnd.label} · billing + non-billing`}
+            deltas={[dl(tkEnd.net, "vs end of Q2"), dl(F.burndown.tickets.ytd.net, "YTD")]} />
+          <StatCard T={T} color={col} icon="saved" label="Recurring benefit" value={`$${FIN.h2.benefits.toFixed(1)}M`} sub="End of Q3 · against $4M spent"
+            deltas={[<span key="b" style={{ color: T.textSecondary }}>{moneyM(totalBenefit)} across CRs, non-billing and billing</span>]} />
+          <StatCard T={T} color={col} icon="program" label="CR run-rate benefit" value={`$${lastDelivered.rate}K/mo`} sub={`${lastDelivered.m} · ${F.delivered.reduce((a, m) => a + m.crs.length, 0)} CRs delivered since Feb`}
+            deltas={[<span key="c" style={{ color: T.textSecondary }}>{`$${(lastDelivered.cum / 1000).toFixed(2)}M cumulative`}</span>]} />
+          <StatCard T={T} color={col} icon="churn" label={`${FIN.month} spend`} value={`$${FIN.monthSpend.toFixed(2)}M`} sub={`vs forecast $${FIN.monthForecast.toFixed(2)}M · YTD $${FIN.spendToDate.ytd.toFixed(1)}M`}
+            deltas={[<span key="r" style={{ color: T.textSecondary }}>{`$${FIN.remaining.toFixed(1)}M remaining (${FIN.remainingPct}% of budget)`}</span>]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          Transcribed from the Friction Free Product Systems program update deck ({F.asOf} edition, {F.period}). This page does not follow the month range selector.
+        </p>
+
+        <Section key="ffps-01" num="01" eyebrow="Friction Free Program" title="Burndown" icon="issues" T={T} collapsible>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: 16 }}>
+            {card(<>
+              {cardTitle(F.burndown.crs.label, F.burndown.crs.sub)}
+              {flow(F.burndown.crs.points, { showOpenClosed: true })}
+              {sectionLabel(`Activity, year to date (through August) · net change ${signed(F.burndown.crs.ytd.net)}`)}
+              <div style={{ display: "flex", gap: 10 }}>
+                {tile(F.burndown.crs.ytd.opened, "New CRs", null, AMBER)}
+                {tile(F.burndown.crs.ytd.closed, "Closed", null, T.good)}
+              </div>
+            </>)}
+            {card(<>
+              {cardTitle(F.burndown.tickets.label, F.burndown.tickets.sub)}
+              {flow(F.burndown.tickets.points)}
+              <div style={{ textAlign: "center", marginTop: 12, fontSize: 12.5, fontWeight: 700, color: T.bad }}>Net change vs start of year: {signed(F.burndown.tickets.ytd.net)}</div>
+              {sectionLabel("Activity, year to date (through August)")}
+              <div style={{ display: "flex", gap: 10 }}>
+                {tile(F.burndown.tickets.ytd.opened.toLocaleString(), "New (total)", `${F.burndown.tickets.ytd.openedTickets} tickets · ${F.burndown.tickets.ytd.openedProactive} proactive`)}
+                {tile(F.burndown.tickets.ytd.closed, "Closed")}
+                {tile(F.burndown.tickets.ytd.cancelled, "Cancelled")}
+              </div>
+              <div style={{ fontSize: 11.5, color: T.textFaint, fontStyle: "italic", marginTop: 10 }}>{F.burndown.tickets.note}</div>
+            </>)}
+          </div>
+        </Section>
+
+        <Section key="ffps-02" num="02" eyebrow="Friction Free Program" title="Benefits" icon="saved" T={T} collapsible>
+          <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 600, lineHeight: 1.5, color: T.text }}>{B.headline}</p>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: T.textMuted }}>{B.sub}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+            {card(<>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, marginBottom: 6 }}>{B.crs.title}</div>
+              {miniBars(B.crs.labels, crStack, moneyM)}
+              <div style={{ display: "flex", gap: 14, justifyContent: "center", fontSize: 11.5, color: T.textSecondary, marginTop: 4 }}>
+                {crStack.map((s) => <span key={s.name} style={{ display: "inline-flex", alignItems: "center", gap: 5 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: s.color, opacity: s.opacity == null ? 1 : s.opacity, display: "inline-block" }} />{s.name}</span>)}
+              </div>
+              {notes(B.crs.notes)}
+            </>)}
+            {card(<>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, marginBottom: 6 }}>{B.nonBilling.title}</div>
+              {miniBars(B.nonBilling.labels, [{ name: "Benefit", color: col, data: B.nonBilling.total }], moneyM)}
+              {notes(B.nonBilling.notes)}
+            </>)}
+            {card(<>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, marginBottom: 6 }}>{B.billing.title}</div>
+              {miniBars(B.billing.labels, [{ name: "EBITDA benefit", color: "#66CC02", data: B.billing.ebitda }], moneyM)}
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.heading, margin: "12px 0 6px" }}>Billing defects: remediation drivers</div>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr><th style={{ ...th, textAlign: "left" }}>Month</th><th style={{ ...th, textAlign: "right" }}>Calls</th><th style={{ ...th, textAlign: "right" }}>Contra</th></tr></thead>
+                <tbody>{B.billing.drivers.map((d) => (
+                  <tr key={d.m}><td style={{ ...td, color: T.textSecondary, fontWeight: 600 }}>{d.m}</td><td style={{ ...td, textAlign: "right" }}>{d.calls.toLocaleString()}</td><td style={{ ...td, textAlign: "right" }}>${d.contra.toLocaleString()}</td></tr>
+                ))}</tbody>
+              </table>
+              <div style={{ fontSize: 11.5, color: T.textFaint, fontStyle: "italic", marginTop: 8 }}>{B.billing.note}</div>
+            </>)}
+          </div>
+          <div style={{ marginTop: 16, borderRadius: 12, padding: "14px 20px", background: `linear-gradient(90deg, ${T.heading}, ${col})`, color: "#fff", display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "space-around" }}>
+            {B.totals.map((t, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <span style={{ fontSize: 20, fontWeight: 700 }}>${t.v.toLocaleString()}</span>
+                <span style={{ fontSize: 12.5, opacity: 0.9 }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section key="ffps-03" num="03" eyebrow="Friction Free Program" title="Billing tickets" icon="tickets" T={T} collapsible defaultOpen={false}>
+          {card(<>
+            {cardTitle("Billing tickets: executive overview", F.billingTickets.period)}
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "stretch" }}>
+              {tile(F.billingTickets.start.v, F.billingTickets.start.m.toUpperCase(), "total billing tickets")}
+              <div style={{ alignSelf: "center", color: T.textFaint, fontSize: 20 }}>→</div>
+              {tile(F.billingTickets.end.v, F.billingTickets.end.m.toUpperCase(), "total billing tickets")}
+              {tile(signed(F.billingTickets.delta), "Change", "Jun → Aug", T.bad)}
+              {tile(F.billingTickets.closed, "Closed to date", null, T.good)}
+              {tile(F.billingTickets.cancelled, "Cancelled to date")}
+            </div>
+          </>)}
+        </Section>
+
+        <Section key="ffps-04" num="04" eyebrow="Friction Free Program" title="CRs delivered (Feb – Aug 2026)" icon="initiatives" T={T} collapsible>
+          {timeline(F.delivered, { footer: deliveredFooter })}
+          <p style={{ fontSize: 11.5, color: T.textFaint, margin: "12px 0 0", lineHeight: 1.5 }}>Run-rate figures are the monthly benefit added by that month's CRs and the resulting monthly run-rate; the boxed figure is the cumulative benefit to date.</p>
+        </Section>
+
+        <Section key="ffps-05" num="05" eyebrow="Friction Free Program" title="CR delivery timeline (Sep – Dec 2026)" icon="initiatives" T={T} collapsible>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${F.pipeline.length}, minmax(150px, 1fr))`, gap: 12, marginBottom: 14, overflowX: "auto" }}>
+            {F.pipeline.map((mo, i) => (
+              <div key={i} style={{ textAlign: "center", background: T.band, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 10px", fontSize: 15, fontWeight: 600, color: T.heading }}>~${mo.rate}K/month</div>
+            ))}
+          </div>
+          {timeline(F.pipeline, {})}
+          <p style={{ fontSize: 11.5, color: T.textFaint, fontStyle: "italic", margin: "12px 0 0", lineHeight: 1.5 }}>{F.pipelineNote}</p>
+        </Section>
+
+        <Section key="ffps-06" num="06" eyebrow="Friction Free Program" title="Finance" icon="churn" T={T} collapsible defaultOpen={false}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 12 }}>
+            {tile(`$${FIN.monthSpend.toFixed(2)}M`, `${FIN.month} spend`, `vs forecast $${FIN.monthForecast.toFixed(2)}M`)}
+            {tile(`$${FIN.spendToDate.ytd.toFixed(1)}M`, "Spend to date", `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M`)}
+            {tile(`$${FIN.h2Forecast.q3.toFixed(1)}M · $${FIN.h2Forecast.q4.toFixed(1)}M`, "H2 forecast", "Q3 · Q4")}
+            {tile(`$${FIN.remaining.toFixed(1)}M`, "Remaining budget", `${FIN.remainingPct}% of total`)}
+            {tile(`$${FIN.h1.spend.toFixed(2)}M / $${FIN.h1.benefits.toFixed(2)}M`, "H1 spend / benefits")}
+            {tile(`$${FIN.h2.spend.toFixed(1)}M / $${FIN.h2.benefits.toFixed(1)}M`, "H2 spend (forecast) / benefits")}
+          </div>
+          {card(<>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, marginBottom: 8 }}>Project spend summary</div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>
+                  <th style={{ ...th, textAlign: "left" }}>Project</th><th style={{ ...th, textAlign: "right" }}>{FIN.month} spend</th><th style={{ ...th, textAlign: "right" }}>Spend to date</th><th style={{ ...th, textAlign: "right" }}>Allocation</th><th style={{ ...th, textAlign: "right" }}>Remaining to spend</th>
+                </tr></thead>
+                <tbody>
+                  {[...FIN.projects, FIN.projectTotal].map((p, i) => {
+                    const total = i === FIN.projects.length;
+                    const s = { ...td, textAlign: "right", fontWeight: total ? 700 : 400, color: total ? T.heading : T.text };
+                    return (
+                      <tr key={p.name} style={total ? { background: T.panel } : undefined}>
+                        <td style={{ ...td, color: total ? T.heading : T.textSecondary, fontWeight: total ? 700 : 600 }}>{p.name}</td>
+                        <td style={{ ...s, color: p.aug < 0 ? T.good : s.color }}>{p.aug < 0 ? "−" : ""}{kFmt(Math.abs(p.aug))}</td>
+                        <td style={s}>{kFmt(p.toDate)}</td><td style={s}>{kFmt(p.alloc)}</td><td style={s}>{kFmt(p.remaining)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>, { marginTop: 16 })}
+          {card(<>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, marginBottom: 8 }}>Spend and receipts by quarter</div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>
+                  <th style={{ ...th, textAlign: "left" }}>Project</th>
+                  {["Q1", "Q2", "Q3 forecast", "Q4 forecast"].flatMap((q) => [<th key={q + "s"} style={{ ...th, textAlign: "right" }}>{q} spend</th>, <th key={q + "r"} style={{ ...th, textAlign: "right" }}>{q} receipts</th>])}
+                </tr></thead>
+                <tbody>
+                  {[...FIN.quarterly, FIN.quarterlyTotal].map((p, i) => {
+                    const total = i === FIN.quarterly.length;
+                    const s = { ...td, textAlign: "right", fontWeight: total ? 700 : 400, color: total ? T.heading : T.text };
+                    return (
+                      <tr key={p.name} style={total ? { background: T.panel } : undefined}>
+                        <td style={{ ...td, color: total ? T.heading : T.textSecondary, fontWeight: total ? 700 : 600 }}>{p.name}</td>
+                        {["q1", "q2", "q3", "q4"].flatMap((q) => [<td key={q + "s"} style={s}>{kFmt(p[q][0])}</td>, <td key={q + "r"} style={{ ...s, color: p[q][1] == null ? T.textFaint : s.color }}>{kFmt(p[q][1])}</td>])}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ fontSize: 11.5, color: T.textFaint, marginTop: 8 }}>Receipts marked TBD are not yet reported in the source.</div>
+          </>, { marginTop: 16 })}
         </Section>
       </>
     );
@@ -4529,6 +4903,8 @@ export default function ReliabilityScorecards() {
     ? "Reliability monthly performance scorecard"
     : page === "selfserve"
       ? "Self-serve workflows scorecard"
+    : page === "ffps"
+      ? "Friction Free Product Systems program"
       : page === "execsummary"
       ? "Executive summary"
       : page === "hsiatickets"
@@ -4613,12 +4989,14 @@ export default function ReliabilityScorecards() {
       {/* Content */}
       <main style={{ flex: 1, minWidth: 0 }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "28px 32px 64px" }}>
-          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${CHILD_LABEL[page] ? `${PARENT_LABEL[CHILD_PARENT[page]] || CHILD_PARENT[page]} · ${CHILD_LABEL[page]}` : page}` : ""}</Eyebrow>
+          <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${CHILD_LABEL[page] ? `${PARENT_LABEL[CHILD_PARENT[page]] || CHILD_PARENT[page]} · ${CHILD_LABEL[page]}` : page === "ffps" ? "Friction Free Program" : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
             <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "selfserve"
               ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
+              : page === "ffps"
+              ? `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`
               : page === "execsummary"
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
               : page === "hsiatickets"
@@ -4663,7 +5041,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            {!PRODUCTS.includes(CHILD_PARENT[page]) && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {!PRODUCTS.includes(CHILD_PARENT[page]) && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
@@ -4680,6 +5058,7 @@ export default function ReliabilityScorecards() {
               page; the Executive Summary keeps its own state and stays a component. */}
           {page === "home" ? HomePage()
             : page === "selfserve" ? SelfServePage()
+            : page === "ffps" ? FfpsPage()
             : page === "execsummary" ? <ExecSummaryPage />
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()

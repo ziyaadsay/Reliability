@@ -30,7 +30,8 @@ const SOURCES = {
   tvPlatforms: "Tickets: Looker split by product. Base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (all regions except BTV and SPLUS). Repairs: 2026 Redwood Scorecard, Repair Tracking Detail (2026 onward). Swaps: Tableau Swapped Orders Combined View, Repair Swap Orders Volumes.",
   b2b: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Reliability B2B rows. Lower is better.",
   selfServe: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Sweepr rows (targets set for 2026 only).",
-  shPlus: "SH+ reliability KPIs workbook (base, calls and ticket volume from Jan 2025; rates from Jul 2025)."
+  shPlus: "SH+ reliability KPIs workbook (base, calls and ticket volume from Jan 2025; rates from Jul 2025).",
+  frictionFree: "Friction Free Product Systems Program Update deck (Google Slides), August 2026 edition: burndown, benefits, billing tickets, CR delivery and finance."
 };
 
 // ---- helpers ----
@@ -78,6 +79,7 @@ const TOOLS = [
   { name: "get_tv_platforms", description: "TV by platform: Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS) tickets, ticket rate, repairs, repair rate, provisioned subscriber base and 2026 repair swap volumes, plus the mixed-usage (both platforms) subscriber count.", inputSchema: { type: "object", properties: { from: { type: "string" }, to: { type: "string" } } } },
   { name: "get_self_serve", description: "Self-serve (Sweepr) workflow metrics: resolved sessions, web/app resolution rate, CX easy-to-follow score, Sweepr-involved churn and deacts saved, with 2026 monthly targets where set.", inputSchema: { type: "object", properties: {} } },
   { name: "get_health_commentary", description: "The hand-written Health Read commentary for a product for the latest month (themes, root causes, initiatives), plus the recurring-issue overview totals.", inputSchema: { type: "object", properties: { product: { type: "string", enum: ["HSIA", "TV", "SHS", "SH+"] } }, required: ["product"] } },
+  { name: "get_friction_free_program", description: "Friction Free Product Systems (FFPS) program update: CR and ticket burndown, benefit by quarter (CRs, non-billing and billing defects), billing ticket overview, CRs delivered Feb-Aug 2026 with run-rate benefit, the Sep-Dec CR delivery pipeline, and program finance (spend, allocation, forecast). Transcribed from the monthly program deck.", inputSchema: { type: "object", properties: { section: { type: "string", enum: ["burndown", "benefits", "billingTickets", "finance", "delivered", "pipeline"], description: "Return one section only; omit for the whole update." } } } },
   { name: "get_sources", description: "Source workbooks, tabs and scope definitions behind each dataset, and the dashboard URL.", inputSchema: { type: "object", properties: {} } }
 ];
 
@@ -178,6 +180,14 @@ function callTool(name, args = {}) {
       const themes = items.filter((x) => typeof x !== "string").map((t) => ({ theme: t.t, share: t.share || null, rootCauses: t.causes || [], inProgress: t.next || [], relatedInitiatives: (t.inits || []).map(resolveInit), note: t.note || null }));
       const overview = OVERVIEW_ISSUES.filter((r) => r[args.product]).map((r) => ({ issue: ISSUE_META[r.grp] ? ISSUE_META[r.grp].label : r.grp, latest: r[args.product][0], priorYear: r[args.product][1], yoy: change(r[args.product][0], r[args.product][1], { goodWhenDown: true }) }));
       return text({ product: args.product, month: LATEST, commentary: items.length ? { bullets, themes } : "No commentary has been added for this month.", recurringIssues: overview });
+    }
+    case "get_friction_free_program": {
+      const { source, pipelineNote, ...rest } = FFPS;
+      if (args.section) {
+        if (!(args.section in rest)) throw new Error(`Unknown section: ${args.section}`);
+        return text({ asOf: FFPS.asOf, period: FFPS.period, section: args.section, data: rest[args.section], ...(args.section === "pipeline" ? { note: pipelineNote } : {}), source: SOURCES.frictionFree });
+      }
+      return text({ ...rest, pipelineNote, source: SOURCES.frictionFree });
     }
     case "get_sources":
       return text({ dashboard: DASHBOARD_URL, latestMonth: LATEST, sources: SOURCES });

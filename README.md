@@ -34,7 +34,7 @@ same numbers as the deployed dashboard; it has no dependencies and no bundler.
 
 Tools: `list_products`, `get_kpi_series`, `get_kpi_summary`,
 `get_ticket_issues`, `get_initiatives`, `get_tv_platforms`, `get_self_serve`,
-`get_health_commentary`, `get_sources`.
+`get_health_commentary`, `get_friction_free_program`, `get_sources`.
 
 ```bash
 node mcp/build.mjs        # writes mcp/dist (gitignored)
