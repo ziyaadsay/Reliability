@@ -53,22 +53,23 @@ const HEALTH_COMMENTARY = {
     { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets (+26.2% MoM) · 14% of TV tickets · +1,086 MoM · the top driver in September",
       causes: [
         "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (+774 tickets on All STBs Affected alone)",
-        "The rise coincides with the CloudCheck agent upgrade rolled out from 6 July to 16 August",
+        "The rise coincides with the CloudCheck agent upgrade rolled out from 6 July to 16 August. The update included enhancements to the CloudCheck agent that allowed updates to be rolled out to the gateway without requiring a reboot",
         "The issue is strongly tied to the T3200M gateway: about 70% of All STBs Affected tickets"
       ],
       next: [
         "Investigating whether any firmware or software updates are responsible for the increase",
-        "Scoping a sequential reboot proactive campaign so affected gateways are cycled before customers are impacted"
+        "Sequential reboot proactive campaign now in flight (target Nov 2026) so affected gateways are cycled before customers are impacted"
       ],
-      inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix", "Revamped OPUS Migration Process"],
+      inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix"],
       note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
     { t: "Digital Box power & boot (TV+)", share: "2,419 tickets (+28.2% MoM) · +532 MoM",
-      causes: ["OPUS digital box power-supply unit failures", "Digital Box power issues added +378 tickets in September"],
+      causes: ["OPUS digital box power-supply unit failures"],
+      next: ["The PSU Replacement Campaign has been on hold since August because the new courier requires a signature for delivery of the replacement PSU. The team is working to resolve this and restart the campaign"],
       inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
-      note: "+28% MoM but still 51% below Sep'25, so the PSU campaign is holding most of its gains" },
+      note: "+28% MoM, still 51% below Sep'25" },
     { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+35.0% MoM, +583) · Missing Channels 1,926 (+30.4% MoM, +449)",
-      causes: ["NetCracker vs Optik identity (Option82) and UUID mismatches that block channels", "Channel configuration gaps: 18 AVS and 172 Mediaroom channel updates outstanding", "A defect temporarily preventing access to subscribed channels", "Perceived channel loss from the Mediaroom SD downconvert during migration"],
-      inits: ["Option82 Sync", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix"],
+      causes: ["A defect temporarily preventing access to subscribed channels", "P001 Playback Error: users encountered this error preventing playback of content"],
+      inits: ["P001 Playback Error Monitoring", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix"],
       note: "Channel errors up 57% MoM across TV+" }
   ],
   // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
@@ -367,9 +368,9 @@ const INITIATIVES = [
   { p: "TV", pillar: 1, theme: "Hardware", name: "Shipping Telemetry Automation", status: "In flight", timeline: "Nov 2026", prime: "A. Kozyniak", issues: ["TV", "Support"],
     desc: "Automates shipping telemetry to proactively identify new trends in shipment failures." },
   // notFor / pinFor: per-issue overrides of the theme-based initiative coverage in the ticket issues table
-  { p: "TV", pillar: 2, theme: "Hardware", name: "PSU Replacement Campaign", status: "Launched", timeline: "Sep 2025", prime: "D. Culp", issues: ["TV"], notFor: ["STB No Boot › Stuck on Initializing"],
-    desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets." },
-  { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "Ideation", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
+  { p: "TV", pillar: 2, theme: "Hardware", name: "PSU Replacement Campaign", status: "On Hold", timeline: "Sep 2025", prime: "D. Culp", issues: ["TV"], notFor: ["STB No Boot › Stuck on Initializing"],
+    desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets. On hold since August: the new courier requires a signature on delivery of the replacement PSU." },
+  { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "In flight", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
     desc: "Sequential reboot procedure for Optik TV (Legacy) set-top boxes stuck on Initializing." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "InSight TV Hardware Check fix", status: "In flight", timeline: "Oct 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"],
     desc: "Fixes the InSight TV Hardware Check diagnostic used on set-top box and gateway faults." },
@@ -381,7 +382,7 @@ const INITIATIVES = [
     desc: "Fixes the recording-restart defect affecting PVR playback." },
   { p: "TV", pillar: 2, theme: "Recording Issues", name: "TTV+ Guide Filter Fix", status: "Launched", timeline: "May 2026", prime: "A. Kozyniak", issues: ["TV"],
     desc: "Fixes guide filtering defects in TELUS TV+." },
-  { p: "TV", pillar: 2, theme: "Hardware", name: "Revamped OPUS Migration Process", status: "In flight", timeline: "Jun 2026", prime: "M. Ibrahim", issues: ["TV"],
+  { p: "TV", pillar: 2, theme: "Hardware", name: "Revamped OPUS Migration Process", status: "Launched", timeline: "Jun 2026", prime: "M. Ibrahim", issues: ["TV"],
     desc: "Overhauls the OPUS migration process for a smoother hardware transition." },
   { p: "TV", pillar: 2, theme: "Recording Issues", name: "Sports Team Recordings", status: "In flight", timeline: "Jul 2026", prime: "C. Carter", issues: ["TV"],
     desc: "Adds sports-team-based recording capability." },
@@ -401,8 +402,8 @@ const INITIATIVES = [
     desc: "Closes channel configuration gaps: 18 channel updates in AVS and 172 in Mediaroom before Sep 30." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Mediaroom SD Downconvert Removal", status: "In flight", timeline: "Oct 2026", prime: "N. Desrosiers", issues: ["TV"],
     desc: "Removes the Mediaroom SD downconvert to mitigate the perception of lost channels during migration." },
-  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Subscribed Channel Access Defect Fix", status: "In flight", timeline: "TBC", prime: "C. Carter", issues: ["TV"],
-    desc: "New defect identified temporarily preventing customers from accessing subscribed channels. Fix underway." },
+  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Subscribed Channel Access Defect Fix", status: "In flight", timeline: "Nov 2026", prime: "C. Carter", issues: ["TV"],
+    desc: "New defect identified temporarily preventing customers from accessing subscribed channels. Fix currently in testing." },
   { p: "TV", pillar: 4, theme: "Video Quality", name: "InSight Conviva Video Quality Metrics & Co-pilot Ingestion", status: "Ideation", timeline: "—", prime: "Z. Sayhebolay", issues: ["TV", "Support"],
     desc: "Updates InSight's Conviva video-quality metrics and feeds them into the agent co-pilot." },
   // ------------------------- SHS -------------------------
@@ -1127,7 +1128,7 @@ function StatusChip({ status, T }) {
   const s = status.toLowerCase();
   let bg = T.chipIdea, fg = T.chipIdeaText;
   if (s.includes("launch")) { bg = T.chipLaunched; fg = T.chipLaunchedText; }
-  else if (s.includes("stall")) { bg = T.chipStalled; fg = T.chipStalledText; }
+  else if (s.includes("stall") || s.includes("hold")) { bg = T.chipStalled; fg = T.chipStalledText; }
   else if (s.includes("flight")) { bg = T.chipFlight; fg = T.chipFlightText; }
   return <span style={{ background: bg, color: fg, borderRadius: 999, padding: "2px 9px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{status}</span>;
 }
@@ -2274,7 +2275,7 @@ export default function ReliabilityScorecards() {
     const nowRight = (nowAbs - start + 1) * cell;
     const barStyle = (it, color) => it.status === "Launched" ? { background: color, border: `1px solid ${color}` }
       : it.status === "In flight" ? { background: color + "a6", border: `1px solid ${color}` }
-      : it.status === "Stalled" ? { background: T.borderStrong, border: `1px solid ${T.borderStrong}` }
+      : (it.status === "Stalled" || it.status === "On Hold") ? { background: T.borderStrong, border: `1px solid ${T.borderStrong}` }
       : { background: color + "1f", border: `1.5px dashed ${color}` };
     const groups = PILLARS.map((pl) => ({ pl, rows: dated.filter((x) => x.it.pillar === pl.n).sort((a, b) => a.t.s - b.t.s || a.t.e - b.t.e || a.it.name.localeCompare(b.it.name)) })).filter((g) => g.rows.length);
     const months = Array.from({ length: n }, (_, k) => start + k);
@@ -2328,7 +2329,7 @@ export default function ReliabilityScorecards() {
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor, border: `1px solid ${legendColor}` })}Launched</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor + "a6", border: `1px solid ${legendColor}` })}In flight</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: legendColor + "1f", border: `1.5px dashed ${legendColor}` })}Ideation</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: T.borderStrong, border: `1px solid ${T.borderStrong}` })}Stalled</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{swatch({ background: T.borderStrong, border: `1px solid ${T.borderStrong}` })}Stalled / On hold</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ display: "inline-block", width: 2, height: 12, background: T.heading, opacity: 0.6 }} />Latest reported month ({MONTHS[MONTHS.length - 1]}); shaded months are in the past</span>
             {showProduct && PRODUCTS.filter((p) => items.some((it) => it.p === p)).map((p) => (
               <span key={p} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 999, background: colors[p], display: "inline-block" }} />{p}</span>
@@ -4441,8 +4442,8 @@ export default function ReliabilityScorecards() {
     );
 
     const chip = (status) => {
-      const bg = status === "Launched" ? T.chipLaunched : status === "Stalled" ? T.chipStalled : status === "Ideation" ? T.chipIdea : T.chipFlight;
-      const fg = status === "Launched" ? T.chipLaunchedText : status === "Stalled" ? T.chipStalledText : status === "Ideation" ? T.chipIdeaText : T.chipFlightText;
+      const bg = status === "Launched" ? T.chipLaunched : (status === "Stalled" || status === "On Hold") ? T.chipStalled : status === "Ideation" ? T.chipIdea : T.chipFlight;
+      const fg = status === "Launched" ? T.chipLaunchedText : (status === "Stalled" || status === "On Hold") ? T.chipStalledText : status === "Ideation" ? T.chipIdeaText : T.chipFlightText;
       return <span style={{ background: bg, color: fg, borderRadius: 999, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{status}</span>;
     };
     const th = { textAlign: "left", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, padding: "6px 8px", borderBottom: `1px solid ${T.border}` };
