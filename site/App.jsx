@@ -693,6 +693,7 @@ const ICON_PATHS = {
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
   program: "M4 20h16M4 16l5-5 4 3 7-7M15 7h5v5",
+  hexes: "M12 2.5l3.5 2v4l-3.5 2-3.5-2v-4zM7 12.5l3.5 2v4L7 20.5l-3.5-2v-4zM17 12.5l3.5 2v4l-3.5 2-3.5-2v-4z",
   notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
   slides: "M3 5h18v12H3zM8 21h8M12 17v4M7 9h6M7 12h10",
   sentiment: "M4 5h16v11H9l-5 4zM8 10h.01M12 10h.01M16 10h.01",
@@ -1201,6 +1202,232 @@ function StatusChip({ status, T }) {
   else if (s.includes("stall") || s.includes("hold")) { bg = T.chipStalled; fg = T.chipStalledText; }
   else if (s.includes("flight")) { bg = T.chipFlight; fg = T.chipFlightText; }
   return <span style={{ background: bg, color: fg, borderRadius: 999, padding: "2px 9px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{status}</span>;
+}
+
+// ---------------------------------------------------------------------------
+// Commentary editor (Health Read). Commentary is an HTML document per product and
+// month: the repo's HEALTH_COMMENTARY seeds it for the latest month, and edits made
+// in the dashboard are saved in the viewer's own browser (localStorage), keyed by
+// product and month. All HTML is passed through sanitizeHtml before it is shown or
+// saved, so pasted or stored markup can never run script.
+// ---------------------------------------------------------------------------
+const CM_LIMIT = 6000;
+const CM_TAGS = new Set(["P", "BR", "DIV", "SECTION", "SPAN", "STRONG", "B", "EM", "I", "U", "UL", "OL", "LI", "H4", "H5"]);
+const CM_DROP = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "LINK", "META", "TEMPLATE", "NOSCRIPT", "SVG", "MATH", "FORM", "INPUT", "TEXTAREA", "BUTTON", "SELECT", "IMG", "VIDEO", "AUDIO", "HEAD", "TITLE"]);
+function cmEsc(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function sanitizeHtml(html) {
+  if (!html) return "";
+  const doc = new DOMParser().parseFromString(`<!doctype html><body>${html}`, "text/html");
+  const out = [];
+  const walk = (node) => {
+    for (const n of Array.from(node.childNodes)) {
+      if (n.nodeType === 3) { out.push(cmEsc(n.nodeValue)); continue; }
+      if (n.nodeType !== 1) continue;
+      const tag = n.tagName;
+      if (CM_DROP.has(tag)) continue;
+      const st = (n.getAttribute("style") || "").toLowerCase();
+      // rich paste: spans carry bold/italic/underline as inline styles; Google Docs wraps everything in a "normal weight" <b>
+      if (tag === "SPAN") {
+        const wrap = [];
+        if (/font-weight:\s*(bold|[6-9]00)/.test(st)) wrap.push("strong");
+        if (/font-style:\s*italic/.test(st)) wrap.push("em");
+        if (/text-decoration[^;]*underline/.test(st)) wrap.push("u");
+        const cls = (n.getAttribute("class") || "").split(/\s+/).filter((c) => /^cm-[a-z0-9-]+$/.test(c)).join(" ");
+        if (cls) out.push(`<span class="${cls}">`);
+        wrap.forEach((w) => out.push(`<${w}>`)); walk(n); wrap.reverse().forEach((w) => out.push(`</${w}>`));
+        if (cls) out.push("</span>");
+        continue;
+      }
+      if ((tag === "B" || tag === "STRONG") && /font-weight:\s*(normal|[1-4]00)/.test(st)) { walk(n); continue; }
+      if (!CM_TAGS.has(tag)) { walk(n); continue; }
+      const t = tag.toLowerCase();
+      if (t === "br") { out.push("<br>"); continue; }
+      const cls = (n.getAttribute("class") || "").split(/\s+/).filter((c) => /^cm-[a-z0-9-]+$/.test(c)).join(" ");
+      out.push(`<${t}${cls ? ` class="${cls}"` : ""}>`); walk(n); out.push(`</${t}>`);
+    }
+  };
+  walk(doc.body);
+  // the browser leaves empty paragraphs around lists and after Enter; they only add stray space
+  return out.join("").replace(/<p(?: class="[^"]*")?>(?:<br>)?<\/p>/g, "");
+}
+// The repo commentary as HTML: lead bullets, then one card per theme (root causes first, then
+// actions and the related initiatives with their live register status).
+function commentarySeedHtml(sc) {
+  const items = HEALTH_COMMENTARY[sc] || [];
+  if (!items.length) return "";
+  const li = (arr) => arr.map((t) => `<li>${cmEsc(t)}</li>`).join("");
+  const lead = items.filter((x) => typeof x === "string").map((x) => x.replace(/^@/, ""));
+  const themes = items.filter((x) => typeof x !== "string");
+  const stKey = (st) => { const k = String(st).toLowerCase(); return k.includes("launch") ? "launched" : (k.includes("hold") || k.includes("stall")) ? "hold" : k.includes("flight") ? "flight" : "idea"; };
+  const initLi = (x) => {
+    if (typeof x !== "string") return `<li class="cm-plain">${cmEsc(x.t)}<ul>${li(x.sub)}</ul></li>`;
+    const it = INITIATIVES.find((i) => i.p === sc && i.name === x);
+    return it
+      ? `<li><span class="cm-st cm-st-${stKey(it.status)}">${cmEsc(it.status)}</span><strong>${cmEsc(it.name)}</strong> <span class="cm-meta">${cmEsc(it.timeline)} · ${cmEsc(it.prime)}</span></li>`
+      : `<li class="cm-plain">${cmEsc(x)}</li>`;
+  };
+  let html = lead.length ? `<ul>${li(lead)}</ul>` : "";
+  themes.forEach((t, i) => {
+    html += `<section class="cm-card"><h4><span class="cm-num">${String(i + 1).padStart(2, "0")}</span> ${cmEsc(t.t)}</h4>`
+      + (t.share ? `<p class="cm-sub">${cmEsc(t.share)}</p>` : "")
+      + (t.causes && t.causes.length ? `<h5 class="cm-h cm-h-bad">${sc === "TV" ? "Possible root causes" : "Root causes"}</h5><ul class="cm-cause">${li(t.causes)}</ul>` : "")
+      + (t.next && t.next.length ? `<h5 class="cm-h">What the team is doing</h5><ul>${li(t.next)}</ul>` : "")
+      + (t.inits && t.inits.length ? `<h5 class="cm-h">Related initiatives</h5><ul class="cm-inits">${t.inits.map(initLi).join("")}</ul>` : "")
+      + (t.note ? `<p class="cm-note">${cmEsc(t.note)}</p>` : "")
+      + `</section>`;
+  });
+  return html;
+}
+const cmStore = {
+  k: (sc, m) => `relstrat.commentary.v1|${sc}|${m}`,
+  get(sc, m) { try { const r = window.localStorage.getItem(cmStore.k(sc, m)); const o = r ? JSON.parse(r) : null; return o && typeof o.html === "string" ? o : null; } catch (e) { return null; } },
+  set(sc, m, html) { try { window.localStorage.setItem(cmStore.k(sc, m), JSON.stringify({ html, at: Date.now() })); return true; } catch (e) { return false; } },
+  clear(sc, m) { try { window.localStorage.removeItem(cmStore.k(sc, m)); return true; } catch (e) { return false; } }
+};
+function commentaryCss(T) {
+  return `
+.cm-doc{font-size:13px;line-height:1.6;color:${T.textSecondary}}
+.cm-doc ul,.cm-doc ol{margin:4px 0;padding-left:20px}
+.cm-doc li{margin:2px 0}
+.cm-doc strong,.cm-doc b{color:${T.text};font-weight:700}
+.cm-doc p{margin:4px 0}
+.cm-doc.cm-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;align-items:start}
+.cm-doc.cm-cards>*{grid-column:1/-1}
+.cm-doc.cm-cards>.cm-card{grid-column:auto}
+.cm-card{background:${T.panel};border:1px solid ${T.border};border-left:3px solid ${T.heading};border-radius:10px;padding:12px 14px;margin:8px 0}
+.cm-doc.cm-cards .cm-card{margin:0}
+.cm-card h4{margin:0;font-size:13.5px;font-weight:700;color:${T.text}}
+.cm-num{font-size:11px;font-weight:700;color:${T.textFaint};letter-spacing:.05em;margin-right:6px}
+.cm-sub{margin:2px 0 0;font-size:12px;color:${T.textMuted}}
+.cm-h{margin:10px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:${T.heading}}
+.cm-h-bad{color:${T.bad}}
+.cm-cause li{font-weight:600;color:${T.text}}
+.cm-inits{list-style:none;padding-left:0!important}
+.cm-inits>li{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;margin:4px 0}
+.cm-inits>li>.cm-st{margin-right:0}
+.cm-inits>li>.cm-meta{grid-column:2;line-height:1.3}
+.cm-inits>li.cm-plain{display:list-item;list-style:disc;margin-left:20px}
+.cm-meta{color:${T.textFaint};font-size:11.5px}
+.cm-note{margin:8px 0 0!important;font-size:12px;font-style:italic;color:${T.textMuted}}
+.cm-st{display:inline-block;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;margin-right:7px;white-space:nowrap;background:${T.chipIdea};color:${T.chipIdeaText}}
+.cm-st-launched{background:${T.chipLaunched};color:${T.chipLaunchedText}}
+.cm-st-flight{background:${T.chipFlight};color:${T.chipFlightText}}
+.cm-st-hold{background:${T.chipStalled};color:${T.chipStalledText}}
+.cm-edit{outline:none;min-height:150px;max-height:68vh;overflow:auto;padding:12px 14px;background:${T.surface};border:1px solid ${T.borderStrong};border-top:none;border-radius:0 0 10px 10px;box-sizing:border-box}
+.cm-edit:focus{box-shadow:inset 0 0 0 2px ${T.heading}}
+.cm-edit:empty::before{content:attr(data-ph);color:${T.textFaint};font-style:italic}
+`;
+}
+function CommentaryEditor({ T, sc, month, seedHtml }) {
+  const [saved, setSaved] = useState(() => cmStore.get(sc, month));
+  const [mode, setMode] = useState("view");
+  const [dirty, setDirty] = useState(false);
+  const [count, setCount] = useState(0);
+  const [msg, setMsg] = useState("");
+  const [confirm, setConfirm] = useState(null); // "discard" | "reset"
+  const ref = useRef(null);
+  const baseHtml = saved ? saved.html : seedHtml;
+  const viewHtml = sanitizeHtml(baseHtml);
+  const isEmpty = !viewHtml.replace(/<[^>]*>/g, "").trim();
+  const over = count > CM_LIMIT;
+
+  useEffect(() => {
+    if (mode !== "edit" || !ref.current) return;
+    ref.current.innerHTML = sanitizeHtml(baseHtml);
+    // a plain paragraph after the last card, so new text does not inherit the card's note styling
+    const last = ref.current.lastElementChild;
+    if (!last || last.tagName !== "P" || last.className) ref.current.insertAdjacentHTML("beforeend", "<p><br></p>");
+    setCount(ref.current.innerText.trim().length);
+    ref.current.focus();
+    try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) { /* older browsers */ }
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const touch = () => {
+    const el = ref.current; if (!el) return;
+    if (!el.innerText.trim() && /^(<br>|<p><br><\/p>|<div><br><\/div>)?$/.test(el.innerHTML)) el.innerHTML = "";
+    setCount(el.innerText.trim().length); setDirty(true); setMsg(""); setConfirm(null);
+  };
+  const exec = (cmd) => { if (ref.current) ref.current.focus(); try { document.execCommand(cmd, false, null); } catch (e) { /* ignore */ } touch(); };
+  const onPaste = (e) => {
+    e.preventDefault();
+    const html = e.clipboardData.getData("text/html"), text = e.clipboardData.getData("text/plain");
+    try { document.execCommand("insertHTML", false, html ? sanitizeHtml(html) : cmEsc(text).replace(/\r?\n/g, "<br>")); } catch (er) { /* ignore */ }
+    touch();
+  };
+  const save = () => {
+    const el = ref.current; if (!el) return;
+    if (el.innerText.trim().length > CM_LIMIT) { setMsg(`Over the ${CM_LIMIT.toLocaleString()} character limit`); return; }
+    const html = sanitizeHtml(el.innerHTML);
+    if (!cmStore.set(sc, month, html)) { setMsg("Could not save: this browser is blocking storage"); return; }
+    setSaved({ html, at: Date.now() }); setMode("view"); setDirty(false); setConfirm(null); setMsg("");
+  };
+  const close = () => {
+    if (dirty && confirm !== "discard") { setConfirm("discard"); return; }
+    setMode("view"); setDirty(false); setConfirm(null); setMsg("");
+  };
+  const onKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); save(); }
+    else if (e.key === "Escape") { e.preventDefault(); close(); }
+  };
+  const resetToOriginal = () => { cmStore.clear(sc, month); setSaved(null); setConfirm(null); };
+
+  const btn = (primary) => ({ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, borderRadius: 8, padding: "5px 14px", cursor: "pointer",
+    border: `1px solid ${primary ? "transparent" : T.borderStrong}`, background: primary ? T.heading : "transparent", color: primary ? T.surface : T.textSecondary });
+  const tool = (cmd, label, title, style) => (
+    <button key={cmd} type="button" title={title} aria-label={title} onMouseDown={(e) => e.preventDefault()} onClick={() => exec(cmd)}
+      style={{ minWidth: 28, height: 26, padding: "0 8px", fontFamily: FONT, fontSize: 13, lineHeight: 1, color: T.textSecondary, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 6, cursor: "pointer", ...style }}>{label}</button>
+  );
+  const stateText = over ? `${count.toLocaleString()} of ${CM_LIMIT.toLocaleString()}: over the limit` : dirty ? "Unsaved changes" : "No changes yet";
+
+  return (
+    <div>
+      <style>{commentaryCss(T)}</style>
+      {mode === "edit" ? (
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", background: T.band, border: `1px solid ${T.border}`, borderRadius: "10px 10px 0 0", padding: "8px 12px", borderBottom: "none" }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: T.heading, marginRight: "auto" }}>Writing {sc} commentary for {month}</span>
+            <span style={{ fontSize: 12, color: over || msg ? T.bad : T.textMuted }}>{msg || stateText}</span>
+            {confirm === "discard"
+              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Discard unsaved changes?</span>
+                  <button type="button" style={btn(false)} onClick={() => setConfirm(null)}>Keep editing</button>
+                  <button type="button" style={{ ...btn(false), color: T.bad, borderColor: T.bad }} onClick={close}>Discard</button></>
+              : <><button type="button" style={btn(false)} onClick={close}>Close</button>
+                  <button type="button" title="Ctrl+Enter" disabled={over} style={{ ...btn(true), opacity: over ? 0.5 : 1, cursor: over ? "not-allowed" : "pointer" }} onClick={save}>Save</button></>}
+          </div>
+          <div role="toolbar" aria-label="Formatting" style={{ display: "flex", gap: 5, flexWrap: "wrap", padding: "6px 10px", background: T.panel, border: `1px solid ${T.borderStrong}`, borderBottom: `1px solid ${T.border}` }}>
+            {tool("bold", <b>B</b>, "Bold (Ctrl+B)")}
+            {tool("italic", <i>I</i>, "Italic (Ctrl+I)")}
+            {tool("underline", <u>U</u>, "Underline (Ctrl+U)")}
+            {tool("insertUnorderedList", "•", "Bullet list")}
+            {tool("insertOrderedList", "1.", "Numbered list")}
+            {tool("undo", "↶", "Undo (Ctrl+Z)")}
+            {tool("redo", "↷", "Redo (Ctrl+Y)")}
+          </div>
+          <div ref={ref} className="cm-doc cm-edit" contentEditable role="textbox" aria-multiline="true" aria-label={`${sc} commentary for ${month}`}
+            data-ph="Write it here" onInput={touch} onPaste={onPaste} onKeyDown={onKeyDown} />
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 6, fontSize: 11.5, color: over ? T.bad : T.textFaint }}>
+            <span>{count.toLocaleString()} of {CM_LIMIT.toLocaleString()}</span>
+            <span>Ctrl+Enter to save · Esc to close · saved in this browser</span>
+          </div>
+        </div>
+      ) : (
+        <div>
+          {isEmpty
+            ? <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>No commentary has been added for {month} yet.</p>
+            : <div className="cm-doc cm-cards" dangerouslySetInnerHTML={{ __html: viewHtml }} />}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+            <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? "Add commentary" : "Edit commentary"}</button>
+            {saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>Edited in this browser · {new Date(saved.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>}
+            {saved && seedHtml && (confirm === "reset"
+              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Replace your edits with the published commentary?</span>
+                  <button type="button" style={btn(false)} onClick={() => setConfirm(null)}>Cancel</button>
+                  <button type="button" style={{ ...btn(false), color: T.bad, borderColor: T.bad }} onClick={resetToOriginal}>Reset</button></>
+              : <button type="button" onClick={() => setConfirm("reset")} style={{ background: "none", border: "none", padding: 0, fontFamily: FONT, fontSize: 11.5, fontWeight: 600, color: T.textMuted, textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Reset to published</button>)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // Numbered section with lavender band header
@@ -2032,75 +2259,10 @@ export default function ReliabilityScorecards() {
       return (a < b) === m.goodDown ? T.good : T.bad;
     };
 
-    // ----- commentary -----
-    const byName = (name) => INITIATIVES.find((it) => it.p === sc && it.name === name);
-    const initChip = (x, j) => {
-      const it = typeof x === "string" ? byName(x) : null;
-      if (!it) return typeof x === "string"
-        ? <div key={j} style={{ display: "flex", gap: 8 }}><span style={{ color: T.textFaint }}>•</span><span>{x}</span></div>
-        : <div key={j} style={{ display: "flex", gap: 8 }}><span style={{ color: T.textFaint }}>•</span><span>{x.t}<ul style={{ margin: "2px 0 0", paddingLeft: 18 }}>{x.sub.map((s, k) => <li key={k}>{s}</li>)}</ul></span></div>;
-      return (
-        <div key={j} style={{ display: "grid", gridTemplateColumns: "auto 1fr", columnGap: 8, alignItems: "center" }}>
-          <StatusChip status={it.status} T={T} />
-          <span style={{ fontWeight: 600, color: T.text }}>{it.name}</span>
-          <span style={{ gridColumn: 2, color: T.textFaint, fontSize: 11.5, lineHeight: 1.3 }}>{it.timeline} · {it.prime}</span>
-        </div>
-      );
-    };
-    const commentary = sc === "All" ? null : (() => {
-      const items = HEALTH_COMMENTARY[sc] || [];
-      const lead = items.filter((x) => typeof x === "string" && x.startsWith("@")).map((x) => x.slice(1));
-      const bullets = items.filter((x) => typeof x === "string" && !x.startsWith("@"));
-      const themes = items.filter((x) => typeof x !== "string");
-      if (!items.length) return <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>Add commentary for {sc} · {f.month}...</p>;
-      return (
-        <div>
-          {(lead.length > 0 || bullets.length > 0) && (
-            <ul style={{ margin: "0 0 10px", paddingLeft: 20, fontSize: 13, lineHeight: 1.65, color: T.textSecondary }}>
-              {[...lead, ...bullets].map((t, i) => <li key={i}>{t}</li>)}
-            </ul>
-          )}
-          {themes.length > 0 && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 12 }}>
-              {themes.map((it, i) => (
-                <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderLeft: `3px solid ${T.heading}`, borderRadius: 10, padding: "12px 14px" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: T.textFaint, letterSpacing: ".05em" }}>{String(i + 1).padStart(2, "0")}</span>
-                    <span style={{ fontWeight: 700, fontSize: 13.5, color: T.text }}>{it.t}</span>
-                  </div>
-                  {it.share && <div style={{ marginTop: 2, fontSize: 12, color: T.textMuted }}>{it.share}</div>}
-                  {it.causes && (
-                    <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.bad }}>{sc === "TV" ? "Possible root causes" : "Root causes"}</div>
-                      <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 13.2, lineHeight: 1.55, color: T.text, fontWeight: 600 }}>
-                        {it.causes.map((c, j) => <li key={j} style={{ marginBottom: 3 }}>{c}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                  {it.next && it.next.length > 0 && (
-                    <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.heading }}>What the team is doing</div>
-                      <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 12.8, lineHeight: 1.55, color: T.textSecondary }}>
-                        {it.next.map((c, j) => <li key={j} style={{ marginBottom: 2 }}>{c}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                  {it.inits && it.inits.length > 0 && (
-                    <div style={{ marginTop: 10 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: T.heading }}>Related initiatives</div>
-                      <div style={{ margin: "6px 0 0", fontSize: 12.5, lineHeight: 1.6, color: T.textSecondary, display: "grid", gap: 5 }}>
-                        {it.inits.map(initChip)}
-                      </div>
-                    </div>
-                  )}
-                  {it.note && <div style={{ marginTop: 8, fontSize: 12, fontStyle: "italic", color: T.textMuted }}>{it.note}</div>}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    })();
+    // ----- commentary (editable; seeded from HEALTH_COMMENTARY for the latest month) -----
+    const commentary = sc === "All" ? null : (
+      <CommentaryEditor key={`${sc}|${f.month}`} T={T} sc={sc} month={f.month} seedHtml={f.month === LATEST ? commentarySeedHtml(sc) : ""} />
+    );
 
     const headlineNode = (
       <>
@@ -2698,6 +2860,16 @@ export default function ReliabilityScorecards() {
             sub={dea.latestMonth}
             deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
         </div>
+        <a href="https://selfserve.telus.gizmos.run/" target="_blank" rel="noopener noreferrer"
+          style={{ display: "flex", alignItems: "flex-start", gap: 14, marginTop: 14, padding: "14px 18px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, textDecoration: "none", color: "inherit" }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = col; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; }}>
+          <span style={{ color: T.heading, display: "inline-flex", marginTop: 2 }}><Icon name="hexes" size={22} /></span>
+          <span style={{ minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 15, fontWeight: 700, color: T.heading }}>Self Assure program</span>
+            <span style={{ display: "block", fontSize: 13.5, lineHeight: 1.55, color: T.textSecondary, marginTop: 2 }}>The full overview and strategy for the Self Assure program</span>
+            <span style={{ display: "block", fontSize: 12, marginTop: 6, color: T.textFaint, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", wordBreak: "break-all" }}>https://selfserve.telus.gizmos.run/</span>
+          </span>
+        </a>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
           Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
         </p>

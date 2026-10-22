@@ -24,6 +24,18 @@ npm run dev      # http://localhost:5173
 npm run build    # writes site/dist
 ```
 
+## Health Read commentary
+
+The Commentary section of each product's Health Read is a rich text editor
+(bold, italic, underline, bullets, numbering, undo and redo). The published
+text for the latest month is `HEALTH_COMMENTARY` in `site/App.jsx`, and it is
+what everyone sees and what the MCP server returns. Edits made in the dashboard
+are saved in the editing user's own browser (local storage, per product and
+month) and are not shared with other viewers. To publish new commentary for
+everyone, update `HEALTH_COMMENTARY` and deploy. "Reset to published" in the
+editor drops a user's local edits. All commentary HTML is sanitised before it
+is saved or shown.
+
 ## MCP server
 
 `mcp/` is a Model Context Protocol server that exposes the dashboard's data to
