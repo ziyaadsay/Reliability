@@ -1497,10 +1497,10 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiabrief", "hsiatickets", "hsiasentiment", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiabrief: "3-Month Review", hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiabrief: "Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -1880,10 +1880,10 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
-    { id: "hsiabrief", label: "3-Month Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiabrief", label: "Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
@@ -4928,13 +4928,13 @@ export default function ReliabilityScorecards() {
     const trDelta = (q.tr - qy.tr), noDataflow = K.agentCat[0], ontNR = K.agentCat[1], slow = K.agentCat[2], incompat = K.agentCat[9], wifiCC = K.agentCat[4];
     const wifiAlign = K.divergence.perCat.filter((r) => r.cat.startsWith("Wireless")).map((r) => r.alignment);
     const css = `
-.hb{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px;font-size:16px;line-height:1.55;color:${T.text}}
+.hb{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
 .hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
-.hb .hb-eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${H}}
-.hb h1{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:700;font-size:clamp(28px,4.5vw,40px);line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
+.hb .hb-eyebrow{font-family:${FONT};font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${H}}
+.hb h1{font-family:${FONT};font-weight:700;font-size:clamp(26px,4vw,36px);letter-spacing:-.01em;line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
 .hb .hb-sub{color:${MUTED};margin:0;max-width:66ch}
-.hb .hb-meta{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
-.hb h2{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:600;font-size:24px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
+.hb .hb-meta{font-family:${FONT};font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
+.hb h2{font-family:${FONT};font-weight:700;font-size:21px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
 .hb h3{font-size:14.5px;font-weight:700;margin:0;letter-spacing:.01em}
 .hb p{margin:0}
 .hb .hb-prose{max-width:70ch;color:${T.textSecondary}}
@@ -4956,8 +4956,8 @@ export default function ReliabilityScorecards() {
 .hb th:first-child,.hb td:first-child{text-align:left}
 .hb th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
 .hb tbody tr:last-child td{border-bottom:0}
-.hb td.n{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
-.hb .hb-flag{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.hb td.n{font-family:${FONT};font-size:14px;font-variant-numeric:tabular-nums}
+.hb .hb-flag{font-family:${FONT};font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
 .hb .hb-warn{color:${T.bad}} .hb .hb-ok{color:${T.good}} .hb .hb-flat{color:${MUTED}}
 .hb .hb-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .hb .hb-note{border-left:3px solid ${AMBER};padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;color:${T.textSecondary}}
@@ -4968,7 +4968,7 @@ export default function ReliabilityScorecards() {
 .hb .hb-init{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid ${RULE};font-size:14px}
 .hb .hb-init:last-child{border-bottom:0}
 .hb .hb-init .hb-m{color:${MUTED};font-size:12.5px;grid-column:2}
-.hb .hb-imp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:${MUTED};white-space:nowrap}
+.hb .hb-imp{font-family:${FONT};font-size:11px;color:${MUTED};white-space:nowrap}
 .hb footer{font-size:13.5px;color:${MUTED};border-top:1px solid ${RULE};padding-top:18px;display:flex;flex-direction:column;gap:6px}
 `;
     return (
