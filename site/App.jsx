@@ -693,6 +693,7 @@ const ICON_PATHS = {
   pillar4: "M4 19v-1a6 6 0 0 1 12 0v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8l2 2 3-3",
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
   program: "M4 20h16M4 16l5-5 4 3 7-7M15 7h5v5",
+  brief: "M6 3h12v18H6zM9 8h6M9 12h6M9 16h4",
   hexes: "M12 2.5l3.5 2v4l-3.5 2-3.5-2v-4zM7 12.5l3.5 2v4L7 20.5l-3.5-2v-4zM17 12.5l3.5 2v4l-3.5 2-3.5-2v-4z",
   notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
   slides: "M3 5h18v12H3zM8 21h8M12 17v4M7 9h6M7 12h10",
@@ -1496,10 +1497,10 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiabrief", "hsiatickets", "hsiasentiment", "hsiacross"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis",
+  hsiabrief: "3-Month Review", hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -1879,6 +1880,7 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
+    { id: "hsiabrief", label: "3-Month Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
@@ -4830,6 +4832,306 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ HSIA 3-month review (brief) ------------------------------
+  // A reading-column brief: the answer first, evidence sections after, method last. Figures
+  // are computed from the same data blocks as the rest of the dashboard (DATA, CALLS_SPLIT,
+  // LOOKER, HSA notes analysis, HSS survey, INITIATIVES) for the three latest months.
+  function HsiaBriefPage() {
+    const col = colors.HSIA;
+    const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12), qi = mi.map((i) => i - 3);
+    const mons = mi.map((i) => MONTHS[i]), shortMon = (m) => m.slice(0, 3);
+    const range = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${mons[2].slice(-4)}`, prevRange = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${MONTHS[yi[2]].slice(-4)}`;
+    const S = { calls: CALLS_SPLIT.HSIA.offered, tv: DATA.ticketVolume.HSIA, tr: DATA.ticketRate.HSIA, rv: DATA.repairVolume.HSIA, rr: DATA.repairRate.HSIA, base: DATA.subBase.HSIA, b2b: DATA.b2bVoC.HSIA };
+    const sum = (arr, idx) => idx.reduce((a, i) => a + (arr[i] || 0), 0), avg = (arr, idx) => sum(arr, idx) / idx.length;
+    const pct = (a, b) => (b ? ((a - b) / b) * 100 : null);
+    const sp = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
+    const sd = (x, d = 2) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d));
+    const ap = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
+    const q = { calls: sum(S.calls, mi), tv: sum(S.tv, mi), rv: sum(S.rv, mi), tr: avg(S.tr, mi), rr: avg(S.rr, mi) };
+    const qy = { calls: sum(S.calls, yi), tv: sum(S.tv, yi), rv: sum(S.rv, yi), tr: avg(S.tr, yi), rr: avg(S.rr, yi) };
+    const qp = { calls: sum(S.calls, qi), tv: sum(S.tv, qi), rv: sum(S.rv, qi), tr: avg(S.tr, qi), rr: avg(S.rr, qi) };
+    const per100 = mi.map((i) => (S.rv[i] / S.tv[i]) * 100), perTicket = mi.map((i) => S.calls[i] / S.tv[i]);
+    const K = HSA.tickets, fibreIdx = DATA.hsiaFibreMonths.indexOf(LATEST), fibre = [2, 1, 0].map((k) => DATA.hsiaFibrePct[fibreIdx - k]);
+    const flag = (v, goodDown = true, thr = 3) => {
+      if (v == null) return null;
+      const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
+      const label = tone === "flat" ? "flat" : v > 0 ? "up" : "down";
+      return <span className={`hb-flag hb-${tone}`}>{label}</span>;
+    };
+    const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString());
+    const H = T.heading, MUTED = T.textMuted, RULE = T.border;
+    const barB = col, barC = T.borderStrong, barA = T.good, AMBER = isDark ? "#F0A55B" : "#B86E00";
+
+    // ---- brief-style SVG figures (700-wide viewBox, labels at left, values at the bar end) ----
+    const svgText = { fontFamily: FONT, fontSize: 13, fill: T.text };
+    const hbars = (groups, { max, ref, refLabel, fmt, keys, step }) => {
+      const W = 700, L = 228, R = 56, top = 22, bh = 16, gap = 4, gh = keys.length * (bh + gap) + 16;
+      const Hh = top + groups.length * gh + 26, x = (v) => L + ((W - L - R) * v) / max;
+      const st = step || (max <= 2 ? 0.5 : max <= 10 ? 2 : max <= 100 ? 10 : Math.pow(10, Math.floor(Math.log10(max))) / 2);
+      const ticks = []; for (let g = 0; g <= max + 1e-9; g += st) ticks.push(+g.toFixed(2));
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }}>
+          {ticks.map((g) => <g key={g}><line x1={x(g)} x2={x(g)} y1={top - 6} y2={Hh - 22} stroke={RULE} /><text x={x(g)} y={Hh - 6} textAnchor="middle" style={{ ...svgText, fontSize: 12, fill: MUTED }}>{fmt(g)}</text></g>)}
+          {groups.map((d, i) => {
+            const y = top + i * gh;
+            return (
+              <g key={i}>
+                <text x={0} y={y + bh + 2} style={svgText}>{d.label}</text>
+                {keys.map((k, j) => { const yy = y + j * (bh + gap), v = d[k.key]; if (v == null) return null;
+                  return <g key={k.key}><rect x={L} y={yy} width={Math.max(0, x(Math.min(v, max)) - L)} height={bh} rx={2} fill={k.color} opacity={k.opacity == null ? 1 : k.opacity} />
+                    <text x={x(Math.min(v, max)) + 6} y={yy + bh - 3} style={{ ...svgText, fontSize: 12 }}>{fmt(v)}</text></g>; })}
+              </g>
+            );
+          })}
+          {ref != null && <><line x1={x(ref)} x2={x(ref)} y1={top - 10} y2={Hh - 22} stroke={AMBER} strokeWidth={1.5} strokeDasharray="4 3" /><text x={x(ref) + 5} y={top - 10} style={{ ...svgText, fontSize: 12, fill: AMBER }}>{refLabel}</text></>}
+        </svg>
+      );
+    };
+    const stacked = (rows, segs) => {
+      const W = 700, L = 232, R = 10, top = 8, rh = 42, bh = 24, Hh = top + rows.length * rh + 24, span = W - L - R;
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }}>
+          {[0, 25, 50, 75, 100].map((g) => <g key={g}><line x1={L + (span * g) / 100} x2={L + (span * g) / 100} y1={top} y2={Hh - 22} stroke={RULE} /><text x={L + (span * g) / 100} y={Hh - 6} textAnchor="middle" style={{ ...svgText, fontSize: 12, fill: MUTED }}>{g}%</text></g>)}
+          {rows.map((r, i) => { const y = top + i * rh; let acc = L;
+            return <g key={i}><text x={0} y={y + bh / 2 + 5} style={svgText}>{r.label}</text>
+              {r.p.map((v, k) => { const w = (span * v) / 100, xx = acc; acc += w;
+                return <g key={k}><rect x={xx} y={y} width={w} height={bh} fill={segs[k].color} opacity={segs[k].opacity == null ? 1 : segs[k].opacity} />
+                  {w > 36 && <text x={xx + w / 2} y={y + bh / 2 + 4} textAnchor="middle" style={{ ...svgText, fontSize: 12, fill: segs[k].dark ? T.bg : T.text }}>{v.toFixed(0)}</text>}</g>; })}
+            </g>; })}
+        </svg>
+      );
+    };
+    const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.label}><i className="hb-sw" style={{ background: it.color, opacity: it.opacity == null ? 1 : it.opacity }} />{it.label}</span>)}</div>;
+
+    // ---- section 1 figure: this quarter against last year and the previous quarter ----
+    const ratioRows = [
+      { label: "Calls offered", y: q.calls / qy.calls, p: q.calls / qp.calls },
+      { label: "Tickets", y: q.tv / qy.tv, p: q.tv / qp.tv },
+      { label: "Repairs / dispatches", y: q.rv / qy.rv, p: q.rv / qp.rv },
+      { label: "Subscriber base (avg)", y: avg(S.base, mi) / avg(S.base, yi), p: avg(S.base, mi) / avg(S.base, qi) }
+    ];
+    // ---- section 2: agent categories over the three months ----
+    const cats = K.agentCat.slice(0, 9).map((c) => ({ ...c, share: (c.v[2] / K.total[2]) * 100 }));
+    const catMax = Math.ceil(Math.max(...cats.map((c) => c.v[2])) / 2000) * 2000;
+    // ---- section 3: technician alignment per agent category ----
+    const align = K.divergence.perCat.slice(0, 7).map((r) => ({ label: r.cat.replace("Connectivity › ", "").replace("Wireless › ", "Wi-Fi: "), p: [r.alignment, r.nofault, Math.max(0, 100 - r.alignment - r.nofault)], n: r.n, top: r.techTop[0] }));
+    // ---- section 4: survey ----
+    const sv = HSS, svM = sv.months.map((m) => m.slice(0, 3)), drivers = sv.drivers.slice(0, 6);
+    // ---- section 5: initiatives by driver ----
+    const themeMap = [
+      { driver: "Connection instability and outages", why: `No Dataflow is the largest ticket category (${num(K.agentCat[0].v[2])} in ${shortMon(mons[2])}) and ONT Not Ranged / No Sync carry the fibre and copper faults.`, names: ["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "Service Guarantee: Internet Backup to Cellular", "Copper to Fibre Repair Intercept", "Copper to WHSIA Technology Change in CSR", "HSIA Churn Prediction (LLM Model)"] },
+      { driver: "Speed and incompatible equipment", why: `Slow Speeds rose ${sp(K.agentCat[2].pct)} and Incompatible Equipment ${sp(K.agentCat[9].pct)} in ${shortMon(mons[2])}; technicians close most of these as plan-versus-hardware mismatches.`, names: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "3 Gig Upgrade on TELUS.com", "Cloudcheck Server Upgrades & Speed Test Improvements", "CloudCheck Speed Test Server Capacity"] },
+      { driver: "Wi-Fi coverage and misdiagnosis", why: `Wi-Fi tickets fell, but only about a third of Wi-Fi dispatches close aligned with the agent's diagnosis and more than half find no fault.`, names: ["Wi-Fi Scaling — Proactive Campaigns", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Cloudcheck Fine Tuning", "Technician WiFi Certification Tool", "Fix Auto Channel Disabled — Firmware"] }
+    ].map((t) => ({ ...t, items: t.names.map((n) => INITIATIVES.find((it) => it.p === "HSIA" && it.name === n)).filter(Boolean) }));
+    const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
+
+    const trDelta = (q.tr - qy.tr), noDataflow = K.agentCat[0], ontNR = K.agentCat[1], slow = K.agentCat[2], incompat = K.agentCat[9], wifiCC = K.agentCat[4];
+    const wifiAlign = K.divergence.perCat.filter((r) => r.cat.startsWith("Wireless")).map((r) => r.alignment);
+    const css = `
+.hb{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px;font-size:16px;line-height:1.55;color:${T.text}}
+.hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
+.hb .hb-eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${H}}
+.hb h1{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:700;font-size:clamp(28px,4.5vw,40px);line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
+.hb .hb-sub{color:${MUTED};margin:0;max-width:66ch}
+.hb .hb-meta{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
+.hb h2{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:600;font-size:24px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
+.hb h3{font-size:14.5px;font-weight:700;margin:0;letter-spacing:.01em}
+.hb p{margin:0}
+.hb .hb-prose{max-width:70ch;color:${T.textSecondary}}
+.hb section{display:flex;flex-direction:column;gap:14px}
+.hb .hb-answer{background:${T.band};border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.hb .hb-answer ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.hb .hb-answer li{padding-left:4px;color:${T.textSecondary}}
+.hb .hb-answer strong{color:${H}}
+.hb figure{margin:0;background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.hb figcaption{font-size:14px;color:${MUTED};line-height:1.5}
+.hb .hb-figtitle{font-weight:700;font-size:15px;color:${T.text}}
+.hb .hb-chart{width:100%;overflow-x:auto}
+.hb .hb-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:${MUTED}}
+.hb .hb-legend span{display:inline-flex;align-items:center;gap:7px}
+.hb .hb-sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+.hb .hb-tw{overflow-x:auto;border:1px solid ${RULE};border-radius:10px;background:${T.surface}}
+.hb table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+.hb th,.hb td{padding:10px 14px;text-align:right;border-bottom:1px solid ${RULE};font-variant-numeric:tabular-nums}
+.hb th:first-child,.hb td:first-child{text-align:left}
+.hb th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
+.hb tbody tr:last-child td{border-bottom:0}
+.hb td.n{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+.hb .hb-flag{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.hb .hb-warn{color:${T.bad}} .hb .hb-ok{color:${T.good}} .hb .hb-flat{color:${MUTED}}
+.hb .hb-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.hb .hb-note{border-left:3px solid ${AMBER};padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;color:${T.textSecondary}}
+.hb .hb-note h3{color:${AMBER}}
+.hb .hb-note.ok{border-color:${T.good}} .hb .hb-note.ok h3{color:${T.good}}
+.hb .hb-note.purple{border-color:${H}} .hb .hb-note.purple h3{color:${H}}
+.hb ul.hb-plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:${T.textSecondary}}
+.hb .hb-init{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid ${RULE};font-size:14px}
+.hb .hb-init:last-child{border-bottom:0}
+.hb .hb-init .hb-m{color:${MUTED};font-size:12.5px;grid-column:2}
+.hb .hb-imp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:${MUTED};white-space:nowrap}
+.hb footer{font-size:13.5px;color:${MUTED};border-top:1px solid ${RULE};padding-top:18px;display:flex;flex-direction:column;gap:6px}
+`;
+    return (
+      <div className="hb">
+        <style>{css}</style>
+        <header className="hb-head">
+          <div className="hb-eyebrow">HSIA · {range} · calls, tickets, dispatches, notes, sentiment, initiatives</div>
+          <h1>HSIA carried more demand than a year ago. Which problems drove it, and are the fixes aimed at them?</h1>
+          <p className="hb-sub">The last three reported months for HSIA West, PFE and TQ ILEC HSIA, read across the operational KPIs, the Looker and agent ticket categories, technician findings, the customer survey and the initiative register.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span><span>Churn to {CHURN_THRU}</span></div>
+        </header>
+
+        <section aria-labelledby="hb-short">
+          <div className="hb-answer">
+            <h3 id="hb-short" style={{ color: H }}>In short</h3>
+            <ol>
+              <li><strong>Demand is {ap(pct(q.tv, qy.tv), 0)} above the same quarter last year.</strong> {num(q.tv)} tickets and {num(q.calls)} calls over {range}, against {num(qy.tv)} and {num(qy.calls)} in {prevRange}. The ticket rate averaged {q.tr.toFixed(2)} per 100 subscribers, {sd(trDelta)} on last year.</li>
+              <li><strong>Dispatches did not follow.</strong> {num(q.rv)} repairs over the quarter, {sp(pct(q.rv, qy.rv))} year over year and {sp(pct(q.rv, qp.rv))} on the previous quarter. Dispatches per 100 tickets fell from {per100[0].toFixed(1)} in {shortMon(mons[0])} to {per100[2].toFixed(1)} in {shortMon(mons[2])}.</li>
+              <li><strong>{shortMon(mons[2])} turned down.</strong> Tickets fell {ap(pct(S.tv[i2], S.tv[i2 - 1]))} and calls {ap(pct(S.calls[i2], S.calls[i2 - 1]))} month over month; ONT Not Ranged ({sp(ontNR.pct)}) and Wi-Fi Can't Connect ({sp(wifiCC.pct)}) led the fall, while No Dataflow stayed at {num(noDataflow.v[2])}, the single largest category.</li>
+              <li><strong>Technicians confirm the fibre and copper faults but not the Wi-Fi ones.</strong> ONT Not Ranged visits close {K.divergence.perCat[2].alignment.toFixed(0)}% aligned with the agent's diagnosis; Wi-Fi visits close {Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned and more than half find no fault.</li>
+              <li><strong>Customers describe the same two things.</strong> Among those rating reliability poorly, {sv.drivers[0].pct[2].toFixed(0)}% cite frequent loss of connection and {sv.drivers[1].pct[2].toFixed(0)}% inconsistent speeds ({svM[2]}). {themeMap.reduce((a, t) => a + t.items.length, 0)} register initiatives map to these drivers; {themeMap.reduce((a, t) => a + t.items.filter((it) => /launch/i.test(it.status)).length, 0)} are launched.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section aria-labelledby="hb-s1">
+          <h2 id="hb-s1">1. Demand ran well above last year, and dispatches did not keep pace</h2>
+          <p className="hb-prose">Each month of {range} against the same month a year earlier. Rates are per 100 subscribers; dispatches per 100 tickets shows how much of the demand reached a truck.</p>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Measure</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>{range}</th><th>{prevRange}</th><th>Change</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Calls offered</td>{mi.map((i) => <td key={i} className="n">{num(S.calls[i])}</td>)}<td className="n">{num(q.calls)}</td><td className="n">{num(qy.calls)}</td><td className="n">{sp(pct(q.calls, qy.calls))}</td><td>{flag(pct(q.calls, qy.calls))}</td></tr>
+                <tr><td>Tickets</td>{mi.map((i) => <td key={i} className="n">{num(S.tv[i])}</td>)}<td className="n">{num(q.tv)}</td><td className="n">{num(qy.tv)}</td><td className="n">{sp(pct(q.tv, qy.tv))}</td><td>{flag(pct(q.tv, qy.tv))}</td></tr>
+                <tr><td>Ticket rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.tr[i], 2)}</td>)}<td className="n">{q.tr.toFixed(2)}</td><td className="n">{qy.tr.toFixed(2)}</td><td className="n">{sd(trDelta)}</td><td>{flag(pct(q.tr, qy.tr))}</td></tr>
+                <tr><td>Repairs / dispatches</td>{mi.map((i) => <td key={i} className="n">{num(S.rv[i])}</td>)}<td className="n">{num(q.rv)}</td><td className="n">{num(qy.rv)}</td><td className="n">{sp(pct(q.rv, qy.rv))}</td><td>{flag(pct(q.rv, qy.rv))}</td></tr>
+                <tr><td>Repair rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.rr[i], 2)}</td>)}<td className="n">{q.rr.toFixed(2)}</td><td className="n">{qy.rr.toFixed(2)}</td><td className="n">{sd(q.rr - qy.rr)}</td><td>{flag(pct(q.rr, qy.rr))}</td></tr>
+                <tr><td>Dispatches per 100 tickets</td>{per100.map((v, k) => <td key={k} className="n">{v.toFixed(1)}</td>)}<td className="n">{((q.rv / q.tv) * 100).toFixed(1)}</td><td className="n">{((qy.rv / qy.tv) * 100).toFixed(1)}</td><td className="n">{sd((q.rv / q.tv - qy.rv / qy.tv) * 100, 1)}</td><td>{flag(pct(q.rv / q.tv, qy.rv / qy.tv))}</td></tr>
+                <tr><td>Calls per ticket</td>{perTicket.map((v, k) => <td key={k} className="n">{v.toFixed(2)}</td>)}<td className="n">{(q.calls / q.tv).toFixed(2)}</td><td className="n">{(qy.calls / qy.tv).toFixed(2)}</td><td className="n">{sd(q.calls / q.tv - qy.calls / qy.tv)}</td><td>{flag(pct(q.calls / q.tv, qy.calls / qy.tv))}</td></tr>
+                <tr><td>Severely degraded fibre, % of repairs</td>{fibre.map((v, k) => <td key={k} className="n">{v == null ? "—" : v.toFixed(1) + "%"}</td>)}<td className="n">{(fibre.reduce((a, b) => a + (b || 0), 0) / 3).toFixed(1)}%</td><td className="n">—</td><td className="n">{sd(fibre[2] - fibre[0], 1)} pts</td><td>{flag(fibre[2] - fibre[0], true, 1)}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure>
+            <div className="hb-figtitle">{range} relative to the same months last year and to the previous quarter</div>
+            <div className="hb-chart">{hbars(ratioRows, { max: 1.5, ref: 1, refLabel: "unchanged = 1×", fmt: (v) => v.toFixed(2) + "×", keys: [{ key: "y", color: barB }, { key: "p", color: barC }] })}</div>
+            {legend([{ label: `vs ${prevRange}`, color: barB }, { label: `vs ${MONTHS[qi[0]].slice(0, 3)} – ${MONTHS[qi[2]].slice(0, 3)} ${MONTHS[qi[2]].slice(-4)}`, color: barC }])}
+            <figcaption>The base grew {sp(pct(avg(S.base, mi), avg(S.base, yi)))} in a year, so almost all of the extra demand is a higher rate of trouble per subscriber, not more subscribers. Calls rose faster than tickets year over year, but calls per ticket eased through the quarter ({perTicket[0].toFixed(2)} to {perTicket[2].toFixed(2)}), so more of the contact is converting to a ticket rather than repeating.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="hb-s2">
+          <h2 id="hb-s2">2. One category carries the volume: No Dataflow</h2>
+          <p className="hb-prose">Agent ticket categories from the notes export, {shortMon(mons[0])} to {shortMon(mons[2])}. The change column is {shortMon(mons[2])} against {shortMon(mons[1])}.</p>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Agent category</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>Share of {shortMon(mons[2])}</th><th>MoM</th><th></th></tr></thead>
+              <tbody>
+                {cats.map((c) => <tr key={c.name}><td>{c.name}</td>{c.v.map((v, k) => <td key={k} className="n">{num(v)}</td>)}<td className="n">{c.share.toFixed(1)}%</td><td className="n">{sp(c.pct)}</td><td>{flag(c.pct)}</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+          <figure>
+            <div className="hb-figtitle">{shortMon(mons[2])} tickets by agent category</div>
+            <div className="hb-chart">{hbars(cats.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: catMax, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
+            <figcaption>No Dataflow was {num(noDataflow.v[0])} in {shortMon(mons[0])} and {num(noDataflow.v[2])} in {shortMon(mons[2])}, {cats[0].share.toFixed(0)}% of all HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. The {shortMon(mons[2])} fall came from the access line: ONT Not Ranged {sp(ontNR.pct)} (outage-tagged {sp(K.falling[2].pct, 0)}) and No Sync {sp(K.agentCat[6].pct)}. Slow Speeds ({sp(slow.pct)}) and Incompatible Equipment ({sp(incompat.pct)}) are the two categories still rising.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="hb-s3">
+          <h2 id="hb-s3">3. Technicians agree with agents on fibre and copper, not on Wi-Fi</h2>
+          <p className="hb-prose">For each agent category, the share of {shortMon(mons[2])} field visits where the technician's closure matched the agent's diagnosis, found no fault, or pointed somewhere else.</p>
+          <figure>
+            <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
+            <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
+            {legend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
+            <figcaption>Across all {num(K.divergence.field[2].visits)} {shortMon(mons[2])} visits, {K.divergence.field[2].alignment.toFixed(1)}% closed aligned and {K.divergence.field[2].nontelus.toFixed(1)}% were not TELUS-caused. Field visits closed {K.closure[2].field_visit_pct.toFixed(1)}% of tickets ({K.closure[0].field_visit_pct.toFixed(1)}% in {shortMon(mons[0])}), and {K.closure[2].no_closure_code_pct.toFixed(1)}% of tickets carried no closure code at all, up from {K.closure[0].no_closure_code_pct.toFixed(1)}%.</figcaption>
+          </figure>
+          <div className="hb-two">
+            <div className="hb-note">
+              <h3>Where the diagnosis gap is</h3>
+              <p>Wi-Fi categories close {Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned, with most visits ending in education or no fault found. Found OK closures spiked to {num(K.techR1[8].v[1])} in {shortMon(mons[1])} before falling back to {num(K.techR1[8].v[2])}. These are the dispatches most likely to be avoidable with a better remote check.</p>
+            </div>
+            <div className="hb-note ok">
+              <h3>What technicians are fixing</h3>
+              <p>{K.fixes[0].name} remains the largest fix ({num(K.fixes[0].v[2])} in {shortMon(mons[2])}, {sp(K.fixes[0].pct)}), followed by {K.fixes[1].name} ({num(K.fixes[1].v[2])}, {sp(K.fixes[1].pct)}). Drop and outside-plant fixes fell {ap(K.fixes[2].pct)}. {K.techRising[0].name.split(" › ")[1]} closures rose {sp(K.techRising[0].pct, 0)}.</p>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="hb-s4">
+          <h2 id="hb-s4">4. Customers describe the same thing: connection drops and speed</h2>
+          <p className="hb-prose">CF&R TELUS Internet survey, {svM[0]} to {svM[2]} ({sv.respondents.map((r) => r.toLocaleString()).join(" / ")} respondents). Reliability ratings are the share of respondents in each band; drivers are among those rating reliability fair or poor.</p>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Survey measure</th>{svM.map((m) => <th key={m}>{m}</th>)}<th>Change</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Reliability rated excellent or very good</td>{sv.reliability.top2.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.reliability.top2[2] - sv.reliability.top2[0], 1)} pts</td><td>{flag(sv.reliability.top2[2] - sv.reliability.top2[0], false, 1)}</td></tr>
+                <tr><td>Reliability rated fair or poor</td>{sv.reliability.bottom2.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.reliability.bottom2[2] - sv.reliability.bottom2[0], 1)} pts</td><td>{flag(sv.reliability.bottom2[2] - sv.reliability.bottom2[0], true, 1)}</td></tr>
+                <tr><td>Had an issue and contacted TELUS</td>{sv.contact.contacted.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.contact.contacted[2] - sv.contact.contacted[0], 1)} pts</td><td>{flag(sv.contact.contacted[2] - sv.contact.contacted[0], true, 1)}</td></tr>
+                <tr><td>Had an issue, did not contact</td>{sv.contact.issue_no_contact.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.contact.issue_no_contact[2] - sv.contact.issue_no_contact[0], 1)} pts</td><td>{flag(sv.contact.issue_no_contact[2] - sv.contact.issue_no_contact[0], true, 1)}</td></tr>
+                <tr><td>Negative verbatims</td>{sv.polarity.negative.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} pts</td><td>{flag(sv.polarity.negative[2] - sv.polarity.negative[0], true, 1)}</td></tr>
+                <tr><td>B2B reliability score (lower is better)</td>{mi.map((i) => <td key={i} className="n">{num(S.b2b[i], 1)}</td>)}<td className="n">{sd(S.b2b[i2] - S.b2b[i2 - 2], 1)}</td><td>{flag(S.b2b[i2] - S.b2b[i2 - 2], true, 0.5)}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure>
+            <div className="hb-figtitle">Why reliability was rated fair or poor, {svM[0]} and {svM[2]} (share of detractors citing each)</div>
+            <div className="hb-chart">{hbars(drivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+            {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
+            <figcaption>Frequent loss of connection is the top reason and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, matching the No Dataflow and outage-tagged ticket growth. Among customers who had an issue and did not contact TELUS, {sv.reliabilityByContact.issue_no_contact.pct[2].toFixed(0)}% rate reliability poorly, against {sv.reliabilityByContact.contacted.pct[2].toFixed(0)}% of those who did call. The B2B row is the operational scorecard, not the survey, and runs to {shortMon(mons[2])}.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="hb-s5">
+          <h2 id="hb-s5">5. The fixes in flight, mapped to the three drivers</h2>
+          <p className="hb-prose">Initiatives from the register that act on the drivers above, with their current status, timeline and HSIA impact rating. Status chips follow the register, so this list updates when the Initiatives tab does.</p>
+          <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+            {themeMap.map((t) => (
+              <figure key={t.driver}>
+                <div className="hb-figtitle">{t.driver}</div>
+                <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.5 }}>{t.why}</p>
+                <div>
+                  {t.items.map((it) => (
+                    <div key={it.name} className="hb-init">
+                      <StatusChip status={it.status} T={T} />
+                      <span style={{ fontWeight: 600, color: T.text, fontSize: 13.5 }}>{it.name}</span>
+                      <span className="hb-imp">{it.impact ? `${IMPACT_LABEL[it.impact]} impact` : ""}</span>
+                      <span className="hb-m">{it.timeline} · {it.prime}</span>
+                    </div>
+                  ))}
+                </div>
+              </figure>
+            ))}
+          </div>
+          <div className="hb-two">
+            <div className="hb-note">
+              <h3>Watch</h3>
+              <ul className="hb-plain">
+                <li>The ticket rate is still {sd(trDelta)} per 100 above last year in every month of the quarter; the {shortMon(mons[2])} dip has not closed the gap.</li>
+                <li>Incompatible Equipment is a new category with no 2025 baseline and is still rising ({sp(incompat.pct)} in {shortMon(mons[2])}); its fix, the DIY Revamp Live ONT Check, lands in {INITIATIVES.find((it) => it.name === "DIY Revamp Live ONT Check").timeline}.</li>
+                <li>Un-coded ticket closures rose to {K.closure[2].no_closure_code_pct.toFixed(1)}%, which weakens next quarter's read of technician findings.</li>
+              </ul>
+            </div>
+            <div className="hb-note ok">
+              <h3>Working</h3>
+              <ul className="hb-plain">
+                <li>Severely degraded fibre fell from {fibre[0].toFixed(1)}% to {fibre[2].toFixed(1)}% of repairs, and ONT Not Ranged tickets fell {ap(pct(LOOKER.HSIA.topIssues[3].a26, LOOKER.HSIA.topIssues[3].a25), 0)} year over year, in line with the GPON degraded-fibre campaigns.</li>
+                <li>Dispatches per 100 tickets fell {Math.abs(per100[2] - per100[0]).toFixed(1)} points through the quarter, so demand growth is being absorbed remotely.</li>
+                <li>Wi-Fi Can't Connect tickets fell {ap(wifiCC.pct)} in {shortMon(mons[2])} after the Wi-Fi proactive campaigns scaled in June and July.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <p>Sources: Churn Measurement 2026 workbook (KPIs, Looker ticket categories); TS Calls Offered by Product (calls); HSIA agent and technician notes analysis ({HSA.months[0]} to {HSA.months[2]}); CF&R TELUS Internet survey ({sv.months[0]} to {sv.months[2]}); HSIA West TCS PLT Charter scorecard (B2B); Initiatives register. Ticket and repair rates are per 100 subscribers; changes in rates are absolute differences in that unit.</p>
+          <p>Method: quarter totals sum the three months; rates are the simple average of the three monthly rates. Year-over-year compares the same three calendar months. Technician alignment is the share of field-visit closures whose domain matches the agent's category. The survey runs one month behind the operational data.</p>
+        </footer>
+      </div>
+    );
+  }
+
   // ------------------------------ executive summary deck ------------------------------
   // "Sep – Oct 2026" style ranges (SHS workbook rows) count for every month they span.
   const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -5079,7 +5381,9 @@ export default function ReliabilityScorecards() {
       ? "Friction Free Product Systems program"
       : page === "execsummary"
       ? "Executive summary"
-      : page === "hsiatickets"
+      : page === "hsiabrief"
+      ? "HSIA: the last three months"
+    : page === "hsiatickets"
       ? "HSIA notes analysis"
       : page === "hsiasentiment"
       ? "HSIA customer sentiment analysis"
@@ -5171,6 +5475,8 @@ export default function ReliabilityScorecards() {
               ? `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`
               : page === "execsummary"
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
+              : page === "hsiabrief"
+              ? "HSIA 3-month review · Jul – Sep 2026 · calls, tickets and dispatches against last year, the issues behind them, agent and technician notes, customer sentiment, and the initiatives in flight"
               : page === "hsiatickets"
               ? "HSIA notes analysis · Sep vs Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
               : page === "hsiasentiment"
@@ -5232,6 +5538,7 @@ export default function ReliabilityScorecards() {
             : page === "selfserve" ? SelfServePage()
             : page === "ffps" ? FfpsPage()
             : page === "execsummary" ? <ExecSummaryPage />
+            : page === "hsiabrief" ? HsiaBriefPage()
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
