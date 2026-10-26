@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
   Sources:
   - "Reliability Deact KPIs" tab (main KPI table), Churn Measurement 2026
     workbook (tab now named "ReliabilityDeact KPIs"). Reporting window
-    Jan 2025 – Sep 2026; churn (go/national RGU) reported through Aug 2026.
+    Jan 2025 – Sep 2026; churn (go/national RGU) reported through Sep 2026.
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
     ticket counts by category, Jan 2025 – Sep 2026 (replaces the earlier
     Tableau DRD feed). For HSIA the category volumes come from the
@@ -89,7 +89,7 @@ const HEALTH_COMMENTARY = {
   SHS: [],
   "SH+": []
 };
-const CHURN_THRU = "Aug 2026";
+const CHURN_THRU = "Sep 2026";
 
 const DATA = {
   callsOffered: {
@@ -127,9 +127,9 @@ const DATA = {
     "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,67]
   },
   churnRate: {
-    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,null],
-    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,1.44,1.42,null],
-    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,1.44,1.42,null],
+    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,1.05],
+    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,1.44,1.42,1.14],
+    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,1.44,1.42,1.43],
     "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
