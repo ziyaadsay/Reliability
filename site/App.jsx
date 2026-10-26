@@ -103,7 +103,7 @@ const DATA = {
     "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569]
   },
   ticketRate: {
-    HSIA: [2.17,2.10,2.41,2.47,2.50,2.46,2.64,2.64,2.51,2.56,2.63,2.59,2.64,2.40,2.77,2.63,2.93,2.99,2.99,3.06,2.97],
+    HSIA: [1.99,1.93,2.21,2.26,2.28,2.25,2.41,2.41,2.28,2.33,2.39,2.35,2.39,2.17,2.50,2.37,2.64,2.70,2.69,2.76,2.66],
     TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24],
     SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01],
     "SH+": [null,null,null,null,null,null,3.10,2.82,2.42,2.39,2.27,2.62,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74]
@@ -115,13 +115,13 @@ const DATA = {
     "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062]
   },
   repairRate: {
-    HSIA: [0.65,0.60,0.64,0.64,0.72,0.73,0.82,0.85,0.85,0.94,0.85,0.85,0.76,0.70,0.80,0.91,0.94,0.83,0.91,0.79,0.83],
+    HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.77,0.77,0.85,0.77,0.78,0.76,0.70,0.80,0.82,0.86,0.76,0.83,0.77,0.82],
     TV:   [0.18,0.15,0.19,0.17,0.15,0.13,0.13,0.13,0.13,0.16,0.15,0.14,0.16,0.15,0.17,0.17,0.16,0.12,0.13,0.12,0.14],
     SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42],
     "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.092,0.110]
   },
   repairVolume: {
-    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,17995,15916,17445,15082,15798],
+    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,18301,16220,17695,16512,17496],
     TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390,1672],
     SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653,3884],
     "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,67]
@@ -133,13 +133,14 @@ const DATA = {
     "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
-    HSIA: [1882545,1884654,1886869,1886034,1886940,1894103,1892708,1894469,1902829,1905345,1905574,1909753,1902859,1904760,1908112,1906873,1907916,1912608,1914753,1920616,1914379],
+    HSIA: [2050488,2051969,2058211,2059523,2062721,2069802,2073105,2080818,2092231,2094989,2098082,2103708,2099575,2104231,2111098,2113465,2118011,2123842,2127014,2130670,2135120],
     TV:   [1205452,1201529,1199443,1196987,1196062,1194035,1191503,1189366,1187756,1188117,1188298,1186983,1184435,1182482,1180294,1178353,1175469,1172778,1169649,1165379,1161960],
     SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318],
     "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,57531,60876]
   },
   // "consolidated national results" rows of the KPI tab (2026 YTD vs 2025). HSIA is the
-  // West wired line, matching this dashboard's base; TV and SHS carry national lines only.
+  // West wired line (the KPI tab's HSIA base is HSIA West + TQ ILEC HS + PFE Vulcan HS from the
+  // 2026 Redwood Scorecard, restated Oct 2026); TV and SHS carry national lines only.
   annualChurn: {
     HSIA: { y2026: 1.10, y2025: 1.15, yoyPts: -0.05 },
     TV:   { y2026: 1.87, y2025: 1.51, yoyPts: 0.36 },
@@ -4925,6 +4926,8 @@ export default function ReliabilityScorecards() {
     ].map((t) => ({ ...t, items: t.names.map((n) => INITIATIVES.find((it) => it.p === "HSIA" && it.name === n)).filter(Boolean) }));
     const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
 
+    // wording that follows the data: did repairs lag ticket growth, and did the dispatch share fall?
+    const rvLag = pct(q.rv, qy.rv) < pct(q.tv, qy.tv) - 5, per100Drop = per100[0] - per100[2];
     const trDelta = (q.tr - qy.tr), noDataflow = K.agentCat[0], ontNR = K.agentCat[1], slow = K.agentCat[2], incompat = K.agentCat[9], wifiCC = K.agentCat[4];
     const wifiAlign = K.divergence.perCat.filter((r) => r.cat.startsWith("Wireless")).map((r) => r.alignment);
     const css = `
@@ -4986,7 +4989,7 @@ export default function ReliabilityScorecards() {
             <h3 id="hb-short" style={{ color: H }}>In short</h3>
             <ol>
               <li><strong>Demand is {ap(pct(q.tv, qy.tv), 0)} above the same quarter last year.</strong> {num(q.tv)} tickets and {num(q.calls)} calls over {range}, against {num(qy.tv)} and {num(qy.calls)} in {prevRange}. The ticket rate averaged {q.tr.toFixed(2)} per 100 subscribers, {sd(trDelta)} on last year.</li>
-              <li><strong>Dispatches did not follow.</strong> {num(q.rv)} repairs over the quarter, {sp(pct(q.rv, qy.rv))} year over year and {sp(pct(q.rv, qp.rv))} on the previous quarter. Dispatches per 100 tickets fell from {per100[0].toFixed(1)} in {shortMon(mons[0])} to {per100[2].toFixed(1)} in {shortMon(mons[2])}.</li>
+              <li><strong>{rvLag ? "Dispatches did not follow." : "Dispatches rose with demand."}</strong> {num(q.rv)} repairs over the quarter, {sp(pct(q.rv, qy.rv))} year over year and {sp(pct(q.rv, qp.rv))} on the previous quarter. Dispatches per 100 tickets {per100Drop >= 1 ? `fell from ${per100[0].toFixed(1)} in ${shortMon(mons[0])} to ${per100[2].toFixed(1)} in ${shortMon(mons[2])}` : `held near ${((q.rv / q.tv) * 100).toFixed(0)} through the quarter (${per100[0].toFixed(1)} in ${shortMon(mons[0])}, ${per100[2].toFixed(1)} in ${shortMon(mons[2])})`}, against {((qy.rv / qy.tv) * 100).toFixed(1)} a year ago.</li>
               <li><strong>{shortMon(mons[2])} turned down.</strong> Tickets fell {ap(pct(S.tv[i2], S.tv[i2 - 1]))} and calls {ap(pct(S.calls[i2], S.calls[i2 - 1]))} month over month; ONT Not Ranged ({sp(ontNR.pct)}) and Wi-Fi Can't Connect ({sp(wifiCC.pct)}) led the fall, while No Dataflow stayed at {num(noDataflow.v[2])}, the single largest category.</li>
               <li><strong>Technicians confirm the fibre and copper faults but not the Wi-Fi ones.</strong> ONT Not Ranged visits close {K.divergence.perCat[2].alignment.toFixed(0)}% aligned with the agent's diagnosis; Wi-Fi visits close {Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned and more than half find no fault.</li>
               <li><strong>Customers describe the same two things.</strong> Among those rating reliability poorly, {sv.drivers[0].pct[2].toFixed(0)}% cite frequent loss of connection and {sv.drivers[1].pct[2].toFixed(0)}% inconsistent speeds ({svM[2]}). {themeMap.reduce((a, t) => a + t.items.length, 0)} register initiatives map to these drivers; {themeMap.reduce((a, t) => a + t.items.filter((it) => /launch/i.test(it.status)).length, 0)} are launched.</li>
@@ -4995,7 +4998,7 @@ export default function ReliabilityScorecards() {
         </section>
 
         <section aria-labelledby="hb-s1">
-          <h2 id="hb-s1">1. Demand ran well above last year, and dispatches did not keep pace</h2>
+          <h2 id="hb-s1">1. Demand ran well above last year{rvLag ? ", and dispatches did not keep pace" : ", and dispatches rose with it"}</h2>
           <p className="hb-prose">Each month of {range} against the same month a year earlier. Rates are per 100 subscribers; dispatches per 100 tickets shows how much of the demand reached a truck.</p>
           <div className="hb-tw">
             <table>
@@ -5117,7 +5120,9 @@ export default function ReliabilityScorecards() {
               <h3>Working</h3>
               <ul className="hb-plain">
                 <li>Severely degraded fibre fell from {fibre[0].toFixed(1)}% to {fibre[2].toFixed(1)}% of repairs, and ONT Not Ranged tickets fell {ap(pct(LOOKER.HSIA.topIssues[3].a26, LOOKER.HSIA.topIssues[3].a25), 0)} year over year, in line with the GPON degraded-fibre campaigns.</li>
-                <li>Dispatches per 100 tickets fell {Math.abs(per100[2] - per100[0]).toFixed(1)} points through the quarter, so demand growth is being absorbed remotely.</li>
+                {per100Drop >= 1
+                  ? <li>Dispatches per 100 tickets fell {per100Drop.toFixed(1)} points through the quarter, so demand growth is being absorbed remotely.</li>
+                  : <li>A smaller share of tickets reaches a truck than a year ago: {((q.rv / q.tv) * 100).toFixed(1)} dispatches per 100 tickets against {((qy.rv / qy.tv) * 100).toFixed(1)} in {prevRange}.</li>}
                 <li>Wi-Fi Can't Connect tickets fell {ap(wifiCC.pct)} in {shortMon(mons[2])} after the Wi-Fi proactive campaigns scaled in June and July.</li>
               </ul>
             </div>
