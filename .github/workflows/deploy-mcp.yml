@@ -31,10 +31,15 @@ jobs:
       - name: Build MCP worker
         run: node mcp/build.mjs
 
-      - name: Install gizmos CLI
+      # The stock CLI hardcodes auth_mode dev_keys on every `push --mcp`, and the hub has
+      # no auth-mode setting. The patched copy reads GIZMOS_AUTH_MODE instead, so the
+      # server deploys in user_auth mode (browser SSO, no API key). Every push must use
+      # it: a stock-CLI push flips the app back to key mode and the connector loads no tools.
+      - name: Fetch and patch the gizmos CLI for user_auth
         run: |
-          curl -fsSL https://gizmos.run/skills/install.sh | bash
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl -fsSL https://gizmos.run/skills/gizmos.mjs -o "$RUNNER_TEMP/gizmos-stock.mjs"
+          node mcp/patch-cli.mjs "$RUNNER_TEMP/gizmos-stock.mjs" "$RUNNER_TEMP/gizmos-userauth.mjs"
+          echo "GIZMOS_CLI=$RUNNER_TEMP/gizmos-userauth.mjs" >> "$GITHUB_ENV"
 
       # The CLI lists files with `git ls-files`, so the gitignored mcp/dist must
       # be pushed from a copy outside the repository.
@@ -44,10 +49,25 @@ jobs:
           cp -r mcp/dist "$RUNNER_TEMP/mcp-deploy"
           echo "DEPLOY_DIR=$RUNNER_TEMP/mcp-deploy" >> "$GITHUB_ENV"
 
+      # Pushes the app root (the folder holding wrangler.toml), not src/, so the platform
+      # keeps the declared bindings.
       - name: Preview upload
-        run: gizmos push --dry-run --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
+        run: node "$GIZMOS_CLI" push --dry-run --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
 
-      - name: Deploy
+      - name: Deploy (user_auth)
         env:
           GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
-        run: gizmos push --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
+          GIZMOS_AUTH_MODE: user_auth
+        run: node "$GIZMOS_CLI" push --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
+
+      # Proof: in user_auth mode the protected-resource document names the org's
+      # authorization server. In dev_keys mode this URL answers 401 invalid_token.
+      - name: Verify user_auth is live
+        run: |
+          URL="https://${GIZMOS_APP}.${GIZMOS_ORG}.gizmos.run/.well-known/oauth-protected-resource"
+          for i in 1 2 3 4 5 6; do
+            BODY=$(curl -fsS "$URL" 2>/dev/null) && break
+            echo "attempt $i: not ready yet"; sleep 10
+          done
+          echo "$BODY"
+          echo "$BODY" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);const ok=Array.isArray(j.authorization_servers)&&j.authorization_servers.some(a=>a.includes("/orgs/'"$GIZMOS_ORG"'/auth"));if(!ok){console.error("authorization_servers does not name the org auth server");process.exit(1)}console.log("user_auth confirmed:",j.authorization_servers.join(", "))})'

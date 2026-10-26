@@ -9,7 +9,10 @@ dashboard (`site/`) or MCP server (`mcp/`):
    automatically on pushes to `main`, and this repo has no `main`):
    - "Deploy to Gizmos" (`deploy-gizmos.yml`), with input `publish=publish`. Goes live at
      https://relstrat.telus.gizmos.run/.
-   - "Deploy MCP server to Gizmos" (`deploy-mcp.yml`). Updates `relstrat-mcp`.
+   - "Deploy MCP server to Gizmos" (`deploy-mcp.yml`). Updates `relstrat-mcp` in User Auth
+     mode through the patched CLI (`mcp/patch-cli.mjs`, `GIZMOS_AUTH_MODE=user_auth`) and
+     verifies `/.well-known/oauth-protected-resource`. Never push `relstrat-mcp` with the stock
+     `gizmos` CLI: it resets the app to Dev Keys mode and the connector loads no tools.
 2. Wait for both runs to finish and confirm they succeeded before reporting the update as live.
 
 Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a deploy.

@@ -53,37 +53,31 @@ node mcp/build.mjs        # writes mcp/dist (gitignored)
 ```
 
 `.github/workflows/deploy-mcp.yml` builds and pushes `mcp/dist` to the
-`relstrat-mcp` app with `gizmos push --mcp` whenever `mcp/` or `site/App.jsx`
-changes on `main` (or on demand). The app is visible to everyone in the TELUS
-org and runs in Dev Keys mode: keys are issued in the Gizmos hub under the
-app's Settings → API keys (binding `MCP`). Share a key over a secure channel,
-never in this repo.
+`relstrat-mcp` app whenever `mcp/` or `site/App.jsx` changes on `main` (or on
+demand). The app is visible to everyone in the TELUS org and runs in
+**User Auth** mode: colleagues sign in with TELUS SSO in the browser, and no
+API key is issued or shared.
 
-Connect from Claude Code:
+User Auth needs a patched CLI. The stock `gizmos push --mcp` hardcodes
+`auth_mode: dev_keys` and the hub has no auth-mode setting, so the workflow
+downloads the stock CLI, runs `mcp/patch-cli.mjs` to make it honour
+`GIZMOS_AUTH_MODE`, and pushes with `GIZMOS_AUTH_MODE=user_auth`. It then
+checks `https://relstrat-mcp.telus.gizmos.run/.well-known/oauth-protected-resource`
+names the TELUS authorization server. **Every push of relstrat-mcp must use the
+patched CLI**: a stock-CLI push flips the app back to key mode and the
+connector loads no tools. Always push the app root (the folder with
+`wrangler.toml`), never `src/`, or the platform drops the declared bindings.
+The `MCP` API key binding stays declared, so any `gzak_` keys issued earlier
+keep working.
+
+Connect from Claude Code (a browser window opens for SSO on first use):
 
 ```bash
-claude mcp add --transport http relstrat https://relstrat-mcp.telus.gizmos.run/mcp \
-  --header "Authorization: Bearer gzak_..."
+claude mcp add --transport http relstrat https://relstrat-mcp.telus.gizmos.run/mcp
 ```
 
-Connect from Claude Desktop (needs Node.js; add to
-`claude_desktop_config.json` and restart the app):
-
-```json
-{
-  "mcpServers": {
-    "relstrat": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://relstrat-mcp.telus.gizmos.run/mcp", "--header", "Authorization:${GZAK_TOKEN}"],
-      "env": { "GZAK_TOKEN": "Bearer gzak_..." }
-    }
-  }
-}
-```
-
-claude.ai custom connectors require OAuth and cannot use a Dev Keys server.
-A colleague can also connect with their own personal `gzm_` platform key from
-https://telus.gizmos.run/settings instead of a shared `gzak_` key.
+Claude Desktop and claude.ai custom connectors use the same URL and the
+built-in OAuth flow.
 
 ## Analysis scripts
 
