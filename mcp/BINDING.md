@@ -2,7 +2,7 @@
 
 The Reliability Strategy dashboard's data, served to other Gizmos apps over RPC. This is the same data the `relstrat-mcp` MCP server serves at `/mcp`; every method below is one MCP tool, with the same name, the same arguments as one plain object, and the same reply as the tool, returned as an object rather than JSON text. A tool error is thrown as an `Error` whose message is the tool's error text.
 
-Access is restricted to the apps listed in the producer's `BINDING_CALLERS` var. Any other caller gets `Error: caller not permitted` before anything else runs.
+The binding is published to the whole TELUS org: any gizmo in the org can declare it and call it, no share or approval needed. The data is read-only reporting and carries no customer details.
 
 ## Declaring it
 
@@ -142,7 +142,7 @@ const src = await env.RELIABILITY.get_sources({});
 
 ## Errors
 
-- `caller not permitted`: the calling app is not in `BINDING_CALLERS`.
+- `caller not permitted`: only if the producer has restricted the binding to an allow-list of app ids (it is open to the org today).
 - `product must be one of ...`, `Unknown month: ...`, `Unknown metric: ...`, `Unknown section: ...`: the tool's own validation, thrown with the tool's message.
 
 Data is frozen into the worker at each deploy from the dashboard's `site/App.jsx`, so a reply reflects the dashboard as last deployed.

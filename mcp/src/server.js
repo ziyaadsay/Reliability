@@ -257,9 +257,11 @@ export default {
 // ---- app-to-app door (custom binding) ----
 // Other gizmos call these methods over RPC through the [[gizmos_binding]] entrypoint
 // "Reliability" declared in wrangler.toml. Each method reuses the MCP tool handler
-// above and returns the tool's reply as an object; a tool error is thrown. Only the
-// app ids listed in the BINDING_CALLERS var may call: the platform stamps the caller's
-// app id on ctx.props, so it cannot be forged by the calling gizmo.
+// above and returns the tool's reply as an object; a tool error is thrown. Who may call
+// is decided by the platform share (`gizmos binding publish` opens it to the whole org).
+// An optional BINDING_CALLERS var (comma-separated app ids) narrows that to an
+// allow-list; when it is unset or empty, every app the platform lets through may call.
+// The platform stamps the caller's app id on ctx.props, so it cannot be forged.
 function permittedCallers(env) {
   return String((env && env.BINDING_CALLERS) || "").split(",").map((s) => s.trim()).filter(Boolean);
 }
@@ -271,8 +273,10 @@ function toolReply(name, args) {
 }
 export class Reliability extends WorkerEntrypoint {
   #gate() {
+    const allow = permittedCallers(this.env);
+    if (allow.length === 0) return;
     const caller = this.ctx && this.ctx.props ? this.ctx.props.callerAppId : undefined;
-    if (!caller || !permittedCallers(this.env).includes(caller)) throw new Error("caller not permitted");
+    if (!caller || !allow.includes(caller)) throw new Error("caller not permitted");
   }
   async list_products(args) { this.#gate(); return toolReply("list_products", args); }
   async get_kpi_series(args) { this.#gate(); return toolReply("get_kpi_series", args); }

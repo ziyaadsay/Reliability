@@ -85,11 +85,12 @@ The same worker exports `class Reliability extends WorkerEntrypoint`
 (`[[gizmos_binding]]` in `mcp/wrangler.toml`), one RPC method per MCP tool
 with the same name, arguments and reply, so other Gizmos apps can call the
 data directly. `mcp/BINDING.md` documents the methods and is served as the
-binding's doc. The worker only answers callers whose app id is listed in the
-`BINDING_CALLERS` var (currently the `canon` app); the deploy workflow also
-shares the binding with `canon` and prints `gizmos binding list`, where the
-row for `relstrat-mcp` / `Reliability` carries the `gzb_` id a consumer
-declares in its own wrangler.toml.
+binding's doc. The deploy workflow publishes the binding to the whole TELUS
+org (`gizmos binding publish`), so any gizmo in the org can declare the
+`gzb_` id shown by `gizmos binding list` for `relstrat-mcp` / `Reliability`
+and call it. To restrict it again, set a `BINDING_CALLERS` var in
+`mcp/wrangler.toml` to a comma-separated list of app ids and the worker refuses
+every other caller.
 
 ## Analysis scripts
 

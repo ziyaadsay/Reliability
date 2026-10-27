@@ -8,11 +8,11 @@ description = "MCP client access to the Reliability Strategy dashboard data (Str
 paths = ["/mcp", "/mcp/*"]
 
 # App-to-app door. Other gizmos call the exported Reliability class over RPC (see
-# BINDING.md). BINDING_CALLERS is the comma-separated list of app ids allowed to call;
-# any other caller is refused with "caller not permitted". Currently: canon.
-[vars]
-BINDING_CALLERS = "3e3301d6-6b91-4457-a501-d1bbc9cacfcc"
-
+# BINDING.md). The binding is published to the whole TELUS org by the deploy workflow,
+# so any gizmo in the org can declare and call it. To restrict it again, add
+#   [vars]
+#   BINDING_CALLERS = "<app id>,<app id>"
+# and the worker refuses every other caller with "caller not permitted".
 [[gizmos_binding]]
 entrypoint = "Reliability"
 doc = "BINDING.md"
