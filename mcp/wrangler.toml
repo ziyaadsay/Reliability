@@ -6,3 +6,13 @@ name = "relstrat-mcp"
 name = "MCP"
 description = "MCP client access to the Reliability Strategy dashboard data (Streamable HTTP transport)"
 paths = ["/mcp", "/mcp/*"]
+
+# App-to-app door. Other gizmos call the exported Reliability class over RPC (see
+# BINDING.md). BINDING_CALLERS is the comma-separated list of app ids allowed to call;
+# any other caller is refused with "caller not permitted". Currently: canon.
+[vars]
+BINDING_CALLERS = "3e3301d6-6b91-4457-a501-d1bbc9cacfcc"
+
+[[gizmos_binding]]
+entrypoint = "Reliability"
+doc = "BINDING.md"
