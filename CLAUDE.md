@@ -5,8 +5,11 @@
 Always make updates live unless the user says not to. After committing and pushing a change to the
 dashboard (`site/`) or MCP server (`mcp/`):
 
-1. Trigger both workflows from the working branch with `workflow_dispatch` (they only run
-   automatically on pushes to `main`, and this repo has no `main`):
+1. Work on and push to `relstrat`, the repo's default branch (there is no `main`). Pull and merge
+   `relstrat` before pushing: other sessions push and deploy from it, and a deploy only contains
+   what is on the branch it runs from. Never deploy from a side branch, it overwrites the live site
+   with a build that lacks the other sessions' work.
+   Then trigger both workflows with `workflow_dispatch` on `relstrat`:
    - "Deploy to Gizmos" (`deploy-gizmos.yml`), with input `publish=publish`. Goes live at
      https://relstrat.telus.gizmos.run/.
    - "Deploy MCP server to Gizmos" (`deploy-mcp.yml`). Updates `relstrat-mcp` in User Auth
