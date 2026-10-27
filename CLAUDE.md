@@ -22,3 +22,9 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - Ticket, repair and churn rates are reported per 100 subscribers, not as percentages. Changes in
   those rates are absolute differences in that unit (e.g. 0.05), not basis points. Use `fmtRate` and
   `deltaRate` in `site/App.jsx`. Survey and notes-analysis shares stay as percentages with bps moves.
+- HSIA initiatives come from the "Product Technical | Churn & VOC Projects Impact" Google Sheet
+  (https://docs.google.com/spreadsheets/d/1hFqUsmWcpEBSlO8GV-zvRfKpj8mp9lTo_5Trm03lUac, current
+  month's "Executive Summary" tab, gid 610989644 for Sept 2026), not the Churn Measurement 2026
+  workbook's Initiatives tab. TV and SHS initiatives still use the Churn Measurement workbook.
+  Re-pull from it into `INITIATIVES` in `site/App.jsx`: map "Launched monitoring" to "Launched",
+  and keep the Health Read and HSIA Review initiative lists in step with any new or renamed projects.

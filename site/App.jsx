@@ -76,7 +76,7 @@ const HEALTH_COMMENTARY = {
   HSIA: [
     { t: "Connection Instability & Disconnects", share: "58% of all HSIA tickets",
       causes: ["Fibre degradation", "New bucket of work: 'no dataflow provisioning'", "Outages"],
-      inits: ["OLT clustering fibre degradation pilot", { t: "No dataflow defects", sub: ["GPON/XGSPON mis-tagging", "Warm Home Condition"] }, "GPONe Fibre Degradation Proactive Campaign", "Pulse & initial customer comms"],
+      inits: ["OLT clustering fibre degradation pilot", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", "GPONe Fibre Degradation Proactive Campaign", "Pulse & initial customer comms"],
       note: "MoM drop of ~4% in tickets for September" },
     { t: "Slow speeds", share: "23% of all HSIA tickets",
       causes: ["Incompatible equipment / speed plans", "Customer education"],
@@ -322,7 +322,7 @@ const INITIATIVES = [
     desc: "Automated removal of the Quick Connect flag when no optical light is observed for 7 consecutive days." },
   { p: "HSIA", pillar: 2, theme: "Speed & equipment", name: "Speed Upgrade No Charge", status: "Ideation", timeline: "—", prime: "TBD", issues: ["Speed"],
     desc: "Software speed-upgrade program for congested cohorts to defend against competitor churn." },
-  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "XGSPON Light Requirements Enhancement", status: "Stalled", timeline: "Jul 2026", prime: "A. Broten", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "XGSPON Light Requirements Enhancement", status: "Ideation", timeline: "Jul 2026", prime: "A. Broten", issues: ["Connectivity"],
     desc: "Refines optical-loss thresholds for XGSPON based on cable distance and bends." },
   { p: "HSIA", pillar: 2, theme: "GPON degraded fibre", name: "NGMR Build Quality Assurance", status: "Ideation", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
     desc: "Re-establishes suite-level optical attenuation QA standards for new growth-market builds." },
@@ -334,6 +334,15 @@ const INITIATIVES = [
     desc: "System solution for copper-to-wireless HSIA, then targeted transition of low-speed copper subscribers to Fixed Wireless during service calls." },
   { p: "HSIA", pillar: 2, theme: "Outage", name: "Service Guarantee: Internet Backup to Cellular", status: "Launched", timeline: "Jul 2026", prime: "J. Harrison", impact: "M", issues: ["Connectivity"],
     desc: "Automatic cellular failover backup during fibre outages, restoring seamlessly on recovery." },
+
+  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "GPON/XGSPON Mis-tagging", status: "In flight", timeline: "Oct 2026", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
+    desc: "Defect fix for connectivity tagged as GPON when it is actually XGSPON, which triggered the incorrect Disconnect WSIR flow on cancelled upgrade orders." },
+
+  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "No Internet after Release Activation", status: "In flight", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
+    desc: "Defect fix for locations left marked as 'warm home' after the previous customer's service ceased, where the new order failed to recreate the WSIR." },
+
+  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", status: "In flight", timeline: "Nov 2026", prime: "A. Broten", issues: ["Connectivity"],
+    desc: "For resume orders submitted in FIFA NC, gets the associated Option 82, checks whether the suspend redirect flag is removed from the WSIR and, if it is still present, applies the fix directly to the WSIR." },
   { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", status: "Launched", timeline: "Jul 2026", prime: "F. Ahmed", impact: "L", issues: ["WiFi"],
     desc: "Scales the proactive program using RouteThis RAVA diagnostics to resolve home Wi-Fi issues before contact." },
   { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi Scaling — Proactive Campaigns", status: "Launched", timeline: "Jun 2026", prime: "J. Silva", impact: "M", issues: ["WiFi"],
@@ -1540,7 +1549,7 @@ function issueThemes(product, issue) {
     if (c2 === "Slow Speeds") return ["Speed & equipment"];
     if (c2 === "No Sync") return ["Copper strategy", "Outage"];
     if (c2 === "Losing Sync" || c2 === "Historical Data") return ["GPON degraded fibre", "Copper strategy"];
-    if (c2 === "No Dataflow" || c2 === "No IP") return ["GPON degraded fibre", "Outage"];
+    if (c2 === "No Dataflow" || c2 === "No IP") return ["GPON degraded fibre", "Outage", "No dataflow provisioning"];
     if (c2 === "ONT Not Ranged") return ["GPON degraded fibre"];
     if (c1 === "Abandon") return [];
     return ["GPON degraded fibre"];
@@ -3315,7 +3324,7 @@ export default function ReliabilityScorecards() {
 
         <Section num="05" eyebrow="Reliability program" title="Initiatives by pillar" icon="initiatives" T={T} collapsible>
           <Disclosure label="About this section" T={T} style={{ margin: "0 0 14px" }}><p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
-            Every initiative from the workbook's Initiatives tab (HSIA, TV and SHS), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
+            Every initiative from the registers (HSIA from the Product Technical | Churn & VOC Projects Impact sheet; TV and SHS from the Churn Measurement 2026 workbook's Initiatives tab), grouped under the reliability program's four pillars. Click a pillar to expand or collapse its initiatives.
           </p></Disclosure>
           <PillarInitiatives />
         </Section>
@@ -3524,7 +3533,7 @@ export default function ReliabilityScorecards() {
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", margin: "0 0 12px" }}>
                 <p style={{ fontSize: 12.5, color: T.textMuted, margin: 0, lineHeight: 1.6 }}>
-                  {product} initiatives from the workbook's Initiatives tab. Use the column headers to filter by theme, status, timeline or prime.
+                  {product} initiatives from {product === "HSIA" ? "the Product Technical | Churn & VOC Projects Impact sheet" : "the workbook's Initiatives tab"}. Use the column headers to filter by theme, status, timeline or prime.
                 </p>
                 <span style={{ fontSize: 12, color: T.textFaint, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 10 }}>
                   {filteredInits.length} of {prodInits.length} initiative{prodInits.length > 1 ? "s" : ""}
@@ -4920,7 +4929,7 @@ export default function ReliabilityScorecards() {
     const sv = HSS, svM = sv.months.map((m) => m.slice(0, 3)), drivers = sv.drivers.slice(0, 6);
     // ---- section 5: initiatives by driver ----
     const themeMap = [
-      { driver: "Connection instability and outages", why: `No Dataflow is the largest ticket category (${num(K.agentCat[0].v[2])} in ${shortMon(mons[2])}) and ONT Not Ranged / No Sync carry the fibre and copper faults.`, names: ["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "Service Guarantee: Internet Backup to Cellular", "Copper to Fibre Repair Intercept", "Copper to WHSIA Technology Change in CSR", "HSIA Churn Prediction (LLM Model)"] },
+      { driver: "Connection instability and outages", why: `No Dataflow is the largest ticket category (${num(K.agentCat[0].v[2])} in ${shortMon(mons[2])}) and ONT Not Ranged / No Sync carry the fibre and copper faults.`, names: ["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "Service Guarantee: Internet Backup to Cellular", "Copper to Fibre Repair Intercept", "Copper to WHSIA Technology Change in CSR", "HSIA Churn Prediction (LLM Model)", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)"] },
       { driver: "Speed and incompatible equipment", why: `Slow Speeds rose ${sp(K.agentCat[2].pct)} and Incompatible Equipment ${sp(K.agentCat[9].pct)} in ${shortMon(mons[2])}; technicians close most of these as plan-versus-hardware mismatches.`, names: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "3 Gig Upgrade on TELUS.com", "Cloudcheck Server Upgrades & Speed Test Improvements", "CloudCheck Speed Test Server Capacity"] },
       { driver: "Wi-Fi coverage and misdiagnosis", why: `Wi-Fi tickets fell, but only about a third of Wi-Fi dispatches close aligned with the agent's diagnosis and more than half find no fault.`, names: ["Wi-Fi Scaling — Proactive Campaigns", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Cloudcheck Fine Tuning", "Technician WiFi Certification Tool", "Fix Auto Channel Disabled — Firmware"] }
     ].map((t) => ({ ...t, items: t.names.map((n) => INITIATIVES.find((it) => it.p === "HSIA" && it.name === n)).filter(Boolean) }));
@@ -5088,7 +5097,7 @@ export default function ReliabilityScorecards() {
 
         <section aria-labelledby="hb-s5">
           <h2 id="hb-s5">5. The fixes in flight, mapped to the three drivers</h2>
-          <p className="hb-prose">Initiatives from the register that act on the drivers above, with their current status, timeline and HSIA impact rating. Status chips follow the register, so this list updates when the Initiatives tab does.</p>
+          <p className="hb-prose">Initiatives from the register that act on the drivers above, with their current status, timeline and HSIA impact rating. Status chips follow the register, so this list updates when the register does.</p>
           <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
             {themeMap.map((t) => (
               <figure key={t.driver}>
