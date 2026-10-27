@@ -7,6 +7,8 @@
 // CALLS_SPLIT, HEALTH_COMMENTARY, OVERVIEW_ISSUES, PILLARS, PRODUCTS, LATEST,
 // LATEST_PRIOR and CHURN_THRU are in scope.
 
+import { WorkerEntrypoint } from "cloudflare:workers";
+
 const PROTOCOL_VERSION = "2025-06-18";
 const SERVER_INFO = { name: "relstrat-mcp", version: "1.0.0" };
 const DASHBOARD_URL = "https://relstrat.telus.gizmos.run/";
@@ -251,3 +253,35 @@ export default {
     return json(Array.isArray(payload) ? responses : responses[0]);
   }
 };
+
+// ---- app-to-app door (custom binding) ----
+// Other gizmos call these methods over RPC through the [[gizmos_binding]] entrypoint
+// "Reliability" declared in wrangler.toml. Each method reuses the MCP tool handler
+// above and returns the tool's reply as an object; a tool error is thrown. Only the
+// app ids listed in the BINDING_CALLERS var may call: the platform stamps the caller's
+// app id on ctx.props, so it cannot be forged by the calling gizmo.
+function permittedCallers(env) {
+  return String((env && env.BINDING_CALLERS) || "").split(",").map((s) => s.trim()).filter(Boolean);
+}
+function toolReply(name, args) {
+  const r = callTool(name, args && typeof args === "object" ? args : {});
+  const body = r.content && r.content[0] ? r.content[0].text : "";
+  if (r.isError) throw new Error(body || `${name} failed`);
+  return JSON.parse(body);
+}
+export class Reliability extends WorkerEntrypoint {
+  #gate() {
+    const caller = this.ctx && this.ctx.props ? this.ctx.props.callerAppId : undefined;
+    if (!caller || !permittedCallers(this.env).includes(caller)) throw new Error("caller not permitted");
+  }
+  async list_products(args) { this.#gate(); return toolReply("list_products", args); }
+  async get_kpi_series(args) { this.#gate(); return toolReply("get_kpi_series", args); }
+  async get_kpi_summary(args) { this.#gate(); return toolReply("get_kpi_summary", args); }
+  async get_ticket_issues(args) { this.#gate(); return toolReply("get_ticket_issues", args); }
+  async get_initiatives(args) { this.#gate(); return toolReply("get_initiatives", args); }
+  async get_tv_platforms(args) { this.#gate(); return toolReply("get_tv_platforms", args); }
+  async get_self_serve(args) { this.#gate(); return toolReply("get_self_serve", args); }
+  async get_health_commentary(args) { this.#gate(); return toolReply("get_health_commentary", args); }
+  async get_friction_free_program(args) { this.#gate(); return toolReply("get_friction_free_program", args); }
+  async get_sources(args) { this.#gate(); return toolReply("get_sources", args); }
+}

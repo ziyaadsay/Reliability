@@ -71,3 +71,22 @@ jobs:
           done
           echo "$BODY"
           echo "$BODY" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);const ok=Array.isArray(j.authorization_servers)&&j.authorization_servers.some(a=>a.includes("/orgs/'"$GIZMOS_ORG"'/auth"));if(!ok){console.error("authorization_servers does not name the org auth server");process.exit(1)}console.log("user_auth confirmed:",j.authorization_servers.join(", "))})'
+
+      # App-to-app door: the worker also exports `class Reliability extends WorkerEntrypoint`
+      # ([[gizmos_binding]] in wrangler.toml, documented in BINDING.md). Sharing is idempotent
+      # and only the gizmos listed here may call it; the worker additionally checks the
+      # caller's app id against BINDING_CALLERS.
+      - name: Share the Reliability binding with canon
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: node "$GIZMOS_CLI" binding share "$GIZMOS_APP" --gizmo canon --entrypoint Reliability --org "$GIZMOS_ORG"
+
+      - name: List bindings and shares
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: |
+          echo "== gizmos binding list =="
+          node "$GIZMOS_CLI" binding list --org "$GIZMOS_ORG"
+          echo
+          echo "== gizmos binding shares $GIZMOS_APP =="
+          node "$GIZMOS_CLI" binding shares "$GIZMOS_APP" --org "$GIZMOS_ORG"

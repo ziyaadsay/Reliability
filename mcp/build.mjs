@@ -32,4 +32,5 @@ const out = banner + data + products + deriveAll + "\n// ---- MCP server ----\n"
 mkdirSync(join(here, "dist", "src"), { recursive: true });
 writeFileSync(join(here, "dist", "src", "index.js"), out);
 copyFileSync(join(here, "wrangler.toml"), join(here, "dist", "wrangler.toml"));
+copyFileSync(join(here, "BINDING.md"), join(here, "dist", "BINDING.md")); // the [[gizmos_binding]] doc must ship at the bundle root
 console.log(`mcp/dist/src/index.js written (${(out.length / 1024).toFixed(0)} KB)`);

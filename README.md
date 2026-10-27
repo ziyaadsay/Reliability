@@ -79,6 +79,18 @@ claude mcp add --transport http relstrat https://relstrat-mcp.telus.gizmos.run/m
 Claude Desktop and claude.ai custom connectors use the same URL and the
 built-in OAuth flow.
 
+### App-to-app binding
+
+The same worker exports `class Reliability extends WorkerEntrypoint`
+(`[[gizmos_binding]]` in `mcp/wrangler.toml`), one RPC method per MCP tool
+with the same name, arguments and reply, so other Gizmos apps can call the
+data directly. `mcp/BINDING.md` documents the methods and is served as the
+binding's doc. The worker only answers callers whose app id is listed in the
+`BINDING_CALLERS` var (currently the `canon` app); the deploy workflow also
+shares the binding with `canon` and prints `gizmos binding list`, where the
+row for `relstrat-mcp` / `Reliability` carries the `gzb_` id a consumer
+declares in its own wrangler.toml.
+
 ## Analysis scripts
 
 `analysis/` holds the scripts that turn the raw agent/technician notes and
