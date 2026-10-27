@@ -571,6 +571,96 @@ const FFPS = {
 };
 
 // ---------------------------------------------------------------------------
+// "TELUS Internet: why support tickets rose year over year" analysis (Jan – Sep 2026 vs
+// 2025, all TELUS-branded internet excluding Koodo, data through 4 Oct 2026). Figures are
+// transcribed from the analysis. They are not recomputed from the dashboard's KPI series,
+// whose base (HSIA West + TQ ILEC + PFE) and ticket source (Looker Assure) differ, so the
+// two are shown side by side in the HSIA Review rather than reconciled.
+// ---------------------------------------------------------------------------
+const HSIA_YOY = {
+  period: "Jan – Sep", y0: 2025, y1: 2026, dataThrough: "4 Oct 2026",
+  tickets: { y0: 411385, y1: 463799, delta: 52414, pct: 12.7 },
+  lines: { y0: 2171683, y1: 2247114, delta: 75431, pct: 3.5, ratePerLine9mo: 0.1894 },
+  monthly: { labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"], note: "The rise is steady across every month; PureFibre West carries the bulk and drives the trend, Copper West is second but flat to down." },
+  // Volume-only contribution = growth in the population × its 2025 ticket rate; capped rows are
+  // held at their actual change because the per-line rate fell. GPON rows are August ×9.
+  drivers: [
+    { name: "Customer growth (base +3.5%)", group: "Base growth", v: 14289, share: 27.3, delta: "+75,431 lines", rate: "18.9% per 9 mo" },
+    { name: "GPON severely degraded", group: "Network: GPON", v: 8666, share: 16.5, delta: "+1,826 lines", rate: "4.7 per 9 mo", actual: 26406, caveat: true },
+    { name: "Gateway reboots (3+ in 7 days)", group: "In-home telemetry", v: 5201, share: 9.9, delta: "+5,973 lines", rate: "11.7% per mo", actual: 5481, capped: true },
+    { name: "Poor Wi-Fi index (15% or more)", group: "In-home telemetry", v: 4938, share: 9.4, delta: "+28,567 lines", rate: "1.93% per mo", actual: 9481 },
+    { name: "Plan or speed change", group: "Plan change", v: 4934, share: 9.4, delta: "+69,185 events", rate: "7.13% of events", actual: 6335 },
+    { name: "Equipment delivered", group: "Provisioning", v: 4586, share: 8.8, delta: "+71,600 events", rate: "6.41% of events", actual: 6967 },
+    { name: "Speed test below 50% of plan", group: "Provisioning", v: 4508, share: 8.6, delta: "+471,296 tests", rate: "0.96% per failing test", actual: 5893 },
+    { name: "GPON outage (service interrupted)", group: "Network: GPON", v: 3060, share: 5.8, delta: "+586 lines", rate: "11.0 per 9 mo", actual: 3060, capped: true, caveat: true },
+    { name: "GPON unknown", group: "Network: GPON", v: 2918, share: 5.6, delta: "+1,366 lines", rate: "2.1 per 9 mo", actual: 6093, caveat: true },
+    { name: "Early tenure (under 3 months)", group: "Provisioning", v: 2289, share: 4.4, delta: "+3,697 lines", rate: "6.90% per mo", actual: 7854 },
+    { name: "ONT capped (plan faster than ONT)", group: "Provisioning", v: 1411, share: 2.7, delta: "+6,362 lines", rate: "2.47% per mo", actual: 5074 },
+    { name: "Overlap removed (double counting)", group: "Adjustment", v: -4386, share: -8.4 }
+  ],
+  campaigns: { reach: [209454, 634176], callbacks: [14533, 31045], callbackRate: [6.9, 4.9], campaigns: 29 },
+  copper: { lines: [351066, 281930], ratePct: [2.63, 3.11], tickets: [82761, 78516] },
+  bucket: { tickets: 462994, lineSidePct: 72, wifiPct: 25, noDataflowPct: 19.9, noDataflowGrowthPct: 34, noLineFaultPct: 60,
+    // share of a category's callers whose line showed each signal at ticket time (Jan–Sep 2026)
+    rows: [
+      { cat: "No Dataflow", n: 92037, gponSev: 10.6, outage: 2.3, downtime: 9.3, speed: 3.8, ontCap: 1.7, reboots: 5.4, wifi: 8.2, planChg: 6.4, tenure: 19.0, noFault: 65 },
+      { cat: "Slow Speeds", n: 84157, gponSev: 7.0, outage: 0.4, downtime: 8.8, speed: 14.2, ontCap: 1.9, reboots: 8.1, wifi: 8.5, planChg: 9.4, tenure: 12.1, noFault: 62 },
+      { cat: "ONT Not Ranged", n: 55475, gponSev: 9.4, outage: 18.1, downtime: 10.4, speed: 4.1, ontCap: 2.3, reboots: 4.8, wifi: 7.8, planChg: 4.2, tenure: 17.6, noFault: 40 },
+      { cat: "Losing Sync", n: 50610, gponSev: 6.6, outage: 0.8, downtime: 12.7, speed: 8.5, ontCap: 1.3, reboots: 10.6, wifi: 8.2, planChg: 5.7, tenure: 10.2, noFault: 62 },
+      { cat: "Can't Connect", n: 48690, gponSev: 6.7, outage: 0.6, downtime: 7.5, speed: 5.4, ontCap: 1.8, reboots: 6.8, wifi: 8.2, planChg: 5.7, tenure: 20.1, noFault: 69 },
+      { cat: "Disconnects", n: 38100, gponSev: 6.0, outage: 0.4, downtime: 9.2, speed: 8.5, ontCap: 1.6, reboots: 9.9, wifi: 10.3, planChg: 5.9, tenure: 10.6, noFault: 64 },
+      { cat: "Historical Data", n: 25406, gponSev: 12.1, outage: 25.0, downtime: 15.1, speed: 6.1, ontCap: 1.5, reboots: 6.3, wifi: 7.4, planChg: 4.6, tenure: 11.8, noFault: 43 },
+      { cat: "No Sync", n: 24857, gponSev: 3.0, outage: 1.2, downtime: 10.5, speed: 3.6, ontCap: 0.7, reboots: 6.3, wifi: 7.4, planChg: 5.3, tenure: 11.6, noFault: 72 },
+      { cat: "Incompatible Equipment", n: 23155, gponSev: 4.6, outage: 0.7, downtime: 5.9, speed: 8.9, ontCap: 24.9, reboots: 4.7, wifi: 6.5, planChg: 12.7, tenure: 22.2, noFault: 53 },
+      { cat: "No IP", n: 14670, gponSev: 9.5, outage: 1.8, downtime: 9.7, speed: 3.7, ontCap: 1.5, reboots: 5.8, wifi: 7.5, planChg: 5.7, tenure: 14.0, noFault: 66 }
+    ] },
+  orders: { total: [1393167, 1714597], pct: 23, backend: [138683, 290969], backendPct: 110, rate30: [8.10, 7.65], baseRate: [2.10, 2.29],
+    after90: { y0: 145809, y1: 169383, extra: 23574, expectedExtra: 33641, shareOfIncrease: 36, hsicIncrease: 64751 },
+    channels: [
+      { name: "CSR (agent)", o: [867598, 944142], pct: 9, rate: [9.6, 9.8] },
+      { name: "BackEnd (automated)", o: [138683, 290969], pct: 110, rate: [2.3, 2.6] },
+      { name: "Other channels", o: [203412, 265471], pct: 31, rate: [5.9, 6.0] },
+      { name: "Unknown", o: [34099, 63850], pct: 87, rate: [5.0, 2.6] },
+      { name: "TELUS.com (self-serve)", o: [66901, 71152], pct: 6, rate: [7.2, 6.5] },
+      { name: "TELUS Store", o: [48814, 53791], pct: 10, rate: [11.4, 12.1] },
+      { name: "F2F", o: [30434, 22699], pct: -25, rate: [7.5, 9.0] }
+    ],
+    augSep: { ordersPerDay: [6499, 6839], noDataflowPerDay: [400, 414], ticketsPerDay: [1815, 1810] },
+    gponAugSep: [
+      { m: "GPON status: service interrupted", v: [2960, 2744], pct: -7.3 },
+      { m: "Interrupted at least once in the last 7 days", v: [5821, 5139], pct: -11.7 },
+      { m: "GPON status: severely degraded", v: [7026, 6349], pct: -9.6 },
+      { m: "GPON status: unknown", v: [9539, 9198], pct: -3.6 },
+      { m: "ONT out of service", v: [16778, 16567], pct: -1.3 }
+    ] },
+  noDataflow: { callers: [26496, 32892], pct: 24, tenuredSharePct: 73, offnetSharePct: 30, offnetBasePct: 3,
+    // lift = share of No Dataflow callers with the trait ÷ share of all customers with it
+    lifts: [
+      { t: "GPON link interrupted in the last 7 days", lift: [9.2, 9.6], n: [487, 782] },
+      { t: "Equipment delivered in the 7 days before", lift: [11.7, 8.8], n: [1347, 1478] },
+      { t: "First 30 days of service", lift: [8.2, 7.4], n: [4066, 4298] },
+      { t: "3+ gateway reboots in the last 7 days", lift: [4.5, 4.1], n: [1405, 2030] },
+      { t: "GPON severely degraded", lift: [3.4, 3.5], n: [684, 1237] },
+      { t: "Plan change in the 30 days before", lift: [3.1, 3.2], n: [1761, 2638] },
+      { t: "Offnet (Bell network) East", lift: [4.2, 3.2], n: [812, 2551] },
+      { t: "TELUS Boost Wi-Fi 7 (new in 2026)", lift: [null, 1.8], n: [80, 3310] },
+      { t: "NH20A firmware v1.18.07-build02", lift: [null, 1.7], n: [0, 7897] },
+      { t: "Arcadyan NH20A gateway", lift: [1.4, 1.4], n: [6207, 9705] },
+      { t: "Poor Wi-Fi index 15% or more", lift: [1.0, 1.1], n: [1864, 3303] },
+      { t: "ONT capped (plan faster than ONT)", lift: [0.8, 1.0], n: [384, 691] }
+    ],
+    tenure: { oneYearPlus: [18306, 22961], first30: [4066, 4298] },
+    notFactors: "Wi-Fi quality (QoE score, poor Wi-Fi index, throughput), ONT model, PON type, number of extenders, ONT capping and ONT alarms" },
+  caveats: [
+    "GPON telemetry covered only about half of fibre lines in Jan to Jul 2025, so the GPON rows are August multiplied by nine and are directional, not final.",
+    "September 2026 plan-change and delivery tickets are partly projected because the data runs to 4 Oct 2026.",
+    "Proactive-campaign callbacks (14,533 to 31,045 completed) sit inside the +52,414 and cannot be netted out: there is no campaign tag in the ticket data.",
+    "Copper is not a driver: worse per line (2.63% to 3.11% per month) but the base shrank 20%, so it removed about 4,200 tickets.",
+    "The orders analysis uses the HSIC ticket table, where the Jan to Sep increase is +64,751; the waterfall uses internet_daily, where it is +52,414."
+  ]
+};
+
+// ---------------------------------------------------------------------------
 // FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
 // Arrays align with MONTHS (Jan 2025 – Sep 2026); the whole series is re-read each month
 // because the source restates earlier months.
@@ -728,11 +818,15 @@ const PRODUCT_ICON = { All: "overview", HSIA: "hsia", TV: "tv", SHS: "shs", "SH+
 // ---------------------------------------------------------------------------
 function fmtNum(v) { return v == null ? "—" : v.toLocaleString(); }
 function fmtNumK(v) { return v == null ? "—" : v >= 10000 ? (v / 1000).toFixed(1) + "K" : v.toLocaleString(); }
+// Large-number notation for volumes: three significant digits from 10K up (85.3K, 181K,
+// 1.16M, 84.0M); smaller counts keep thousands separators (3,451).
 function fmtBig(v) {
   if (v == null) return "—";
-  if (v >= 1e6) return (v / 1e6).toFixed(2) + "M";
-  if (v >= 1e4) return (v / 1000).toFixed(1) + "K";
-  return v.toLocaleString();
+  const a = Math.abs(v), sign = v < 0 ? "−" : "";
+  if (a >= 1e9) return sign + (a / 1e9).toFixed(a >= 1e11 ? 0 : a >= 1e10 ? 1 : 2) + "B";
+  if (a >= 1e6) return sign + (a / 1e6).toFixed(a >= 1e8 ? 0 : a >= 1e7 ? 1 : 2) + "M";
+  if (a >= 1e4) return sign + (a / 1e3).toFixed(a >= 1e5 ? 0 : 1) + "K";
+  return sign + Math.round(a).toLocaleString();
 }
 function fmtPct(v, d = 2) { return v == null ? "—" : v.toFixed(d) + "%"; }
 // Ticket, repair and churn rates are reported per 100 subscribers (same figure as the old % of base)
@@ -756,7 +850,7 @@ function delta(curr, prev, unit, decimals, goodWhenDown = true, withPct = true) 
   const flat = Math.abs(diff) < 1e-9;
   const good = goodWhenDown ? diff <= 0 : diff >= 0;
   const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
-  const mag = Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  const mag = decimals === 0 && !unit ? fmtBig(Math.abs(diff)) : Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const pct = prev ? (diff / Math.abs(prev)) * 100 : null;
   const pctText = !withPct || pct == null || flat ? "" : ` (${pct > 0 ? "+" : ""}${pct.toFixed(1)}%)`;
   return { text: `${arrow} ${mag}${unit}${pctText}`, tone: flat ? "flat" : good ? "good" : "bad" };
@@ -1919,10 +2013,10 @@ export default function ReliabilityScorecards() {
   function scopeTiles(sc) {
     if (sc === "SH+") {
       return [
-        { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
-        { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
-        { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
         { icon: "base", label: "Subscriber base", data: DATA.subBase["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: false }
       ];
@@ -1931,8 +2025,8 @@ export default function ReliabilityScorecards() {
     const callsData = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[callsKey];
     const callsLabel = sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`;
     return [
-      { icon: "calls", label: callsLabel, data: callsData, fmt: fmtNum, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
-      { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNum, dec: 0, color: colors[sc], goodDown: true },
+      { icon: "calls", label: callsLabel, data: callsData, fmt: fmtBig, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
+      { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: true },
       { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "churn", label: "Churn rate per 100 subs", data: DATA.churnRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
@@ -2069,7 +2163,7 @@ export default function ReliabilityScorecards() {
     const at = (arr, k) => (arr && k >= 0 && k < arr.length ? arr[k] : null);
     const pick = (arr) => ({ now: at(arr, i), prev: at(arr, i - 1), yoy: at(arr, i - 12) });
     const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
-    const bps = (o, k) => (o.now != null && o[k] != null ? +(o.now - o[k]).toFixed(3) : null);
+    const bps = (o, k) => (o.now != null && o[k] != null ? +(o.now - o[k]).toFixed(2) : null);
     const calls = pick(CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc]);
     const tv = pick(DATA.ticketVolume[sc]), tr = pick(DATA.ticketRate[sc]), rv = pick(DATA.repairVolume[sc]), rr = pick(DATA.repairRate[sc]), base = pick(DATA.subBase[sc]);
     return {
@@ -2114,7 +2208,7 @@ export default function ReliabilityScorecards() {
     const toneColor = v.tone === "good" ? T.good : v.tone === "bad" ? T.bad : T.textMuted;
     const sPct = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
     const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " per 100");
-    const trDec = 2, rrDec = sc === "SH+" ? 3 : 2;
+    const trDec = 2, rrDec = 2;
     const aPct = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
     const prefer = v.tone === "good" ? -1 : v.tone === "bad" ? 1 : 0;
     // rate and volume pointing in opposite directions means the subscriber base moved the rate
@@ -2220,17 +2314,17 @@ export default function ReliabilityScorecards() {
     const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
     const metricDefs = [
       { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: (x) => fmtRate(x, trDec), rate: true, goodDown: true },
-      { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNumK, goodDown: true },
+      { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, goodDown: true },
       { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: (x) => fmtRate(x, rrDec), rate: true, goodDown: true },
-      { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtNumK, goodDown: true },
-      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtNumK, goodDown: true },
-      { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtNumK, goodDown: false },
+      { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtBig, goodDown: true },
+      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtBig, goodDown: true },
+      { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, goodDown: false },
       { key: "b2bVoC", eyebrow: "B2B VoC", name: "B2B reliability score", data: DATA.b2bVoC[sc], fmt: (x) => (x == null ? "—" : x.toFixed(1)), goodDown: true, pts: true }
     ].filter((m) => m.data && m.data[f.i] != null);
     const metric = metricDefs.find((m) => m.key === healthMetric[sc]) || metricDefs[0];
     const mNow = metric.data[f.i], mPrev = metric.data[f.i - 1], mYoy = metric.data[f.i - 12];
-    const mDelta = mPrev == null ? null : metric.rate ? +(mNow - mPrev).toFixed(3) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
-    const mDeltaY = mYoy == null ? null : metric.rate ? +(mNow - mYoy).toFixed(3) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
+    const mDelta = mPrev == null ? null : metric.rate ? +(mNow - mPrev).toFixed(2) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
+    const mDeltaY = mYoy == null ? null : metric.rate ? +(mNow - mYoy).toFixed(2) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
     const chg = (d) => {
       if (d == null) return null;
       if (d === 0 || (!metric.rate && Math.abs(d) < 0.05)) return "flat";
@@ -2744,7 +2838,7 @@ export default function ReliabilityScorecards() {
           const tk = rowFigures(p.tickets, 0, true, false, LAST);
           const tr = rowFigures(p.ticketRate, 2, true, "rate", LAST);
           const rp = rowFigures(p.repairs, 0, true, false, LAST);
-          const rr = rowFigures(p.repairRate, 3, true, "rate", LAST);
+          const rr = rowFigures(p.repairRate, 2, true, "rate", LAST);
           const sw = rowFigures(p.swaps2026 || [], 0, true, false, LAST);
           const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
           return (
@@ -2756,11 +2850,11 @@ export default function ReliabilityScorecards() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
                 <StatCard T={T} color={col} icon="base" label="Subscriber base" value={fmtBig(bs.latest)} sub={bs.latestMonth} deltas={[d(bs.mom, "MoM"), d(bs.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtNum(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtBig(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket rate per 100 subs" value={fmtRate(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtNum(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 3)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtNum(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtBig(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 2)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtBig(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
               </div>
             </div>
           );
@@ -2803,7 +2897,7 @@ export default function ReliabilityScorecards() {
         {sec("Repairs / Dispatches", "repairs",
           <>
             {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Repair split reported for 2026 onward.")}
-            {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 3))}
+            {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 2))}
           </>
         )}
 
@@ -2856,8 +2950,8 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtNum(res.latest)}
-            sub={`${res.latestMonth} · target ${fmtNum(res.target)}`}
+          <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtBig(res.latest)}
+            sub={`${res.latestMonth} · target ${fmtBig(res.target)}`}
             deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="YoY" />]} />
           <StatCard T={T} color={col} icon="tickets" label="Web/App resolution rate" value={fmtPct(web.latest, 1)}
             sub={`${web.latestMonth} · target ${fmtPct(web.target, 1)}`}
@@ -2868,7 +2962,7 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn per 100 subs" value={fmtRate(chn.latest, 2)}
             sub={chn.latestMonth}
             deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="MoM" />]} />
-          <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
+          <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtBig(dea.latest)}
             sub={dea.latestMonth}
             deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
         </div>
@@ -3278,10 +3372,10 @@ export default function ReliabilityScorecards() {
             const res = sweeprFig("resolved", 0);
             const dea = sweeprFig("deacts", 0);
             const selfServeCards = scope === "All" ? [
-              <StatCard key="ss-res" T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtNum(res.latest)}
+              <StatCard key="ss-res" T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtBig(res.latest)}
                 sub={`${res.latestMonth} · target ${fmtNum(res.target)} · Sweepr workflows`}
                 deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />,
-              <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
+              <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtBig(dea.latest)}
                 sub={`${dea.latestMonth} · Sweepr workflows`}
                 deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
             ] : null;
@@ -3696,7 +3790,7 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtNum(K.total[2])} sub="Sep 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtBig(K.total[2])} sub="Sep 2026 · agent + technician notes"
             deltas={[<Move key="m" v={K.total} />]} />
           <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Sep"
             deltas={[<span key="a" style={{ color: T.textMuted }}>Jul {K.closure[0].field_visit_pct}% · Aug {K.closure[1].field_visit_pct}%</span>]} />
@@ -4221,7 +4315,7 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtNum(K.total[2])} sub="Sep 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtBig(K.total[2])} sub="Sep 2026 · agent + technician notes"
             deltas={[<Move key="m" v={K.total} />]} />
           <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Sep"
             deltas={[<span key="a" style={{ color: T.textMuted }}>Jul {K.closure[0].field_visit_pct}% · Aug {K.closure[1].field_visit_pct}%</span>]} />
@@ -4842,40 +4936,42 @@ export default function ReliabilityScorecards() {
     );
   }
 
-  // ------------------------------ HSIA 3-month review (brief) ------------------------------
-  // A reading-column brief: the answer first, evidence sections after, method last. Figures
-  // are computed from the same data blocks as the rest of the dashboard (DATA, CALLS_SPLIT,
-  // LOOKER, HSA notes analysis, HSS survey, INITIATIVES) for the three latest months.
+  // ------------------------------ HSIA review (brief) ------------------------------
+  // A reading-column brief framed around the "why tickets rose year over year" analysis
+  // (HSIA_YOY): the answer first, the driver waterfall, orders, the reactive bucket, the No
+  // Dataflow caller profile, then the dashboard's own corroborating evidence (KPIs, technician
+  // findings, survey) and the initiatives mapped to the analysis's driver groups.
   function HsiaBriefPage() {
-    const col = colors.HSIA;
-    const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12), qi = mi.map((i) => i - 3);
+    const col = colors.HSIA, Y = HSIA_YOY;
+    const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
     const mons = mi.map((i) => MONTHS[i]), shortMon = (m) => m.slice(0, 3);
     const range = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${mons[2].slice(-4)}`, prevRange = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${MONTHS[yi[2]].slice(-4)}`;
-    const S = { calls: CALLS_SPLIT.HSIA.offered, tv: DATA.ticketVolume.HSIA, tr: DATA.ticketRate.HSIA, rv: DATA.repairVolume.HSIA, rr: DATA.repairRate.HSIA, base: DATA.subBase.HSIA, b2b: DATA.b2bVoC.HSIA };
+    const S = { calls: CALLS_SPLIT.HSIA.offered, tv: DATA.ticketVolume.HSIA, tr: DATA.ticketRate.HSIA, rv: DATA.repairVolume.HSIA, rr: DATA.repairRate.HSIA, base: DATA.subBase.HSIA };
     const sum = (arr, idx) => idx.reduce((a, i) => a + (arr[i] || 0), 0), avg = (arr, idx) => sum(arr, idx) / idx.length;
     const pct = (a, b) => (b ? ((a - b) / b) * 100 : null);
     const sp = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
     const sd = (x, d = 2) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d));
     const ap = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
+    const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString());
+    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
     const q = { calls: sum(S.calls, mi), tv: sum(S.tv, mi), rv: sum(S.rv, mi), tr: avg(S.tr, mi), rr: avg(S.rr, mi) };
     const qy = { calls: sum(S.calls, yi), tv: sum(S.tv, yi), rv: sum(S.rv, yi), tr: avg(S.tr, yi), rr: avg(S.rr, yi) };
-    const qp = { calls: sum(S.calls, qi), tv: sum(S.tv, qi), rv: sum(S.rv, qi), tr: avg(S.tr, qi), rr: avg(S.rr, qi) };
-    const per100 = mi.map((i) => (S.rv[i] / S.tv[i]) * 100), perTicket = mi.map((i) => S.calls[i] / S.tv[i]);
-    const K = HSA.tickets, fibreIdx = DATA.hsiaFibreMonths.indexOf(LATEST), fibre = [2, 1, 0].map((k) => DATA.hsiaFibrePct[fibreIdx - k]);
+    const per100 = mi.map((i) => (S.rv[i] / S.tv[i]) * 100);
+    const K = HSA.tickets, sv = HSS, svM = sv.months.map((m) => m.slice(0, 3));
+    const fibreIdx = DATA.hsiaFibreMonths.indexOf(LATEST), fibre = [2, 1, 0].map((k) => DATA.hsiaFibrePct[fibreIdx - k]);
     const flag = (v, goodDown = true, thr = 3) => {
       if (v == null) return null;
       const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
-      const label = tone === "flat" ? "flat" : v > 0 ? "up" : "down";
-      return <span className={`hb-flag hb-${tone}`}>{label}</span>;
+      return <span className={`hb-flag hb-${tone}`}>{tone === "flat" ? "flat" : v > 0 ? "up" : "down"}</span>;
     };
-    const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString());
     const H = T.heading, MUTED = T.textMuted, RULE = T.border;
     const barB = col, barC = T.borderStrong, barA = T.good, AMBER = isDark ? "#F0A55B" : "#B86E00";
+    const GROUP_COLOR = { "Base growth": barC, "Network: GPON": col, "In-home telemetry": isDark ? "#D37AC0" : "#A3268A", "Provisioning": AMBER, "Plan change": isDark ? "#E8C56B" : "#8F6A00", "Adjustment": T.textFaint };
 
-    // ---- brief-style SVG figures (700-wide viewBox, labels at left, values at the bar end) ----
+    // ---- brief-style SVG figures ----
     const svgText = { fontFamily: FONT, fontSize: 13, fill: T.text };
-    const hbars = (groups, { max, ref, refLabel, fmt, keys, step }) => {
-      const W = 700, L = 228, R = 56, top = 22, bh = 16, gap = 4, gh = keys.length * (bh + gap) + 16;
+    const hbars = (groups, { max, ref, refLabel, fmt, keys, step, labelW = 228 }) => {
+      const W = 700, L = labelW, R = 56, top = 22, bh = 16, gap = 4, gh = keys.length * (bh + gap) + 16;
       const Hh = top + groups.length * gh + 26, x = (v) => L + ((W - L - R) * v) / max;
       const st = step || (max <= 2 ? 0.5 : max <= 10 ? 2 : max <= 100 ? 10 : Math.pow(10, Math.floor(Math.log10(max))) / 2);
       const ticks = []; for (let g = 0; g <= max + 1e-9; g += st) ticks.push(+g.toFixed(2));
@@ -4888,12 +4984,28 @@ export default function ReliabilityScorecards() {
               <g key={i}>
                 <text x={0} y={y + bh + 2} style={svgText}>{d.label}</text>
                 {keys.map((k, j) => { const yy = y + j * (bh + gap), v = d[k.key]; if (v == null) return null;
-                  return <g key={k.key}><rect x={L} y={yy} width={Math.max(0, x(Math.min(v, max)) - L)} height={bh} rx={2} fill={k.color} opacity={k.opacity == null ? 1 : k.opacity} />
+                  return <g key={k.key}><rect x={L} y={yy} width={Math.max(0, x(Math.min(v, max)) - L)} height={bh} rx={2} fill={d.color || k.color} opacity={k.opacity == null ? 1 : k.opacity} />
                     <text x={x(Math.min(v, max)) + 6} y={yy + bh - 3} style={{ ...svgText, fontSize: 12 }}>{fmt(v)}</text></g>; })}
               </g>
             );
           })}
           {ref != null && <><line x1={x(ref)} x2={x(ref)} y1={top - 10} y2={Hh - 22} stroke={AMBER} strokeWidth={1.5} strokeDasharray="4 3" /><text x={x(ref) + 5} y={top - 10} style={{ ...svgText, fontSize: 12, fill: AMBER }}>{refLabel}</text></>}
+        </svg>
+      );
+    };
+    // waterfall-as-bars: each driver's contribution, coloured by root-cause group, with its share
+    const contribChart = (rows) => {
+      const W = 700, L = 250, R = 110, top = 10, rh = 30, bh = 18, max = Math.max(...rows.map((r) => Math.abs(r.v)));
+      const Hh = top + rows.length * rh + 6, x = (v) => L + ((W - L - R) * Math.abs(v)) / max;
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }}>
+          {rows.map((r, i) => { const y = top + i * rh; const c = GROUP_COLOR[r.group] || barB;
+            return <g key={i}>
+              <text x={0} y={y + bh - 4} style={{ ...svgText, fontSize: 12.5 }}>{r.name.length > 36 ? r.name.slice(0, 35) + "…" : r.name}</text>
+              <rect x={L} y={y} width={Math.max(1, x(r.v) - L)} height={bh} rx={2} fill={c} opacity={r.v < 0 ? 0.55 : 1} />
+              <text x={x(r.v) + 6} y={y + bh - 4} style={{ ...svgText, fontSize: 12, fontWeight: 700 }}>{sn(r.v)}</text>
+              <text x={W} y={y + bh - 4} textAnchor="end" style={{ ...svgText, fontSize: 12, fill: MUTED }}>{(r.share > 0 ? "" : "−") + Math.abs(r.share).toFixed(1)}%</text>
+            </g>; })}
         </svg>
       );
     };
@@ -4912,33 +5024,35 @@ export default function ReliabilityScorecards() {
       );
     };
     const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.label}><i className="hb-sw" style={{ background: it.color, opacity: it.opacity == null ? 1 : it.opacity }} />{it.label}</span>)}</div>;
+    const stat = (v, label, sub) => (
+      <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
+    );
+    const heat = (v, maxV) => ({ background: `${col}${Math.round(Math.min(1, v / maxV) * 0.75 * 255).toString(16).padStart(2, "0")}`, color: v / maxV > 0.45 ? "#fff" : T.text });
 
-    // ---- section 1 figure: this quarter against last year and the previous quarter ----
-    const ratioRows = [
-      { label: "Calls offered", y: q.calls / qy.calls, p: q.calls / qp.calls },
-      { label: "Tickets", y: q.tv / qy.tv, p: q.tv / qp.tv },
-      { label: "Repairs / dispatches", y: q.rv / qy.rv, p: q.rv / qp.rv },
-      { label: "Subscriber base (avg)", y: avg(S.base, mi) / avg(S.base, yi), p: avg(S.base, mi) / avg(S.base, qi) }
+    // ---- derived from the analysis ----
+    const drivers = Y.drivers, growth = drivers[0], adj = drivers[drivers.length - 1];
+    const condTotal = drivers.filter((d) => d.group !== "Base growth" && d.group !== "Adjustment").reduce((a, d) => a + d.v, 0);
+    const groupTotals = ["Network: GPON", "Provisioning", "In-home telemetry", "Plan change"].map((g) => ({ g, v: drivers.filter((d) => d.group === g).reduce((a, d) => a + d.v, 0) })).sort((a, b) => b.v - a.v);
+    const gshare = (g) => ((g.v / Y.tickets.delta) * 100).toFixed(0);
+    const O = Y.orders, B = Y.bucket, ND = Y.noDataflow;
+    const nd = B.rows[0];
+    const wifiAlign = K.divergence.perCat.filter((r) => r.cat.startsWith("Wireless")).map((r) => r.alignment);
+    const align = K.divergence.perCat.slice(0, 7).map((r) => ({ label: r.cat.replace("Connectivity › ", "").replace("Wireless › ", "Wi-Fi: "), p: [r.alignment, r.nofault, Math.max(0, 100 - r.alignment - r.nofault)] }));
+    const svDrivers = sv.drivers.slice(0, 5);
+    const perDay = (a) => sp(pct(a[1], a[0]), 1);
+
+    // ---- initiatives mapped to the analysis's driver groups ----
+    const byName = (names) => names.map((n) => INITIATIVES.find((it) => it.p === "HSIA" && it.name === n)).filter(Boolean);
+    const initGroups = [
+      { g: "Network: GPON", title: "Network: degraded fibre and outages", share: gshare(groupTotals.find((x) => x.g === "Network: GPON")), why: "GPON severely degraded, outage and unknown states add about " + num(groupTotals.find((x) => x.g === "Network: GPON").v) + " tickets; ONT Not Ranged and Historical Data are the call categories most tied to them.",
+        items: byName(["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "GPONe Geographic Analysis & Infrastructure Optimization", "Service Guarantee: Internet Backup to Cellular", "Fibre Check — Bit Errors & Critical Alarms", "XGSPON Light Requirements Enhancement"]) },
+      { g: "Provisioning", title: "Provisioning, orders and plan changes", share: (((groupTotals.find((x) => x.g === "Provisioning").v + groupTotals.find((x) => x.g === "Plan change").v) / Y.tickets.delta) * 100).toFixed(0), why: `Orders rose ${O.pct}% and a customer who has just had an order calls 3 to 4 times as often for 30 days; deliveries, plan changes, failing speed tests, early tenure and ONT capping add about ${num(groupTotals.find((x) => x.g === "Provisioning").v + groupTotals.find((x) => x.g === "Plan change").v)} tickets.`,
+        items: byName(["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "3 Gig Upgrade on TELUS.com", "Copper to WHSIA Technology Change in CSR", "Copper to Fibre Repair Intercept", "Cloudcheck Server Upgrades & Speed Test Improvements", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)"]) },
+      { g: "In-home telemetry", title: "In-home: gateway reboots and poor Wi-Fi", share: gshare(groupTotals.find((x) => x.g === "In-home telemetry")), why: `Lines with 3+ gateway reboots a week grew 37% and poor-Wi-Fi lines 27%, adding about ${num(groupTotals.find((x) => x.g === "In-home telemetry").v)} tickets; technicians close only ${Math.round(Math.min(...wifiAlign))}% to ${Math.round(Math.max(...wifiAlign))}% of Wi-Fi visits aligned with the agent's diagnosis.`,
+        items: byName(["Wi-Fi Scaling — Proactive Campaigns", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Cloudcheck Fine Tuning", "Technician WiFi Certification Tool", "Fix Auto Channel Disabled — Firmware", "HSIA Legacy Hardware Upgrades"]) }
     ];
-    // ---- section 2: agent categories over the three months ----
-    const cats = K.agentCat.slice(0, 9).map((c) => ({ ...c, share: (c.v[2] / K.total[2]) * 100 }));
-    const catMax = Math.ceil(Math.max(...cats.map((c) => c.v[2])) / 2000) * 2000;
-    // ---- section 3: technician alignment per agent category ----
-    const align = K.divergence.perCat.slice(0, 7).map((r) => ({ label: r.cat.replace("Connectivity › ", "").replace("Wireless › ", "Wi-Fi: "), p: [r.alignment, r.nofault, Math.max(0, 100 - r.alignment - r.nofault)], n: r.n, top: r.techTop[0] }));
-    // ---- section 4: survey ----
-    const sv = HSS, svM = sv.months.map((m) => m.slice(0, 3)), drivers = sv.drivers.slice(0, 6);
-    // ---- section 5: initiatives by driver ----
-    const themeMap = [
-      { driver: "Connection instability and outages", why: `No Dataflow is the largest ticket category (${num(K.agentCat[0].v[2])} in ${shortMon(mons[2])}) and ONT Not Ranged / No Sync carry the fibre and copper faults.`, names: ["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "Service Guarantee: Internet Backup to Cellular", "Copper to Fibre Repair Intercept", "Copper to WHSIA Technology Change in CSR", "HSIA Churn Prediction (LLM Model)", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)"] },
-      { driver: "Speed and incompatible equipment", why: `Slow Speeds rose ${sp(K.agentCat[2].pct)} and Incompatible Equipment ${sp(K.agentCat[9].pct)} in ${shortMon(mons[2])}; technicians close most of these as plan-versus-hardware mismatches.`, names: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "3 Gig Upgrade on TELUS.com", "Cloudcheck Server Upgrades & Speed Test Improvements", "CloudCheck Speed Test Server Capacity"] },
-      { driver: "Wi-Fi coverage and misdiagnosis", why: `Wi-Fi tickets fell, but only about a third of Wi-Fi dispatches close aligned with the agent's diagnosis and more than half find no fault.`, names: ["Wi-Fi Scaling — Proactive Campaigns", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Cloudcheck Fine Tuning", "Technician WiFi Certification Tool", "Fix Auto Channel Disabled — Firmware"] }
-    ].map((t) => ({ ...t, items: t.names.map((n) => INITIATIVES.find((it) => it.p === "HSIA" && it.name === n)).filter(Boolean) }));
     const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
 
-    // wording that follows the data: did repairs lag ticket growth, and did the dispatch share fall?
-    const rvLag = pct(q.rv, qy.rv) < pct(q.tv, qy.tv) - 5, per100Drop = per100[0] - per100[2];
-    const trDelta = (q.tr - qy.tr), noDataflow = K.agentCat[0], ontNR = K.agentCat[1], slow = K.agentCat[2], incompat = K.agentCat[9], wifiCC = K.agentCat[4];
-    const wifiAlign = K.divergence.perCat.filter((r) => r.cat.startsWith("Wireless")).map((r) => r.alignment);
     const css = `
 .hb{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
 .hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
@@ -4955,6 +5069,11 @@ export default function ReliabilityScorecards() {
 .hb .hb-answer ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
 .hb .hb-answer li{padding-left:4px;color:${T.textSecondary}}
 .hb .hb-answer strong{color:${H}}
+.hb .hb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.hb .hb-stat{background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:14px 16px}
+.hb .hb-stat-v{font-size:26px;font-weight:700;color:${H};line-height:1.1}
+.hb .hb-stat-l{font-size:12.5px;font-weight:600;color:${T.textSecondary};margin-top:5px}
+.hb .hb-stat-s{font-size:11.5px;color:${T.textFaint};margin-top:3px;line-height:1.4}
 .hb figure{margin:0;background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .hb figcaption{font-size:14px;color:${MUTED};line-height:1.5}
 .hb .hb-figtitle{font-weight:700;font-size:15px;color:${T.text}}
@@ -4963,12 +5082,13 @@ export default function ReliabilityScorecards() {
 .hb .hb-legend span{display:inline-flex;align-items:center;gap:7px}
 .hb .hb-sw{width:12px;height:12px;border-radius:2px;display:inline-block}
 .hb .hb-tw{overflow-x:auto;border:1px solid ${RULE};border-radius:10px;background:${T.surface}}
-.hb table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
-.hb th,.hb td{padding:10px 14px;text-align:right;border-bottom:1px solid ${RULE};font-variant-numeric:tabular-nums}
+.hb table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.hb th,.hb td{padding:9px 12px;text-align:right;border-bottom:1px solid ${RULE};font-variant-numeric:tabular-nums}
 .hb th:first-child,.hb td:first-child{text-align:left}
-.hb th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
+.hb th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
 .hb tbody tr:last-child td{border-bottom:0}
-.hb td.n{font-family:${FONT};font-size:14px;font-variant-numeric:tabular-nums}
+.hb td.n{font-family:${FONT};font-size:13.5px;font-variant-numeric:tabular-nums}
+.hb td.heat{font-size:12.5px;text-align:center;border-radius:4px}
 .hb .hb-flag{font-family:${FONT};font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
 .hb .hb-warn{color:${T.bad}} .hb .hb-ok{color:${T.good}} .hb .hb-flat{color:${MUTED}}
 .hb .hb-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
@@ -4976,135 +5096,216 @@ export default function ReliabilityScorecards() {
 .hb .hb-note h3{color:${AMBER}}
 .hb .hb-note.ok{border-color:${T.good}} .hb .hb-note.ok h3{color:${T.good}}
 .hb .hb-note.purple{border-color:${H}} .hb .hb-note.purple h3{color:${H}}
+.hb .hb-note.bad{border-color:${T.bad}} .hb .hb-note.bad h3{color:${T.bad}}
 .hb ul.hb-plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:${T.textSecondary}}
 .hb .hb-init{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid ${RULE};font-size:14px}
 .hb .hb-init:last-child{border-bottom:0}
 .hb .hb-init .hb-m{color:${MUTED};font-size:12.5px;grid-column:2}
 .hb .hb-imp{font-family:${FONT};font-size:11px;color:${MUTED};white-space:nowrap}
+.hb .hb-pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:${T.band};color:${H};margin-left:8px;vertical-align:middle}
 .hb footer{font-size:13.5px;color:${MUTED};border-top:1px solid ${RULE};padding-top:18px;display:flex;flex-direction:column;gap:6px}
 `;
     return (
       <div className="hb">
         <style>{css}</style>
         <header className="hb-head">
-          <div className="hb-eyebrow">HSIA · {range} · calls, tickets, dispatches, notes, sentiment, initiatives</div>
-          <h1>HSIA carried more demand than a year ago. Which problems drove it, and are the fixes aimed at them?</h1>
-          <p className="hb-sub">The last three reported months for HSIA West, PFE and TQ ILEC HSIA, read across the operational KPIs, the Looker and agent ticket categories, technician findings, the customer survey and the initiative register.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span><span>Churn to {CHURN_THRU}</span></div>
+          <div className="hb-eyebrow">HSIA · {Y.period} {Y.y1} vs {Y.y0} · why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it</div>
+          <h1>HSIA tickets are up {Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.</h1>
+          <p className="hb-sub">The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for {range}, agent and technician notes, the customer survey and the initiative register.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
         </header>
 
         <section aria-labelledby="hb-short">
           <div className="hb-answer">
             <h3 id="hb-short" style={{ color: H }}>In short</h3>
             <ol>
-              <li><strong>Demand is {ap(pct(q.tv, qy.tv), 0)} above the same quarter last year.</strong> {num(q.tv)} tickets and {num(q.calls)} calls over {range}, against {num(qy.tv)} and {num(qy.calls)} in {prevRange}. The ticket rate averaged {q.tr.toFixed(2)} per 100 subscribers, {sd(trDelta)} on last year.</li>
-              <li><strong>{rvLag ? "Dispatches did not follow." : "Dispatches rose with demand."}</strong> {num(q.rv)} repairs over the quarter, {sp(pct(q.rv, qy.rv))} year over year and {sp(pct(q.rv, qp.rv))} on the previous quarter. Dispatches per 100 tickets {per100Drop >= 1 ? `fell from ${per100[0].toFixed(1)} in ${shortMon(mons[0])} to ${per100[2].toFixed(1)} in ${shortMon(mons[2])}` : `held near ${((q.rv / q.tv) * 100).toFixed(0)} through the quarter (${per100[0].toFixed(1)} in ${shortMon(mons[0])}, ${per100[2].toFixed(1)} in ${shortMon(mons[2])})`}, against {((qy.rv / qy.tv) * 100).toFixed(1)} a year ago.</li>
-              <li><strong>{shortMon(mons[2])} turned down.</strong> Tickets fell {ap(pct(S.tv[i2], S.tv[i2 - 1]))} and calls {ap(pct(S.calls[i2], S.calls[i2 - 1]))} month over month; ONT Not Ranged ({sp(ontNR.pct)}) and Wi-Fi Can't Connect ({sp(wifiCC.pct)}) led the fall, while No Dataflow stayed at {num(noDataflow.v[2])}, the single largest category.</li>
-              <li><strong>Technicians confirm the fibre and copper faults but not the Wi-Fi ones.</strong> ONT Not Ranged visits close {K.divergence.perCat[2].alignment.toFixed(0)}% aligned with the agent's diagnosis; Wi-Fi visits close {Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned and more than half find no fault.</li>
-              <li><strong>Customers describe the same two things.</strong> Among those rating reliability poorly, {sv.drivers[0].pct[2].toFixed(0)}% cite frequent loss of connection and {sv.drivers[1].pct[2].toFixed(0)}% inconsistent speeds ({svM[2]}). {themeMap.reduce((a, t) => a + t.items.length, 0)} register initiatives map to these drivers; {themeMap.reduce((a, t) => a + t.items.filter((it) => /launch/i.test(it.status)).length, 0)} are launched.</li>
+              <li><strong>Tickets rose {num(Y.tickets.delta)} ({sp(Y.tickets.pct)}) in {Y.period} {Y.y1}.</strong> {num(Y.tickets.y0)} to {num(Y.tickets.y1)}, and the rise is steady in every month. Our own quarter agrees: {range} tickets are {ap(pct(q.tv, qy.tv), 0)} above {prevRange} and the ticket rate is {sd(q.tr - qy.tr)} per 100 subscribers higher.</li>
+              <li><strong>{growth.share.toFixed(0)}% is simply a larger base.</strong> {num(Y.lines.delta)} more lines (+{Y.lines.pct}%) at the {Y.y0} ticket rate account for {num(growth.v)} of the extra tickets. Everything else is a higher rate of trouble per line.</li>
+              <li><strong>Four root-cause groups explain the rest.</strong> {groupTotals.map((g, i) => `${g.g.replace("Network: ", "")} ${gshare(g)}%`).join(", ")} of the increase, before removing {num(Math.abs(adj.v))} of double counting. GPON severely degraded is the single largest condition at {num(drivers[1].v)}, with the caveat that GPON figures are August scaled to nine months.</li>
+              <li><strong>Orders are the biggest lever we control.</strong> Orders rose {O.pct}% (automated BackEnd orders {sp(O.backendPct, 0)}), a customer calls 3 to 4 times as often in the 30 days after one, and tickets within 90 days of an order added about {num(O.after90.extra)}, roughly {O.after90.shareOfIncrease}% of the year-over-year increase.</li>
+              <li><strong>No Dataflow is the category to shrink.</strong> It is {B.noDataflowPct}% of the {num(B.tickets)} reactive tickets and grew {B.noDataflowGrowthPct}% from January to September. Its callers are up {ND.pct}%, {ND.tenuredSharePct}% of that growth is customers with a year or more of tenure, and about {ND.offnetSharePct}% is the offnet (Bell) East group that is under {ND.offnetBasePct}% of customers. {nd.noFault}% of No Dataflow callers showed no line fault in telemetry at ticket time.</li>
+              <li><strong>The register covers the network and provisioning drivers; the gaps are orders, offnet East and the NH20A gateway.</strong> {initGroups.reduce((a, g) => a + g.items.length, 0)} initiatives map to the three driver groups, {initGroups.reduce((a, g) => a + g.items.filter((it) => /launch/i.test(it.status)).length, 0)} launched. None targets post-order contact, the offnet East provisioning stack, or the NH20A firmware build running at 1.7× lift.</li>
             </ol>
           </div>
         </section>
 
         <section aria-labelledby="hb-s1">
-          <h2 id="hb-s1">1. Demand ran well above last year{rvLag ? ", and dispatches did not keep pace" : ", and dispatches rose with it"}</h2>
-          <p className="hb-prose">Each month of {range} against the same month a year earlier. Rates are per 100 subscribers; dispatches per 100 tickets shows how much of the demand reached a truck.</p>
+          <h2 id="hb-s1">1. The rise is steady, and a quarter of it is a bigger base</h2>
+          <div className="hb-stats">
+            {stat(num(Y.tickets.y0), `Tickets · ${Y.period} ${Y.y0}`)}
+            {stat(num(Y.tickets.y1), `Tickets · ${Y.period} ${Y.y1}`)}
+            {stat(sn(Y.tickets.delta), `Increase (${sp(Y.tickets.pct)})`)}
+            {stat(sn(Y.lines.delta), `Average active lines (+${Y.lines.pct}%)`, `${num(Y.lines.y0)} to ${num(Y.lines.y1)}`)}
+            {stat(sn(growth.v), "Expected from base growth", `${num(Y.lines.delta)} × ${Y.lines.ratePerLine9mo} tickets per line · ${growth.share}% of the increase`)}
+          </div>
+          <p className="hb-prose">Each driver is credited by volume alone: how many more customers entered the state, times what that state cost in tickets in {Y.y0}. Holding the rate at its {Y.y0} level stops a group looking worse just because more of the kind of customers who call joined it. A customer can sit in several states at once, so an adjustment removes the double counting and the drivers reconcile to the total.</p>
           <div className="hb-tw">
             <table>
-              <thead><tr><th>Measure</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>{range}</th><th>{prevRange}</th><th>Change</th><th></th></tr></thead>
+              <thead><tr><th>Dashboard measure</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>{range}</th><th>{prevRange}</th><th>Change</th><th></th></tr></thead>
               <tbody>
+                <tr><td>Tickets (Looker Assure)</td>{mi.map((i) => <td key={i} className="n">{num(S.tv[i])}</td>)}<td className="n">{num(q.tv)}</td><td className="n">{num(qy.tv)}</td><td className="n">{sp(pct(q.tv, qy.tv))}</td><td>{flag(pct(q.tv, qy.tv))}</td></tr>
+                <tr><td>Ticket rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.tr[i], 2)}</td>)}<td className="n">{q.tr.toFixed(2)}</td><td className="n">{qy.tr.toFixed(2)}</td><td className="n">{sd(q.tr - qy.tr)}</td><td>{flag(pct(q.tr, qy.tr))}</td></tr>
                 <tr><td>Calls offered</td>{mi.map((i) => <td key={i} className="n">{num(S.calls[i])}</td>)}<td className="n">{num(q.calls)}</td><td className="n">{num(qy.calls)}</td><td className="n">{sp(pct(q.calls, qy.calls))}</td><td>{flag(pct(q.calls, qy.calls))}</td></tr>
-                <tr><td>Tickets</td>{mi.map((i) => <td key={i} className="n">{num(S.tv[i])}</td>)}<td className="n">{num(q.tv)}</td><td className="n">{num(qy.tv)}</td><td className="n">{sp(pct(q.tv, qy.tv))}</td><td>{flag(pct(q.tv, qy.tv))}</td></tr>
-                <tr><td>Ticket rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.tr[i], 2)}</td>)}<td className="n">{q.tr.toFixed(2)}</td><td className="n">{qy.tr.toFixed(2)}</td><td className="n">{sd(trDelta)}</td><td>{flag(pct(q.tr, qy.tr))}</td></tr>
                 <tr><td>Repairs / dispatches</td>{mi.map((i) => <td key={i} className="n">{num(S.rv[i])}</td>)}<td className="n">{num(q.rv)}</td><td className="n">{num(qy.rv)}</td><td className="n">{sp(pct(q.rv, qy.rv))}</td><td>{flag(pct(q.rv, qy.rv))}</td></tr>
-                <tr><td>Repair rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.rr[i], 2)}</td>)}<td className="n">{q.rr.toFixed(2)}</td><td className="n">{qy.rr.toFixed(2)}</td><td className="n">{sd(q.rr - qy.rr)}</td><td>{flag(pct(q.rr, qy.rr))}</td></tr>
                 <tr><td>Dispatches per 100 tickets</td>{per100.map((v, k) => <td key={k} className="n">{v.toFixed(1)}</td>)}<td className="n">{((q.rv / q.tv) * 100).toFixed(1)}</td><td className="n">{((qy.rv / qy.tv) * 100).toFixed(1)}</td><td className="n">{sd((q.rv / q.tv - qy.rv / qy.tv) * 100, 1)}</td><td>{flag(pct(q.rv / q.tv, qy.rv / qy.tv))}</td></tr>
-                <tr><td>Calls per ticket</td>{perTicket.map((v, k) => <td key={k} className="n">{v.toFixed(2)}</td>)}<td className="n">{(q.calls / q.tv).toFixed(2)}</td><td className="n">{(qy.calls / qy.tv).toFixed(2)}</td><td className="n">{sd(q.calls / q.tv - qy.calls / qy.tv)}</td><td>{flag(pct(q.calls / q.tv, qy.calls / qy.tv))}</td></tr>
                 <tr><td>Severely degraded fibre, % of repairs</td>{fibre.map((v, k) => <td key={k} className="n">{v == null ? "—" : v.toFixed(1) + "%"}</td>)}<td className="n">{(fibre.reduce((a, b) => a + (b || 0), 0) / 3).toFixed(1)}%</td><td className="n">—</td><td className="n">{sd(fibre[2] - fibre[0], 1)} pts</td><td>{flag(fibre[2] - fibre[0], true, 1)}</td></tr>
               </tbody>
             </table>
           </div>
-          <figure>
-            <div className="hb-figtitle">{range} relative to the same months last year and to the previous quarter</div>
-            <div className="hb-chart">{hbars(ratioRows, { max: 1.5, ref: 1, refLabel: "unchanged = 1×", fmt: (v) => v.toFixed(2) + "×", keys: [{ key: "y", color: barB }, { key: "p", color: barC }] })}</div>
-            {legend([{ label: `vs ${prevRange}`, color: barB }, { label: `vs ${MONTHS[qi[0]].slice(0, 3)} – ${MONTHS[qi[2]].slice(0, 3)} ${MONTHS[qi[2]].slice(-4)}`, color: barC }])}
-            <figcaption>The base grew {sp(pct(avg(S.base, mi), avg(S.base, yi)))} in a year, so almost all of the extra demand is a higher rate of trouble per subscriber, not more subscribers. Calls rose faster than tickets year over year, but calls per ticket eased through the quarter ({perTicket[0].toFixed(2)} to {perTicket[2].toFixed(2)}), so more of the contact is converting to a ticket rather than repeating.</figcaption>
-          </figure>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>The dashboard's quarter and the analysis measure different populations (HSIA West plus TQ ILEC and PFE on Looker Assure tickets, against all TELUS internet excluding Koodo on internet_daily), so the two are shown side by side and not reconciled. They tell the same story: demand up by a sixth, dispatches up far less.</p>
         </section>
 
         <section aria-labelledby="hb-s2">
-          <h2 id="hb-s2">2. One category carries the volume: No Dataflow</h2>
-          <p className="hb-prose">Agent ticket categories from the notes export, {shortMon(mons[0])} to {shortMon(mons[2])}. The change column is {shortMon(mons[2])} against {shortMon(mons[1])}.</p>
+          <h2 id="hb-s2">2. What the {sn(Y.tickets.delta)} breaks down into</h2>
+          <p className="hb-prose">Customer growth first, then each condition's volume-only contribution, then the adjustment for overlap. Colours group drivers by root cause.</p>
+          <figure>
+            <div className="hb-figtitle">Contribution to the {sn(Y.tickets.delta)} increase, {Y.period}, volume only (growth in the population × {Y.y0} rate)</div>
+            <div className="hb-chart">{contribChart(drivers)}</div>
+            {legend(Object.entries(GROUP_COLOR).map(([g, c]) => ({ label: g, color: c })))}
+            <figcaption>Condition drivers add {sn(condTotal)} before adjustment; the overlap removed is {sn(adj.v)}. GPON outage and the 3 to 5 reboot band are capped at their actual change because their per-line rates fell. GPON figures are August × 9 because telemetry covered only about half of fibre lines in Jan to Jul {Y.y0}, so they are directional.</figcaption>
+          </figure>
           <div className="hb-tw">
             <table>
-              <thead><tr><th>Agent category</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>Share of {shortMon(mons[2])}</th><th>MoM</th><th></th></tr></thead>
+              <thead><tr><th>Driver</th><th>Group</th><th>Growth in the population</th><th>{Y.y0} rate</th><th>Volume tickets</th><th>Actual change</th><th>Share</th></tr></thead>
               <tbody>
-                {cats.map((c) => <tr key={c.name}><td>{c.name}</td>{c.v.map((v, k) => <td key={k} className="n">{num(v)}</td>)}<td className="n">{c.share.toFixed(1)}%</td><td className="n">{sp(c.pct)}</td><td>{flag(c.pct)}</td></tr>)}
+                {drivers.map((d) => (
+                  <tr key={d.name}>
+                    <td>{d.name}{d.capped && <span className="hb-pill">capped</span>}{d.caveat && <span className="hb-pill" style={{ color: AMBER }}>Aug × 9</span>}</td>
+                    <td style={{ textAlign: "left", color: GROUP_COLOR[d.group], fontWeight: 600, fontSize: 12.5 }}>{d.group}</td>
+                    <td className="n">{d.delta || "—"}</td><td className="n">{d.rate || "—"}</td>
+                    <td className="n" style={{ fontWeight: 700 }}>{sn(d.v)}</td><td className="n">{d.actual != null ? sn(d.actual) : "—"}</td><td className="n">{d.share.toFixed(1)}%</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <figure>
-            <div className="hb-figtitle">{shortMon(mons[2])} tickets by agent category</div>
-            <div className="hb-chart">{hbars(cats.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: catMax, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
-            <figcaption>No Dataflow was {num(noDataflow.v[0])} in {shortMon(mons[0])} and {num(noDataflow.v[2])} in {shortMon(mons[2])}, {cats[0].share.toFixed(0)}% of all HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. The {shortMon(mons[2])} fall came from the access line: ONT Not Ranged {sp(ontNR.pct)} (outage-tagged {sp(K.falling[2].pct, 0)}) and No Sync {sp(K.agentCat[6].pct)}. Slow Speeds ({sp(slow.pct)}) and Incompatible Equipment ({sp(incompat.pct)}) are the two categories still rising.</figcaption>
-          </figure>
+          <div className="hb-two">
+            <div className="hb-note purple">
+              <h3>Proactive campaigns shaped the contact volume</h3>
+              <p>Internet proactive campaigns with a callback option reached {(Y.campaigns.reach[1] / Y.campaigns.reach[0]).toFixed(1)}× more customers than a year ago ({num(Y.campaigns.reach[0])} to {num(Y.campaigns.reach[1])} touches). Completed callbacks rose {num(Y.campaigns.callbacks[0])} to {num(Y.campaigns.callbacks[1])} ({sn(Y.campaigns.callbacks[1] - Y.campaigns.callbacks[0])}). These are contacts we generated and they sit inside the {sn(Y.tickets.delta)}; there is no campaign tag in the ticket data to net them out.</p>
+            </div>
+            <div className="hb-note">
+              <h3>Copper is not a driver</h3>
+              <p>Per surviving copper line it got worse ({Y.copper.ratePct[0]}% to {Y.copper.ratePct[1]}% per month), but the base shrank {ap(pct(Y.copper.lines[1], Y.copper.lines[0]), 0)} ({num(Y.copper.lines[0])} to {num(Y.copper.lines[1])} lines), so copper tickets fell {num(Y.copper.tickets[0])} to {num(Y.copper.tickets[1])} and removed volume rather than adding it.</p>
+            </div>
+          </div>
         </section>
 
         <section aria-labelledby="hb-s3">
-          <h2 id="hb-s3">3. Technicians agree with agents on fibre and copper, not on Wi-Fi</h2>
-          <p className="hb-prose">For each agent category, the share of {shortMon(mons[2])} field visits where the technician's closure matched the agent's diagnosis, found no fault, or pointed somewhere else.</p>
-          <figure>
-            <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
-            <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
-            {legend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
-            <figcaption>Across all {num(K.divergence.field[2].visits)} {shortMon(mons[2])} visits, {K.divergence.field[2].alignment.toFixed(1)}% closed aligned and {K.divergence.field[2].nontelus.toFixed(1)}% were not TELUS-caused. Field visits closed {K.closure[2].field_visit_pct.toFixed(1)}% of tickets ({K.closure[0].field_visit_pct.toFixed(1)}% in {shortMon(mons[0])}), and {K.closure[2].no_closure_code_pct.toFixed(1)}% of tickets carried no closure code at all, up from {K.closure[0].no_closure_code_pct.toFixed(1)}%.</figcaption>
-          </figure>
+          <h2 id="hb-s3">3. Orders are one of the biggest drivers, and the one we control</h2>
+          <div className="hb-stats">
+            {stat(sp(O.pct, 0), `PureFibre orders, ${Y.period}`, `${num(O.total[0])} to ${num(O.total[1])}`)}
+            {stat(sp(O.backendPct, 0), "BackEnd (automated) orders", `${num(O.backend[0])} to ${num(O.backend[1])}`)}
+            {stat(`${O.rate30[1]}%`, "Ticket rate in the 30 days after an order", `against a ${O.baseRate[1]}% monthly base rate: 3 to 4×`)}
+            {stat(sn(O.after90.extra), "Extra tickets within 90 days of an order", `about ${O.after90.shareOfIncrease}% of the ${sn(O.after90.hsicIncrease)} HSIC increase`)}
+          </div>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Channel</th><th>Orders {Y.y0}</th><th>Orders {Y.y1}</th><th>YoY</th><th>30-day ticket rate {Y.y0}</th><th>{Y.y1}</th></tr></thead>
+              <tbody>
+                {O.channels.map((c) => <tr key={c.name}><td>{c.name}</td><td className="n">{num(c.o[0])}</td><td className="n">{num(c.o[1])}</td><td className="n" style={{ color: c.pct > 20 ? T.bad : c.pct < 0 ? T.good : T.text, fontWeight: 600 }}>{sp(c.pct, 0)}</td><td className="n">{c.rate[0]}%</td><td className="n">{c.rate[1]}%</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+          <p className="hb-prose">Account activity rose across every order type. The surge is led by automated BackEnd orders, which carry a low call rate (about 2.5%), so the overall post-order rate eased from {O.rate30[0]}% to {O.rate30[1]}%. Had the rate stayed at {Y.y0} levels, order growth would have added about {num(O.after90.expectedExtra)} tickets; the actual was {num(O.after90.extra)}. By about 120 days after an order, customers call at their normal rate again.</p>
           <div className="hb-two">
             <div className="hb-note">
-              <h3>Where the diagnosis gap is</h3>
-              <p>Wi-Fi categories close {Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned, with most visits ending in education or no fault found. Found OK closures spiked to {num(K.techR1[8].v[1])} in {shortMon(mons[1])} before falling back to {num(K.techR1[8].v[2])}. These are the dispatches most likely to be avoidable with a better remote check.</p>
+              <h3>August to September: orders still rising</h3>
+              <p>Orders per day {num(O.augSep.ordersPerDay[0])} to {num(O.augSep.ordersPerDay[1])} ({perDay(O.augSep.ordersPerDay)}) and No Dataflow tickets per day {O.augSep.noDataflowPerDay[0]} to {O.augSep.noDataflowPerDay[1]} ({perDay(O.augSep.noDataflowPerDay)}), while all tickets per day were flat ({num(O.augSep.ticketsPerDay[0])} to {num(O.augSep.ticketsPerDay[1])}, {perDay(O.augSep.ticketsPerDay)}). September's lower monthly total is the calendar, not fewer calls. CSR orders, the 9.8% call-rate channel, rose 14% in September while low-rate automated orders fell, so order-driven tickets were expected to grow faster than orders.</p>
             </div>
             <div className="hb-note ok">
-              <h3>What technicians are fixing</h3>
-              <p>{K.fixes[0].name} remains the largest fix ({num(K.fixes[0].v[2])} in {shortMon(mons[2])}, {sp(K.fixes[0].pct)}), followed by {K.fixes[1].name} ({num(K.fixes[1].v[2])}, {sp(K.fixes[1].pct)}). Drop and outside-plant fixes fell {ap(K.fixes[2].pct)}. {K.techRising[0].name.split(" › ")[1]} closures rose {sp(K.techRising[0].pct, 0)}.</p>
+              <h3>The fibre network was calmer in September</h3>
+              <ul className="hb-plain" style={{ fontSize: 13.5 }}>
+                {O.gponAugSep.map((r) => <li key={r.m}>{r.m}: {num(r.v[0])} to {num(r.v[1])} ({sp(r.pct)})</li>)}
+              </ul>
+              <p style={{ fontSize: 13.5 }}>That matches the fall in ONT Not Ranged ({ap(K.agentCat[1].pct)} MoM in our notes data), No Sync and No IP, and offset the extra order-driven calls.</p>
             </div>
           </div>
         </section>
 
         <section aria-labelledby="hb-s4">
-          <h2 id="hb-s4">4. Customers describe the same thing: connection drops and speed</h2>
-          <p className="hb-prose">CF&R TELUS Internet survey, {svM[0]} to {svM[2]} ({sv.respondents.map((r) => r.toLocaleString()).join(" / ")} respondents). Reliability ratings are the share of respondents in each band; drivers are among those rating reliability fair or poor.</p>
+          <h2 id="hb-s4">4. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2>
+          <div className="hb-stats">
+            {stat(num(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
+            {stat(`${B.lineSidePct}%`, "Line-side (Connectivity)", `about ${B.wifiPct}% is in-home Wi-Fi`)}
+            {stat(`${B.noDataflowPct}%`, "No Dataflow, the largest symptom", `${sp(B.noDataflowGrowthPct, 0)} January to September`)}
+            {stat(`${B.noLineFaultPct}%`, "Callers with no line fault in telemetry", "none of the six line-health signals at ticket time")}
+          </div>
+          <p className="hb-prose">For each call category, the share of callers whose line showed each telemetry signal at ticket time. Darker cells are higher within the column. The last column is the share of callers whose line showed none of the six line-health faults.</p>
           <div className="hb-tw">
-            <table>
-              <thead><tr><th>Survey measure</th>{svM.map((m) => <th key={m}>{m}</th>)}<th>Change</th><th></th></tr></thead>
+            <table style={{ minWidth: 760 }}>
+              <thead><tr><th>Call category</th><th>Callers</th><th>GPON sev.</th><th>GPON outage</th><th>Downtime</th><th>Speed test &lt;50%</th><th>ONT capped</th><th>Reboots 3+</th><th>Poor Wi-Fi</th><th>Plan change</th><th>Early tenure</th><th>No line fault</th></tr></thead>
               <tbody>
-                <tr><td>Reliability rated excellent or very good</td>{sv.reliability.top2.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.reliability.top2[2] - sv.reliability.top2[0], 1)} pts</td><td>{flag(sv.reliability.top2[2] - sv.reliability.top2[0], false, 1)}</td></tr>
-                <tr><td>Reliability rated fair or poor</td>{sv.reliability.bottom2.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.reliability.bottom2[2] - sv.reliability.bottom2[0], 1)} pts</td><td>{flag(sv.reliability.bottom2[2] - sv.reliability.bottom2[0], true, 1)}</td></tr>
-                <tr><td>Had an issue and contacted TELUS</td>{sv.contact.contacted.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.contact.contacted[2] - sv.contact.contacted[0], 1)} pts</td><td>{flag(sv.contact.contacted[2] - sv.contact.contacted[0], true, 1)}</td></tr>
-                <tr><td>Had an issue, did not contact</td>{sv.contact.issue_no_contact.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.contact.issue_no_contact[2] - sv.contact.issue_no_contact[0], 1)} pts</td><td>{flag(sv.contact.issue_no_contact[2] - sv.contact.issue_no_contact[0], true, 1)}</td></tr>
-                <tr><td>Negative verbatims</td>{sv.polarity.negative.map((v, k) => <td key={k} className="n">{v.toFixed(1)}%</td>)}<td className="n">{sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} pts</td><td>{flag(sv.polarity.negative[2] - sv.polarity.negative[0], true, 1)}</td></tr>
-                <tr><td>B2B reliability score (lower is better)</td>{mi.map((i) => <td key={i} className="n">{num(S.b2b[i], 1)}</td>)}<td className="n">{sd(S.b2b[i2] - S.b2b[i2 - 2], 1)}</td><td>{flag(S.b2b[i2] - S.b2b[i2 - 2], true, 0.5)}</td></tr>
+                {B.rows.map((r) => (
+                  <tr key={r.cat}>
+                    <td style={{ fontWeight: 600 }}>{r.cat}</td><td className="n">{num(r.n)}</td>
+                    {[["gponSev", 12.1], ["outage", 25], ["downtime", 15.1], ["speed", 14.2], ["ontCap", 24.9], ["reboots", 10.6], ["wifi", 10.3], ["planChg", 12.7], ["tenure", 22.2]].map(([k, mx]) => <td key={k} className="heat" style={heat(r[k], mx)}>{r[k].toFixed(1)}%</td>)}
+                    <td className="n" style={{ color: AMBER, fontWeight: 700 }}>{r.noFault}%</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
+          <figcaption style={{ fontSize: 14, color: MUTED, lineHeight: 1.5 }}>Speed test validates the mapping: it peaks on Slow Speeds. Plan change and ONT capping drive Incompatible Equipment; downtime and GPON drive ONT Not Ranged and Historical Data. No Dataflow callers are {nd.noFault}% fault-free in telemetry and {nd.tenure}% are in early tenure, which is why proactive detection and the onboarding and order path matter more than any one network fix.</figcaption>
           <figure>
-            <div className="hb-figtitle">Why reliability was rated fair or poor, {svM[0]} and {svM[2]} (share of detractors citing each)</div>
-            <div className="hb-chart">{hbars(drivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
-            {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
-            <figcaption>Frequent loss of connection is the top reason and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, matching the No Dataflow and outage-tagged ticket growth. Among customers who had an issue and did not contact TELUS, {sv.reliabilityByContact.issue_no_contact.pct[2].toFixed(0)}% rate reliability poorly, against {sv.reliabilityByContact.contacted.pct[2].toFixed(0)}% of those who did call. The B2B row is the operational scorecard, not the survey, and runs to {shortMon(mons[2])}.</figcaption>
+            <div className="hb-figtitle">Our agent categories agree: {shortMon(mons[2])} tickets by agent category (notes export)</div>
+            <div className="hb-chart">{hbars(K.agentCat.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: Math.ceil(Math.max(...K.agentCat.slice(0, 8).map((c) => c.v[2])) / 2000) * 2000, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
+            <figcaption>No Dataflow was {num(K.agentCat[0].v[0])} in {shortMon(mons[0])} and {num(K.agentCat[0].v[2])} in {shortMon(mons[2])}, {((K.agentCat[0].v[2] / K.total[2]) * 100).toFixed(0)}% of our HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. Slow Speeds ({sp(K.agentCat[2].pct)}) and Incompatible Equipment ({sp(K.agentCat[9].pct)}) are the categories still rising month over month.</figcaption>
           </figure>
         </section>
 
         <section aria-labelledby="hb-s5">
-          <h2 id="hb-s5">5. The fixes in flight, mapped to the three drivers</h2>
-          <p className="hb-prose">Initiatives from the register that act on the drivers above, with their current status, timeline and HSIA impact rating. Status chips follow the register, so this list updates when the register does.</p>
+          <h2 id="hb-s5">5. No Dataflow callers: the same kinds of customers, just more of them</h2>
+          <div className="hb-stats">
+            {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${num(ND.callers[0])} to ${num(ND.callers[1])} customer-days`)}
+            {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${num(ND.tenure.oneYearPlus[0])} to ${num(ND.tenure.oneYearPlus[1])}; first 30 days ${num(ND.tenure.first30[0])} to ${num(ND.tenure.first30[1])}`)}
+            {stat(`~${ND.offnetSharePct}%`, "of the growth is the offnet (Bell) East group", `under ${ND.offnetBasePct}% of customers; the group tripled in size`)}
+          </div>
+          <p className="hb-prose">Every No Dataflow caller from 1 July to 27 September in each year, compared with all internet customers. Lift is the share of callers with a trait divided by the share of the base with it: 1× means no more common among callers than among everyone.</p>
+          <figure>
+            <div className="hb-figtitle">Lift of selected traits among No Dataflow callers, {Y.y0} and {Y.y1}</div>
+            <div className="hb-chart">{hbars(ND.lifts.map((l) => ({ label: l.t, a: l.lift[1], b: l.lift[0] })), { max: 12, step: 2, ref: 1, refLabel: "no lift = 1×", fmt: (v) => v.toFixed(1) + "×", labelW: 268, keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+            {legend([{ label: String(Y.y1), color: barB }, { label: String(Y.y0), color: barC }])}
+            <figcaption>Line faults and GPON problems run 5 to 10× in both years, 3+ reboots about 4×, the first 30 days of service about 8×, and recent deliveries or plan changes about 3×. No new telemetry signal appeared in {Y.y1}; the growth is more customers in the same states. Not factors: {ND.notFactors}.</figcaption>
+          </figure>
+          <div className="hb-two">
+            <div className="hb-note bad">
+              <h3>Two device findings to review</h3>
+              <p>The Arcadyan NH20A gateway runs at 1.4× in both years, and in {Y.y1} its main firmware build v1.18.07-build02 runs at 1.7× while v1.18.06-build02 runs at 0.7×. The new TELUS Boost Wi-Fi 7 extender runs at 1.8×. Traits overlap with new installs, so a check within one tenure group and region would separate them.</p>
+            </div>
+            <div className="hb-note">
+              <h3>The offnet East group</h3>
+              <p>Offnet (Bell network), PureFibre East, the 1.5GB XT plans and the SalesOne provisioning stack are the same customers. The group tripled and its No Dataflow callers rose {num(ND.lifts[6].n[0])} to {num(ND.lifts[6].n[1])}. SalesOne did not exist in {Y.y0}. No initiative in the register targets this group.</p>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="hb-s6">
+          <h2 id="hb-s6">6. Field and customer evidence point the same way</h2>
+          <figure>
+            <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
+            <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
+            {legend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
+            <figcaption>Technicians confirm the line-side categories (ONT Not Ranged {K.divergence.perCat[2].alignment.toFixed(0)}% aligned, No Sync {K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")) ? K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")).alignment.toFixed(0) : "—"}%) and not the Wi-Fi ones ({Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned, most closing as no fault). That mirrors the telemetry: the in-home drivers are real but are the hardest to diagnose remotely, which is where the Wi-Fi certification and CloudCheck work earns its place.</figcaption>
+          </figure>
+          <figure>
+            <div className="hb-figtitle">Why customers rated reliability fair or poor, {svM[0]} and {svM[2]} (share of detractors citing each)</div>
+            <div className="hb-chart">{hbars(svDrivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+            {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
+            <figcaption>Frequent loss of connection is the top reason at {sv.drivers[0].pct[2].toFixed(0)}% and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, the customer's words for No Dataflow and outage-tagged tickets. Negative verbatims rose {sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} points to {sv.polarity.negative[2].toFixed(1)}%. The survey runs to {sv.months[sv.months.length - 1]}, one month behind the operational data.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="hb-s7">
+          <h2 id="hb-s7">7. The fixes in flight, mapped to the analysis's driver groups</h2>
+          <p className="hb-prose">Register initiatives that act on each root-cause group, with live status, timeline, prime and HSIA impact rating. The share is each group's part of the {sn(Y.tickets.delta)} increase.</p>
           <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
-            {themeMap.map((t) => (
-              <figure key={t.driver}>
-                <div className="hb-figtitle">{t.driver}</div>
-                <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.5 }}>{t.why}</p>
+            {initGroups.map((g) => (
+              <figure key={g.g}>
+                <div className="hb-figtitle" style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: GROUP_COLOR[g.g], display: "inline-block" }} />{g.title}<span className="hb-pill">{g.share}% of the rise</span></div>
+                <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.5 }}>{g.why}</p>
                 <div>
-                  {t.items.map((it) => (
+                  {g.items.map((it) => (
                     <div key={it.name} className="hb-init">
                       <StatusChip status={it.status} T={T} />
                       <span style={{ fontWeight: 600, color: T.text, fontSize: 13.5 }}>{it.name}</span>
@@ -5117,30 +5318,31 @@ export default function ReliabilityScorecards() {
             ))}
           </div>
           <div className="hb-two">
-            <div className="hb-note">
-              <h3>Watch</h3>
+            <div className="hb-note bad">
+              <h3>Gaps the analysis exposes</h3>
               <ul className="hb-plain">
-                <li>The ticket rate is still {sd(trDelta)} per 100 above last year in every month of the quarter; the {shortMon(mons[2])} dip has not closed the gap.</li>
-                <li>Incompatible Equipment is a new category with no 2025 baseline and is still rising ({sp(incompat.pct)} in {shortMon(mons[2])}); its fix, the DIY Revamp Live ONT Check, lands in {INITIATIVES.find((it) => it.name === "DIY Revamp Live ONT Check").timeline}.</li>
-                <li>Un-coded ticket closures rose to {K.closure[2].no_closure_code_pct.toFixed(1)}%, which weakens next quarter's read of technician findings.</li>
+                <li>Nothing in the register targets post-order contact, although orders explain about {O.after90.shareOfIncrease}% of the increase. A post-order check-in or a fix for avoidable orders would be the largest single lever.</li>
+                <li>Nothing targets the offnet (Bell) East and SalesOne group, about {ND.offnetSharePct}% of No Dataflow caller growth from under {ND.offnetBasePct}% of customers.</li>
+                <li>Gateway reboots (3+ a week, {sn(drivers[2].v)} tickets) have no HSIA initiative; the sequential reboot work exists only for TV set-top boxes.</li>
+                <li>The NH20A v1.18.07 firmware (1.7× lift) and Boost Wi-Fi 7 (1.8×) need a device-team review.</li>
               </ul>
             </div>
             <div className="hb-note ok">
               <h3>Working</h3>
               <ul className="hb-plain">
-                <li>Severely degraded fibre fell from {fibre[0].toFixed(1)}% to {fibre[2].toFixed(1)}% of repairs, and ONT Not Ranged tickets fell {ap(pct(LOOKER.HSIA.topIssues[3].a26, LOOKER.HSIA.topIssues[3].a25), 0)} year over year, in line with the GPON degraded-fibre campaigns.</li>
-                {per100Drop >= 1
-                  ? <li>Dispatches per 100 tickets fell {per100Drop.toFixed(1)} points through the quarter, so demand growth is being absorbed remotely.</li>
-                  : <li>A smaller share of tickets reaches a truck than a year ago: {((q.rv / q.tv) * 100).toFixed(1)} dispatches per 100 tickets against {((qy.rv / qy.tv) * 100).toFixed(1)} in {prevRange}.</li>}
-                <li>Wi-Fi Can't Connect tickets fell {ap(wifiCC.pct)} in {shortMon(mons[2])} after the Wi-Fi proactive campaigns scaled in June and July.</li>
+                <li>Severely degraded fibre fell from {fibre[0].toFixed(1)}% to {fibre[2].toFixed(1)}% of repairs and GPON severely degraded lines fell {ap(O.gponAugSep[2].pct)} from August to September, in line with the GPON campaigns.</li>
+                <li>ONT Not Ranged tickets fell {ap(pct(LOOKER.HSIA.topIssues[3].a26, LOOKER.HSIA.topIssues[3].a25), 0)} year over year and {ap(K.agentCat[1].pct)} month over month.</li>
+                <li>The post-order ticket rate eased from {O.rate30[0]}% to {O.rate30[1]}%, so the order effect per order is not getting worse even as volume grows.</li>
+                <li>A smaller share of tickets reaches a truck: {((q.rv / q.tv) * 100).toFixed(1)} dispatches per 100 tickets against {((qy.rv / qy.tv) * 100).toFixed(1)} in {prevRange}.</li>
               </ul>
             </div>
           </div>
         </section>
 
         <footer>
-          <p>Sources: Churn Measurement 2026 workbook (KPIs, Looker ticket categories); TS Calls Offered by Product (calls); HSIA agent and technician notes analysis ({HSA.months[0]} to {HSA.months[2]}); CF&R TELUS Internet survey ({sv.months[0]} to {sv.months[2]}); HSIA West TCS PLT Charter scorecard (B2B); Initiatives register. Ticket and repair rates are per 100 subscribers; changes in rates are absolute differences in that unit.</p>
-          <p>Method: quarter totals sum the three months; rates are the simple average of the three monthly rates. Year-over-year compares the same three calendar months. Technician alignment is the share of field-visit closures whose domain matches the agent's category. The survey runs one month behind the operational data.</p>
+          <p>Sources: "TELUS Internet: why support tickets rose year over year" (support ticket analysis, {Y.period} {Y.y1} vs {Y.y0}, all TELUS-branded internet excluding Koodo, data through {Y.dataThrough}; internet_daily, Remedy, HSIC orders and tickets, CloudCheck and GPON telemetry); Churn Measurement 2026 workbook (KPIs, Looker ticket categories); TS Calls Offered by Product (calls); HSIA agent and technician notes analysis ({HSA.months[0]} to {HSA.months[2]}); CF&R TELUS Internet survey ({sv.months[0]} to {sv.months[2]}); Initiatives register.</p>
+          <p>Caveats carried from the analysis: {Y.caveats.join(" ")}</p>
+          <p>Method notes: dashboard quarter totals sum the three months and rates are the simple average of the monthly rates per 100 subscribers; technician alignment is the share of field-visit closures whose domain matches the agent's category. Analysis figures are transcribed, not recomputed, and are refreshed when a new edition of the analysis is supplied.</p>
         </footer>
       </div>
     );
@@ -5184,11 +5386,11 @@ export default function ReliabilityScorecards() {
     }));
     const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, "rate"), dea = sweeprFig("deacts", 0);
     const selfServe = [
-      { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
+      { icon: "selfserve", label: "Resolved sessions", value: fmtBig(res.latest), sub: `${res.latestMonth || ""} · target ${fmtBig(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
       { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "YoY"]] },
       { icon: "cx", label: "CX 'Easy to follow'", value: easy.latest == null ? "—" : easy.latest.toFixed(2), sub: easy.latest == null ? "" : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`, deltas: [[D(easy.vsTarget), "vs target"]] },
       { icon: "churn", label: "Sweepr involved churn per 100 subs", value: fmtRate(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "MoM"]] },
-      { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
+      { icon: "saved", label: "Deacts saved", value: fmtBig(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
     ];
     return {
       month, kpis, issues, milestones, selfServe,
@@ -5396,7 +5598,7 @@ export default function ReliabilityScorecards() {
       : page === "execsummary"
       ? "Executive summary"
       : page === "hsiabrief"
-      ? "HSIA: the last three months"
+      ? "HSIA review: why tickets rose and what is being done"
     : page === "hsiatickets"
       ? "HSIA notes analysis"
       : page === "hsiasentiment"
@@ -5490,7 +5692,7 @@ export default function ReliabilityScorecards() {
               : page === "execsummary"
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
               : page === "hsiabrief"
-              ? "HSIA 3-month review · Jul – Sep 2026 · calls, tickets and dispatches against last year, the issues behind them, agent and technician notes, customer sentiment, and the initiatives in flight"
+              ? "HSIA review · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight"
               : page === "hsiatickets"
               ? "HSIA notes analysis · Sep vs Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
               : page === "hsiasentiment"
