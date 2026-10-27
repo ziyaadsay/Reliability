@@ -2150,7 +2150,7 @@ export default function ReliabilityScorecards() {
     const at = (arr, k) => (arr && k >= 0 && k < arr.length ? arr[k] : null);
     const pick = (arr) => ({ now: at(arr, i), prev: at(arr, i - 1), yoy: at(arr, i - 12) });
     const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
-    const bps = (o, k) => (o.now != null && o[k] != null ? +(o.now - o[k]).toFixed(3) : null);
+    const bps = (o, k) => (o.now != null && o[k] != null ? +(o.now - o[k]).toFixed(2) : null);
     const calls = pick(CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc]);
     const tv = pick(DATA.ticketVolume[sc]), tr = pick(DATA.ticketRate[sc]), rv = pick(DATA.repairVolume[sc]), rr = pick(DATA.repairRate[sc]), base = pick(DATA.subBase[sc]);
     return {
@@ -2195,7 +2195,7 @@ export default function ReliabilityScorecards() {
     const toneColor = v.tone === "good" ? T.good : v.tone === "bad" ? T.bad : T.textMuted;
     const sPct = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
     const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " per 100");
-    const trDec = 2, rrDec = sc === "SH+" ? 3 : 2;
+    const trDec = 2, rrDec = 2;
     const aPct = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
     const prefer = v.tone === "good" ? -1 : v.tone === "bad" ? 1 : 0;
     // rate and volume pointing in opposite directions means the subscriber base moved the rate
@@ -2310,8 +2310,8 @@ export default function ReliabilityScorecards() {
     ].filter((m) => m.data && m.data[f.i] != null);
     const metric = metricDefs.find((m) => m.key === healthMetric[sc]) || metricDefs[0];
     const mNow = metric.data[f.i], mPrev = metric.data[f.i - 1], mYoy = metric.data[f.i - 12];
-    const mDelta = mPrev == null ? null : metric.rate ? +(mNow - mPrev).toFixed(3) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
-    const mDeltaY = mYoy == null ? null : metric.rate ? +(mNow - mYoy).toFixed(3) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
+    const mDelta = mPrev == null ? null : metric.rate ? +(mNow - mPrev).toFixed(2) : metric.pts ? +(mNow - mPrev).toFixed(1) : ((mNow - mPrev) / mPrev) * 100;
+    const mDeltaY = mYoy == null ? null : metric.rate ? +(mNow - mYoy).toFixed(2) : metric.pts ? +(mNow - mYoy).toFixed(1) : ((mNow - mYoy) / mYoy) * 100;
     const chg = (d) => {
       if (d == null) return null;
       if (d === 0 || (!metric.rate && Math.abs(d) < 0.05)) return "flat";
@@ -2825,7 +2825,7 @@ export default function ReliabilityScorecards() {
           const tk = rowFigures(p.tickets, 0, true, false, LAST);
           const tr = rowFigures(p.ticketRate, 2, true, "rate", LAST);
           const rp = rowFigures(p.repairs, 0, true, false, LAST);
-          const rr = rowFigures(p.repairRate, 3, true, "rate", LAST);
+          const rr = rowFigures(p.repairRate, 2, true, "rate", LAST);
           const sw = rowFigures(p.swaps2026 || [], 0, true, false, LAST);
           const swapTotal = p.swaps2026 == null ? null : p.swaps2026.filter((v) => v != null).reduce((a, b) => a + b, 0);
           return (
@@ -2840,7 +2840,7 @@ export default function ReliabilityScorecards() {
                 <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtNum(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket rate per 100 subs" value={fmtRate(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtNum(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 3)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 2)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtNum(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
               </div>
             </div>
@@ -2884,7 +2884,7 @@ export default function ReliabilityScorecards() {
         {sec("Repairs / Dispatches", "repairs",
           <>
             {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Repair split reported for 2026 onward.")}
-            {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 3))}
+            {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 2))}
           </>
         )}
 
