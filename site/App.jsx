@@ -4953,6 +4953,7 @@ export default function ReliabilityScorecards() {
     const sd = (x, d = 2) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d));
     const ap = (x, d = 1) => (x == null ? "n/a" : Math.abs(x).toFixed(d) + "%");
     const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString());
+    const big = fmtBig, sbig = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + fmtBig(Math.abs(v)));
     const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
     const q = { calls: sum(S.calls, mi), tv: sum(S.tv, mi), rv: sum(S.rv, mi), tr: avg(S.tr, mi), rr: avg(S.rr, mi) };
     const qy = { calls: sum(S.calls, yi), tv: sum(S.tv, yi), rv: sum(S.rv, yi), tr: avg(S.tr, yi), rr: avg(S.rr, yi) };
@@ -5128,12 +5129,12 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="hb-kpis">
           <h2 id="hb-kpis">{qPrev} to {qNow} at a glance</h2>
           <div className="hb-stats">
-            {kpiCard(num(q.calls), `Calls offered · ${qNow}`, num(qy.calls), sp(pct(q.calls, qy.calls)), volTone(pct(q.calls, qy.calls)))}
-            {kpiCard(num(q.tv), `Tickets · ${qNow}`, num(qy.tv), sp(pct(q.tv, qy.tv)), volTone(pct(q.tv, qy.tv)))}
+            {kpiCard(big(q.calls), `Calls offered · ${qNow}`, big(qy.calls), sp(pct(q.calls, qy.calls)), volTone(pct(q.calls, qy.calls)))}
+            {kpiCard(big(q.tv), `Tickets · ${qNow}`, big(qy.tv), sp(pct(q.tv, qy.tv)), volTone(pct(q.tv, qy.tv)))}
             {kpiCard(fmtRate(q.tr, 2), `Ticket rate per 100 subs · ${qNow}`, fmtRate(qy.tr, 2), `${sd(q.tr - qy.tr)} per 100`, rateTone(q.tr - qy.tr))}
-            {kpiCard(num(q.rv), `Repairs / dispatches · ${qNow}`, num(qy.rv), sp(pct(q.rv, qy.rv)), volTone(pct(q.rv, qy.rv)))}
+            {kpiCard(big(q.rv), `Repairs / dispatches · ${qNow}`, big(qy.rv), sp(pct(q.rv, qy.rv)), volTone(pct(q.rv, qy.rv)))}
             {kpiCard(fmtRate(q.rr, 2), `Repair rate per 100 subs · ${qNow}`, fmtRate(qy.rr, 2), `${sd(q.rr - qy.rr)} per 100`, rateTone(q.rr - qy.rr))}
-            {kpiCard(num(avg(S.base, mi)), `Subscriber base (avg) · ${qNow}`, num(avg(S.base, yi)), sp(pct(avg(S.base, mi), avg(S.base, yi))), "flat")}
+            {kpiCard(big(avg(S.base, mi)), `Subscriber base (avg) · ${qNow}`, big(avg(S.base, yi)), sp(pct(avg(S.base, mi), avg(S.base, yi))), "flat")}
             {cq.now != null && cq.prev != null && kpiCard(fmtRate(cq.now, 2), `Churn rate per 100 subs · ${qNow}`, fmtRate(cq.prev, 2), `${sd(cq.now - cq.prev)} per 100`, rateTone(cq.now - cq.prev))}
           </div>
           <p className="hb-prose" style={{ marginTop: 10 }}>{qNow} is {shortMon(mons[0])} – {shortMon(mons[2])} {mons[2].slice(-4)}, against {shortMon(mons[0])} – {shortMon(mons[2])} {MONTHS[yi[2]].slice(-4)}. Calls, tickets and repairs are quarter totals; rates and the subscriber base are quarter averages of the monthly figures, with rates per 100 subscribers. Red is worse, green is better.</p>
@@ -5156,11 +5157,11 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="hb-s1">
           <h2 id="hb-s1">1. The rise is steady, and a quarter of it is a bigger base</h2>
           <div className="hb-stats">
-            {stat(num(Y.tickets.y0), `Tickets · ${Y.period} ${Y.y0}`)}
-            {stat(num(Y.tickets.y1), `Tickets · ${Y.period} ${Y.y1}`)}
-            {stat(sn(Y.tickets.delta), `Increase (${sp(Y.tickets.pct)})`)}
-            {stat(sn(Y.lines.delta), `Average active lines (+${Y.lines.pct}%)`, `${num(Y.lines.y0)} to ${num(Y.lines.y1)}`)}
-            {stat(sn(growth.v), "Expected from base growth", `${num(Y.lines.delta)} × ${Y.lines.ratePerLine9mo} tickets per line · ${growth.share}% of the increase`)}
+            {stat(big(Y.tickets.y0), `Tickets · ${Y.period} ${Y.y0}`)}
+            {stat(big(Y.tickets.y1), `Tickets · ${Y.period} ${Y.y1}`)}
+            {stat(sbig(Y.tickets.delta), `Increase (${sp(Y.tickets.pct)})`)}
+            {stat(sbig(Y.lines.delta), `Average active lines (+${Y.lines.pct}%)`, `${big(Y.lines.y0)} to ${big(Y.lines.y1)}`)}
+            {stat(sbig(growth.v), "Expected from base growth", `${big(Y.lines.delta)} × ${Y.lines.ratePerLine9mo} tickets per line · ${growth.share}% of the increase`)}
           </div>
           <p className="hb-prose">Each driver is credited by volume alone: how many more customers entered the state, times what that state cost in tickets in {Y.y0}. Holding the rate at its {Y.y0} level stops a group looking worse just because more of the kind of customers who call joined it. A customer can sit in several states at once, so an adjustment removes the double counting and the drivers reconcile to the total.</p>
           <div className="hb-tw">
@@ -5218,10 +5219,10 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="hb-s3">
           <h2 id="hb-s3">3. Orders are one of the biggest drivers, and the one we control</h2>
           <div className="hb-stats">
-            {stat(sp(O.pct, 0), `PureFibre orders, ${Y.period}`, `${num(O.total[0])} to ${num(O.total[1])}`)}
-            {stat(sp(O.backendPct, 0), "BackEnd (automated) orders", `${num(O.backend[0])} to ${num(O.backend[1])}`)}
+            {stat(sp(O.pct, 0), `PureFibre orders, ${Y.period}`, `${big(O.total[0])} to ${big(O.total[1])}`)}
+            {stat(sp(O.backendPct, 0), "BackEnd (automated) orders", `${big(O.backend[0])} to ${big(O.backend[1])}`)}
             {stat(`${O.rate30[1]}%`, "Ticket rate in the 30 days after an order", `against a ${O.baseRate[1]}% monthly base rate: 3 to 4×`)}
-            {stat(sn(O.after90.extra), "Extra tickets within 90 days of an order", `about ${O.after90.shareOfIncrease}% of the ${sn(O.after90.hsicIncrease)} HSIC increase`)}
+            {stat(sbig(O.after90.extra), "Extra tickets within 90 days of an order", `about ${O.after90.shareOfIncrease}% of the ${sbig(O.after90.hsicIncrease)} HSIC increase`)}
           </div>
           <div className="hb-tw">
             <table>
@@ -5250,7 +5251,7 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="hb-s4">
           <h2 id="hb-s4">4. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2>
           <div className="hb-stats">
-            {stat(num(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
+            {stat(big(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
             {stat(`${B.lineSidePct}%`, "Line-side (Connectivity)", `about ${B.wifiPct}% is in-home Wi-Fi`)}
             {stat(`${B.noDataflowPct}%`, "No Dataflow, the largest symptom", `${sp(B.noDataflowGrowthPct, 0)} January to September`)}
             {stat(`${B.noLineFaultPct}%`, "Callers with no line fault in telemetry", "none of the six line-health signals at ticket time")}
@@ -5281,8 +5282,8 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="hb-s5">
           <h2 id="hb-s5">5. No Dataflow callers: the same kinds of customers, just more of them</h2>
           <div className="hb-stats">
-            {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${num(ND.callers[0])} to ${num(ND.callers[1])} customer-days`)}
-            {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${num(ND.tenure.oneYearPlus[0])} to ${num(ND.tenure.oneYearPlus[1])}; first 30 days ${num(ND.tenure.first30[0])} to ${num(ND.tenure.first30[1])}`)}
+            {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${big(ND.callers[0])} to ${big(ND.callers[1])} customer-days`)}
+            {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${big(ND.tenure.oneYearPlus[0])} to ${big(ND.tenure.oneYearPlus[1])}; first 30 days ${big(ND.tenure.first30[0])} to ${big(ND.tenure.first30[1])}`)}
             {stat(`~${ND.offnetSharePct}%`, "of the growth is the offnet (Bell) East group", `under ${ND.offnetBasePct}% of customers; the group tripled in size`)}
           </div>
           <p className="hb-prose">Every No Dataflow caller from 1 July to 27 September in each year, compared with all internet customers. Lift is the share of callers with a trait divided by the share of the base with it: 1× means no more common among callers than among everyone.</p>
