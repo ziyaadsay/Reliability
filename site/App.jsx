@@ -5064,16 +5064,16 @@ export default function ReliabilityScorecards() {
     const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
 
     const css = `
-.hb{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
+.hb{width:100%;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
 .hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
 .hb .hb-eyebrow{font-family:${FONT};font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${H}}
 .hb h1{font-family:${FONT};font-weight:700;font-size:clamp(26px,4vw,36px);letter-spacing:-.01em;line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
-.hb .hb-sub{color:${MUTED};margin:0;max-width:66ch}
+.hb .hb-sub{color:${MUTED};margin:0}
 .hb .hb-meta{font-family:${FONT};font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
 .hb h2{font-family:${FONT};font-weight:700;font-size:21px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
 .hb h3{font-size:14.5px;font-weight:700;margin:0;letter-spacing:.01em}
 .hb p{margin:0}
-.hb .hb-prose{max-width:70ch;color:${T.textSecondary}}
+.hb .hb-prose{color:${T.textSecondary}}
 .hb section{display:flex;flex-direction:column;gap:14px}
 .hb .hb-answer{background:${T.band};border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
 .hb .hb-answer ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
