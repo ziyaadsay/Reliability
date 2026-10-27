@@ -809,11 +809,15 @@ const PRODUCT_ICON = { All: "overview", HSIA: "hsia", TV: "tv", SHS: "shs", "SH+
 // ---------------------------------------------------------------------------
 function fmtNum(v) { return v == null ? "—" : v.toLocaleString(); }
 function fmtNumK(v) { return v == null ? "—" : v >= 10000 ? (v / 1000).toFixed(1) + "K" : v.toLocaleString(); }
+// Large-number notation for volumes: three significant digits from 10K up (85.3K, 181K,
+// 1.16M, 84.0M); smaller counts keep thousands separators (3,451).
 function fmtBig(v) {
   if (v == null) return "—";
-  if (v >= 1e6) return (v / 1e6).toFixed(2) + "M";
-  if (v >= 1e4) return (v / 1000).toFixed(1) + "K";
-  return v.toLocaleString();
+  const a = Math.abs(v), sign = v < 0 ? "−" : "";
+  if (a >= 1e9) return sign + (a / 1e9).toFixed(a >= 1e11 ? 0 : a >= 1e10 ? 1 : 2) + "B";
+  if (a >= 1e6) return sign + (a / 1e6).toFixed(a >= 1e8 ? 0 : a >= 1e7 ? 1 : 2) + "M";
+  if (a >= 1e4) return sign + (a / 1e3).toFixed(a >= 1e5 ? 0 : 1) + "K";
+  return sign + Math.round(a).toLocaleString();
 }
 function fmtPct(v, d = 2) { return v == null ? "—" : v.toFixed(d) + "%"; }
 // Ticket, repair and churn rates are reported per 100 subscribers (same figure as the old % of base)
@@ -837,7 +841,7 @@ function delta(curr, prev, unit, decimals, goodWhenDown = true, withPct = true) 
   const flat = Math.abs(diff) < 1e-9;
   const good = goodWhenDown ? diff <= 0 : diff >= 0;
   const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
-  const mag = Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  const mag = decimals === 0 && !unit ? fmtBig(Math.abs(diff)) : Math.abs(diff).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const pct = prev ? (diff / Math.abs(prev)) * 100 : null;
   const pctText = !withPct || pct == null || flat ? "" : ` (${pct > 0 ? "+" : ""}${pct.toFixed(1)}%)`;
   return { text: `${arrow} ${mag}${unit}${pctText}`, tone: flat ? "flat" : good ? "good" : "bad" };
@@ -2000,10 +2004,10 @@ export default function ReliabilityScorecards() {
   function scopeTiles(sc) {
     if (sc === "SH+") {
       return [
-        { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
-        { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
-        { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtNum, dec: 0, color: colors["SH+"], goodDown: true },
+        { icon: "repairs", label: "Repair volume", data: DATA.repairVolume["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
         { icon: "base", label: "Subscriber base", data: DATA.subBase["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: false }
       ];
@@ -2012,8 +2016,8 @@ export default function ReliabilityScorecards() {
     const callsData = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[callsKey];
     const callsLabel = sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`;
     return [
-      { icon: "calls", label: callsLabel, data: callsData, fmt: fmtNum, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
-      { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNum, dec: 0, color: colors[sc], goodDown: true },
+      { icon: "calls", label: callsLabel, data: callsData, fmt: fmtBig, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
+      { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: true },
       { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "repairs", label: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "churn", label: "Churn rate per 100 subs", data: DATA.churnRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
@@ -2301,11 +2305,11 @@ export default function ReliabilityScorecards() {
     const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
     const metricDefs = [
       { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: (x) => fmtRate(x, trDec), rate: true, goodDown: true },
-      { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtNumK, goodDown: true },
+      { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, goodDown: true },
       { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: (x) => fmtRate(x, rrDec), rate: true, goodDown: true },
-      { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtNumK, goodDown: true },
-      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtNumK, goodDown: true },
-      { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtNumK, goodDown: false },
+      { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtBig, goodDown: true },
+      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtBig, goodDown: true },
+      { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, goodDown: false },
       { key: "b2bVoC", eyebrow: "B2B VoC", name: "B2B reliability score", data: DATA.b2bVoC[sc], fmt: (x) => (x == null ? "—" : x.toFixed(1)), goodDown: true, pts: true }
     ].filter((m) => m.data && m.data[f.i] != null);
     const metric = metricDefs.find((m) => m.key === healthMetric[sc]) || metricDefs[0];
@@ -2837,11 +2841,11 @@ export default function ReliabilityScorecards() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
                 <StatCard T={T} color={col} icon="base" label="Subscriber base" value={fmtBig(bs.latest)} sub={bs.latestMonth} deltas={[d(bs.mom, "MoM"), d(bs.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtNum(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtBig(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket rate per 100 subs" value={fmtRate(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtNum(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtBig(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair rate per 100 subs" value={fmtRate(rr.latest, 2)} sub={rr.latestMonth} deltas={[d(rr.mom, "MoM"), d(rr.yoy, "YoY")].filter(Boolean)} />
-                <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtNum(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="repairs" label="Repair swaps · 2026 total" value={swapTotal == null ? "pending" : fmtBig(swapTotal)} sub={sw.latestMonth ? `latest ${sw.latestMonth}: ${fmtNum(sw.latest)}` : undefined} deltas={[d(sw.mom, "MoM")].filter(Boolean)} />
               </div>
             </div>
           );
@@ -2937,8 +2941,8 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtNum(res.latest)}
-            sub={`${res.latestMonth} · target ${fmtNum(res.target)}`}
+          <StatCard T={T} color={col} icon="selfserve" label="Resolved sessions" value={fmtBig(res.latest)}
+            sub={`${res.latestMonth} · target ${fmtBig(res.target)}`}
             deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />, <DeltaText key="y" d={res.yoy} T={T} suffix="YoY" />]} />
           <StatCard T={T} color={col} icon="tickets" label="Web/App resolution rate" value={fmtPct(web.latest, 1)}
             sub={`${web.latestMonth} · target ${fmtPct(web.target, 1)}`}
@@ -2949,7 +2953,7 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={col} icon="churn" label="Sweepr involved churn per 100 subs" value={fmtRate(chn.latest, 2)}
             sub={chn.latestMonth}
             deltas={[<DeltaText key="m" d={chn.mom} T={T} suffix="MoM" />]} />
-          <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtNum(dea.latest)}
+          <StatCard T={T} color={col} icon="saved" label="Deacts saved" value={fmtBig(dea.latest)}
             sub={dea.latestMonth}
             deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
         </div>
@@ -3359,10 +3363,10 @@ export default function ReliabilityScorecards() {
             const res = sweeprFig("resolved", 0);
             const dea = sweeprFig("deacts", 0);
             const selfServeCards = scope === "All" ? [
-              <StatCard key="ss-res" T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtNum(res.latest)}
+              <StatCard key="ss-res" T={T} color={colors.SWEEPR} icon="selfserve" label="Self-serve resolved sessions" value={fmtBig(res.latest)}
                 sub={`${res.latestMonth} · target ${fmtNum(res.target)} · Sweepr workflows`}
                 deltas={[<DeltaText key="t" d={res.vsTarget} T={T} suffix="vs target" />]} />,
-              <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtNum(dea.latest)}
+              <StatCard key="ss-dea" T={T} color={colors.SWEEPR} icon="saved" label="Self-serve deacts saved" value={fmtBig(dea.latest)}
                 sub={`${dea.latestMonth} · Sweepr workflows`}
                 deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
             ] : null;
@@ -3777,7 +3781,7 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtNum(K.total[2])} sub="Sep 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtBig(K.total[2])} sub="Sep 2026 · agent + technician notes"
             deltas={[<Move key="m" v={K.total} />]} />
           <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Sep"
             deltas={[<span key="a" style={{ color: T.textMuted }}>Jul {K.closure[0].field_visit_pct}% · Aug {K.closure[1].field_visit_pct}%</span>]} />
@@ -4302,7 +4306,7 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtNum(K.total[2])} sub="Sep 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtBig(K.total[2])} sub="Sep 2026 · agent + technician notes"
             deltas={[<Move key="m" v={K.total} />]} />
           <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Sep"
             deltas={[<span key="a" style={{ color: T.textMuted }}>Jul {K.closure[0].field_visit_pct}% · Aug {K.closure[1].field_visit_pct}%</span>]} />
@@ -5373,11 +5377,11 @@ export default function ReliabilityScorecards() {
     }));
     const res = sweeprFig("resolved", 0), web = sweeprFig("webAppRate", 1, false, true), easy = sweeprFig("cxEasy", 2), chn = sweeprFig("churn", 2, true, "rate"), dea = sweeprFig("deacts", 0);
     const selfServe = [
-      { icon: "selfserve", label: "Resolved sessions", value: fmtNum(res.latest), sub: `${res.latestMonth || ""} · target ${fmtNum(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
+      { icon: "selfserve", label: "Resolved sessions", value: fmtBig(res.latest), sub: `${res.latestMonth || ""} · target ${fmtBig(res.target)}`, deltas: [[D(res.vsTarget), "vs target"], [D(res.yoy), "YoY"]] },
       { icon: "tickets", label: "Web/App resolution rate", value: fmtPct(web.latest, 1), sub: `${web.latestMonth || ""} · target ${fmtPct(web.target, 1)}`, deltas: [[D(web.vsTarget), "vs target"], [D(web.yoy), "YoY"]] },
       { icon: "cx", label: "CX 'Easy to follow'", value: easy.latest == null ? "—" : easy.latest.toFixed(2), sub: easy.latest == null ? "" : `${easy.latestMonth} · target ${easy.target == null ? "—" : easy.target.toFixed(2)}`, deltas: [[D(easy.vsTarget), "vs target"]] },
       { icon: "churn", label: "Sweepr involved churn per 100 subs", value: fmtRate(chn.latest, 2), sub: chn.latestMonth || "", deltas: [[D(chn.mom), "MoM"]] },
-      { icon: "saved", label: "Deacts saved", value: fmtNum(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
+      { icon: "saved", label: "Deacts saved", value: fmtBig(dea.latest), sub: dea.latestMonth || "", deltas: [[D(dea.mom), "MoM"]] }
     ];
     return {
       month, kpis, issues, milestones, selfServe,
