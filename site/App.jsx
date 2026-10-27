@@ -5027,6 +5027,16 @@ export default function ReliabilityScorecards() {
     const stat = (v, label, sub) => (
       <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
     );
+    // Quarter-on-same-quarter summary: the dashboard's latest three months against the same three a year earlier.
+    const qName = `Q${Math.floor((i2 % 12) / 3) + 1}`, qNow = `${qName} ${MONTHS[i2].slice(-4)}`, qPrev = `${qName} ${MONTHS[yi[2]].slice(-4)}`;
+    const churnQ = (idx) => (idx.every((i) => DATA.churnRate.HSIA[i] != null) ? avg(DATA.churnRate.HSIA, idx) : null);
+    const cq = { now: churnQ(mi), prev: churnQ(yi) };
+    const kpiCard = (value, label, prev, change, tone) => (
+      <div className="hb-stat"><div className="hb-stat-v">{value}</div><div className="hb-stat-l">{label}</div>
+        <div className="hb-stat-s">{qPrev}: {prev}{change != null && <> · <span className={`hb-${tone}`} style={{ fontWeight: 700 }}>{change}</span></>}</div></div>
+    );
+    const volTone = (v) => (v == null ? "flat" : Math.abs(v) < 1 ? "flat" : v > 0 ? "warn" : "ok");
+    const rateTone = (v) => (v == null ? "flat" : Math.abs(v) < 0.005 ? "flat" : v > 0 ? "warn" : "ok");
     const heat = (v, maxV) => ({ background: `${col}${Math.round(Math.min(1, v / maxV) * 0.75 * 255).toString(16).padStart(2, "0")}`, color: v / maxV > 0.45 ? "#fff" : T.text });
 
     // ---- derived from the analysis ----
@@ -5114,6 +5124,20 @@ export default function ReliabilityScorecards() {
           <p className="hb-sub">The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for {range}, agent and technician notes, the customer survey and the initiative register.</p>
           <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
         </header>
+
+        <section aria-labelledby="hb-kpis">
+          <h2 id="hb-kpis">{qPrev} to {qNow} at a glance</h2>
+          <div className="hb-stats">
+            {kpiCard(num(q.calls), `Calls offered · ${qNow}`, num(qy.calls), sp(pct(q.calls, qy.calls)), volTone(pct(q.calls, qy.calls)))}
+            {kpiCard(num(q.tv), `Tickets · ${qNow}`, num(qy.tv), sp(pct(q.tv, qy.tv)), volTone(pct(q.tv, qy.tv)))}
+            {kpiCard(fmtRate(q.tr, 2), `Ticket rate per 100 subs · ${qNow}`, fmtRate(qy.tr, 2), `${sd(q.tr - qy.tr)} per 100`, rateTone(q.tr - qy.tr))}
+            {kpiCard(num(q.rv), `Repairs / dispatches · ${qNow}`, num(qy.rv), sp(pct(q.rv, qy.rv)), volTone(pct(q.rv, qy.rv)))}
+            {kpiCard(fmtRate(q.rr, 2), `Repair rate per 100 subs · ${qNow}`, fmtRate(qy.rr, 2), `${sd(q.rr - qy.rr)} per 100`, rateTone(q.rr - qy.rr))}
+            {kpiCard(num(avg(S.base, mi)), `Subscriber base (avg) · ${qNow}`, num(avg(S.base, yi)), sp(pct(avg(S.base, mi), avg(S.base, yi))), "flat")}
+            {cq.now != null && cq.prev != null && kpiCard(fmtRate(cq.now, 2), `Churn rate per 100 subs · ${qNow}`, fmtRate(cq.prev, 2), `${sd(cq.now - cq.prev)} per 100`, rateTone(cq.now - cq.prev))}
+          </div>
+          <p className="hb-prose" style={{ marginTop: 10 }}>{qNow} is {shortMon(mons[0])} – {shortMon(mons[2])} {mons[2].slice(-4)}, against {shortMon(mons[0])} – {shortMon(mons[2])} {MONTHS[yi[2]].slice(-4)}. Calls, tickets and repairs are quarter totals; rates and the subscriber base are quarter averages of the monthly figures, with rates per 100 subscribers. Red is worse, green is better.</p>
+        </section>
 
         <section aria-labelledby="hb-short">
           <div className="hb-answer">
