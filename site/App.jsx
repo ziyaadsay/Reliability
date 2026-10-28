@@ -1204,9 +1204,18 @@ function Eyebrow({ children, T, style }) {
 }
 
 function StatCard({ icon, label, sub, value, deltas, color, T }) {
+  // Hover: the card lifts, takes the metric colour on its border and a faint
+  // tint of it as background, and the label switches to the metric colour.
+  const [hover, setHover] = useState(false);
+  const tint = /^#[0-9a-f]{6}$/i.test(color || "") ? `${color}14` : T.band;
   return (
-    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 18px" }}>
-      <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      style={{
+        background: hover ? tint : T.surface, border: `1px solid ${hover ? color : T.border}`, borderRadius: 12, padding: "16px 18px",
+        boxShadow: hover ? "0 6px 18px rgba(0,0,0,.10)" : "none", transform: hover ? "translateY(-2px)" : "none",
+        transition: "background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease"
+      }}>
+      <div style={{ fontSize: 11, color: hover ? color : T.textMuted, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", display: "flex", alignItems: "center", gap: 7, marginBottom: 8, transition: "color .15s ease" }}>
         <span style={{ color, display: "inline-flex" }}><Icon name={icon} size={14} /></span>
         {label}
       </div>
