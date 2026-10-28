@@ -5249,80 +5249,7 @@ export default function ReliabilityScorecards() {
         </section>
 
         <section aria-labelledby="hb-s4">
-          <h2 id="hb-s4">4. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2>
-          <div className="hb-stats">
-            {stat(big(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
-            {stat(`${B.lineSidePct}%`, "Line-side (Connectivity)", `about ${B.wifiPct}% is in-home Wi-Fi`)}
-            {stat(`${B.noDataflowPct}%`, "No Dataflow, the largest symptom", `${sp(B.noDataflowGrowthPct, 0)} January to September`)}
-            {stat(`${B.noLineFaultPct}%`, "Callers with no line fault in telemetry", "none of the six line-health signals at ticket time")}
-          </div>
-          <p className="hb-prose">For each call category, the share of callers whose line showed each telemetry signal at ticket time. Darker cells are higher within the column. The last column is the share of callers whose line showed none of the six line-health faults.</p>
-          <div className="hb-tw">
-            <table style={{ minWidth: 760 }}>
-              <thead><tr><th>Call category</th><th>Callers</th><th>GPON sev.</th><th>GPON outage</th><th>Downtime</th><th>Speed test &lt;50%</th><th>ONT capped</th><th>Reboots 3+</th><th>Poor Wi-Fi</th><th>Plan change</th><th>Early tenure</th><th>No line fault</th></tr></thead>
-              <tbody>
-                {B.rows.map((r) => (
-                  <tr key={r.cat}>
-                    <td style={{ fontWeight: 600 }}>{r.cat}</td><td className="n">{num(r.n)}</td>
-                    {[["gponSev", 12.1], ["outage", 25], ["downtime", 15.1], ["speed", 14.2], ["ontCap", 24.9], ["reboots", 10.6], ["wifi", 10.3], ["planChg", 12.7], ["tenure", 22.2]].map(([k, mx]) => <td key={k} className="heat" style={heat(r[k], mx)}>{r[k].toFixed(1)}%</td>)}
-                    <td className="n" style={{ color: AMBER, fontWeight: 700 }}>{r.noFault}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <figcaption style={{ fontSize: 14, color: MUTED, lineHeight: 1.5 }}>Speed test validates the mapping: it peaks on Slow Speeds. Plan change and ONT capping drive Incompatible Equipment; downtime and GPON drive ONT Not Ranged and Historical Data. No Dataflow callers are {nd.noFault}% fault-free in telemetry and {nd.tenure}% are in early tenure, which is why proactive detection and the onboarding and order path matter more than any one network fix.</figcaption>
-          <figure>
-            <div className="hb-figtitle">Our agent categories agree: {shortMon(mons[2])} tickets by agent category (notes export)</div>
-            <div className="hb-chart">{hbars(K.agentCat.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: Math.ceil(Math.max(...K.agentCat.slice(0, 8).map((c) => c.v[2])) / 2000) * 2000, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
-            <figcaption>No Dataflow was {num(K.agentCat[0].v[0])} in {shortMon(mons[0])} and {num(K.agentCat[0].v[2])} in {shortMon(mons[2])}, {((K.agentCat[0].v[2] / K.total[2]) * 100).toFixed(0)}% of our HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. Slow Speeds ({sp(K.agentCat[2].pct)}) and Incompatible Equipment ({sp(K.agentCat[9].pct)}) are the categories still rising month over month.</figcaption>
-          </figure>
-        </section>
-
-        <section aria-labelledby="hb-s5">
-          <h2 id="hb-s5">5. No Dataflow callers: the same kinds of customers, just more of them</h2>
-          <div className="hb-stats">
-            {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${big(ND.callers[0])} to ${big(ND.callers[1])} customer-days`)}
-            {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${big(ND.tenure.oneYearPlus[0])} to ${big(ND.tenure.oneYearPlus[1])}; first 30 days ${big(ND.tenure.first30[0])} to ${big(ND.tenure.first30[1])}`)}
-            {stat(`~${ND.offnetSharePct}%`, "of the growth is the offnet (Bell) East group", `under ${ND.offnetBasePct}% of customers; the group tripled in size`)}
-          </div>
-          <p className="hb-prose">Every No Dataflow caller from 1 July to 27 September in each year, compared with all internet customers. Lift is the share of callers with a trait divided by the share of the base with it: 1× means no more common among callers than among everyone.</p>
-          <figure>
-            <div className="hb-figtitle">Lift of selected traits among No Dataflow callers, {Y.y0} and {Y.y1}</div>
-            <div className="hb-chart">{hbars(ND.lifts.map((l) => ({ label: l.t, a: l.lift[1], b: l.lift[0] })), { max: 12, step: 2, ref: 1, refLabel: "no lift = 1×", fmt: (v) => v.toFixed(1) + "×", labelW: 268, keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
-            {legend([{ label: String(Y.y1), color: barB }, { label: String(Y.y0), color: barC }])}
-            <figcaption>Line faults and GPON problems run 5 to 10× in both years, 3+ reboots about 4×, the first 30 days of service about 8×, and recent deliveries or plan changes about 3×. No new telemetry signal appeared in {Y.y1}; the growth is more customers in the same states. Not factors: {ND.notFactors}.</figcaption>
-          </figure>
-          <div className="hb-two">
-            <div className="hb-note bad">
-              <h3>Two device findings to review</h3>
-              <p>The Arcadyan NH20A gateway runs at 1.4× in both years, and in {Y.y1} its main firmware build v1.18.07-build02 runs at 1.7× while v1.18.06-build02 runs at 0.7×. The new TELUS Boost Wi-Fi 7 extender runs at 1.8×. Traits overlap with new installs, so a check within one tenure group and region would separate them.</p>
-            </div>
-            <div className="hb-note">
-              <h3>The offnet East group</h3>
-              <p>Offnet (Bell network), PureFibre East, the 1.5GB XT plans and the SalesOne provisioning stack are the same customers. The group tripled and its No Dataflow callers rose {num(ND.lifts[6].n[0])} to {num(ND.lifts[6].n[1])}. SalesOne did not exist in {Y.y0}. No initiative in the register targets this group.</p>
-            </div>
-          </div>
-        </section>
-
-        <section aria-labelledby="hb-s6">
-          <h2 id="hb-s6">6. Field and customer evidence point the same way</h2>
-          <figure>
-            <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
-            <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
-            {legend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
-            <figcaption>Technicians confirm the line-side categories (ONT Not Ranged {K.divergence.perCat[2].alignment.toFixed(0)}% aligned, No Sync {K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")) ? K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")).alignment.toFixed(0) : "—"}%) and not the Wi-Fi ones ({Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned, most closing as no fault). That mirrors the telemetry: the in-home drivers are real but are the hardest to diagnose remotely, which is where the Wi-Fi certification and CloudCheck work earns its place.</figcaption>
-          </figure>
-          <figure>
-            <div className="hb-figtitle">Why customers rated reliability fair or poor, {svM[0]} and {svM[2]} (share of detractors citing each)</div>
-            <div className="hb-chart">{hbars(svDrivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
-            {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
-            <figcaption>Frequent loss of connection is the top reason at {sv.drivers[0].pct[2].toFixed(0)}% and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, the customer's words for No Dataflow and outage-tagged tickets. Negative verbatims rose {sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} points to {sv.polarity.negative[2].toFixed(1)}%. The survey runs to {sv.months[sv.months.length - 1]}, one month behind the operational data.</figcaption>
-          </figure>
-        </section>
-
-        <section aria-labelledby="hb-s7">
-          <h2 id="hb-s7">7. The fixes in flight, mapped to the analysis's driver groups</h2>
+          <h2 id="hb-s4">4. The fixes in flight, mapped to the analysis's driver groups</h2>
           <p className="hb-prose">Register initiatives that act on each root-cause group, with live status, timeline, prime and HSIA impact rating. The share is each group's part of the {sn(Y.tickets.delta)} increase.</p>
           <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
             {initGroups.map((g) => (
@@ -5362,6 +5289,79 @@ export default function ReliabilityScorecards() {
               </ul>
             </div>
           </div>
+        </section>
+
+        <section aria-labelledby="hb-s5">
+          <h2 id="hb-s5">5. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2>
+          <div className="hb-stats">
+            {stat(big(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
+            {stat(`${B.lineSidePct}%`, "Line-side (Connectivity)", `about ${B.wifiPct}% is in-home Wi-Fi`)}
+            {stat(`${B.noDataflowPct}%`, "No Dataflow, the largest symptom", `${sp(B.noDataflowGrowthPct, 0)} January to September`)}
+            {stat(`${B.noLineFaultPct}%`, "Callers with no line fault in telemetry", "none of the six line-health signals at ticket time")}
+          </div>
+          <p className="hb-prose">For each call category, the share of callers whose line showed each telemetry signal at ticket time. Darker cells are higher within the column. The last column is the share of callers whose line showed none of the six line-health faults.</p>
+          <div className="hb-tw">
+            <table style={{ minWidth: 760 }}>
+              <thead><tr><th>Call category</th><th>Callers</th><th>GPON sev.</th><th>GPON outage</th><th>Downtime</th><th>Speed test &lt;50%</th><th>ONT capped</th><th>Reboots 3+</th><th>Poor Wi-Fi</th><th>Plan change</th><th>Early tenure</th><th>No line fault</th></tr></thead>
+              <tbody>
+                {B.rows.map((r) => (
+                  <tr key={r.cat}>
+                    <td style={{ fontWeight: 600 }}>{r.cat}</td><td className="n">{num(r.n)}</td>
+                    {[["gponSev", 12.1], ["outage", 25], ["downtime", 15.1], ["speed", 14.2], ["ontCap", 24.9], ["reboots", 10.6], ["wifi", 10.3], ["planChg", 12.7], ["tenure", 22.2]].map(([k, mx]) => <td key={k} className="heat" style={heat(r[k], mx)}>{r[k].toFixed(1)}%</td>)}
+                    <td className="n" style={{ color: AMBER, fontWeight: 700 }}>{r.noFault}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <figcaption style={{ fontSize: 14, color: MUTED, lineHeight: 1.5 }}>Speed test validates the mapping: it peaks on Slow Speeds. Plan change and ONT capping drive Incompatible Equipment; downtime and GPON drive ONT Not Ranged and Historical Data. No Dataflow callers are {nd.noFault}% fault-free in telemetry and {nd.tenure}% are in early tenure, which is why proactive detection and the onboarding and order path matter more than any one network fix.</figcaption>
+          <figure>
+            <div className="hb-figtitle">Our agent categories agree: {shortMon(mons[2])} tickets by agent category (notes export)</div>
+            <div className="hb-chart">{hbars(K.agentCat.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: Math.ceil(Math.max(...K.agentCat.slice(0, 8).map((c) => c.v[2])) / 2000) * 2000, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
+            <figcaption>No Dataflow was {num(K.agentCat[0].v[0])} in {shortMon(mons[0])} and {num(K.agentCat[0].v[2])} in {shortMon(mons[2])}, {((K.agentCat[0].v[2] / K.total[2]) * 100).toFixed(0)}% of our HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. Slow Speeds ({sp(K.agentCat[2].pct)}) and Incompatible Equipment ({sp(K.agentCat[9].pct)}) are the categories still rising month over month.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="hb-s6">
+          <h2 id="hb-s6">6. No Dataflow callers: the same kinds of customers, just more of them</h2>
+          <div className="hb-stats">
+            {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${big(ND.callers[0])} to ${big(ND.callers[1])} customer-days`)}
+            {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${big(ND.tenure.oneYearPlus[0])} to ${big(ND.tenure.oneYearPlus[1])}; first 30 days ${big(ND.tenure.first30[0])} to ${big(ND.tenure.first30[1])}`)}
+            {stat(`~${ND.offnetSharePct}%`, "of the growth is the offnet (Bell) East group", `under ${ND.offnetBasePct}% of customers; the group tripled in size`)}
+          </div>
+          <p className="hb-prose">Every No Dataflow caller from 1 July to 27 September in each year, compared with all internet customers. Lift is the share of callers with a trait divided by the share of the base with it: 1× means no more common among callers than among everyone.</p>
+          <figure>
+            <div className="hb-figtitle">Lift of selected traits among No Dataflow callers, {Y.y0} and {Y.y1}</div>
+            <div className="hb-chart">{hbars(ND.lifts.map((l) => ({ label: l.t, a: l.lift[1], b: l.lift[0] })), { max: 12, step: 2, ref: 1, refLabel: "no lift = 1×", fmt: (v) => v.toFixed(1) + "×", labelW: 268, keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+            {legend([{ label: String(Y.y1), color: barB }, { label: String(Y.y0), color: barC }])}
+            <figcaption>Line faults and GPON problems run 5 to 10× in both years, 3+ reboots about 4×, the first 30 days of service about 8×, and recent deliveries or plan changes about 3×. No new telemetry signal appeared in {Y.y1}; the growth is more customers in the same states. Not factors: {ND.notFactors}.</figcaption>
+          </figure>
+          <div className="hb-two">
+            <div className="hb-note bad">
+              <h3>Two device findings to review</h3>
+              <p>The Arcadyan NH20A gateway runs at 1.4× in both years, and in {Y.y1} its main firmware build v1.18.07-build02 runs at 1.7× while v1.18.06-build02 runs at 0.7×. The new TELUS Boost Wi-Fi 7 extender runs at 1.8×. Traits overlap with new installs, so a check within one tenure group and region would separate them.</p>
+            </div>
+            <div className="hb-note">
+              <h3>The offnet East group</h3>
+              <p>Offnet (Bell network), PureFibre East, the 1.5GB XT plans and the SalesOne provisioning stack are the same customers. The group tripled and its No Dataflow callers rose {num(ND.lifts[6].n[0])} to {num(ND.lifts[6].n[1])}. SalesOne did not exist in {Y.y0}. No initiative in the register targets this group.</p>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="hb-s7">
+          <h2 id="hb-s7">7. Field and customer evidence point the same way</h2>
+          <figure>
+            <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
+            <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
+            {legend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
+            <figcaption>Technicians confirm the line-side categories (ONT Not Ranged {K.divergence.perCat[2].alignment.toFixed(0)}% aligned, No Sync {K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")) ? K.divergence.perCat.find((r) => r.cat.endsWith("No Sync")).alignment.toFixed(0) : "—"}%) and not the Wi-Fi ones ({Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned, most closing as no fault). That mirrors the telemetry: the in-home drivers are real but are the hardest to diagnose remotely, which is where the Wi-Fi certification and CloudCheck work earns its place.</figcaption>
+          </figure>
+          <figure>
+            <div className="hb-figtitle">Why customers rated reliability fair or poor, {svM[0]} and {svM[2]} (share of detractors citing each)</div>
+            <div className="hb-chart">{hbars(svDrivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+            {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
+            <figcaption>Frequent loss of connection is the top reason at {sv.drivers[0].pct[2].toFixed(0)}% and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, the customer's words for No Dataflow and outage-tagged tickets. Negative verbatims rose {sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} points to {sv.polarity.negative[2].toFixed(1)}%. The survey runs to {sv.months[sv.months.length - 1]}, one month behind the operational data.</figcaption>
+          </figure>
         </section>
 
         <footer>
