@@ -5090,7 +5090,20 @@ export default function ReliabilityScorecards() {
 .hb .hb-answer li{padding-left:4px;color:${T.textSecondary}}
 .hb .hb-answer strong{color:${H}}
 .hb .hb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.hb .hb-stat{background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:14px 16px}
+.hb .hb-stat{background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:14px 16px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.hb .hb-stat:hover{background:${col}14;border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.10);transform:translateY(-2px)}
+.hb .hb-stat .hb-stat-l{transition:color .15s ease}
+.hb .hb-stat:hover .hb-stat-l{color:${col}}
+.hb details.hb-sec{display:block;background:${T.surface};border:1px solid ${RULE};border-radius:12px;transition:border-color .15s ease,box-shadow .15s ease}
+.hb details.hb-sec:hover{border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.hb details.hb-sec summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:12px;user-select:none}
+.hb details.hb-sec summary::-webkit-details-marker{display:none}
+.hb details.hb-sec summary::before{content:"";flex:none;width:9px;height:9px;border-right:2px solid ${col};border-bottom:2px solid ${col};transform:rotate(-45deg);transition:transform .15s ease;margin-left:4px}
+.hb details.hb-sec[open] summary::before{transform:rotate(45deg)}
+.hb details.hb-sec[open] summary{border-bottom:1px solid ${RULE};border-radius:12px 12px 0 0}
+.hb details.hb-sec summary h2{margin:0;font-size:19px}
+.hb details.hb-sec summary:hover h2{color:${col}}
+.hb .hb-body{display:flex;flex-direction:column;gap:14px;padding:18px 22px 22px}
 .hb .hb-stat-v{font-size:26px;font-weight:700;color:${H};line-height:1.1}
 .hb .hb-stat-l{font-size:12.5px;font-weight:600;color:${T.textSecondary};margin-top:5px}
 .hb .hb-stat-s{font-size:11.5px;color:${T.textFaint};margin-top:3px;line-height:1.4}
@@ -5140,6 +5153,20 @@ export default function ReliabilityScorecards() {
             {cq.now != null && cq.prev != null && kpiCard(fmtRate(cq.now, 2), `Churn rate per 100 subs · ${qNow}`, fmtRate(cq.prev, 2), `${sd(cq.now - cq.prev)} per 100`, rateTone(cq.now - cq.prev))}
           </div>
           <p className="hb-prose" style={{ marginTop: 10 }}>{qNow} is {shortMon(mons[0])} – {shortMon(mons[2])} {mons[2].slice(-4)}, against {shortMon(mons[0])} – {shortMon(mons[2])} {MONTHS[yi[2]].slice(-4)}. Calls, tickets and repairs are quarter totals; rates and the subscriber base are quarter averages of the monthly figures, with rates per 100 subscribers. Red is worse, green is better.</p>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Dashboard measure</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>{range}</th><th>{prevRange}</th><th>Change</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Tickets (Looker Assure)</td>{mi.map((i) => <td key={i} className="n">{num(S.tv[i])}</td>)}<td className="n">{num(q.tv)}</td><td className="n">{num(qy.tv)}</td><td className="n">{sp(pct(q.tv, qy.tv))}</td><td>{flag(pct(q.tv, qy.tv))}</td></tr>
+                <tr><td>Ticket rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.tr[i], 2)}</td>)}<td className="n">{q.tr.toFixed(2)}</td><td className="n">{qy.tr.toFixed(2)}</td><td className="n">{sd(q.tr - qy.tr)}</td><td>{flag(pct(q.tr, qy.tr))}</td></tr>
+                <tr><td>Calls offered</td>{mi.map((i) => <td key={i} className="n">{num(S.calls[i])}</td>)}<td className="n">{num(q.calls)}</td><td className="n">{num(qy.calls)}</td><td className="n">{sp(pct(q.calls, qy.calls))}</td><td>{flag(pct(q.calls, qy.calls))}</td></tr>
+                <tr><td>Repairs / dispatches</td>{mi.map((i) => <td key={i} className="n">{num(S.rv[i])}</td>)}<td className="n">{num(q.rv)}</td><td className="n">{num(qy.rv)}</td><td className="n">{sp(pct(q.rv, qy.rv))}</td><td>{flag(pct(q.rv, qy.rv))}</td></tr>
+                <tr><td>Dispatches per 100 tickets</td>{per100.map((v, k) => <td key={k} className="n">{v.toFixed(1)}</td>)}<td className="n">{((q.rv / q.tv) * 100).toFixed(1)}</td><td className="n">{((qy.rv / qy.tv) * 100).toFixed(1)}</td><td className="n">{sd((q.rv / q.tv - qy.rv / qy.tv) * 100, 1)}</td><td>{flag(pct(q.rv / q.tv, qy.rv / qy.tv))}</td></tr>
+                <tr><td>Severely degraded fibre, % of repairs</td>{fibre.map((v, k) => <td key={k} className="n">{v == null ? "—" : v.toFixed(1) + "%"}</td>)}<td className="n">{(fibre.reduce((a, b) => a + (b || 0), 0) / 3).toFixed(1)}%</td><td className="n">—</td><td className="n">{sd(fibre[2] - fibre[0], 1)} pts</td><td>{flag(fibre[2] - fibre[0], true, 1)}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>The dashboard's quarter and the analysis measure different populations (HSIA West plus TQ ILEC and PFE on Looker Assure tickets, against all TELUS internet excluding Koodo on internet_daily), so the two are shown side by side and not reconciled. They tell the same story: demand up by a sixth, dispatches up far less.</p>
         </section>
 
         <header className="hb-head">
@@ -5163,8 +5190,9 @@ export default function ReliabilityScorecards() {
           </div>
         </section>
 
-        <section aria-labelledby="hb-s1">
-          <h2 id="hb-s1">1. The rise is steady, and a quarter of it is a bigger base</h2>
+        <details className="hb-sec" aria-labelledby="hb-s1">
+          <summary><h2 id="hb-s1">1. The rise is steady, and a quarter of it is a bigger base</h2></summary>
+          <div className="hb-body">
           <div className="hb-stats">
             {stat(big(Y.tickets.y0), `Tickets · ${Y.period} ${Y.y0}`)}
             {stat(big(Y.tickets.y1), `Tickets · ${Y.period} ${Y.y1}`)}
@@ -5172,25 +5200,13 @@ export default function ReliabilityScorecards() {
             {stat(sbig(Y.lines.delta), `Average active lines (+${Y.lines.pct}%)`, `${big(Y.lines.y0)} to ${big(Y.lines.y1)}`)}
             {stat(sbig(growth.v), "Expected from base growth", `${big(Y.lines.delta)} × ${Y.lines.ratePerLine9mo} tickets per line · ${growth.share}% of the increase`)}
           </div>
-          <p className="hb-prose">Each driver is credited by volume alone: how many more customers entered the state, times what that state cost in tickets in {Y.y0}. Holding the rate at its {Y.y0} level stops a group looking worse just because more of the kind of customers who call joined it. A customer can sit in several states at once, so an adjustment removes the double counting and the drivers reconcile to the total.</p>
-          <div className="hb-tw">
-            <table>
-              <thead><tr><th>Dashboard measure</th>{mons.map((m) => <th key={m}>{shortMon(m)}</th>)}<th>{range}</th><th>{prevRange}</th><th>Change</th><th></th></tr></thead>
-              <tbody>
-                <tr><td>Tickets (Looker Assure)</td>{mi.map((i) => <td key={i} className="n">{num(S.tv[i])}</td>)}<td className="n">{num(q.tv)}</td><td className="n">{num(qy.tv)}</td><td className="n">{sp(pct(q.tv, qy.tv))}</td><td>{flag(pct(q.tv, qy.tv))}</td></tr>
-                <tr><td>Ticket rate per 100 subs</td>{mi.map((i) => <td key={i} className="n">{num(S.tr[i], 2)}</td>)}<td className="n">{q.tr.toFixed(2)}</td><td className="n">{qy.tr.toFixed(2)}</td><td className="n">{sd(q.tr - qy.tr)}</td><td>{flag(pct(q.tr, qy.tr))}</td></tr>
-                <tr><td>Calls offered</td>{mi.map((i) => <td key={i} className="n">{num(S.calls[i])}</td>)}<td className="n">{num(q.calls)}</td><td className="n">{num(qy.calls)}</td><td className="n">{sp(pct(q.calls, qy.calls))}</td><td>{flag(pct(q.calls, qy.calls))}</td></tr>
-                <tr><td>Repairs / dispatches</td>{mi.map((i) => <td key={i} className="n">{num(S.rv[i])}</td>)}<td className="n">{num(q.rv)}</td><td className="n">{num(qy.rv)}</td><td className="n">{sp(pct(q.rv, qy.rv))}</td><td>{flag(pct(q.rv, qy.rv))}</td></tr>
-                <tr><td>Dispatches per 100 tickets</td>{per100.map((v, k) => <td key={k} className="n">{v.toFixed(1)}</td>)}<td className="n">{((q.rv / q.tv) * 100).toFixed(1)}</td><td className="n">{((qy.rv / qy.tv) * 100).toFixed(1)}</td><td className="n">{sd((q.rv / q.tv - qy.rv / qy.tv) * 100, 1)}</td><td>{flag(pct(q.rv / q.tv, qy.rv / qy.tv))}</td></tr>
-                <tr><td>Severely degraded fibre, % of repairs</td>{fibre.map((v, k) => <td key={k} className="n">{v == null ? "—" : v.toFixed(1) + "%"}</td>)}<td className="n">{(fibre.reduce((a, b) => a + (b || 0), 0) / 3).toFixed(1)}%</td><td className="n">—</td><td className="n">{sd(fibre[2] - fibre[0], 1)} pts</td><td>{flag(fibre[2] - fibre[0], true, 1)}</td></tr>
-              </tbody>
-            </table>
           </div>
-          <p className="hb-prose" style={{ fontSize: 13.5 }}>The dashboard's quarter and the analysis measure different populations (HSIA West plus TQ ILEC and PFE on Looker Assure tickets, against all TELUS internet excluding Koodo on internet_daily), so the two are shown side by side and not reconciled. They tell the same story: demand up by a sixth, dispatches up far less.</p>
-        </section>
+        </details>
 
-        <section aria-labelledby="hb-s2">
-          <h2 id="hb-s2">2. What the {sn(Y.tickets.delta)} breaks down into</h2>
+        <details className="hb-sec" aria-labelledby="hb-s2">
+          <summary><h2 id="hb-s2">2. What the {sn(Y.tickets.delta)} breaks down into</h2></summary>
+          <div className="hb-body">
+          <p className="hb-prose">Each driver is credited by volume alone: how many more customers entered the state, times what that state cost in tickets in {Y.y0}. Holding the rate at its {Y.y0} level stops a group looking worse just because more of the kind of customers who call joined it. A customer can sit in several states at once, so an adjustment removes the double counting and the drivers reconcile to the total.</p>
           <p className="hb-prose">Customer growth first, then each condition's volume-only contribution, then the adjustment for overlap. Colours group drivers by root cause.</p>
           <figure>
             <div className="hb-figtitle">Contribution to the {sn(Y.tickets.delta)} increase, {Y.period}, volume only (growth in the population × {Y.y0} rate)</div>
@@ -5223,10 +5239,12 @@ export default function ReliabilityScorecards() {
               <p>Per surviving copper line it got worse ({Y.copper.ratePct[0]}% to {Y.copper.ratePct[1]}% per month), but the base shrank {ap(pct(Y.copper.lines[1], Y.copper.lines[0]), 0)} ({num(Y.copper.lines[0])} to {num(Y.copper.lines[1])} lines), so copper tickets fell {num(Y.copper.tickets[0])} to {num(Y.copper.tickets[1])} and removed volume rather than adding it.</p>
             </div>
           </div>
-        </section>
+          </div>
+        </details>
 
-        <section aria-labelledby="hb-s3">
-          <h2 id="hb-s3">3. Orders are one of the biggest drivers, and the one we control</h2>
+        <details className="hb-sec" aria-labelledby="hb-s3">
+          <summary><h2 id="hb-s3">3. Orders are one of the biggest drivers, and the one we control</h2></summary>
+          <div className="hb-body">
           <div className="hb-stats">
             {stat(sp(O.pct, 0), `PureFibre orders, ${Y.period}`, `${big(O.total[0])} to ${big(O.total[1])}`)}
             {stat(sp(O.backendPct, 0), "BackEnd (automated) orders", `${big(O.backend[0])} to ${big(O.backend[1])}`)}
@@ -5255,10 +5273,12 @@ export default function ReliabilityScorecards() {
               <p style={{ fontSize: 13.5 }}>That matches the fall in ONT Not Ranged ({ap(K.agentCat[1].pct)} MoM in our notes data), No Sync and No IP, and offset the extra order-driven calls.</p>
             </div>
           </div>
-        </section>
+          </div>
+        </details>
 
-        <section aria-labelledby="hb-s4">
-          <h2 id="hb-s4">4. The fixes in flight, mapped to the analysis's driver groups</h2>
+        <details className="hb-sec" aria-labelledby="hb-s4">
+          <summary><h2 id="hb-s4">4. The fixes in flight, mapped to the analysis's driver groups</h2></summary>
+          <div className="hb-body">
           <p className="hb-prose">Register initiatives that act on each root-cause group, with live status, timeline, prime and HSIA impact rating. The share is each group's part of the {sn(Y.tickets.delta)} increase.</p>
           <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
             {initGroups.map((g) => (
@@ -5298,10 +5318,12 @@ export default function ReliabilityScorecards() {
               </ul>
             </div>
           </div>
-        </section>
+          </div>
+        </details>
 
-        <section aria-labelledby="hb-s5">
-          <h2 id="hb-s5">5. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2>
+        <details className="hb-sec" aria-labelledby="hb-s5">
+          <summary><h2 id="hb-s5">5. The reactive bucket is line-side, and No Dataflow is the piece to shrink</h2></summary>
+          <div className="hb-body">
           <div className="hb-stats">
             {stat(big(B.tickets), `Reactive tickets with telemetry, ${Y.period} ${Y.y1}`, "Remedy High Speed, matched to a monitored line")}
             {stat(`${B.lineSidePct}%`, "Line-side (Connectivity)", `about ${B.wifiPct}% is in-home Wi-Fi`)}
@@ -5329,10 +5351,12 @@ export default function ReliabilityScorecards() {
             <div className="hb-chart">{hbars(K.agentCat.slice(0, 8).map((c) => ({ label: c.name.replace(" › ", ": "), v: c.v[2] })), { max: Math.ceil(Math.max(...K.agentCat.slice(0, 8).map((c) => c.v[2])) / 2000) * 2000, fmt: (v) => (v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "K" : String(v)), step: 2000, keys: [{ key: "v", color: barB }] })}</div>
             <figcaption>No Dataflow was {num(K.agentCat[0].v[0])} in {shortMon(mons[0])} and {num(K.agentCat[0].v[2])} in {shortMon(mons[2])}, {((K.agentCat[0].v[2] / K.total[2]) * 100).toFixed(0)}% of our HSIA tickets and {sp(pct(LOOKER.HSIA.topIssues[0].a26, LOOKER.HSIA.topIssues[0].a25), 0)} on {shortMon(mons[2])} last year in Looker. Slow Speeds ({sp(K.agentCat[2].pct)}) and Incompatible Equipment ({sp(K.agentCat[9].pct)}) are the categories still rising month over month.</figcaption>
           </figure>
-        </section>
+          </div>
+        </details>
 
-        <section aria-labelledby="hb-s6">
-          <h2 id="hb-s6">6. No Dataflow callers: the same kinds of customers, just more of them</h2>
+        <details className="hb-sec" aria-labelledby="hb-s6">
+          <summary><h2 id="hb-s6">6. No Dataflow callers: the same kinds of customers, just more of them</h2></summary>
+          <div className="hb-body">
           <div className="hb-stats">
             {stat(sp(ND.pct, 0), "No Dataflow callers, Jul to Sep", `${big(ND.callers[0])} to ${big(ND.callers[1])} customer-days`)}
             {stat(`${ND.tenuredSharePct}%`, "of the growth is customers with 1+ year tenure", `${big(ND.tenure.oneYearPlus[0])} to ${big(ND.tenure.oneYearPlus[1])}; first 30 days ${big(ND.tenure.first30[0])} to ${big(ND.tenure.first30[1])}`)}
@@ -5355,10 +5379,12 @@ export default function ReliabilityScorecards() {
               <p>Offnet (Bell network), PureFibre East, the 1.5GB XT plans and the SalesOne provisioning stack are the same customers. The group tripled and its No Dataflow callers rose {num(ND.lifts[6].n[0])} to {num(ND.lifts[6].n[1])}. SalesOne did not exist in {Y.y0}. No initiative in the register targets this group.</p>
             </div>
           </div>
-        </section>
+          </div>
+        </details>
 
-        <section aria-labelledby="hb-s7">
-          <h2 id="hb-s7">7. Field and customer evidence point the same way</h2>
+        <details className="hb-sec" aria-labelledby="hb-s7">
+          <summary><h2 id="hb-s7">7. Field and customer evidence point the same way</h2></summary>
+          <div className="hb-body">
           <figure>
             <div className="hb-figtitle">How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
             <div className="hb-chart">{stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}</div>
@@ -5371,7 +5397,8 @@ export default function ReliabilityScorecards() {
             {legend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
             <figcaption>Frequent loss of connection is the top reason at {sv.drivers[0].pct[2].toFixed(0)}% and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer, the customer's words for No Dataflow and outage-tagged tickets. Negative verbatims rose {sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} points to {sv.polarity.negative[2].toFixed(1)}%. The survey runs to {sv.months[sv.months.length - 1]}, one month behind the operational data.</figcaption>
           </figure>
-        </section>
+          </div>
+        </details>
 
         <footer>
           <p>Sources: "TELUS Internet: why support tickets rose year over year" (support ticket analysis, {Y.period} {Y.y1} vs {Y.y0}, all TELUS-branded internet excluding Koodo, data through {Y.dataThrough}; internet_daily, Remedy, HSIC orders and tickets, CloudCheck and GPON telemetry); Churn Measurement 2026 workbook (KPIs, Looker ticket categories); TS Calls Offered by Product (calls); HSIA agent and technician notes analysis ({HSA.months[0]} to {HSA.months[2]}); CF&R TELUS Internet survey ({sv.months[0]} to {sv.months[2]}); Initiatives register.</p>
