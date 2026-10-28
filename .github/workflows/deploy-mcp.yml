@@ -31,6 +31,12 @@ jobs:
       - name: Build MCP worker
         run: node mcp/build.mjs
 
+      # Every product/page pair in list_pages must answer with well-formed sections, a page
+      # a product lacks must throw "page not available for <product>", and the pre-existing
+      # tools must keep their fields. Fails the deploy otherwise.
+      - name: Verify page model
+        run: node mcp/verify-pages.mjs
+
       # The stock CLI hardcodes auth_mode dev_keys on every `push --mcp`, and the hub has
       # no auth-mode setting. The patched copy reads GIZMOS_AUTH_MODE instead, so the
       # server deploys in user_auth mode (browser SSO, no API key). Every push must use
@@ -89,3 +95,16 @@ jobs:
           echo
           echo "== gizmos binding shares $GIZMOS_APP =="
           node "$GIZMOS_CLI" binding shares "$GIZMOS_APP" --org "$GIZMOS_ORG"
+
+      # The published doc must list the page methods; a stale doc means the bundle root
+      # did not carry BINDING.md.
+      - name: Check the published binding doc
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: |
+          node "$GIZMOS_CLI" binding doc "$GIZMOS_APP" --entrypoint Reliability --org "$GIZMOS_ORG" > "$RUNNER_TEMP/binding-doc.md"
+          for m in list_products list_pages get_page get_kpi_series get_kpi_summary get_ticket_issues get_initiatives get_tv_platforms get_self_serve get_health_commentary get_friction_free_program get_sources; do
+            grep -q "### \`$m" "$RUNNER_TEMP/binding-doc.md" || { echo "published binding doc lacks $m"; exit 1; }
+          done
+          echo "published binding doc lists all 12 methods ($(wc -l < "$RUNNER_TEMP/binding-doc.md") lines)"
+          grep -n "^### " "$RUNNER_TEMP/binding-doc.md"

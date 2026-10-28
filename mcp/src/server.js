@@ -10,7 +10,7 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 
 const PROTOCOL_VERSION = "2025-06-18";
-const SERVER_INFO = { name: "relstrat-mcp", version: "1.0.0" };
+const SERVER_INFO = { name: "relstrat-mcp", version: "2.0.0" };
 const DASHBOARD_URL = "https://relstrat.telus.gizmos.run/";
 const KPI_PRODUCTS = ["All", "HSIA", "TV", "SHS", "SH+"];
 const METRICS = {
@@ -69,7 +69,7 @@ function rangeIdx(from, to) {
   return [Math.min(a, b), Math.max(a, b)];
 }
 const requireProduct = (p, allowed) => { if (!allowed.includes(p)) throw new Error(`product must be one of ${allowed.join(", ")}`); };
-const text = (obj) => ({ content: [{ type: "text", text: JSON.stringify(obj, null, 2) }] });
+const text = (obj) => ({ content: [{ type: "text", text: JSON.stringify({ schemaVersion: SCHEMA_VERSION, ...obj }, null, 2) }] });
 
 // ---- tools ----
 const TOOLS = [
@@ -85,19 +85,21 @@ const TOOLS = [
   { name: "get_sources", description: "Source workbooks, tabs and scope definitions behind each dataset, and the dashboard URL.", inputSchema: { type: "object", properties: {} } }
 ];
 
+const ALL_TOOLS = () => TOOLS.concat(PAGE_TOOLS);
 function callTool(name, args = {}) {
   switch (name) {
     case "list_products":
       return text({
         dashboard: DASHBOARD_URL, latestMonth: LATEST, months: MONTHS, churnReportedThrough: CHURN_THRU,
         products: [
-          { id: "All", label: "All products (HSIA + TV + SHS)", tools: ["get_kpi_series", "get_kpi_summary"], note: "Rates blended over the combined base; SH+ excluded" },
-          { id: "HSIA", label: "High Speed Internet (HSIA West, PFE - HSIA, TQ ILEC - HSIA)", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary"] },
-          { id: "TV", label: "Optik TV (Legacy) and TV Evolution", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_tv_platforms", "get_health_commentary"] },
-          { id: "SHS", label: "SmartHome Security", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary"] },
-          { id: "SH+", label: "SmartHome+", tools: ["get_kpi_series", "get_kpi_summary", "get_health_commentary"], note: "Calls, tickets and base from Jan 2025; rates from Jul 2025; no churn, ticket categories or initiatives yet" }
+          { id: "All", label: "All products (HSIA + TV + SHS)", tools: ["get_kpi_series", "get_kpi_summary", "list_pages", "get_page"], covers: COVERS.All, note: "Rates blended over the combined base; SH+ excluded" },
+          { id: "HSIA", label: "High Speed Internet (HSIA West, PFE - HSIA, TQ ILEC - HSIA)", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.HSIA },
+          { id: "TV", label: "Optik TV (Legacy) and TV Evolution", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_tv_platforms", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.TV },
+          { id: "SHS", label: "SmartHome Security", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.SHS },
+          { id: "SH+", label: "SmartHome+", tools: ["get_kpi_series", "get_kpi_summary", "get_health_commentary", "list_pages", "get_page"], covers: COVERS["SH+"], note: "Calls, tickets and base from Jan 2025; rates from Jul 2025; no churn, ticket categories or initiatives yet" }
         ],
-        metrics: Object.fromEntries(Object.entries(METRICS).map(([k, m]) => [k, `${m.label} (${m.unit})`]))
+        metrics: Object.fromEntries(Object.entries(METRICS).map(([k, m]) => [k, `${m.label} (${m.unit})`])),
+        coversKeys: { hsiawest: "HSIA West scorecard", pfe: "PFE (PureFibre East / Vulcan)", whsia: "Wireless HSIA", koodo: "Koodo internet", optikwest: "Optik TV West", shs10: "SHS 1.0", shplus: "SmartHome+" }, coversNote: COVERS_NOTE
       });
     case "get_kpi_series": {
       requireProduct(args.product, KPI_PRODUCTS);
@@ -194,6 +196,7 @@ function callTool(name, args = {}) {
     case "get_sources":
       return text({ dashboard: DASHBOARD_URL, latestMonth: LATEST, sources: SOURCES });
     default:
+      if (PAGE_TOOL_NAMES.includes(name)) return pageTool(name, args);
       return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
   }
 }
@@ -217,10 +220,10 @@ function handleMessage(msg) {
       case "initialize":
         return ok(msg.id, { protocolVersion: PROTOCOL_VERSION, capabilities: { tools: { listChanged: false } }, serverInfo: SERVER_INFO, instructions: `Reliability Strategy dashboard data (${DASHBOARD_URL}). Start with list_products, then get_kpi_summary or get_kpi_series for a product. Latest reported month: ${LATEST}.` });
       case "tools/list":
-        return ok(msg.id, { tools: TOOLS });
+        return ok(msg.id, { tools: ALL_TOOLS() });
       case "tools/call": {
         const name = msg.params && msg.params.name;
-        if (!TOOLS.some((t) => t.name === name)) return ok(msg.id, { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true });
+        if (!ALL_TOOLS().some((t) => t.name === name)) return ok(msg.id, { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true });
         try { return ok(msg.id, callTool(name, (msg.params && msg.params.arguments) || {})); }
         catch (e) { return ok(msg.id, { content: [{ type: "text", text: String(e && e.message || e) }], isError: true }); }
       }
@@ -240,7 +243,7 @@ export default {
   async fetch(request) {
     const url = new URL(request.url);
     if (url.pathname === "/" || url.pathname === "") {
-      return json({ name: SERVER_INFO.name, version: SERVER_INFO.version, endpoint: "/mcp", transport: "streamable-http", dashboard: DASHBOARD_URL, latestMonth: LATEST, tools: TOOLS.map((t) => t.name) });
+      return json({ name: SERVER_INFO.name, version: SERVER_INFO.version, endpoint: "/mcp", transport: "streamable-http", dashboard: DASHBOARD_URL, latestMonth: LATEST, tools: ALL_TOOLS().map((t) => t.name) });
     }
     if (url.pathname !== "/mcp") return new Response("Not found", { status: 404 });
     if (request.method === "GET") return json({ error: "Use POST with JSON-RPC 2.0 messages; server-initiated streams are not offered." }, 405);
@@ -288,4 +291,6 @@ export class Reliability extends WorkerEntrypoint {
   async get_health_commentary(args) { this.#gate(); return toolReply("get_health_commentary", args); }
   async get_friction_free_program(args) { this.#gate(); return toolReply("get_friction_free_program", args); }
   async get_sources(args) { this.#gate(); return toolReply("get_sources", args); }
+  async list_pages(args) { this.#gate(); return toolReply("list_pages", args); }
+  async get_page(args) { this.#gate(); return toolReply("get_page", args); }
 }

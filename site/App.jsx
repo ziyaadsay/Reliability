@@ -1931,7 +1931,18 @@ function printDeck(deck) {
 // Main app
 // ---------------------------------------------------------------------------
 export default function ReliabilityScorecards() {
-  const [page, setPage] = useState("home");
+  // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
+  // from the MCP server's list_pages open the right page.
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "SHS", "SH+", "selfserve", "ffps"];
+  const hashPage = () => { const h = typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#/, "")) : ""; return PAGE_IDS.includes(h) ? h : "home"; };
+  const [page, setPage] = useState(hashPage);
+  useEffect(() => {
+    const want = page === "home" ? "" : `#${encodeURIComponent(page)}`;
+    if (window.location.hash !== want && !(want === "" && window.location.hash === "")) window.history.replaceState(null, "", want || window.location.pathname + window.location.search);
+    const onHash = () => setPage(hashPage());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [page]);
   const [fromIdx, setFromIdx] = useState(12); // default view: 2026 months
   const [toIdx, setToIdx] = useState(MONTHS.length - 1);
   const [scope, setScope] = useState("All");

@@ -46,10 +46,21 @@ same numbers as the deployed dashboard; it has no dependencies and no bundler.
 
 Tools: `list_products`, `get_kpi_series`, `get_kpi_summary`,
 `get_ticket_issues`, `get_initiatives`, `get_tv_platforms`, `get_self_serve`,
-`get_health_commentary`, `get_friction_free_program`, `get_sources`.
+`get_health_commentary`, `get_friction_free_program`, `get_sources`,
+`list_pages`, `get_page`.
+
+`list_pages` and `get_page` (`mcp/src/pages.js`) serve every dashboard page as
+data in page order: typed sections of kind `cards`, `series`, `table`, `text`
+or `list`. The build also lifts the hand-written analysis content that lives
+inside the dashboard component (recommendations, cross-analysis matrices) so
+the pages carry exactly what the dashboard shows. Every reply carries
+`schemaVersion`. Pages are addressable in the dashboard by URL hash
+(`#HSIA`, `#hsiabrief`, `#execsummary`, ...), which is what `url` in
+`list_pages` points at.
 
 ```bash
 node mcp/build.mjs        # writes mcp/dist (gitignored)
+node mcp/verify-pages.mjs # checks every product/page pair against the built worker
 ```
 
 `.github/workflows/deploy-mcp.yml` builds and pushes `mcp/dist` to the
@@ -83,9 +94,11 @@ built-in OAuth flow.
 
 The same worker exports `class Reliability extends WorkerEntrypoint`
 (`[[gizmos_binding]]` in `mcp/wrangler.toml`), one RPC method per MCP tool
-with the same name, arguments and reply, so other Gizmos apps can call the
-data directly. `mcp/BINDING.md` documents the methods and is served as the
-binding's doc. The deploy workflow publishes the binding to the whole TELUS
+with the same name, arguments and reply (including `list_pages` and
+`get_page`), so other Gizmos apps can call the data directly. `mcp/BINDING.md`
+documents the methods, the page list per product and the covers map, and is
+served as the binding's doc (`gizmos binding doc relstrat-mcp --entrypoint
+Reliability`). The deploy workflow publishes the binding to the whole TELUS
 org (`gizmos binding publish`), so any gizmo in the org can declare the
 `gzb_` id shown by `gizmos binding list` for `relstrat-mcp` / `Reliability`
 and call it. To restrict it again, set a `BINDING_CALLERS` var in
