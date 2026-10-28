@@ -5623,7 +5623,7 @@ export default function ReliabilityScorecards() {
       : page === "execsummary"
       ? "Executive summary"
       : page === "hsiabrief"
-      ? "HSIA review: why tickets rose and what is being done"
+      ? `Q${Math.floor((MONTHS.indexOf(LATEST) % 12) / 3) + 1} ${LATEST.slice(-4)} and why tickets rose and what is being done`
     : page === "hsiatickets"
       ? "HSIA notes analysis"
       : page === "hsiasentiment"
