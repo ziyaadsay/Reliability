@@ -5119,13 +5119,6 @@ export default function ReliabilityScorecards() {
     return (
       <div className="hb">
         <style>{css}</style>
-        <header className="hb-head">
-          <div className="hb-eyebrow">HSIA · {Y.period} {Y.y1} vs {Y.y0} · why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it</div>
-          <h1>HSIA tickets are up {Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.</h1>
-          <p className="hb-sub">The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for {range}, agent and technician notes, the customer survey and the initiative register.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
-        </header>
-
         <section aria-labelledby="hb-kpis">
           <h2 id="hb-kpis">{qPrev} to {qNow} at a glance</h2>
           <div className="hb-stats">
@@ -5139,6 +5132,13 @@ export default function ReliabilityScorecards() {
           </div>
           <p className="hb-prose" style={{ marginTop: 10 }}>{qNow} is {shortMon(mons[0])} – {shortMon(mons[2])} {mons[2].slice(-4)}, against {shortMon(mons[0])} – {shortMon(mons[2])} {MONTHS[yi[2]].slice(-4)}. Calls, tickets and repairs are quarter totals; rates and the subscriber base are quarter averages of the monthly figures, with rates per 100 subscribers. Red is worse, green is better.</p>
         </section>
+
+        <header className="hb-head">
+          <div className="hb-eyebrow">HSIA · {Y.period} {Y.y1} vs {Y.y0} · why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it</div>
+          <h1>HSIA tickets are up {Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.</h1>
+          <p className="hb-sub">The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for {range}, agent and technician notes, the customer survey and the initiative register.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
+        </header>
 
         <section aria-labelledby="hb-short">
           <div className="hb-answer">
