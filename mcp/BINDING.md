@@ -4,7 +4,7 @@ The Reliability Strategy dashboard's data, served to other Gizmos apps over RPC.
 
 The binding is published to the whole TELUS org: any gizmo in the org can declare it and call it, no share or approval needed. The data is read-only reporting and carries no customer details.
 
-Every reply carries `schemaVersion` (a number, currently `2`). It rises when a shape changes; existing fields never change meaning, new fields are only added.
+Every reply carries `schemaVersion` (a number, currently `3`). It rises when a shape changes; existing fields never change meaning, new fields are only added. Version 3 adds the presentation fields (`display`, `groups`, `groupId`, `doc`) described under Presentation below; nothing from version 2 was renamed or removed.
 
 ## Declaring it
 
@@ -53,6 +53,95 @@ const same = await env.RELIABILITY.call("get_kpi_summary", [{ product: "HSIA" }]
 
 A page a product does not have throws `page not available for <product>`. Every page's `url` opens it in the dashboard (`https://relstrat.telus.gizmos.run/#<page>`).
 
+## Presentation
+
+Every section says how the dashboard draws it, and every page says how the dashboard groups its sections. The data is unchanged by this; it is a drawing recipe. The consumer picks colours itself from the words in the data (statuses, `read`, `direction`, group names); **no colours or colour names are served**.
+
+### `display`
+
+`display.as` is one of: `cards`, `text`, `quotes`, `list`, `table`, `matrix`, `bars`, `grouped-bars`, `stacked-bars`, `paired-bars`, `line`, `bars-and-line`, `area`, `scatter`, `gantt`, `heatmap`, `donut`. (`area`, `scatter` and `donut` are reserved; the dashboard does not draw them today.) The other keys name the section's own data keys: column keys for table sections, series keys for series sections.
+
+| as | keys | draws |
+|---|---|---|
+| `cards` | none | a row of KPI cards |
+| `text` | none | the narrative paragraphs; `data.read` as the badge. A Health Read lens also carries `chart` (below) |
+| `quotes` | none | customer quotes, one block per theme (`title` is the theme, `meta.quotes` the quotes) |
+| `list` | none | a bullet list of `title` / `body` |
+| `table` | `wide?` | a table; `wide: true` means it scrolls sideways |
+| `matrix` | `wide?` | a text matrix (the cross-analysis signal table), rows by lens |
+| `bars` | `label`, `value`, `sort` (`as-is` or `desc`) | one horizontal bar per row: `label` is the text column, `value` the number column |
+| `grouped-bars` | `label`, `values` (oldest first), `change?` | one cluster per row with one bar per column in `values`; `change` is the column holding the move |
+| `stacked-bars` | `label`, `stack`, `total?` | one stacked bar per row, segments from the columns in `stack`. On a series section the bars are the months: `x: "months"` replaces `label`, and `stack` names series keys |
+| `paired-bars` | `label`, `pair` (`[earlier, later]`), `reference?` | two bars per row, earlier then later; `reference` is a value to mark with a line (1 for lift) |
+| `line`, `area` | `x: "months"`, `y`, `axis?`, `dashed?` | one line per series key in `y`; `dashed` names keys drawn dashed (targets, prior year) |
+| `bars-and-line` | `x: "months"`, `bars`, `line`, `axis?` | bars for the keys in `bars`, lines for the keys in `line`; `axis.right` names the keys on a second axis (absent means one shared axis) |
+| `scatter` | `label`, `x`, `y`, `note?` | reserved |
+| `gantt` | `label`, `lane`, `laneOrder?`, `start`, `end`, `status`, `statusOrder`, `undatedText`, `marker` | a roadmap: one row per `label`, grouped into lanes by `lane` (ordered by `laneOrder`), a bar from `start` to `end` (month labels such as `"Sep 2026"`), shaded by `status` in the order `statusOrder`; rows with no dates are listed by their `undatedText`; `marker: "asOf"` means draw a marker at the page's as-of month |
+| `heatmap` | `label`, `cells`, `scale` (`0-100` or `auto`) | a table whose cells in `cells` are shaded by value; `auto` shades within each column, `0-100` on a fixed percentage scale |
+| `donut` | reserved | reserved |
+
+Extra keys on `display`:
+
+- `alsoAs: "table"`: the dashboard shows the same section as a chart with a table toggle; the table is the section's `data` shown as rows.
+- `orient: "months"` (stacked-bars on a table section): the bars are the columns listed in `stack` (each a month) and the segments are the rows, named by the `label` column; used for the polarity splits.
+- `groupBy`: the column whose words group the bars (the root-cause group of a driver); colour them from those words.
+- `chart` (on a `text` section): the Health Read lens draws a chart under its narrative. `chart` has the same shape as a `line` display over the section's `data.series` (`y: ["actual", "prior"]`, `dashed: ["prior"]`). The prior-year line exists when the window starts in 2026 or later.
+
+### `groups` and `groupId`
+
+`groups: [{ id, title, sectionIds, open }]` lists the dashboard's collapsible groups in page order. `open` is how the group starts on the dashboard. `title` keeps the dashboard's numbering (`"01 · Health Read — Sep 2026"`). Every section carries `groupId`, the id of its group, or `null` when it is part of the page's top (always open): the KPI cards, the annual churn line and the sub-page links, for example. Sections stay in page order; a group's `sectionIds` follow that order. The Executive Summary page's groups are its four slides (the deck is paged rather than collapsible, so they are all `open: true`). On the Review page the closing sources-and-caveats section is ungrouped and comes last.
+
+### `note` and `doc`
+
+`note` is a sentence a product manager can read under the section title. Anything about data shapes, keys, windows or how the dashboard is built is in `doc` instead, along with a description of the section's `data`.
+
+### One example per `as` value (from real sections)
+
+```js
+const hsia = await env.RELIABILITY.get_page({ product: "HSIA", page: "overview", from: "Jan 2026", to: "Sep 2026" });
+const sec = (r, id) => r.sections.find((s) => s.id === id);
+
+sec(hsia, "cards").display;                       // { as: "cards" }  (groupId null: the page's top)
+sec(hsia, "annual-churn").display;                // { as: "text" }
+sec(hsia, "s01-health-01-ticketRate").display;
+// { as: "text", chart: { as: "line", x: "months", y: ["actual", "prior"], dashed: ["prior"] } }
+sec(hsia, "s03-tickets").display;
+// { as: "bars-and-line", x: "months", bars: ["ticketVolume"], line: ["ticketRate"], axis: { right: ["ticketRate"] }, alsoAs: "table" }
+sec(hsia, "s03-categories").display;
+// { as: "stacked-bars", x: "months", stack: ["cat1","cat2","cat3","cat4"], total: "total", alsoAs: "table" }
+sec(hsia, "s06-churn").display;                   // { as: "line", x: "months", y: ["churnRate"], alsoAs: "table" }
+sec(hsia, "s04-issues-rising").display;           // { as: "list" }
+sec(hsia, "s04-issues-top-issues").display;       // { as: "table", wide: true }
+sec(hsia, "s09-timeline").display;
+// { as: "gantt", label: "initiative", lane: "pillarName", laneOrder: "pillar", start: "start", end: "end",
+//   status: "status", statusOrder: ["Launched","In flight","Ideation","Stalled","On Hold"], undatedText: "timeline", marker: "asOf" }
+hsia.groups[0]; // { id: "g01", title: "01 · Health Read — Sep 2026", sectionIds: [...], open: true }
+
+const notes = await env.RELIABILITY.get_page({ product: "HSIA", page: "notes" });
+sec(notes, "s03-fixes").display;
+// { as: "grouped-bars", label: "name", values: ["Jul 2026","Aug 2026","Sep 2026"], change: "change", alsoAs: "table" }
+sec(notes, "s02-domain-mix").display;
+// { as: "heatmap", label: "agentDomain", cells: ["d1","d2","d3","d4","d5","d6","d7","d8"], scale: "0-100" }
+
+const sentiment = await env.RELIABILITY.get_page({ product: "HSIA", page: "sentiment" });
+sec(sentiment, "s03-attributes").display;  // { as: "bars", label: "attribute", value: "fairOrPoor", sort: "as-is", alsoAs: "table" }
+sec(sentiment, "s04-polarity").display;    // { as: "stacked-bars", orient: "months", label: "polarity", stack: ["Jun","Jul","Aug"], alsoAs: "table" }
+
+const cross = await env.RELIABILITY.get_page({ product: "HSIA", page: "cross" });
+sec(cross, "s01-matrix").display;          // { as: "matrix", wide: true }
+
+const tvSent = await env.RELIABILITY.get_page({ product: "TV", page: "sentiment" });
+sec(tvSent, "s03-quotes").display;         // { as: "quotes" }
+
+const review = await env.RELIABILITY.get_page({ product: "HSIA", page: "review" });
+sec(review, "s6-lifts").display;           // { as: "paired-bars", label: "trait", pair: ["lift2025","lift2026"], reference: 1, alsoAs: "table" }
+sec(review, "s5-bucket").display;
+// { as: "heatmap", label: "category", cells: ["gponSev","outage","downtime","speed","ontCap","reboots","wifi","planChg","tenure"], scale: "auto", wide: true }
+
+const selfServe = await env.RELIABILITY.get_page({ product: "All", page: "selfserve" });
+sec(selfServe, "s01-resolved").display;    // { as: "line", x: "months", y: ["actual","target"], dashed: ["target"], alsoAs: "table" }
+```
+
 ## Methods
 
 ### `list_products(args?)`
@@ -70,7 +159,7 @@ p.products.map((x) => `${x.id}:${x.covers.join("+")}`); // ["All:hsiawest+pfe+op
 
 The dashboard's navigation as data. `product` (optional) narrows to one product.
 
-Returns `{ schemaVersion, dashboard, latestMonth, kinds, pages: [{ id, label, product, nav, url, sections: [{ id, title, kind }] }], notes }`. The section list is exactly what `get_page` returns for that page, in page order.
+Returns `{ schemaVersion, dashboard, latestMonth, kinds, pages: [{ id, label, product, nav, url, groups, sections: [{ id, title, kind, display, groupId }] }], notes }`. The section list is exactly what `get_page` returns for that page called with default arguments, in page order, with the same `display`, `groupId` and `groups`.
 
 ```js
 const nav = await env.RELIABILITY.list_pages({ product: "TV" });
@@ -85,7 +174,7 @@ Everything the page shows, in page order.
 - `product` (required), `page` (required): a pair from `list_pages`.
 - `from`, `to` (optional): month labels, same rules as `get_kpi_series`. Chart series are cut to the window, and `to` is the month the KPI cards and the Health Read are evaluated at (the dashboard's "Reviewing" month). Pages built from a fixed analysis window (`notes`, `sentiment`, `cross`, `review`, `ffps`) ignore `from`/`to`.
 
-Returns `{ schemaVersion, product, page, label, url, asOf, window: { from, to } | null, scope, sections: [{ id, title, kind, note?, data }] }`. `kind` is one of five, and `data` follows the kind:
+Returns `{ schemaVersion, product, page, label, url, asOf, window: { from, to } | null, scope, groups: [{ id, title, sectionIds, open }], sections: [{ id, title, kind, display, groupId, note?, doc, data }] }`. `note` is one reader-facing sentence or two to show under the section title; `doc` is the technical description of the section's data (shapes, keys, windows). `kind` is one of five, and `data` follows the kind:
 
 | kind | data | used for |
 |---|---|---|
@@ -97,7 +186,7 @@ Returns `{ schemaVersion, product, page, label, url, asOf, window: { from, to } 
 
 Nothing shown on a page is left out: every chart comes through as `series`, every narrative as `text`, every table as `table`, every card row as `cards`, every bullet list as `list`. Section `id`s are stable; titles carry the page's own section number and heading.
 
-A product's `overview` page carries, in order: its KPI `cards`; the annual churn line (`text`); the Health Read lenses in the dashboard's switcher order, one section each (`text`, titled `01 · <product> · <lens> · <metric>`, with `data.read` the lens's own read, `data.paragraphs` the hero statement and its narrative, and additionally `data.series` holding the lens chart in the `series` shape); the Commentary (`list`) and Additional Monthly Context (`text`, with the month's verdict as `read`); then Calls, Tickets, Ticket issues & movers, Repairs, Churn, B2B, Initiatives and Initiative timeline as the page shows them.
+A product's `overview` page carries, in order, after the top (cards, annual churn, sub-page links): its KPI `cards`; the annual churn line (`text`); the Health Read lenses in the dashboard's switcher order, one section each (`text`, titled `01 · <product> · <lens> · <metric>`, with `data.read` the lens's own read, `data.paragraphs` the hero statement and its narrative, and additionally `data.series` holding the lens chart in the `series` shape); the Commentary (`list`) and Additional Monthly Context (`text`, with the month's verdict as `read`); then Calls, Tickets, Ticket issues & movers, Repairs, Churn, B2B, Initiatives and Initiative timeline as the page shows them.
 
 One example per kind:
 
@@ -109,7 +198,7 @@ pg.sections[0].data[2];
 // { label: "Ticket rate per 100 subs", value: 2.66, unit: "per 100 subscribers", month: "Sep 2026",
 //   mom: { delta: -0.1, direction: "down", read: "favourable" }, yoy: { delta: 0.38, direction: "up", read: "unfavourable" } }
 
-// text (a Health Read lens; also carries data.series)
+// text (a Health Read lens; also carries data.series, drawn as display.chart)
 const lens = pg.sections.find((s) => s.id.startsWith("s01-health-01"));
 lens.data.read;          // "Favourable"
 lens.data.paragraphs[0]; // "Ticket rate per 100 subs was 2.66 in Sep'26, 0.1 per 100 lower MoM, which is favourable."

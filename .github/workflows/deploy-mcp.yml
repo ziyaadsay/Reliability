@@ -106,5 +106,9 @@ jobs:
           for m in list_products list_pages get_page get_kpi_series get_kpi_summary get_ticket_issues get_initiatives get_tv_platforms get_self_serve get_health_commentary get_friction_free_program get_sources; do
             grep -q "### \`$m" "$RUNNER_TEMP/binding-doc.md" || { echo "published binding doc lacks $m"; exit 1; }
           done
+          for h in "## Presentation" "### \`display\`" "### \`groups\` and \`groupId\`" "### \`note\` and \`doc\`" "heatmap" "gantt" "bars-and-line"; do
+            grep -qF "$h" "$RUNNER_TEMP/binding-doc.md" || { echo "published binding doc lacks: $h"; exit 1; }
+          done
+          grep -q "currently \`3\`" "$RUNNER_TEMP/binding-doc.md" || { echo "published binding doc does not state schemaVersion 3"; exit 1; }
           echo "published binding doc lists all 12 methods ($(wc -l < "$RUNNER_TEMP/binding-doc.md") lines)"
           grep -n "^### " "$RUNNER_TEMP/binding-doc.md"

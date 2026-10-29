@@ -4,7 +4,7 @@
 // `figures`/`change`/`rangeIdx` are all in scope. list_pages and get_page are wired into
 // callTool through PAGE_TOOL_NAMES / pageTool below.
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 // Which scorecard boards each product rolls up (see list_products.covers).
 const COVERS = {
@@ -879,9 +879,12 @@ function buildPage(product, id, a, b) {
     default: throw new Error(`page not available for ${product}`);
   }
 }
+function buildDecorated(product, id, a, b) {
+  return decoratePage(product, id, buildPage(product, id, a, b), MONTHS[b]);
+}
 function pageEntry(p, a, b) {
-  const sections = buildPage(p.product, p.id, a, b).map((s) => ({ id: s.id, title: s.title, kind: s.kind }));
-  return { id: p.id, label: PAGE_LABEL[p.id], product: p.product, nav: p.nav, url: pageUrl(p.product, p.id), sections };
+  const { sections, groups } = buildDecorated(p.product, p.id, a, b);
+  return { id: p.id, label: PAGE_LABEL[p.id], product: p.product, nav: p.nav, url: pageUrl(p.product, p.id), groups, sections: sections.map((s) => ({ id: s.id, title: s.title, kind: s.kind, display: s.display, groupId: s.groupId })) };
 }
 const PAGE_TOOLS = [
   { name: "list_pages", description: "The dashboard's navigation as data: every page per product (executive, overview, platforms, notes, sentiment, cross, review, selfserve, ffps) with its URL and the ordered list of sections get_page returns. Pass product to narrow.", inputSchema: { type: "object", properties: { product: { type: "string", enum: SCOPES } } } },
@@ -891,10 +894,11 @@ const PAGE_TOOL_NAMES = PAGE_TOOLS.map((t) => t.name);
 function pageTool(name, args) {
   if (name === "list_pages") {
     const list = args.product ? (requireProduct(args.product, SCOPES), PAGES.filter((p) => p.product === args.product)) : PAGES;
-    return text({ dashboard: DASHBOARD_URL, latestMonth: LATEST, kinds: ["cards", "series", "table", "text", "list"], pages: list.map((p) => pageEntry(p, 12, LATEST_IDX)), notes: ["Section lists are evaluated at the dashboard's default window (Jan 2026 to the latest month); get_page returns the same sections for any window, with chart series cut to from/to.", "url opens the page in the dashboard (hash routing)."] });
+    return text({ dashboard: DASHBOARD_URL, latestMonth: LATEST, kinds: ["cards", "series", "table", "text", "list"], pages: list.map((p) => pageEntry(p, 0, LATEST_IDX)), notes: ["Sections, groups and display describe get_page called with default arguments (Jan 2025 to the latest month); a different window cuts the chart series, and the lens charts gain a prior-year line when the window starts in 2026 or later.", "url opens the page in the dashboard."] });
   }
   requirePage(args.product, args.page);
   const [a, b] = rangeIdx(args.from, args.to);
   const fixed = FIXED_WINDOW.has(args.page);
-  return text({ product: args.product, page: args.page, label: PAGE_LABEL[args.page], url: pageUrl(args.product, args.page), asOf: fixed ? LATEST : MONTHS[b], window: fixed ? null : { from: MONTHS[a], to: MONTHS[b] }, scope: PAGE_SCOPE[`${args.product}|${args.page}`], sections: buildPage(args.product, args.page, a, b) });
+  const { sections, groups } = buildDecorated(args.product, args.page, a, b);
+  return text({ product: args.product, page: args.page, label: PAGE_LABEL[args.page], url: pageUrl(args.product, args.page), asOf: fixed ? LATEST : MONTHS[b], window: fixed ? null : { from: MONTHS[a], to: MONTHS[b] }, scope: PAGE_SCOPE[`${args.product}|${args.page}`], groups, sections });
 }

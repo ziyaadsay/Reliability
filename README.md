@@ -53,8 +53,10 @@ Tools: `list_products`, `get_kpi_series`, `get_kpi_summary`,
 data in page order: typed sections of kind `cards`, `series`, `table`, `text`
 or `list`. The build also lifts the hand-written analysis content that lives
 inside the dashboard component (recommendations, cross-analysis matrices) so
-the pages carry exactly what the dashboard shows. Every reply carries
-`schemaVersion`. Pages are addressable in the dashboard by URL hash
+the pages carry exactly what the dashboard shows. Every section also
+carries presentation hints (`display`, `groupId`, `doc`) and every page its
+`groups`, produced by `mcp/src/display.js`, so a consumer can draw each section
+the way the dashboard does. Every reply carries `schemaVersion` (3). Pages are addressable in the dashboard by URL hash
 (`#HSIA`, `#hsiabrief`, `#execsummary`, ...), which is what `url` in
 `list_pages` points at.
 
