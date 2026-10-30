@@ -1424,7 +1424,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-body{flex:1;min-height:0;margin-top:22px;font-size:16px;line-height:1.5;display:flex;flex-direction:column;gap:14px}
 .dk-foot{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:${muted};margin-top:14px;letter-spacing:.02em}
 .dk-foot b{color:${color}}
-.dk-cover,.dk-end,.dk-section{background:linear-gradient(135deg,${color} 0%,${isDark ? "#0f2a05" : "#163d00"} 100%);color:#fff;justify-content:flex-start}
+.dk-cover,.dk-end,.dk-section{background:linear-gradient(135deg,${color} 0%,${color} 18%,#17141c 140%);color:#fff;justify-content:flex-start}
 .dk-cover h1,.dk-end h1,.dk-section .dk-num{margin-top:auto}
 .dk-cover .dk-foot,.dk-end .dk-foot,.dk-section .dk-foot{margin-top:auto}
 .dk-cover h1,.dk-end h1,.dk-section h1{color:#fff;font-size:44px}
@@ -1441,6 +1441,9 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-statement h1{font-size:40px;line-height:1.25}
 .dk-statement h1::after{display:none}
 .dk-two{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;min-height:0}
+.dk-body svg{max-height:400px}
+.dk-raw td,.dk-raw th{text-align:left}
+.dk-dense{padding:34px 56px 28px} .dk-dense h1{font-size:25px} .dk-dense h1::after{margin-top:8px;height:3px;width:48px} .dk-dense .dk-sub{font-size:13.5px;margin-top:6px} .dk-dense .dk-body{margin-top:14px;font-size:14px} .dk-dense .dk-foot{margin-top:10px}
 .dk-click{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease}
 .dk-click.on{opacity:1;transform:none}
 .dk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -1475,7 +1478,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-thumb span{position:absolute;left:8px;bottom:6px;font-size:11px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:1px 8px}
 `;
   const renderSlide = (sl, k, cls, content) => (
-    <div className={`dk-slide dk-${sl.layout || "default"} ${cls || ""}`}>
+    <div className={`dk-slide dk-${sl.layout || "default"}${sl.dense ? " dk-dense" : ""} ${cls || ""}`}>
       {sl.layout === "section" && <div className="dk-num">{sl.num}</div>}
       {sl.layout === "fact" ? <div className="dk-big">{sl.big}</div> : <h1>{sl.title}</h1>}
       {sl.sub && <p className="dk-sub">{sl.sub}</p>}
@@ -5363,9 +5366,145 @@ export default function ReliabilityScorecards() {
     const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
 
     const css = briefCss(col, AMBER);
+    // ---- presentation mode (Deck): the review as Slidev-style slides ----
+    const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
+    const dlegend = (items) => <div className="dk-legend">{items.map((it) => <span key={it.label}><i style={{ background: it.color, opacity: it.opacity == null ? 1 : it.opacity }} />{it.label}</span>)}</div>;
+    const dmove = (change, tone) => <span className={`hb-${tone}`} style={{ fontWeight: 700, color: tone === "warn" ? T.bad : tone === "ok" ? T.good : MUTED }}>{change}</span>;
+    const noSyncRow = K.divergence.perCat.find((r) => r.cat.endsWith("No Sync"));
+    const slides = [
+      { layout: "cover", title: `HSIA review · ${Y.period} ${Y.y1} vs ${Y.y0}`, sub: "Why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it. The year-over-year ticket analysis read against the dashboard's own quarter, the agent and technician notes, the customer survey and the initiative register.",
+        notes: `Analysis data to ${Y.dataThrough}; dashboard data to ${LATEST}; survey to ${sv.months[sv.months.length - 1]}.` },
+      { layout: "statement", title: `HSIA tickets are up ${Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.`, notes: "The one-sentence answer." },
+      { layout: "default", title: `${qPrev} to ${qNow} at a glance`, sub: `${qNow} is ${range}, against ${prevRange}; calls, tickets and repairs are quarter totals, rates are quarter averages per 100 subscribers`, clicks: 6 + (cq.now != null && cq.prev != null ? 1 : 0),
+        body: (step, C) => <div className="dk-stats" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+          {C(1, dstat(big(q.calls), "Calls offered", <>{qPrev}: {big(qy.calls)} · {dmove(sp(pct(q.calls, qy.calls)), volTone(pct(q.calls, qy.calls)))}</>))}
+          {C(2, dstat(big(q.tv), "Tickets", <>{qPrev}: {big(qy.tv)} · {dmove(sp(pct(q.tv, qy.tv)), volTone(pct(q.tv, qy.tv)))}</>))}
+          {C(3, dstat(fmtRate(q.tr, 2), "Ticket rate per 100 subs", <>{qPrev}: {fmtRate(qy.tr, 2)} · {dmove(`${sd(q.tr - qy.tr)} per 100`, rateTone(q.tr - qy.tr))}</>))}
+          {C(4, dstat(big(q.rv), "Repairs / dispatches", <>{qPrev}: {big(qy.rv)} · {dmove(sp(pct(q.rv, qy.rv)), volTone(pct(q.rv, qy.rv)))}</>))}
+          {C(5, dstat(fmtRate(q.rr, 2), "Repair rate per 100 subs", <>{qPrev}: {fmtRate(qy.rr, 2)} · {dmove(`${sd(q.rr - qy.rr)} per 100`, rateTone(q.rr - qy.rr))}</>))}
+          {C(6, dstat(big(avg(S.base, mi)), "Subscriber base (avg)", <>{qPrev}: {big(avg(S.base, yi))} · {sp(pct(avg(S.base, mi), avg(S.base, yi)))}</>))}
+          {cq.now != null && cq.prev != null && C(7, dstat(fmtRate(cq.now, 2), "Churn rate per 100 subs", <>{qPrev}: {fmtRate(cq.prev, 2)} · {dmove(`${sd(cq.now - cq.prev)} per 100`, rateTone(cq.now - cq.prev))}</>))}
+        </div>,
+        notes: "One click per card. Red is worse, green is better. The dashboard quarter and the analysis measure different populations and are shown side by side, not reconciled." },
+      { layout: "default", title: "In short", clicks: 6,
+        body: (step, C) => <ul style={{ fontSize: 15 }}>
+          <li>{C(1, <><strong>Tickets rose {num(Y.tickets.delta)} ({sp(Y.tickets.pct)}) in {Y.period} {Y.y1}.</strong> {num(Y.tickets.y0)} to {num(Y.tickets.y1)}, steady in every month. Our own quarter agrees: {range} tickets are {ap(pct(q.tv, qy.tv), 0)} above {prevRange}.</>)}</li>
+          <li>{C(2, <><strong>{growth.share.toFixed(0)}% is simply a larger base.</strong> {num(Y.lines.delta)} more lines (+{Y.lines.pct}%) at the {Y.y0} ticket rate account for {num(growth.v)} of the extra tickets.</>)}</li>
+          <li>{C(3, <><strong>Four root-cause groups explain the rest.</strong> {groupTotals.map((g) => `${g.g.replace("Network: ", "")} ${gshare(g)}%`).join(", ")} of the increase, before removing {num(Math.abs(adj.v))} of double counting.</>)}</li>
+          <li>{C(4, <><strong>Orders are the biggest lever we control.</strong> Orders rose {O.pct}%, a customer calls 3 to 4 times as often in the 30 days after one, and tickets within 90 days of an order added about {num(O.after90.extra)}, roughly {O.after90.shareOfIncrease}% of the increase.</>)}</li>
+          <li>{C(5, <><strong>No Dataflow is the category to shrink.</strong> {B.noDataflowPct}% of reactive tickets, up {B.noDataflowGrowthPct}% January to September; {nd.noFault}% of its callers showed no line fault in telemetry at ticket time.</>)}</li>
+          <li>{C(6, <><strong>The register covers network and provisioning; the gaps are orders, offnet East and the NH20A gateway.</strong> {initGroups.reduce((a, g) => a + g.items.length, 0)} initiatives map to the driver groups, {initGroups.reduce((a, g) => a + g.items.filter((it) => /launch/i.test(it.status)).length, 0)} launched.</>)}</li>
+        </ul>, notes: "Six points, one per click." },
+      { layout: "section", num: "01", title: "The rise is steady, and a quarter of it is a bigger base" },
+      { layout: "default", title: "The rise is steady, and a quarter of it is a bigger base", clicks: 5,
+        body: (step, C) => <div className="dk-stats">
+          {C(1, dstat(big(Y.tickets.y0), `Tickets · ${Y.period} ${Y.y0}`))}
+          {C(2, dstat(big(Y.tickets.y1), `Tickets · ${Y.period} ${Y.y1}`))}
+          {C(3, dstat(sbig(Y.tickets.delta), `Increase (${sp(Y.tickets.pct)})`))}
+          {C(4, dstat(sbig(Y.lines.delta), `Average active lines (+${Y.lines.pct}%)`, `${big(Y.lines.y0)} to ${big(Y.lines.y1)}`))}
+          {C(5, dstat(sbig(growth.v), "Expected from base growth", `${big(Y.lines.delta)} × ${Y.lines.ratePerLine9mo} tickets per line · ${growth.share}% of the increase`))}
+        </div>, notes: Y.monthly.note },
+      { layout: "section", num: "02", title: `What the ${sn(Y.tickets.delta)} breaks down into`, sub: `Each driver credited by volume alone: growth in the population × its ${Y.y0} rate` },
+      { layout: "default", title: `Contribution to the ${sn(Y.tickets.delta)} increase, ${Y.period}, volume only`, clicks: 1,
+        body: (step, C) => <>
+          <div style={{ width: "100%" }}>{contribChart(drivers)}</div>
+          {dlegend(Object.entries(GROUP_COLOR).map(([g, c]) => ({ label: g, color: c })))}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Condition drivers add {sn(condTotal)} before adjustment; the overlap removed is {sn(adj.v)}. GPON outage and the 3 to 5 reboot band are capped at their actual change because their per-line rates fell. GPON figures are August × 9 and are directional.</p>)}
+        </>, notes: "Customer growth first, then each condition's volume-only contribution, then the adjustment for overlap. Colours group drivers by root cause." },
+      { layout: "two-cols", title: "Campaigns shaped the contact volume; copper is not a driver", clicks: 2,
+        body: (step, C) => <>
+          {C(1, <div className="dk-note"><h3>Proactive campaigns shaped the contact volume</h3>Internet proactive campaigns with a callback option reached {(Y.campaigns.reach[1] / Y.campaigns.reach[0]).toFixed(1)}× more customers than a year ago ({num(Y.campaigns.reach[0])} to {num(Y.campaigns.reach[1])} touches). Completed callbacks rose {num(Y.campaigns.callbacks[0])} to {num(Y.campaigns.callbacks[1])}. These are contacts we generated and they sit inside the {sn(Y.tickets.delta)}.</div>)}
+          {C(2, <div className="dk-note amber"><h3>Copper is not a driver</h3>Per surviving copper line it got worse ({Y.copper.ratePct[0]}% to {Y.copper.ratePct[1]}% per month), but the base shrank {ap(pct(Y.copper.lines[1], Y.copper.lines[0]), 0)} ({num(Y.copper.lines[0])} to {num(Y.copper.lines[1])} lines), so copper tickets fell {num(Y.copper.tickets[0])} to {num(Y.copper.tickets[1])}.</div>)}
+        </>, notes: "There is no campaign tag in the ticket data to net the campaign contacts out." },
+      { layout: "section", num: "03", title: "Orders are one of the biggest drivers, and the one we control" },
+      { layout: "two-cols", title: "Orders are one of the biggest drivers, and the one we control", clicks: 4,
+        body: (step, C) => <>
+          <div className="dk-stats" style={{ gridTemplateColumns: "1fr 1fr", alignContent: "start" }}>
+            {C(1, dstat(sp(O.pct, 0), `PureFibre orders, ${Y.period}`, `${big(O.total[0])} to ${big(O.total[1])}`))}
+            {C(2, dstat(sp(O.backendPct, 0), "BackEnd (automated) orders", `${big(O.backend[0])} to ${big(O.backend[1])}`))}
+            {C(3, dstat(`${O.rate30[1]}%`, "Ticket rate in the 30 days after an order", `against a ${O.baseRate[1]}% monthly base rate: 3 to 4×`))}
+            {C(4, dstat(sbig(O.after90.extra), "Extra tickets within 90 days of an order", `about ${O.after90.shareOfIncrease}% of the ${sbig(O.after90.hsicIncrease)} HSIC increase`))}
+          </div>
+          <div>
+            <table>
+              <thead><tr><th>Channel</th><th>Orders {Y.y0}</th><th>Orders {Y.y1}</th><th>YoY</th><th>30-day rate {Y.y1}</th></tr></thead>
+              <tbody>{O.channels.map((c) => <tr key={c.name}><td>{c.name}</td><td>{num(c.o[0])}</td><td>{num(c.o[1])}</td><td style={{ color: c.pct > 20 ? T.bad : c.pct < 0 ? T.good : T.text, fontWeight: 600 }}>{sp(c.pct, 0)}</td><td>{c.rate[1]}%</td></tr>)}</tbody>
+            </table>
+            <p className="dk-cap" style={{ marginTop: 10 }}>The surge is led by automated BackEnd orders, which carry a low call rate (about 2.5%), so the overall post-order rate eased from {O.rate30[0]}% to {O.rate30[1]}%. By about 120 days after an order, customers call at their normal rate again.</p>
+          </div>
+        </>, notes: `August to September: orders per day ${num(O.augSep.ordersPerDay[0])} to ${num(O.augSep.ordersPerDay[1])} and No Dataflow tickets per day ${O.augSep.noDataflowPerDay[0]} to ${O.augSep.noDataflowPerDay[1]}, while all tickets per day were flat. The fibre network was calmer in September.` },
+      { layout: "section", num: "04", title: "The fixes in flight, mapped to the analysis's driver groups" },
+      { layout: "default", title: "The fixes in flight, mapped to the driver groups", sub: `Register initiatives that act on each root-cause group; the share is each group's part of the ${sn(Y.tickets.delta)} increase`, clicks: initGroups.length,
+        body: (step, C) => <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+          {initGroups.map((g, k) => C(k + 1, <div className="dk-note" style={{ borderColor: GROUP_COLOR[g.g], fontSize: 12.5, height: "100%" }}>
+            <h3>{g.title}<span className="dk-pill">{g.share}% of the rise</span></h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              {g.items.map((it) => <div key={it.name} style={{ display: "flex", gap: 8, alignItems: "baseline" }}><StatusChip status={it.status} T={T} /><span style={{ fontWeight: 600, color: T.text }}>{it.name}</span><span style={{ color: MUTED, fontSize: 11, marginLeft: "auto", whiteSpace: "nowrap" }}>{it.timeline}</span></div>)}
+            </div>
+          </div>, { height: "100%" }))}
+        </div>, notes: initGroups.map((g) => `${g.title}: ${g.why}`).join(" ") },
+      { layout: "two-cols", title: "Gaps, and what is working", clicks: 2,
+        body: (step, C) => <>
+          {C(1, <div className="dk-note bad"><h3>Gaps the analysis exposes</h3><ul style={{ paddingLeft: 18 }}>
+            <li>Nothing in the register targets post-order contact, although orders explain about {O.after90.shareOfIncrease}% of the increase.</li>
+            <li>Nothing targets the offnet (Bell) East and SalesOne group, about {ND.offnetSharePct}% of No Dataflow caller growth from under {ND.offnetBasePct}% of customers.</li>
+            <li>Gateway reboots (3+ a week, {sn(drivers[2].v)} tickets) have no HSIA initiative; the sequential reboot work exists only for TV set-top boxes.</li>
+            <li>The NH20A v1.18.07 firmware (1.7× lift) and Boost Wi-Fi 7 (1.8×) need a device-team review.</li></ul></div>)}
+          {C(2, <div className="dk-note ok"><h3>Working</h3><ul style={{ paddingLeft: 18 }}>
+            <li>Severely degraded fibre fell from {fibre[0].toFixed(1)}% to {fibre[2].toFixed(1)}% of repairs and GPON severely degraded lines fell {ap(O.gponAugSep[2].pct)} from August to September.</li>
+            <li>ONT Not Ranged tickets fell {ap(pct(LOOKER.HSIA.topIssues[3].a26, LOOKER.HSIA.topIssues[3].a25), 0)} year over year and {ap(K.agentCat[1].pct)} month over month.</li>
+            <li>The post-order ticket rate eased from {O.rate30[0]}% to {O.rate30[1]}%.</li>
+            <li>A smaller share of tickets reaches a truck: {((q.rv / q.tv) * 100).toFixed(1)} dispatches per 100 tickets against {((qy.rv / qy.tv) * 100).toFixed(1)} in {prevRange}.</li></ul></div>)}
+        </>, notes: "Close on the ask: a post-order check-in, an owner for offnet East, and a device-team review of the NH20A firmware." },
+      { layout: "section", num: "05", title: "The reactive bucket is line-side, and No Dataflow is the piece to shrink" },
+      { layout: "default", title: "Telemetry signals by call category", sub: "Share of callers whose line showed each signal at ticket time; darker is higher within the column", clicks: 1,
+        body: (step, C) => <>
+          <table style={{ fontSize: 12 }}>
+            <thead><tr><th>Call category</th><th>Callers</th><th>GPON sev.</th><th>GPON outage</th><th>Downtime</th><th>Speed &lt;50%</th><th>ONT capped</th><th>Reboots 3+</th><th>Poor Wi-Fi</th><th>Plan change</th><th>Early tenure</th><th>No line fault</th></tr></thead>
+            <tbody>{B.rows.map((r) => <tr key={r.cat}><td style={{ fontWeight: 600 }}>{r.cat}</td><td>{num(r.n)}</td>
+              {[["gponSev", 12.1], ["outage", 25], ["downtime", 15.1], ["speed", 14.2], ["ontCap", 24.9], ["reboots", 10.6], ["wifi", 10.3], ["planChg", 12.7], ["tenure", 22.2]].map(([k, mx]) => <td key={k} style={{ ...heat(r[k], mx), textAlign: "center", borderRadius: 4, padding: "4px 6px" }}>{r[k].toFixed(1)}%</td>)}
+              <td style={{ color: AMBER, fontWeight: 700 }}>{r.noFault}%</td></tr>)}</tbody>
+          </table>
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Speed test peaks on Slow Speeds; plan change and ONT capping drive Incompatible Equipment; downtime and GPON drive ONT Not Ranged and Historical Data. No Dataflow callers are {nd.noFault}% fault-free in telemetry and {nd.tenure}% are in early tenure, which is why proactive detection and the order path matter more than any one network fix.</p>)}
+        </>, notes: `${B.tickets.toLocaleString()} reactive tickets with telemetry, ${B.lineSidePct}% line-side, No Dataflow ${B.noDataflowPct}% and the largest symptom.` },
+      { layout: "section", num: "06", title: "No Dataflow callers: the same kinds of customers, just more of them" },
+      { layout: "default", title: `Lift of selected traits among No Dataflow callers, ${Y.y0} and ${Y.y1}`, sub: "Lift is the share of callers with a trait divided by the share of the base with it; 1× means no more common among callers than among everyone", clicks: 1,
+        body: (step, C) => <>
+          <div style={{ width: "100%" }}>{hbars(ND.lifts.map((l) => ({ label: l.t, a: l.lift[1], b: l.lift[0] })), { max: 12, step: 2, ref: 1, refLabel: "no lift = 1×", fmt: (v) => v.toFixed(1) + "×", labelW: 268, keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}</div>
+          {dlegend([{ label: String(Y.y1), color: barB }, { label: String(Y.y0), color: barC }])}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Line faults and GPON problems run 5 to 10× in both years, 3+ reboots about 4×, the first 30 days of service about 8×. No new telemetry signal appeared in {Y.y1}; the growth is more customers in the same states. The Arcadyan NH20A gateway runs at 1.4× and its v1.18.07 build at 1.7×; the offnet East group tripled and no initiative targets it.</p>)}
+        </>, notes: `No Dataflow callers ${sp(ND.pct, 0)} Jul to Sep; ${ND.tenuredSharePct}% of the growth is customers with a year or more of tenure; about ${ND.offnetSharePct}% is the offnet (Bell) East group.` },
+      { layout: "section", num: "07", title: "Field and customer evidence point the same way" },
+      { layout: "two-cols", title: "Field and customer evidence point the same way", clicks: 2,
+        body: (step, C) => <>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>How {shortMon(mons[2])} field visits closed, by what the agent diagnosed</div>
+            {stacked(align, [{ color: barA, dark: true }, { color: barC, opacity: 0.85 }, { color: barB }])}
+            {dlegend([{ label: "Aligned with the agent", color: barA }, { label: "No fault found", color: barC, opacity: 0.85 }, { label: "Re-attributed elsewhere", color: barB }])}
+            {C(1, <p className="dk-cap" style={{ marginTop: 8 }}>Technicians confirm the line-side categories (ONT Not Ranged {K.divergence.perCat[2].alignment.toFixed(0)}% aligned, No Sync {noSyncRow ? noSyncRow.alignment.toFixed(0) : "—"}%) and not the Wi-Fi ones ({Math.round(Math.min(...wifiAlign))}% to {Math.round(Math.max(...wifiAlign))}% aligned).</p>)}
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>Why customers rated reliability fair or poor, {svM[0]} and {svM[2]}</div>
+            {hbars(svDrivers.map((d) => ({ label: d.name, a: d.pct[2], b: d.pct[0] })), { max: 50, step: 10, fmt: (v) => v.toFixed(0) + "%", labelW: 200, keys: [{ key: "a", color: barB }, { key: "b", color: barC }] })}
+            {dlegend([{ label: svM[2], color: barB }, { label: svM[0], color: barC }])}
+            {C(2, <p className="dk-cap" style={{ marginTop: 8 }}>Frequent loss of connection is the top reason at {sv.drivers[0].pct[2].toFixed(0)}% and grew {sd(sv.drivers[0].pct[2] - sv.drivers[0].pct[0], 1)} points over the summer. Negative verbatims rose {sd(sv.polarity.negative[2] - sv.polarity.negative[0], 1)} points to {sv.polarity.negative[2].toFixed(1)}%.</p>)}
+          </div>
+        </>, notes: `The survey runs to ${sv.months[sv.months.length - 1]}, one month behind the operational data.` },
+      { layout: "end", title: "Sources and method", sub: `"TELUS Internet: why support tickets rose year over year" (${Y.period} ${Y.y1} vs ${Y.y0}, data through ${Y.dataThrough}) · Churn Measurement 2026 workbook · TS Calls Offered by Product · HSIA agent and technician notes (${HSA.months[0]} to ${HSA.months[2]}) · CF&R TELUS Internet survey (${sv.months[0]} to ${sv.months[2]}) · Initiatives register. Quarter totals sum three months and rates average the monthly rates per 100 subscribers; analysis figures are transcribed, not recomputed.`,
+        notes: `Caveats carried from the analysis: ${Y.caveats.join(" ")}` }
+    ];
+
     return (
-      <div className="hb">
+      <>
+        {deckSlide != null && <Deck slides={slides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={col} isDark={isDark} title={`HSIA review · ${Y.period} ${Y.y1} vs ${Y.y0}`} />}
+        <div className="hb">
         <style>{css}</style>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -26 }}>
+          <button onClick={() => setDeckSlide(1)} title="Open this review as slides (arrow keys to navigate, Esc to exit)"
+            style={{ background: col, color: "#fff", border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: FONT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 4px 14px rgba(0,0,0,.14)" }}>
+            <span style={{ fontSize: 10 }}>▶</span> Present · {slides.length} slides
+          </button>
+        </div>
         <section aria-labelledby="hb-kpis">
           <h2 id="hb-kpis">{qPrev} to {qNow} at a glance</h2>
           <div className="hb-stats">
@@ -5630,7 +5769,8 @@ export default function ReliabilityScorecards() {
           <p>Caveats carried from the analysis: {Y.caveats.join(" ")}</p>
           <p>Method notes: dashboard quarter totals sum the three months and rates are the simple average of the monthly rates per 100 subscribers; technician alignment is the share of field-visit closures whose domain matches the agent's category. Analysis figures are transcribed, not recomputed, and are refreshed when a new edition of the analysis is supplied.</p>
         </footer>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -6202,10 +6342,10 @@ export default function ReliabilityScorecards() {
       setCur(n);
     };
     useEffect(() => {
-      const onKey = (e) => { if (e.key === "ArrowRight") goTo(cur + 1); else if (e.key === "ArrowLeft") goTo(cur - 1); };
+      const onKey = (e) => { if (deckSlide != null) return; if (e.key === "ArrowRight") goTo(cur + 1); else if (e.key === "ArrowLeft") goTo(cur - 1); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
-    }, [cur]);
+    }, [cur, deckSlide]);
     const onScroll = () => { const el = scrollRef.current; if (el && el.clientWidth) setCur(Math.max(0, Math.min(3, Math.round(el.scrollLeft / el.clientWidth)))); };
     const toneCol = (t) => (t === "good" ? T.good : t === "bad" ? T.bad : T.textMuted);
     const fileStem = `Reliability-Strategy-Executive-Summary-${deck.month.replace(/\s+/g, "-")}`;
@@ -6230,10 +6370,13 @@ export default function ReliabilityScorecards() {
     );
     const card = { background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px 16px", boxSizing: "border-box", minWidth: 0 };
 
-    const slide1 = (
+    // Slides take an optional reveal wrapper C(step, node, style) so the same JSX serves the
+    // in-page strip (no reveals) and the Deck presentation (one product or card per click).
+    const noC = (k, node) => node;
+    const slide1 = (C = noC) => (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, height: "100%" }}>
-        {deck.kpis.map((k) => (
-          <div key={k.product} style={{ ...card, display: "flex", flexDirection: "column" }}>
+        {deck.kpis.map((k, ki) => (
+          <React.Fragment key={k.product}>{C(ki + 1, <div style={{ ...card, display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <span style={{ color: k.color, display: "inline-flex" }}><Icon name={PRODUCT_ICON[k.product]} size={16} /></span>
               <span style={{ fontSize: 16, fontWeight: 800, color: k.color }}>{k.product}</span>
@@ -6248,7 +6391,7 @@ export default function ReliabilityScorecards() {
                 </div>
               ))}
             </div>
-          </div>
+          </div>, { height: "100%" })}</React.Fragment>
         ))}
       </div>
     );
@@ -6261,10 +6404,10 @@ export default function ReliabilityScorecards() {
         </svg>
       );
     };
-    const slide2 = (
+    const slide2 = (C = noC) => (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, height: "100%" }}>
-        {deck.issues.map((k) => (
-          <div key={k.product} style={card}>
+        {deck.issues.map((k, ki) => (
+          <React.Fragment key={k.product}>{C(ki + 1, <div style={{ ...card, height: "100%" }}>
             <div style={{ ...lbl, color: k.color }}>{k.product} · top ticket issue — {k.asOf}</div>
             <div style={{ fontSize: 15, fontWeight: 700, color: T.textSecondary, marginTop: 4 }}>{k.issue}</div>
             <div style={{ fontSize: 12.5, color: T.textMuted, marginTop: 2 }}>{k.volume.toLocaleString()} tickets · <b style={{ color: toneCol(k.tone) }}>{k.yoy}</b></div>
@@ -6282,7 +6425,7 @@ export default function ReliabilityScorecards() {
                 ))}
               </div>
             ))}
-          </div>
+          </div>, { height: "100%" })}</React.Fragment>
         ))}
       </div>
     );
@@ -6312,25 +6455,37 @@ export default function ReliabilityScorecards() {
       </table>
     ) : <p style={{ color: T.textMuted, fontSize: 14 }}>No initiative has a milestone dated {deck.month}.</p>;
 
-    const slide4 = (
+    const slide4 = (C = noC) => (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 14 }}>
-          {deck.selfServe.map((t) => (
-            <div key={t.label} style={card}>
+          {deck.selfServe.map((t, ti) => (
+            <React.Fragment key={t.label}>{C(ti + 1, <div style={{ ...card, height: "100%" }}>
               <div style={{ ...lbl, display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: colors.SWEEPR, display: "inline-flex" }}><Icon name={t.icon} size={13} /></span>{t.label}</div>
               <div style={{ fontSize: 26, fontWeight: 700, color: T.heading, lineHeight: 1.1, marginTop: 8 }}>{t.value}</div>
               <div style={{ fontSize: 10.5, color: T.textFaint, marginTop: 3 }}>{t.sub}</div>
               {t.deltas.map(([d, suf], i) => <div key={i} style={{ fontSize: 12, fontWeight: 700, marginTop: 4, color: d ? toneCol(d.tone) : T.textFaint }}>{d ? `${d.text} ${suf}` : "—"}</div>)}
-            </div>
+            </div>, { height: "100%" })}</React.Fragment>
           ))}
         </div>
         <p style={{ fontSize: 12.5, color: T.textMuted, marginTop: 18, lineHeight: 1.6 }}>{deck.selfServeNote}</p>
       </>
     );
 
-    const slides = [slide1, slide2, slide3, slide4];
+    const slides = [slide1(), slide2(), slide3, slide4()];
+    // Presentation mode: the same four slides on the Deck component, with a cover and a close.
+    // fill: the slide body takes the remaining height; k < 1 scales the strip's slide down to fit.
+    const fill = (node, k = 1) => <div className="dk-raw" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", ...(k < 1 ? { transform: `scale(${k})`, transformOrigin: "top left", width: `${100 / k}%`, height: `${100 / k}%`, flex: "none" } : {}) }}>{node}</div>;
+    const deckSlides = [
+      { layout: "cover", title: `Executive summary · ${deck.month}`, sub: `Reliability Strategy · KPI scorecard, top ticket issues and movers, initiative milestones and self-serve workflows for ${deck.month}`, notes: `Slides follow the end of the selected date range (${deck.month}); the top-issue slide uses the Looker ticket categories as of ${LATEST}.` },
+      { layout: "default", dense: true, title: deck.titles[0], sub: "Latest reported month with the year-over-year move; rates per 100 subscribers", clicks: deck.kpis.length, body: (step, C) => fill(slide1(C), 0.86), notes: "One click per product. Green is better, red is worse, year over year." },
+      { layout: "default", dense: true, title: deck.titles[1], sub: `Top ticket issue per product with its trend, and the biggest movers ${deck.issues[0] ? deck.issues[0].compare : ""}`, clicks: deck.issues.length, body: (step, C) => fill(slide2(C), 0.9), notes: "One click per product. The sparkline is the top category's monthly ticket volume since January 2025." },
+      { layout: "default", dense: true, title: deck.titles[2], sub: `Register initiatives with a milestone in ${deck.month}`, body: fill(slide3), notes: deck.milestones.length ? `${deck.milestones.length} initiatives carry a ${deck.month} milestone.` : `No initiative has a milestone dated ${deck.month}.` },
+      { layout: "default", dense: true, title: deck.titles[3], sub: "Self-serve customer workflows are powered by the Sweepr platform", clicks: deck.selfServe.length, body: (step, C) => fill(slide4(C)), notes: deck.selfServeNote },
+      { layout: "end", title: "Sources", sub: DECK_SOURCE, notes: "Full detail is on the Overview and product pages of the dashboard." }
+    ];
     return (
       <>
+        {deckSlide != null && <Deck slides={deckSlides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={T.heading} isDark={isDark} title={`Executive summary · ${deck.month}`} />}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", margin: "6px 0 12px" }}>
           <div>
             <div style={lbl}>Slide {cur + 1} of 4</div>
@@ -6340,6 +6495,7 @@ export default function ReliabilityScorecards() {
             <button onClick={() => goTo(cur - 1)} disabled={cur === 0} style={{ ...btn(false), opacity: cur === 0 ? 0.4 : 1 }} aria-label="Previous slide">‹ Prev</button>
             <button onClick={() => goTo(cur + 1)} disabled={cur === 3} style={{ ...btn(false), opacity: cur === 3 ? 0.4 : 1 }} aria-label="Next slide">Next ›</button>
             <span style={{ width: 1, height: 22, background: T.border, margin: "0 4px" }} />
+            <button onClick={() => setDeckSlide(1)} style={{ ...btn(true), background: T.heading }} title="Present full screen (arrow keys to navigate, Esc to exit)"><span style={{ fontSize: 10 }}>▶</span> Present</button>
             <button onClick={() => downloadBlob(pptxFromDeck(deck), `${fileStem}.pptx`)} style={btn(true)} title="Downloads a .pptx that opens in Google Slides">
               <Icon name="slides" size={13} /> Google Slides (.pptx)
             </button>
