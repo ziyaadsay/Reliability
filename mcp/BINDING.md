@@ -47,7 +47,7 @@ const same = await env.RELIABILITY.call("get_kpi_summary", [{ product: "HSIA" }]
 |---|---|
 | `All` | `overview` (the Overview home page), `executive` (Overview › Executive Summary), `selfserve`, `ffps` |
 | `HSIA` | `overview`, `notes`, `sentiment`, `cross`, `review` |
-| `TV` | `overview`, `platforms`, `notes`, `sentiment`, `cross` |
+| `TV` | `overview`, `platforms`, `notes`, `sentiment`, `cross`, `review` |
 | `SHS` | `overview` |
 | `SH+` | `overview` |
 
@@ -223,6 +223,13 @@ Other pages:
 ```js
 const review = await env.RELIABILITY.get_page({ product: "HSIA", page: "review" });
 review.sections.map((s) => s.id); // ["kpis", "kpis-table", "header", "in-short", "s1-stats", "s2-method", "s2-drivers", ...]
+
+// TV review: STB No Boot › Stuck on Initializing, Aug – Oct 2026, with the All STBs / One STB split
+const tvReview = await env.RELIABILITY.get_page({ product: "TV", page: "review" });
+tvReview.sections.map((s) => s.id); // ["kpis", "kpis-table", "header", "in-short", "s1-stats", "s1-prose", "s2-stats", "s2-history", "s2-table", "s3-stats", "s3-daily", "s3-weekly", "s3-share", "s4-subcats", "s4-markers", "s5-causes", "s6-intro", "s6-initiatives", "s6-actions", "s6-gaps", "s6-working", "footer"]
+sec(tvReview, "s2-history").display;  // { as: "stacked-bars", x: "months", stack: ["one","multi","all"], total: "total", alsoAs: "table" } — Looker monthly history by Category 3, Jan 2025 – Oct 2026 (last month is month to date)
+sec(tvReview, "s3-daily").display;    // { as: "line", x: "date", y: ["all7","one7","multi7"], alsoAs: "table" } — one row per day, Aug 1 – Oct 28, daily counts plus trailing 7-day averages
+sec(tvReview, "s5-causes").data[0];   // { title: "CloudCheck agent side-load upgrade … · Leading hypothesis", body: "…", meta: { status: "leading", statusLabel, next } }
 
 const deck = await env.RELIABILITY.get_page({ product: "All", page: "executive" });
 deck.sections.filter((s) => s.id.startsWith("slide1")).map((s) => s.title); // one cards section per product

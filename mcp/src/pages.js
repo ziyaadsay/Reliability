@@ -42,7 +42,7 @@ const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platf
 const PAGE_HASH = {
   "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps",
   "HSIA|overview": "HSIA", "HSIA|notes": "hsiatickets", "HSIA|sentiment": "hsiasentiment", "HSIA|cross": "hsiacross", "HSIA|review": "hsiabrief",
-  "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross",
+  "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross", "TV|review": "tvbrief",
   "SHS|overview": "SHS", "SH+|overview": "SH+"
 };
 const PAGES = [
@@ -58,6 +58,7 @@ const PAGES = [
   { product: "TV", id: "notes", nav: "TV › Notes Analysis" },
   { product: "TV", id: "sentiment", nav: "TV › Customer Sentiment Analysis" },
   { product: "TV", id: "cross", nav: "TV › Cross Analysis" },
+  { product: "TV", id: "review", nav: "TV › Review" },
   { product: "SHS", id: "overview", nav: "SHS" },
   { product: "SH+", id: "overview", nav: "SH+" },
   { product: "All", id: "selfserve", nav: "Self-serve" },
@@ -845,6 +846,148 @@ function reviewPage() {
   return out;
 }
 
+// ---- TV Review (mirrors TvBriefPage): STB No Boot › Stuck on Initializing, Aug – Oct 2026 ----
+function tvReviewPage() {
+  const R = TV_REVIEW, D = R.daily, L = R.looker, out = [];
+  const sum = (arr) => arr.reduce((x, y) => x + (y || 0), 0);
+  const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString("en-CA"));
+  const KEYS = ["aug", "sep", "oct"];
+  const M = KEYS.map((k) => { const d = D[k]; return { key: k, label: d.label, days: d.days, tickets: sum(d.tickets), stuck: sum(d.stuck), all: sum(d.all), multi: sum(d.multi), one: sum(d.one) }; });
+  const [A, S, O] = M;
+  const perDay = (m, f) => round(m[f] / m.days, 1);
+  const iAug = MONTHS.indexOf("Aug 2026"), iSep = MONTHS.indexOf("Sep 2026");
+  const K = { tv: DATA.ticketVolume.TV, tr: DATA.ticketRate.TV, calls: CALLS_SPLIT.TV.offered, rv: DATA.repairVolume.TV, rr: DATA.repairRate.TV, ch: DATA.churnRate.TV, base: DATA.subBase.TV };
+  const legacy = TV_PLATFORMS.find((p) => p.id === "legacy"), opus = TV_PLATFORMS.find((p) => p.id === "opus");
+  const lSep = L.months.indexOf("Sep 2026"), lOct = L.months.indexOf("Oct 2026"), lAug = L.months.indexOf("Aug 2026"), lJul = L.months.indexOf("Jul 2026");
+  const octRun = (arr) => Math.round((arr[lOct] / L.mtdDays) * 31);
+  const yr26 = L.months.map((m, i) => i).filter((i) => L.months[i].endsWith("2026"));
+  const octNote = `Oct 1 – ${R.octDays}`;
+  // weekly blocks (Monday to Sunday)
+  const dayList = [];
+  KEYS.forEach((k) => { const d = D[k]; const mon = { aug: 7, sep: 8, oct: 9 }[k]; for (let i = 0; i < d.days; i++) dayList.push({ date: new Date(Date.UTC(2026, mon, i + 1)), tickets: d.tickets[i], stuck: d.stuck[i], all: d.all[i], multi: d.multi[i], one: d.one[i] }); });
+  const weeks = [];
+  dayList.forEach((d) => { const dow = (d.date.getUTCDay() + 6) % 7; const start = new Date(d.date); start.setUTCDate(d.date.getUTCDate() - dow); let w = weeks.find((x) => x.start.getTime() === start.getTime()); if (!w) { w = { start, days: 0, tickets: 0, stuck: 0, all: 0, multi: 0, one: 0 }; weeks.push(w); } w.days += 1; w.tickets += d.tickets; w.stuck += d.stuck; w.all += d.all; w.multi += d.multi; w.one += d.one; });
+  const iso = (dt) => dt.toISOString().slice(0, 10);
+  const roll = (arr, n = 7) => arr.map((_, i) => (i < n - 1 ? null : round(sum(arr.slice(i - n + 1, i + 1)) / n, 1)));
+  const rAll = roll(dayList.map((d) => d.all)), rOne = roll(dayList.map((d) => d.one)), rMulti = roll(dayList.map((d) => d.multi)), rStuck = roll(dayList.map((d) => d.stuck));
+  const kujo = dayList.findIndex((d) => d.date.getUTCMonth() === 8 && d.date.getUTCDate() === 25);
+  const beforeKujo = round(sum(dayList.slice(kujo - 14, kujo).map((d) => d.stuck)) / 14, 1), afterKujo = round(sum(dayList.slice(kujo, kujo + 14).map((d) => d.stuck)) / 14, 1);
+  const allUpVsAug = round(pctChange(O.all / O.days, A.all / A.days), 1), oneUpVsAug = round(pctChange(O.one / O.days, A.one / A.days), 1);
+  const stuckSepVsAug = round(pctChange(S.stuck, A.stuck), 1), stuckOctVsSep = round(pctChange(O.stuck / O.days, S.stuck / S.days), 1);
+  const allShare = (m) => round((m.all / m.stuck) * 100, 1);
+  const allVsBase = round(pctChange(L.all[lSep], L.baseline.all), 0), oneVsBase = round(pctChange(L.one[lSep], L.baseline.one), 0), totVsBase = round(pctChange(L.total[lSep], L.baseline.total), 0);
+  const risePts = L.total[lSep] - L.baseline.total, riseAll = L.all[lSep] - L.baseline.all;
+  const restOct = (R.stbNoBootTotal[2] - O.stuck) / O.days, restSep = (R.stbNoBootTotal[1] - S.stuck) / S.days;
+  const mshare = (m, i) => round((m.v[i] / R.markersBase[i]) * 100, 1);
+  const T3 = R.markers[0], SEQ = R.markers[5], DISP = R.markers[6], TECH = R.markers[7];
+  const octWeeks = weeks.filter((w) => w.start.getUTCMonth() === 9 && w.days >= 5).map((w) => w.stuck / w.days);
+  const card = (label, value, unit, month, note, prior) => ({ ...cardStatic(label, value, unit, month, note), ...(prior ? { prior } : {}) });
+  // top
+  out.push(sec("kpis", "August to October at a glance", "cards", [
+    card(`Stuck on Initializing per day · ${octNote}`, perDay(O, "stuck"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "stuck")} · Sep ${perDay(S, "stuck")} · ${sPct(stuckOctVsSep, 0)} vs Sep`, { aug: perDay(A, "stuck"), sep: perDay(S, "stuck") }),
+    card(`All STBs Affected per day · ${octNote}`, perDay(O, "all"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "all")} · Sep ${perDay(S, "all")} · ${sPct(allUpVsAug, 0)} vs Aug`, { aug: perDay(A, "all"), sep: perDay(S, "all") }),
+    card(`One STB Affected per day · ${octNote}`, perDay(O, "one"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "one")} · Sep ${perDay(S, "one")} · ${sPct(oneUpVsAug, 0)} vs Aug`, { aug: perDay(A, "one"), sep: perDay(S, "one") }),
+    card("All STBs share of Stuck tickets · Oct", allShare(O), "%", "Oct 2026", `Aug ${allShare(A)}% · Sep ${allShare(S)}%`, { aug: allShare(A), sep: allShare(S) }),
+    card("Stuck on Initializing share of TV tickets · Oct", round((O.stuck / O.tickets) * 100, 1), "%", "Oct 2026", `Aug ${round((A.stuck / A.tickets) * 100, 1)}% · Sep ${round((S.stuck / S.tickets) * 100, 1)}%`),
+    card("TV ticket rate per 100 subs · Sep", K.tr[iSep], "per 100 subscribers", "Sep 2026", `Aug ${K.tr[iAug]} · ${sDec(K.tr[iSep] - K.tr[iAug])} per 100 · October not yet reported`, { aug: K.tr[iAug] })
+  ], `Daily figures come from the TV agent ticket exports (Aug 1 to Oct ${R.octDays}); the dashboard's own KPIs run to ${LATEST}. Rates are per 100 subscribers.`));
+  const mrow = (measure, aug, sep, oct, change, flagV, goodDown = true) => ({ measure, aug, sep, oct, change, flag: flagV == null ? null : Math.abs(flagV) < 3 ? "flat" : flagV > 0 ? "up" : "down" });
+  out.push(tableSec("kpis-table", "Dashboard measures · August to October", [col("measure", "Dashboard measure"), col("aug", "Aug"), col("sep", "Sep"), col("oct", `Oct (to ${R.octDays}th)`), col("change", "Sep vs Aug"), col("flag", "Flag")], [
+    mrow("TV tickets (Looker Assure)", K.tv[iAug], K.tv[iSep], null, sPct(pctChange(K.tv[iSep], K.tv[iAug])), pctChange(K.tv[iSep], K.tv[iAug])),
+    mrow("TV tickets in the agent exports", A.tickets, S.tickets, O.tickets, sPct(pctChange(S.tickets, A.tickets)), pctChange(S.tickets, A.tickets)),
+    mrow("Ticket rate per 100 subs", K.tr[iAug], K.tr[iSep], null, sDec(K.tr[iSep] - K.tr[iAug]), pctChange(K.tr[iSep], K.tr[iAug])),
+    mrow("Calls offered", K.calls[iAug], K.calls[iSep], null, sPct(pctChange(K.calls[iSep], K.calls[iAug])), pctChange(K.calls[iSep], K.calls[iAug])),
+    mrow("Repairs / dispatches", K.rv[iAug], K.rv[iSep], null, sPct(pctChange(K.rv[iSep], K.rv[iAug])), pctChange(K.rv[iSep], K.rv[iAug])),
+    mrow("Repair rate per 100 subs", K.rr[iAug], K.rr[iSep], null, sDec(K.rr[iSep] - K.rr[iAug]), pctChange(K.rr[iSep], K.rr[iAug])),
+    mrow("Churn rate per 100 subs", K.ch[iAug], K.ch[iSep], null, sDec(K.ch[iSep] - K.ch[iAug]), pctChange(K.ch[iSep], K.ch[iAug])),
+    mrow("Optik TV Legacy tickets (Looker)", legacy.tickets[iAug], legacy.tickets[iSep], null, sPct(pctChange(legacy.tickets[iSep], legacy.tickets[iAug])), pctChange(legacy.tickets[iSep], legacy.tickets[iAug])),
+    mrow("Optik TV Legacy ticket rate per 100 subs", legacy.ticketRate[iAug], legacy.ticketRate[iSep], null, sDec(legacy.ticketRate[iSep] - legacy.ticketRate[iAug]), pctChange(legacy.ticketRate[iSep], legacy.ticketRate[iAug])),
+    mrow("TV Evolution tickets (Looker)", opus.tickets[iAug], opus.tickets[iSep], null, sPct(pctChange(opus.tickets[iSep], opus.tickets[iAug])), pctChange(opus.tickets[iSep], opus.tickets[iAug])),
+    mrow("Stuck on Initializing (Looker, Legacy)", L.total[lAug], L.total[lSep], L.total[lOct], sPct(pctChange(L.total[lSep], L.total[lAug])), pctChange(L.total[lSep], L.total[lAug])),
+    mrow("Stuck on Initializing (agent exports)", A.stuck, S.stuck, O.stuck, sPct(stuckSepVsAug), stuckSepVsAug)
+  ], `October dashboard KPIs (ticket rate, calls, repairs, churn) arrive with the November scorecard; the Looker Stuck count for October is month to date at the ${L.mtdDays}th. The Looker and agent-export counts differ by about 1% because the export is pulled a few days after month end.`));
+  out.push(textSec("header", `TV · ${R.period} · STB No Boot › Stuck on Initializing: what happened in September, is October the same, and what is being done`, [
+    `Stuck on Initializing jumped ${sPct(stuckSepVsAug, 0)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.`,
+    `TV performance for August to October 2026 (October to the ${R.octDays}th), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, and the fixes in flight.`,
+    `Reliability Strategy · Agent exports to ${R.asOf} · Looker to Oct ${L.mtdDays} (month to date) · Dashboard KPIs to ${LATEST} · Interlocks 21, 22, 27 and 28 Oct 2026`]));
+  out.push(listSec("in-short", "In short", [
+    { title: "September was a step change, and October is the new level, not a further climb.", body: `Stuck on Initializing went from ${num(A.stuck)} tickets in August to ${num(S.stuck)} in September (${sPct(stuckSepVsAug, 0)}); October is running at ${num(O.stuck / O.days)} a day against ${num(S.stuck / S.days)} in September (${sPct(stuckOctVsSep, 0)}), on track for about ${num((O.stuck / O.days) * 31)} for the month. Every October week sits between ${num(Math.min(...octWeeks))} and ${num(Math.max(...octWeeks))} a day.` },
+    { title: "The rise is almost entirely All STBs Affected.", body: `In Looker, All STBs Affected ran at ${num(L.baseline.all)} a month from January to July, ${num(L.all[lAug])} in August and ${num(L.all[lSep])} in September (${sPct(allVsBase, 0)} on the baseline); One STB Affected moved from ${num(L.baseline.one)} to ${num(L.one[lSep])} (${sPct(oneVsBase, 0)}). Of the ${sNum(risePts)} September tickets above baseline, ${sNum(riseAll)} (${Math.round((riseAll / risePts) * 100)}%) are All STBs Affected. The agent exports agree: All STBs Affected is ${sPct(allUpVsAug, 0)} per day on August in October, One STB Affected ${sPct(oneUpVsAug, 0)}.` },
+    { title: "Every box in the home failing at once is a gateway symptom.", body: `${mshare(T3, 1)}% of October Stuck tickets name the T3200M gateway and it is ${R.t3200ShareOfGatewayNamed[1]}% of the gateways named; the interlock data puts about 70% of affected customers on the T3200M. There is no correlation to STB model, number of STBs, or fibre versus copper, and the repeat rate is not elevated.` },
+    { title: "Leading hypothesis: the CloudCheck agent side-load upgrade (v2.5 to 3.418, 6 Jul to 16 Aug) on T3200M gateways, aggravated by long gateway uptime.", body: `Onset lags two to four weeks, ticketed gateways skew to no reboot in more than 30 days, and the fault clears with a gateway-then-STB reboot. Rolling the agent back was rejected on security grounds. Kujo being disabled on 25 September did not move the series (${beforeKujo} a day in the fortnight before, ${afterKujo} after).` },
+    { title: "The fixes have not reached customers yet.", body: "The Sequential Reboot campaign (In flight, Nov 2026) is the only initiative aimed at the mechanism and its pilot cohort was agreed on 22 October; the InSight TV Hardware Check fix (Oct 2026) improves diagnosis; the agent release delta and gateway-marker analysis are due the week of 2 November. Expect the October full-month read to land flat on September." },
+    { title: "Wider TV performance moved with it.", body: `TV tickets rose ${sPct(pctChange(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate ${sDec(K.tr[iSep] - K.tr[iAug])} per 100 subscribers from August to September; Optik TV Legacy tickets rose ${sPct(pctChange(legacy.tickets[iSep], legacy.tickets[iAug]), 0)} on a base that shrank ${Math.abs(pctChange(legacy.base[iSep], legacy.base[iAug])).toFixed(1)}%. The rest of STB No Boot is down ${Math.abs(pctChange(restOct, restSep)).toFixed(0)}% per day in October on September, so the elevated plateau is now this one symptom.` }
+  ]));
+  // 1
+  out.push(sec("s1-stats", "1. TV performance, August to October", "cards", [
+    card("TV tickets · Sep", K.tv[iSep], "count", "Sep 2026", `${num(K.tv[iAug])} in Aug · ${sPct(pctChange(K.tv[iSep], K.tv[iAug]))}`, { aug: K.tv[iAug] }),
+    card("Ticket rate per 100 subs · Sep", K.tr[iSep], "per 100 subscribers", "Sep 2026", `${K.tr[iAug]} in Aug · ${sDec(K.tr[iSep] - K.tr[iAug])}`, { aug: K.tr[iAug] }),
+    card("Calls offered · Sep", K.calls[iSep], "count", "Sep 2026", `${num(K.calls[iAug])} in Aug · ${sPct(pctChange(K.calls[iSep], K.calls[iAug]))}`, { aug: K.calls[iAug] }),
+    card("Repair rate per 100 subs · Sep", K.rr[iSep], "per 100 subscribers", "Sep 2026", `${K.rr[iAug]} in Aug · ${sDec(K.rr[iSep] - K.rr[iAug])}`, { aug: K.rr[iAug] }),
+    card("Churn rate per 100 subs · Sep", K.ch[iSep], "per 100 subscribers", "Sep 2026", `${K.ch[iAug]} in Aug · ${sDec(K.ch[iSep] - K.ch[iAug])}`, { aug: K.ch[iAug] }),
+    card("Optik TV Legacy base · Sep", legacy.base[iSep], "count", "Sep 2026", `${num(legacy.base[iAug])} in Aug · ${sPct(pctChange(legacy.base[iSep], legacy.base[iAug]))}`, { aug: legacy.base[iAug] })
+  ]));
+  out.push(textSec("s1-prose", "1. How the quarter read", [
+    `September is the seasonal peak for TV and 2026 followed the pattern, but harder: tickets rose ${sPct(pctChange(K.tv[iSep], K.tv[iAug]), 0)} on August against ${sPct(pctChange(K.tv[iSep - 12], K.tv[iAug - 12]), 0)} over the same two months of 2025, and the ticket rate reached ${K.tr[iSep]} per 100 subscribers. STB No Boot is the largest TV category and added ${sNum(TVA.tickets.agentCat[0].v[2] - TVA.tickets.agentCat[0].v[1])} tickets in September; Stuck on Initializing alone added ${sNum(S.stuck - A.stuck)}, about ${Math.round(((S.stuck - A.stuck) / (S.tickets - A.tickets)) * 100)}% of the whole TV increase in the agent exports. Repairs and churn did not follow: the repair rate stayed at ${K.rr[iSep]} and churn at ${K.ch[iSep]} per 100, because the fault is cleared by a reboot rather than a truck or a swap.`,
+    `October in the agent exports is ${num(O.tickets / O.days)} TV tickets a day against ${num(S.tickets / S.days)} in September, so total TV demand has eased about ${Math.abs(pctChange(O.tickets / O.days, S.tickets / S.days)).toFixed(0)}% while Stuck on Initializing has not. Video freezing and pixelization are the other October risers; Digital Box No Boot, remote programming and the TV+ app are down.`]));
+  // 2
+  out.push(sec("s2-stats", "2. Stuck on Initializing against its baseline", "cards", [
+    card("2025 monthly average", L.baseline2025.total, "tickets per month", null, `All STBs ${num(L.baseline2025.all)} · One STB ${num(L.baseline2025.one)}`),
+    card(L.baselineLabel, L.baseline.total, "tickets per month", null, `All STBs ${num(L.baseline.all)} · One STB ${num(L.baseline.one)}`),
+    card("September 2026", L.total[lSep], "tickets", "Sep 2026", `${sPct(totVsBase, 0)} on the Jan – Jul average · ${sPct(pctChange(L.total[lSep], L.total[lSep - 12]), 0)} YoY`),
+    card(`October run rate (to ${L.mtdDays}th)`, octRun(L.total), "tickets", "Oct 2026", `${num(L.total[lOct])} so far · All STBs on track for ${num(octRun(L.all))}`)
+  ]));
+  out.push(sec("s2-history", "2. Optik TV Legacy › STB No Boot › Stuck on Initializing by Category 3, monthly, Jan 2025 to Oct 2026 (October month to date)", "series", { months: L.months, series: { one: { label: "One STB Affected", unit: "count", values: L.one }, multi: { label: "Multiple STBs Affected", unit: "count", values: L.multi }, all: { label: "All STBs Affected", unit: "count", values: L.all }, total: { label: "Total", unit: "count", values: L.total } } },
+    `Through 2025 and the first seven months of 2026 the category drifted down with the Legacy base (One STB Affected fell from about ${num(L.one[0])} to ${num(L.one[lJul])} a month) while All STBs Affected held near ${num(L.baseline.all)}. From August All STBs Affected broke out: ${num(L.all[lJul])} in July, ${num(L.all[lAug])} in August, ${num(L.all[lSep])} in September and ${num(L.all[lOct])} in the first ${L.mtdDays} days of October. One STB Affected rose with the season and is back near its baseline in October. The last month is month to date.`));
+  out.push(tableSec("s2-table", "2. Stuck on Initializing by Category 3, 2026 by month", [col("category", "Category 3"), ...yr26.map((i) => col(L.months[i].slice(0, 3), L.months[i].slice(0, 3) + (i === lOct ? " (MTD)" : ""), "count"))],
+    [["All STBs Affected", L.all], ["Multiple STBs Affected", L.multi], ["One STB Affected", L.one], ["Total", L.total]].map(([category, arr]) => { const r = { category }; yr26.forEach((i) => { r[L.months[i].slice(0, 3)] = arr[i]; }); return r; })
+      .concat([(() => { const r = { category: "All STBs share (%)" }; yr26.forEach((i) => { r[L.months[i].slice(0, 3)] = round((L.all[i] / L.total[i]) * 100, 0); }); return r; })()]),
+    `October is month to date at the ${L.mtdDays}th. ${L.source}`));
+  // 3
+  out.push(sec("s3-stats", "3. Day by day: the rise is All STBs Affected, and October has plateaued", "cards", [
+    card("All STBs Affected per day · Oct", perDay(O, "all"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "all")} · Sep ${perDay(S, "all")} · ${sPct(allUpVsAug, 0)} October on August`, { aug: perDay(A, "all"), sep: perDay(S, "all") }),
+    card("One STB Affected per day · Oct", perDay(O, "one"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "one")} · Sep ${perDay(S, "one")} · ${sPct(oneUpVsAug, 0)} October on August`, { aug: perDay(A, "one"), sep: perDay(S, "one") }),
+    card("Multiple STBs Affected per day · Oct", perDay(O, "multi"), "tickets per day", "Oct 2026", `Aug ${perDay(A, "multi")} · Sep ${perDay(S, "multi")} · ${sPct(pctChange(O.multi / O.days, A.multi / A.days), 0)} October on August`, { aug: perDay(A, "multi"), sep: perDay(S, "multi") }),
+    card("Stuck per day, 14 days after Kujo was disabled (25 Sep)", afterKujo, "tickets per day", null, `${beforeKujo} a day in the 14 days before · no step change either way`, { before: beforeKujo })
+  ]));
+  out.push(tableSec("s3-daily", `3. Stuck on Initializing tickets per day by Category 3, Aug 1 to Oct ${R.octDays} 2026`, [col("date", "Date"), col("tickets", "TV tickets", "count"), col("stuck", "Stuck on Initializing", "count"), col("all", "All STBs Affected", "count"), col("multi", "Multiple STBs Affected", "count"), col("one", "One STB Affected", "count"), col("stuck7", "Stuck, 7-day average", "count"), col("all7", "All STBs, 7-day average", "count"), col("multi7", "Multiple STBs, 7-day average", "count"), col("one7", "One STB, 7-day average", "count")],
+    dayList.map((d, i) => ({ date: iso(d.date), tickets: d.tickets, stuck: d.stuck, all: d.all, multi: d.multi, one: d.one, stuck7: rStuck[i], all7: rAll[i], multi7: rMulti[i], one7: rOne[i] })),
+    `All STBs Affected climbed through August, reached its September level in the second week of September and has stayed there since; One STB Affected moved far less and is seasonal. The August climb starts about three weeks after the CloudCheck agent rollout began on 6 July and runs through the rollout's end on 16 August. The Jan – Jul 2026 baseline for All STBs Affected is about ${Math.round(L.baseline.all / 30.4)} a day.`));
+  out.push(tableSec("s3-weekly", "3. Stuck on Initializing by week (Monday to Sunday)", [col("weekStart", "Week starting"), col("days", "Days in the data", "count"), col("stuckPerDay", "Stuck per day", "count"), col("allPerDay", "All STBs per day", "count"), col("onePerDay", "One STB per day", "count"), col("allShare", "All STBs share", "%")],
+    weeks.map((w) => ({ weekStart: iso(w.start), days: w.days, stuckPerDay: round(w.stuck / w.days, 1), allPerDay: round(w.all / w.days, 1), onePerDay: round(w.one / w.days, 1), allShare: round((w.all / w.stuck) * 100, 0) })), "Partial weeks at the start of August and the end of October carry their day count."));
+  out.push(tableSec("s3-share", "3. Share of Stuck on Initializing tickets by Category 3", [col("month", "Month"), col("all", "All STBs Affected", "%"), col("multi", "Multiple STBs Affected", "%"), col("one", "One STB Affected", "%")],
+    M.map((m) => ({ month: m.key === "oct" ? `${m.label} (to ${R.octDays}th)` : m.label, all: allShare(m), multi: round((m.multi / m.stuck) * 100, 1), one: round((m.one / m.stuck) * 100, 1) })),
+    `All STBs Affected was ${allShare(A).toFixed(0)}% of Stuck tickets in August and ${allShare(O).toFixed(0)}% in October. A single box failing to initialise is usually that box; every box failing at once is the gateway or the middleware session behind it.`));
+  // 4
+  out.push(tableSec("s4-subcats", `4. STB No Boot sub-categories, tickets per day · Aug, Sep, Oct (to ${R.octDays}th)`, [col("name", "Sub-category"), col("augPerDay", "Aug per day", "count"), col("sepPerDay", "Sep per day", "count"), col("octPerDay", "Oct per day", "count"), col("aug", "Aug", "count"), col("sep", "Sep", "count"), col("oct", `Oct (to ${R.octDays}th)`, "count")],
+    R.stbNoBoot.map((r) => ({ name: r.name, augPerDay: round(r.v[0] / A.days, 1), sepPerDay: round(r.v[1] / S.days, 1), octPerDay: round(r.v[2] / O.days, 1), aug: r.v[0], sep: r.v[1], oct: r.v[2] })),
+    `STB No Boot in total: ${num(R.stbNoBootTotal[0] / A.days)}, ${num(R.stbNoBootTotal[1] / S.days)} and ${num(R.stbNoBootTotal[2] / O.days)} tickets a day. Only Stuck on Initializing and Red X are above their August level in October; the other boot symptoms have eased, so the category's plateau is now one symptom. Stuck on Initializing is ${Math.round((O.stuck / R.stbNoBootTotal[2]) * 100)}% of the category in October against ${Math.round((A.stuck / R.stbNoBootTotal[0]) * 100)}% in August.`));
+  out.push(tableSec("s4-markers", "4. Markers in the Stuck on Initializing ticket notes, Sep and Oct", [col("name", "Marker"), col("sep", "Sep tickets", "count"), col("sepShare", "Sep share", "%"), col("oct", `Oct tickets (to ${R.octDays}th)`, "count"), col("octShare", "Oct share", "%")],
+    R.markers.map((m) => ({ name: m.name, sep: m.v[0], sepShare: mshare(m, 0), oct: m.v[1], octShare: mshare(m, 1) })),
+    `The profile of a Stuck ticket did not change between September and October: the T3200M is named in ${mshare(T3, 0)}% then ${mshare(T3, 1)}% of tickets and is ${R.t3200ShareOfGatewayNamed[0]}% then ${R.t3200ShareOfGatewayNamed[1]}% of the gateways named. A sequential reboot is recorded in ${mshare(SEQ, 0)}% then ${mshare(SEQ, 1)}%, a dispatch in ${mshare(DISP, 0)}% then ${mshare(DISP, 1)}%, and a technician determination in ${mshare(TECH, 0)}% then ${mshare(TECH, 1)}%. The fix is still an agent-led reboot in the great majority of cases. Written agent comments cover ${Math.round((R.commentCoverage.oct[0] / R.commentCoverage.oct[1]) * 100)}% of October tickets.`));
+  // 5
+  const STATUS_LABEL = { leading: "Leading hypothesis", contributing: "Contributing factor", open: "Open question", "ruled out": "Ruled out" };
+  out.push(listSec("s5-causes", "5. Possible root causes", R.causes.map((c) => ({ title: `${c.name} · ${STATUS_LABEL[c.status]}`, body: c.evidence + (c.next && c.next !== "None." ? ` Next: ${c.next}` : ""), meta: { status: c.status, statusLabel: STATUS_LABEL[c.status], next: c.next } })),
+    "As the STB No Boot interlocks left them on 28 October. The working picture: a change on the T3200M gateway in July and August made gateways with long uptime lose the middleware session for every attached Mediaroom STB, and it clears when the gateway is rebooted before the boxes."));
+  // 6
+  out.push(textSec("s6-intro", "6. What is being done", ["Register initiatives with live status, then the commitments from the October interlocks. The Sequential Reboot campaign is the only item aimed at the mechanism itself; the others improve diagnosis or confirm the cause. None has reached customers yet, so the October full-month figure should be read as the pre-fix baseline."]));
+  const inits = INITIATIVES.filter((it) => it.p === "TV" && R.actions.some((a) => a.kind === "initiative" && a.name === it.name));
+  out.push(listSec("s6-initiatives", "6. Initiatives in the register", inits.map((it) => { const a = R.actions.find((x) => x.name === it.name); return { title: it.name, body: `${it.status} · ${it.timeline} · ${it.prime}. ${a ? a.detail : it.desc}`, meta: { status: it.status, timeline: it.timeline, prime: it.prime, theme: it.theme, pillar: it.pillar } }; })));
+  out.push(tableSec("s6-actions", "6. Interlock commitments", [col("action", "Commitment"), col("owner", "Owner"), col("due", "Due"), col("status", "Status"), col("detail", "Detail")], R.actions.filter((a) => a.kind === "action").map((a) => ({ action: a.name, owner: a.owner, due: a.when, status: a.status, detail: a.detail }))));
+  out.push(listSec("s6-gaps", "6. Gaps", [
+    { title: "No customer-facing fix is live. The reboot pilot has a cohort but no start date, and the campaign excludes mixed OPUS and SHS homes, so part of the base stays uncovered." },
+    { title: `About ${Math.round(((R.markersBase[1] - DISP.v[1]) / R.markersBase[1]) * 100)}% of Stuck tickets close without a dispatch, mostly on an agent-led reboot, so the same gateways will fault again until the uptime driver is addressed proactively.` },
+    { title: "Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement." }]));
+  out.push(listSec("s6-working", "6. Working", [
+    { title: `The rise has stopped: October is ${sPct(stuckOctVsSep, 0)} per day on September, and the All STBs Affected weekly run rate has been flat since mid-September.` },
+    { title: `The agent-led gateway-then-STB reboot clears the fault, so repairs and swaps have not followed tickets: the TV repair rate is ${K.rr[iSep]} per 100 and STB replacements are flat.` },
+    { title: "The cause has been narrowed to one gateway model and one change window, with the data to confirm it due the week of 2 November." }]));
+  out.push(textSec("footer", "Sources, caveats and method", [
+    `Sources: TV agent ticket exports, Aug 1 to Oct ${R.octDays} 2026 (Category 1 to 3, agent notes and resolution text; counts per day, no customer data retained); Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories, Look 2154, Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3, Jan 2025 to Oct 2026 month to date); TS Calls Offered by Product; TV Customer Base Breakdown (platform base); STB No Boot interlock notes of 21, 22, 27 and 28 Oct 2026; Initiatives register.`,
+    `Method notes: per-day figures divide month totals by days in the month (October by ${R.octDays}); the 7-day averages are trailing; weeks run Monday to Sunday and partial weeks are shown with their day count. Baselines are simple monthly averages of the Looker series (2025, and January to July 2026). Note markers are regular-expression matches over the agent notes and resolution text of Stuck on Initializing tickets with the same patterns in both months; they count tickets that mention a thing, not confirmed causes. Interlock content is transcribed from the meeting notes and will be refreshed as the analyses land.`]));
+  return out;
+}
+
 // ---- list_pages / get_page ----
 const PAGE_SCOPE = {
   "All|overview": `Overview home page, All scope: KPI cards, Health Read, scorecard, recurring issues, initiatives by pillar, initiative timeline`,
@@ -861,6 +1004,7 @@ const PAGE_SCOPE = {
   "TV|notes": "TV notes analysis · Sep vs Aug 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations",
   "TV|sentiment": "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)",
   "TV|cross": "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims",
+  "TV|review": `TV review · Aug – Oct 2026 (October to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`,
   "SHS|overview": "SHS: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "SH+|overview": "SH+: calls, tickets, repairs/dispatches, base"
 };
@@ -873,7 +1017,7 @@ function buildPage(product, id, a, b) {
     case "notes": return notesPage(product);
     case "sentiment": return product === "HSIA" ? hsiaSentimentPage() : tvSentimentPage();
     case "cross": return crossPage(product);
-    case "review": return reviewPage();
+    case "review": return product === "TV" ? tvReviewPage() : reviewPage();
     case "selfserve": return selfServePage(a, b);
     case "ffps": return ffpsPage();
     default: throw new Error(`page not available for ${product}`);

@@ -27,6 +27,7 @@ function seriesDisplay(page, s) {
   if (/-tickets$/.test(id)) return { as: "bars-and-line", x: "months", bars: ["ticketVolume"], line: ["ticketRate"], axis: { right: ["ticketRate"] }, alsoAs: "table" };
   if (/-repairs$/.test(id)) return { as: "bars-and-line", x: "months", bars: ["repairVolume"], line: ["repairRate"], axis: { right: ["repairRate"] }, alsoAs: "table" };
   if (/-categories$/.test(id)) return { as: "stacked-bars", x: "months", stack: keys.filter((k) => k !== "total"), total: "total", alsoAs: "table" };
+  if (page === "review" && /-history$/.test(id)) return { as: "stacked-bars", x: "months", stack: keys.filter((k) => k !== "total"), total: "total", alsoAs: "table" };
   if (/-fibre-spotlight$/.test(id)) return { as: "line", x: "months", y: keys };
   if (/-(churn|b2b)$/.test(id)) return { as: "line", x: "months", y: keys, alsoAs: "table" };
   return { as: "line", x: "months", y: keys };
@@ -60,6 +61,14 @@ function tableDisplay(page, product, s) {
     case "cross":
       return { as: "matrix", wide: true };
     case "review":
+      if (product === "TV") {
+        if (s.id === "kpis-table" || s.id === "s2-table" || s.id === "s6-actions") return tbl(s, wide);
+        if (s.id === "s3-daily") return { as: "line", x: "date", y: ["all7", "one7", "multi7"], alsoAs: "table" };
+        if (s.id === "s3-share") return { as: "stacked-bars", label: "month", stack: ["all", "multi", "one"], alsoAs: "table" };
+        if (s.id === "s4-subcats") return { as: "grouped-bars", label: "name", values: ["augPerDay", "sepPerDay", "octPerDay"], alsoAs: "table" };
+        if (s.id === "s4-markers") return { as: "paired-bars", label: "name", pair: ["sepShare", "octShare"], alsoAs: "table" };
+        return tbl(s);
+      }
       if (s.id === "kpis-table") return tbl(s, wide);
       if (s.id === "s2-drivers") return { as: "bars", label: "driver", value: "volumeTickets", sort: "as-is", groupBy: "group", alsoAs: "table" };
       if (s.id === "s5-bucket") return { as: "heatmap", label: "category", cells: ["gponSev", "outage", "downtime", "speed", "ontCap", "reboots", "wifi", "planChg", "tenure"], scale: "auto", wide: true };
@@ -134,7 +143,10 @@ function groupDefs(page, product, sections, asOfMonth) {
     case "ffps": return byNumber(FFPS_GROUPS, (n) => ![3, 6].includes(n));
     case "review": {
       const first = (re) => (sections.find((s) => re.test(s.id)) || {}).title;
-      const titles = { 1: first(/^s1-stats$/), 2: first(/^s2-method$/), 3: first(/^s3-stats$/), 4: first(/^s4-intro$/), 5: first(/^s5-stats$/), 6: first(/^s6-stats$/), 7: "7. Field and customer evidence point the same way" };
+      // TV review: six numbered sections, each titled by its first section; the HSIA review keeps its explicit titles.
+      const titles = product === "TV"
+        ? { 1: first(/^s1-stats$/), 2: first(/^s2-stats$/), 3: first(/^s3-stats$/), 4: "4. The rest of STB No Boot, and what the notes say", 5: first(/^s5-causes$/), 6: first(/^s6-intro$/) }
+        : { 1: first(/^s1-stats$/), 2: first(/^s2-method$/), 3: first(/^s3-stats$/), 4: first(/^s4-intro$/), 5: first(/^s5-stats$/), 6: first(/^s6-stats$/), 7: "7. Field and customer evidence point the same way" };
       return Object.entries(titles).map(([n, title]) => ({ id: `g${n}`, title, open: false, test: (id) => id.startsWith(`s${n}-`) }));
     }
     default: return [];

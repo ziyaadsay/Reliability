@@ -57,8 +57,16 @@ the pages carry exactly what the dashboard shows. Every section also
 carries presentation hints (`display`, `groupId`, `doc`) and every page its
 `groups`, produced by `mcp/src/display.js`, so a consumer can draw each section
 the way the dashboard does. Every reply carries `schemaVersion` (3). Pages are addressable in the dashboard by URL hash
-(`#HSIA`, `#hsiabrief`, `#execsummary`, ...), which is what `url` in
+(`#HSIA`, `#hsiabrief`, `#tvbrief`, `#execsummary`, ...), which is what `url` in
 `list_pages` points at.
+
+The two Review pages (`#hsiabrief`, `#tvbrief`) are hand-written analyses: the
+HSIA one reads the year-over-year ticket analysis against the dashboard quarter;
+the TV one (`TV_REVIEW` in `site/App.jsx`) follows STB No Boot › Stuck on
+Initializing from August to October 2026 with daily counts from the TV agent
+ticket exports, the Looker Category 3 split (All STBs / One STB Affected) from
+Jan 2025, the root-cause hypotheses and the fixes in flight. Both are served by
+`get_page({ page: "review" })`.
 
 ```bash
 node mcp/build.mjs        # writes mcp/dist (gitignored)

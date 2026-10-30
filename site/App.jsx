@@ -741,6 +741,44 @@ const TVA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[311
 // analysis/hsia/analyze_hsia_notes.py; aggregates only, no customer data)
 const HSA = {"months":["Jul 2026","Aug 2026","Sep 2026"],"tickets":{"total":[57173,58787,56761],"c1":[{"name":"Connectivity","v":[41039,42732,41325],"pct":-3.3},{"name":"Wireless","v":[13445,13135,12565],"pct":-4.3},{"name":"Incompatible Equipment","v":[1656,1994,2118],"pct":6.2},{"name":"Abandon","v":[937,848,702],"pct":-17.2},{"name":"NWH","v":[93,75,46],"pct":-38.7}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[11676,13151,13255],"pct":0.8},{"name":"Connectivity › ONT Not Ranged","v":[7205,7117,6358],"pct":-10.7},{"name":"Connectivity › Slow Speeds","v":[6433,6348,6574],"pct":3.6},{"name":"Connectivity › Losing Sync","v":[6269,6391,6307],"pct":-1.3},{"name":"Wireless › Can't Connect","v":[5788,5728,5162],"pct":-9.9},{"name":"Wireless › Disconnects","v":[4270,4149,4253],"pct":2.5},{"name":"Connectivity › No Sync","v":[3262,3717,3170],"pct":-14.7},{"name":"Wireless › Slow Speeds","v":[3387,3258,3149],"pct":-3.3},{"name":"Connectivity › Historical Data","v":[2917,2593,2600],"pct":0.3},{"name":"Incompatible Equipment › Incompatible","v":[1656,1994,2117],"pct":6.2},{"name":"Connectivity › No IP","v":[1939,1920,1710],"pct":-10.9},{"name":"Connectivity › Incompatible Equipment","v":[1337,1494,1349],"pct":-9.7},{"name":"Abandon › Abandon","v":[937,848,702],"pct":-17.2}],"rising":[{"name":"Incompatible Equipment › Incompatible › Not Applicable","v":[1651,1983,2114],"delta":131,"pct":6.6},{"name":"Connectivity › Slow Speeds › All Devices Affected","v":[5133,5038,5163],"delta":125,"pct":2.5},{"name":"Connectivity › No Dataflow › All Devices Affected","v":[10420,11925,12026],"delta":101,"pct":0.8},{"name":"Connectivity › Slow Speeds › Single Device Affected","v":[519,555,648],"delta":93,"pct":16.8},{"name":"Wireless › Disconnects › Some Devices Affected","v":[973,870,955],"delta":85,"pct":9.8},{"name":"Wireless › Disconnects › All Devices Affected","v":[2981,2972,2990],"delta":18,"pct":0.6},{"name":"Connectivity › Historical Data › Severe Line Issues","v":[2914,2593,2599],"delta":6,"pct":0.2},{"name":"Connectivity › Slow Speeds › Some Devices Affected","v":[688,654,659],"delta":5,"pct":0.8}],"falling":[{"name":"Wireless › Can't Connect › All Devices Affected","v":[3332,3521,3054],"delta":-467,"pct":-13.3},{"name":"Connectivity › No Sync › No DSL Light","v":[2461,2595,2273],"delta":-322,"pct":-12.4},{"name":"Connectivity › ONT Not Ranged › Outage","v":[825,1016,713],"delta":-303,"pct":-29.8},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[4238,3988,3688],"delta":-300,"pct":-7.5},{"name":"Connectivity › No Sync › Outage","v":[303,640,450],"delta":-190,"pct":-29.7},{"name":"Connectivity › No IP › No Internet Light","v":[1792,1691,1543],"delta":-148,"pct":-8.8},{"name":"Abandon › Abandon › Abandon","v":[936,845,700],"delta":-145,"pct":-17.2},{"name":"Connectivity › ONT Not Ranged › No Power","v":[2041,2003,1861],"delta":-142,"pct":-7.1}],"techR1":[{"name":"Education","v":[11813,12410,11990],"pct":-3.4},{"name":"Connectivity","v":[10346,10663,10390],"pct":-2.6},{"name":"(no closure code)","v":[7099,7843,8061],"pct":2.8},{"name":"GPON","v":[7555,7544,7612],"pct":0.9},{"name":"HSIA","v":[7723,7490,7030],"pct":-6.1},{"name":"Customer","v":[5336,4986,4666],"pct":-6.4},{"name":"Cancel Ticket","v":[1378,1370,1281],"pct":-6.5},{"name":"Outside Plant","v":[1299,1243,1190],"pct":-4.3},{"name":"Found OK","v":[1119,1451,1138],"pct":-21.6},{"name":"IPTV","v":[789,753,771],"pct":2.4},{"name":"Network Service Wire","v":[756,689,691],"pct":0.3},{"name":"NetCracker","v":[552,702,460],"pct":-34.5}],"techRising":[{"name":"HSIA › Boost Wireless Extender","v":[514,481,642],"delta":161,"pct":33.5},{"name":"Connectivity › STB/PVR","v":[313,328,460],"delta":132,"pct":40.2},{"name":"GPON › Inside Premise Equipment","v":[5006,5130,5200],"delta":70,"pct":1.4},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[163,125,182],"delta":57,"pct":45.6},{"name":"Network Service Wire › Drop/Serv Wire (Incl Bonding)","v":[621,564,593],"delta":29,"pct":5.1},{"name":"Education › IPTV","v":[216,252,276],"delta":24,"pct":9.5}],"techFalling":[{"name":"Education › HSIA","v":[11054,11583,11174],"delta":-409,"pct":-3.5},{"name":"Customer › Customer Training/Education/Inquiry Only","v":[4681,4311,4029],"delta":-282,"pct":-6.5},{"name":"Found OK › Not Required","v":[690,965,705],"delta":-260,"pct":-26.9},{"name":"NetCracker › Stuck","v":[511,645,411],"delta":-234,"pct":-36.3},{"name":"Connectivity › ONT","v":[965,983,807],"delta":-176,"pct":-17.9},{"name":"HSIA › Modem/Gateway","v":[4565,4410,4241],"delta":-169,"pct":-3.8}],"divergence":{"all":[{"alignment":55.3,"nofault":39.2,"nontelus":4.0,"reattribution":44.7,"closed":49133},{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118},{"alignment":54.9,"nofault":39.0,"nontelus":4.1,"reattribution":45.1,"closed":48025}],"field":[{"alignment":86.1,"nofault":6.1,"nontelus":13.2,"reattribution":13.9,"visits":14937},{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452},{"alignment":83.6,"nofault":6.9,"nontelus":13.4,"reattribution":16.4,"visits":14636}],"perCat":[{"cat":"Connectivity › No Dataflow","n":13255,"alignment":55.2,"nofault":38.5,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6574,"alignment":52.3,"nofault":45.4,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › ONT Not Ranged","n":6358,"alignment":70.7,"nofault":26.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Losing Sync","n":6307,"alignment":61.6,"nofault":31.6,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Can't Connect","n":5162,"alignment":33.1,"nofault":58.2,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4253,"alignment":36.0,"nofault":52.3,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":3170,"alignment":67.0,"nofault":28.3,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Wireless › Slow Speeds","n":3149,"alignment":30.6,"nofault":58.0,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Historical Data","n":2600,"alignment":80.4,"nofault":15.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":2117,"alignment":73.5,"nofault":22.6,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1710,"alignment":51.1,"nofault":43.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1349,"alignment":57.1,"nofault":38.5,"techTop":["Education / no fault","Access line / fibre / ONT"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":3275,"alignment":91.7,"nofault":4.7,"nontelus":21.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":2021,"alignment":80.9,"nofault":7.4,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1972,"alignment":84.1,"nofault":8.6,"nontelus":11.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1683,"alignment":91.4,"nofault":4.2,"nontelus":14.0,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1264,"alignment":88.7,"nofault":6.9,"nontelus":6.1,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1153,"alignment":88.5,"nofault":5.6,"nontelus":9.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1110,"alignment":83.3,"nofault":11.4,"nontelus":13.6,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":659,"alignment":50.4,"nofault":9.3,"nontelus":10.9,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":460,"alignment":88.3,"nofault":7.2,"nontelus":10.0,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":406,"alignment":45.4,"nofault":12.6,"nontelus":17.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":365,"alignment":85.4,"nofault":8.0,"nontelus":15.7,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":298,"alignment":45.0,"nofault":7.4,"nontelus":12.4,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":57173,"field_visit_pct":26.3,"agent_education_closure_pct":29.3,"no_closure_code_pct":12.4},{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3},{"tickets":56761,"field_visit_pct":25.9,"agent_education_closure_pct":28.4,"no_closure_code_pct":14.2}],"determination":[[13021,1974],[12490,2000],[12704,1969]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4941,4631,4647],"pct":0.3},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3846,3887,4167],"pct":7.2},{"name":"Drop / service wire / outside plant","v":[1882,1733,1597],"pct":-7.8},{"name":"Inside wiring / jack / ethernet","v":[1318,1352,1350],"pct":-0.1},{"name":"Modem / gateway replaced","v":[1337,1160,1109],"pct":-4.4},{"name":"Provisioning / profile / port fix","v":[1119,1114,1046],"pct":-6.1},{"name":"Education / no fault found / working on arrival","v":[836,799,817],"pct":2.3},{"name":"Power cycle / factory reset / firmware","v":[684,675,733],"pct":8.6},{"name":"Power supply / power","v":[201,157,151],"pct":-3.8},{"name":"Customer-owned equipment / third-party router","v":[66,74,64],"pct":-13.5}],"commentCoverage":[45159,45489,43185],"themes":[{"name":"ONT / fibre / light level","v":[15729,15321,14339],"pct":-6.4},{"name":"Slow speed / buffering","v":[12547,11736,10884],"pct":-7.3},{"name":"No internet / all devices down","v":[10606,11426,10453],"pct":-8.5},{"name":"Dispatch / technician booked","v":[9812,9936,9720],"pct":-2.2},{"name":"Boost / Wi-Fi extender","v":[8990,9214,8564],"pct":-7.1},{"name":"Intermittent drops / disconnects","v":[9323,8267,7882],"pct":-4.7},{"name":"Firmware / settings / factory reset","v":[7990,7861,7194],"pct":-8.5},{"name":"Work from home / streaming / gaming impact","v":[6691,7098,7014],"pct":-1.2},{"name":"Outage / active network event","v":[6537,7478,6666],"pct":-10.9},{"name":"DSL / copper line","v":[6471,6582,5932],"pct":-9.9},{"name":"Red / alarm light / LOS on ONT or modem","v":[6123,5862,5306],"pct":-9.5},{"name":"Repeat / recurring issue","v":[5539,5399,4871],"pct":-9.8},{"name":"Wi-Fi: cannot connect / single device","v":[2821,3058,2823],"pct":-7.7},{"name":"No power / dead equipment","v":[3046,2837,2616],"pct":-7.8},{"name":"Modem / gateway swap shipped","v":[1088,1141,1131],"pct":-0.9},{"name":"Customer wants tech / refuses troubleshooting","v":[893,846,918],"pct":8.5},{"name":"Third-party / customer-owned router","v":[399,399,407],"pct":2.0}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37386,37555,35238],"pct":-6.2},{"name":"NH20 / NAH (Network Access Hub)","v":[15541,15519,14383],"pct":-7.3},{"name":"T3200M gateway","v":[10477,10778,10304],"pct":-4.4},{"name":"Actiontec / legacy modem","v":[5084,5395,5211],"pct":-3.4},{"name":"Boost Wi-Fi 6","v":[3019,3313,2948],"pct":-11.0},{"name":"Wi-Fi Hub / WFH","v":[2203,1852,1639],"pct":-11.5},{"name":"Boost Wi-Fi 7 (BV3)","v":[1113,1551,1645],"pct":6.1},{"name":"Boost Lite (BLite)","v":[551,610,613],"pct":0.5}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[41813,42320,39955],"pct":-5.6},{"name":"Copper (DSL / bonded)","v":[27079,27785,27108],"pct":-2.4}],"domainMix":[{"agent":"Gateway / dataflow","n":13143,"v":[2272,3970,604,801,23,120,5137,206]},{"agent":"Access line & ONT","n":15658,"v":[6587,3181,342,839,93,181,4211,216]},{"agent":"Speed","n":5584,"v":[713,1735,274,193,3,51,2533,79]},{"agent":"Wi-Fi","n":10657,"v":[815,2814,659,116,1,90,5989,170]},{"agent":"Equipment compatibility","n":2983,"v":[951,851,111,80,1,50,864,72]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
+// ---------------------------------------------------------------------------
+// TV Review: STB No Boot › Stuck on Initializing, Aug – Oct 2026 (month to date).
+// daily.*: agent ticket exports (TV notes files, Aug 1 – Oct 28), counts per day of all TV
+//   tickets, Stuck on Initializing tickets and the Category 3 split (All STBs Affected /
+//   Multiple STBs Affected / One STB Affected). looker.*: the Churn Measurement 2026
+//   workbook's TV Looker Ticket Categories tab (Look 2154), Optik TV (Legacy) › STB No
+//   Boot › Stuck on Initializing by Category 3, Jan 2025 – Oct 2026 (October month to date
+//   at the 28 Oct snapshot). markers: regex counts over the agent notes and resolution text
+//   of Stuck on Initializing tickets, Sep and Oct 1 – 28, same patterns both months.
+//   causes / actions: the STB No Boot interlocks of 21, 22, 27 and 28 Oct 2026.
+// ---------------------------------------------------------------------------
+const TV_REVIEW = {"asOf":"28 Oct 2026","period":"Aug – Oct 2026","octDays":28,"daily":{"aug":{"label":"Aug 2026","days":31,"tickets":[715,611,1034,1088,1030,1151,1018,733,734,1113,1285,1192,1138,1120,955,729,1160,1191,1314,1217,1227,970,872,1161,1298,1219,1166,1285,905,820,1163],"stuck":[85,79,107,107,106,130,98,102,96,129,135,129,116,133,156,114,146,163,149,147,161,157,142,168,179,172,159,144,124,112,139],"all":[36,27,36,29,32,45,27,35,31,38,45,30,33,49,52,38,60,59,60,40,57,65,59,63,74,63,67,57,38,46,55],"multi":[5,6,14,6,8,14,2,9,5,18,13,18,12,13,14,8,13,14,11,14,17,10,13,15,19,23,12,16,8,10,10],"one":[44,46,57,72,66,71,69,58,60,73,77,81,71,71,90,68,73,90,78,93,87,82,70,90,86,86,80,71,78,56,74]},"sep":{"label":"Sep 2026","days":30,"tickets":[1255,1263,1312,1280,955,823,1145,1336,1354,1408,1362,1028,990,1446,1351,1308,1267,1304,1129,989,1306,1363,1386,1288,1374,1164,1018,1336,1415,1348],"stuck":[151,138,174,160,143,124,168,179,188,199,209,166,154,204,187,186,175,201,146,166,156,180,188,189,191,155,141,198,175,179],"all":[61,57,70,73,63,52,79,83,85,78,80,73,73,87,82,82,71,84,70,80,55,74,87,89,73,68,60,82,74,81],"multi":[12,16,15,12,11,13,6,17,10,18,23,16,13,17,12,17,16,19,8,11,13,17,18,14,13,13,11,11,13,14],"one":[78,65,89,75,69,59,83,79,93,103,106,77,68,100,93,87,88,98,68,75,88,89,83,86,105,74,70,105,88,84]},"oct":{"label":"Oct 2026","days":28,"tickets":[1275,1273,1057,979,1370,1318,1291,1122,1319,1086,876,1050,1307,1391,1218,1268,1204,1089,1341,1382,1155,1267,1288,1196,899,1311,1429,1303],"stuck":[195,156,181,165,190,158,190,165,163,149,142,161,149,176,179,172,167,182,193,201,158,175,151,158,131,180,164,141],"all":[92,60,80,76,88,72,86,66,79,68,60,64,74,61,81,81,75,92,79,100,66,88,65,66,57,64,67,60],"multi":[14,14,13,13,21,13,14,16,8,12,10,11,13,9,5,10,7,8,15,10,14,9,11,18,7,21,14,7],"one":[89,82,88,76,81,73,90,83,76,69,72,86,62,106,93,81,85,82,99,91,78,78,75,74,67,95,83,74]}},
+  "looker":{"months":["Jan 2025","Feb 2025","Mar 2025","Apr 2025","May 2025","Jun 2025","Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026","Oct 2026"],"one":[3247,3154,3471,3453,3370,3190,3254,2772,2364,2626,2764,2773,2865,2377,2318,2286,2065,2108,2360,2301,2559,2273],"all":[1200,1232,1356,1255,1324,1321,1307,1168,1043,1187,1217,1209,1218,1018,1046,1179,1076,1084,1027,1470,2244,2035],"multi":[434,364,407,430,412,383,405,343,309,377,372,382,391,287,292,319,321,278,325,378,433,336],"total":[4881,4750,5234,5138,5106,4894,4966,4283,3716,4190,4353,4364,4474,3682,3656,3784,3462,3470,3712,4149,5236,4644],"mtdDays":27,"baseline":{"one":2340,"all":1093,"multi":316,"total":3749},"baseline2025":{"one":3036,"all":1235,"multi":385,"total":4656},"baselineLabel":"Jan – Jul 2026 average","source":"TV Looker Ticket Categories tab (Look 2154), Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3; October is month to date as of the 28 Oct workbook snapshot."},
+  "stbNoBoot":[{"name":"Stuck on Initializing","v":[4084,5170,4692]},{"name":"Reboot Loop","v":[906,1070,838]},{"name":"Quick Client Initialization Error","v":[553,654,522]},{"name":"Stuck on PVR is Starting","v":[460,490,415]},{"name":"Registration Code","v":[417,364,315]},{"name":"Red X","v":[248,247,283]},{"name":"Stuck on TELUS Logo","v":[233,309,224]},{"name":"Stuck on Quit Client Error","v":[189,204,174]}],"stbNoBootTotal":[7097,8514,7465],
+  "markers":[{"name":"T3200M gateway named","v":[1644,1448]},{"name":"NH20 gateway named","v":[76,68]},{"name":"VIP5662W (Mediaroom PVR) named","v":[1460,1246]},{"name":"VIP5602W (Mediaroom wSTB) named","v":[1330,1158]},{"name":"Hardwired / Ethernet mentioned","v":[789,728]},{"name":"Sequential reboot in notes","v":[1928,1619]},{"name":"Dispatch flag","v":[495,428]},{"name":"Technician determination","v":[363,298]}],"markersBase":[5170,4692],"t3200ShareOfGatewayNamed":[95.6,95.5],"commentCoverage":{"oct":[19075,34064],"sep":[20401,37303]},
+  // Root-cause hypotheses as the interlocks left them on 28 Oct 2026. status: leading | contributing | open | ruled out
+  causes: [
+    { name: "CloudCheck agent side-load upgrade on the T3200M gateway", status: "leading", evidence: "Agent v2.5 to 3.418 rolled out 6 July to 16 August, app customers first and then randomly across the T3200M base; the update lets changes reach the gateway without a reboot. Onset lags two to four weeks, which matches the climb through August into September. About 70% of affected customers are on the T3200M and 95% of Stuck tickets that name a gateway name the T3200M; no correlation to STB model, single versus multi-STB, or fibre versus copper.", next: "Alan Chiu to compile the agent release delta; Chris Millman and Chris Tanner to analyse the pre/post signature on gateway markers; results due the week of 2 Nov." },
+    { name: "Gateway uptime: stale NAT tables and memory or CPU build-up", status: "contributing", evidence: "Ticketed customers skew to gateways with no reboot in more than 30 days; relative risk rises past two weeks of uptime and technician notes point to a 90 to 120 day window. About 12% of ticketed gateways had no reboot even after the ticket. The symptom is middleware sync loss that presents as every STB stuck on Initializing, which is why the rise is almost entirely All STBs Affected.", next: "Sequential gateway-then-STB reboot campaign, small cohort first (Jawad data lead)." },
+    { name: "Miscategorised internet tickets", status: "contributing", evidence: "HS Valid IP and No Dataflow tickets for Mediaroom customers are also elevated and are likely the same fault logged under internet categories, so the ticket count here understates the customer impact.", next: "Include Mediaroom HSIA categories in the campaign measurement." },
+    { name: "Seasonal September and October peak", status: "contributing", evidence: "Both months peak every year, but the 2025 baseline was 1,043 to 1,187 All STBs Affected tickets a month against 2,244 in September 2026, so seasonality explains a small part of the rise at most.", next: "None; keep as context." },
+    { name: "Kujo disabled on the T3200M from 25 September", status: "ruled out", evidence: "The issue predates the change and the daily series shows no step on or after 25 September.", next: "None." },
+    { name: "T3200M firmware", status: "ruled out", evidence: "Unchanged for years; nothing shipped in the window.", next: "None." },
+    { name: "Repeat callers", status: "ruled out", evidence: "The repeat rate is not elevated; the growth is more customers hitting the fault once, not the same customers calling back.", next: "None." },
+    { name: "Roll the CloudCheck agent back", status: "ruled out", evidence: "Rejected: the earlier agent carries known security vulnerabilities.", next: "Fix forward through the reboot campaign and the agent release review." }
+  ],
+  // What is being done. kind: initiative (in the register) | action (interlock commitment)
+  actions: [
+    { kind: "initiative", name: "Sequential Reboot for Stuck on Initializing", owner: "Z. Sayhebolay", when: "Nov 2026", status: "In flight", detail: "Proactive gateway-then-STB reboot for Mediaroom plus internet two-play households, excluding OPUS and SHS mixed homes. InSight and Sweepr confirmed the sequence waits for the gateway before the STB. A small cohort campaign was agreed on 22 Oct; testing is still needed before scale." },
+    { kind: "initiative", name: "InSight TV Hardware Check fix", owner: "Z. Sayhebolay", when: "Oct 2026", status: "In flight", detail: "Fixes the InSight TV Hardware Check used on STB and gateway faults so agents see the gateway state before they swap the box." },
+    { kind: "initiative", name: "PSU Replacement Campaign", owner: "D. Culp", when: "Sep 2025", status: "On Hold", detail: "OPUS power-supply swaps, not a Stuck on Initializing fix. On hold since August because the new courier requires a signature; 40k static list, 100k units in stock and 120k free units from Vantiva; list validation under way." },
+    { kind: "action", name: "Agent release delta (CloudCheck v2.5 to 3.418)", owner: "Alan Chiu", when: "Week of 2 Nov 2026", status: "Open", detail: "Compile what changed in the side-loaded agent and when each cohort received it." },
+    { kind: "action", name: "Pre/post signature on gateway markers", owner: "Chris Millman, Chris Tanner", when: "Week of 2 Nov 2026", status: "Open", detail: "Compare gateway uptime, memory and NAT markers before and after the agent rollout for ticketed and non-ticketed T3200M customers." },
+    { kind: "action", name: "Reboot cohort data and campaign list", owner: "Jawad", when: "Nov 2026", status: "Open", detail: "Build the no-reboot-over-30-days cohort and the two-play exclusion list for the sequential reboot pilot." },
+    { kind: "action", name: "October full-month read", owner: "Reliability Strategy", when: "Early Nov 2026", status: "Open", detail: "Re-run this analysis on the completed month and roll the TV notes analysis forward." }
+  ]
+};
+
 const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5", FFPS: "#A3268A" };
 const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2", FFPS: "#D77BC4" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
@@ -1610,11 +1648,11 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiabrief: "Review",
-  tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis"
+  tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
 const PARENT_LABEL = { home: "Overview" };
@@ -1933,7 +1971,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "SHS", "SH+", "selfserve", "ffps"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps"];
   const hashPage = () => { const h = typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#/, "")) : ""; return PAGE_IDS.includes(h) ? h : "home"; };
   const [page, setPage] = useState(hashPage);
   useEffect(() => {
@@ -2013,6 +2051,7 @@ export default function ReliabilityScorecards() {
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
     { id: "tvsentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.TV, child: true, parent: "TV" },
     { id: "tvcross", label: "Cross Analysis", icon: "cross", color: colors.TV, child: true, parent: "TV" },
+    { id: "tvbrief", label: "Review", icon: "brief", color: colors.TV, child: true, parent: "TV" },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
@@ -4961,6 +5000,76 @@ export default function ReliabilityScorecards() {
   // (HSIA_YOY): the answer first, the driver waterfall, orders, the reactive bucket, the No
   // Dataflow caller profile, then the dashboard's own corroborating evidence (KPIs, technician
   // findings, survey) and the initiatives mapped to the analysis's driver groups.
+  // Shared stylesheet for the Review pages (HSIA and TV); `col` is the product colour.
+  function briefCss(col, AMBER) {
+    const H = T.heading, MUTED = T.textMuted, RULE = T.border;
+    return `
+.hb{width:100%;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
+.hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
+.hb .hb-eyebrow{font-family:${FONT};font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${H}}
+.hb h1{font-family:${FONT};font-weight:700;font-size:clamp(26px,4vw,36px);letter-spacing:-.01em;line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
+.hb .hb-sub{color:${MUTED};margin:0}
+.hb .hb-meta{font-family:${FONT};font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
+.hb h2{font-family:${FONT};font-weight:700;font-size:21px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
+.hb h3{font-size:14.5px;font-weight:700;margin:0;letter-spacing:.01em}
+.hb p{margin:0}
+.hb .hb-prose{color:${T.textSecondary}}
+.hb section{display:flex;flex-direction:column;gap:14px}
+.hb .hb-answer{background:${T.band};border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.hb .hb-answer ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.hb .hb-answer li{padding-left:4px;color:${T.textSecondary}}
+.hb .hb-answer strong{color:${H}}
+.hb .hb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.hb .hb-stat{background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:14px 16px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.hb .hb-stat:hover{background:${col}14;border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.10);transform:translateY(-2px)}
+.hb .hb-stat .hb-stat-l{transition:color .15s ease}
+.hb .hb-stat:hover .hb-stat-l{color:${col}}
+.hb details.hb-sec{display:block;background:${T.surface};border:1px solid ${RULE};border-radius:12px;transition:border-color .15s ease,box-shadow .15s ease}
+.hb details.hb-sec:hover{border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.hb details.hb-sec summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:12px;user-select:none}
+.hb details.hb-sec summary::-webkit-details-marker{display:none}
+.hb details.hb-sec summary::before{content:"";flex:none;width:9px;height:9px;border-right:2px solid ${col};border-bottom:2px solid ${col};transform:rotate(-45deg);transition:transform .15s ease;margin-left:4px}
+.hb details.hb-sec[open] summary::before{transform:rotate(45deg)}
+.hb details.hb-sec[open] summary{border-bottom:1px solid ${RULE};border-radius:12px 12px 0 0}
+.hb details.hb-sec summary h2{margin:0;font-size:19px}
+.hb details.hb-sec summary:hover h2{color:${col}}
+.hb .hb-body{display:flex;flex-direction:column;gap:14px;padding:18px 22px 22px}
+.hb .hb-stat-v{font-size:26px;font-weight:700;color:${H};line-height:1.1}
+.hb .hb-stat-l{font-size:12.5px;font-weight:600;color:${T.textSecondary};margin-top:5px}
+.hb .hb-stat-s{font-size:11.5px;color:${T.textFaint};margin-top:3px;line-height:1.4}
+.hb figure{margin:0;background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.hb figcaption{font-size:14px;color:${MUTED};line-height:1.5}
+.hb .hb-figtitle{font-weight:700;font-size:15px;color:${T.text}}
+.hb .hb-chart{width:100%;overflow-x:auto}
+.hb .hb-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:${MUTED}}
+.hb .hb-legend span{display:inline-flex;align-items:center;gap:7px}
+.hb .hb-sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+.hb .hb-tw{overflow-x:auto;border:1px solid ${RULE};border-radius:10px;background:${T.surface}}
+.hb table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.hb th,.hb td{padding:9px 12px;text-align:right;border-bottom:1px solid ${RULE};font-variant-numeric:tabular-nums}
+.hb th:first-child,.hb td:first-child{text-align:left}
+.hb th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
+.hb tbody tr:last-child td{border-bottom:0}
+.hb td.n{font-family:${FONT};font-size:13.5px;font-variant-numeric:tabular-nums}
+.hb td.heat{font-size:12.5px;text-align:center;border-radius:4px}
+.hb .hb-flag{font-family:${FONT};font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.hb .hb-warn{color:${T.bad}} .hb .hb-ok{color:${T.good}} .hb .hb-flat{color:${MUTED}}
+.hb .hb-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.hb .hb-note{border-left:3px solid ${AMBER};padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;color:${T.textSecondary}}
+.hb .hb-note h3{color:${AMBER}}
+.hb .hb-note.ok{border-color:${T.good}} .hb .hb-note.ok h3{color:${T.good}}
+.hb .hb-note.purple{border-color:${H}} .hb .hb-note.purple h3{color:${H}}
+.hb .hb-note.bad{border-color:${T.bad}} .hb .hb-note.bad h3{color:${T.bad}}
+.hb ul.hb-plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:${T.textSecondary}}
+.hb .hb-init{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid ${RULE};font-size:14px}
+.hb .hb-init:last-child{border-bottom:0}
+.hb .hb-init .hb-m{color:${MUTED};font-size:12.5px;grid-column:2}
+.hb .hb-imp{font-family:${FONT};font-size:11px;color:${MUTED};white-space:nowrap}
+.hb .hb-pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:${T.band};color:${H};margin-left:8px;vertical-align:middle}
+.hb footer{font-size:13.5px;color:${MUTED};border-top:1px solid ${RULE};padding-top:18px;display:flex;flex-direction:column;gap:6px}
+`;
+  }
+
   function HsiaBriefPage() {
     const col = colors.HSIA, Y = HSIA_YOY;
     const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
@@ -5084,71 +5193,7 @@ export default function ReliabilityScorecards() {
     ];
     const IMPACT_LABEL = { H: "High", M: "Medium", L: "Low" };
 
-    const css = `
-.hb{width:100%;display:flex;flex-direction:column;gap:40px;font-family:${FONT};font-size:16px;line-height:1.55;color:${T.text}}
-.hb .hb-head{display:flex;flex-direction:column;gap:10px;border-bottom:2px solid ${H};padding-bottom:22px}
-.hb .hb-eyebrow{font-family:${FONT};font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${H}}
-.hb h1{font-family:${FONT};font-weight:700;font-size:clamp(26px,4vw,36px);letter-spacing:-.01em;line-height:1.12;margin:0;text-wrap:balance;color:${T.text}}
-.hb .hb-sub{color:${MUTED};margin:0}
-.hb .hb-meta{font-family:${FONT};font-size:12.5px;color:${MUTED};display:flex;flex-wrap:wrap;gap:6px 18px}
-.hb h2{font-family:${FONT};font-weight:700;font-size:21px;line-height:1.2;margin:0 0 4px;text-wrap:balance;color:${T.text}}
-.hb h3{font-size:14.5px;font-weight:700;margin:0;letter-spacing:.01em}
-.hb p{margin:0}
-.hb .hb-prose{color:${T.textSecondary}}
-.hb section{display:flex;flex-direction:column;gap:14px}
-.hb .hb-answer{background:${T.band};border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
-.hb .hb-answer ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
-.hb .hb-answer li{padding-left:4px;color:${T.textSecondary}}
-.hb .hb-answer strong{color:${H}}
-.hb .hb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.hb .hb-stat{background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:14px 16px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease}
-.hb .hb-stat:hover{background:${col}14;border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.10);transform:translateY(-2px)}
-.hb .hb-stat .hb-stat-l{transition:color .15s ease}
-.hb .hb-stat:hover .hb-stat-l{color:${col}}
-.hb details.hb-sec{display:block;background:${T.surface};border:1px solid ${RULE};border-radius:12px;transition:border-color .15s ease,box-shadow .15s ease}
-.hb details.hb-sec:hover{border-color:${col};box-shadow:0 6px 18px rgba(0,0,0,.08)}
-.hb details.hb-sec summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:12px;user-select:none}
-.hb details.hb-sec summary::-webkit-details-marker{display:none}
-.hb details.hb-sec summary::before{content:"";flex:none;width:9px;height:9px;border-right:2px solid ${col};border-bottom:2px solid ${col};transform:rotate(-45deg);transition:transform .15s ease;margin-left:4px}
-.hb details.hb-sec[open] summary::before{transform:rotate(45deg)}
-.hb details.hb-sec[open] summary{border-bottom:1px solid ${RULE};border-radius:12px 12px 0 0}
-.hb details.hb-sec summary h2{margin:0;font-size:19px}
-.hb details.hb-sec summary:hover h2{color:${col}}
-.hb .hb-body{display:flex;flex-direction:column;gap:14px;padding:18px 22px 22px}
-.hb .hb-stat-v{font-size:26px;font-weight:700;color:${H};line-height:1.1}
-.hb .hb-stat-l{font-size:12.5px;font-weight:600;color:${T.textSecondary};margin-top:5px}
-.hb .hb-stat-s{font-size:11.5px;color:${T.textFaint};margin-top:3px;line-height:1.4}
-.hb figure{margin:0;background:${T.surface};border:1px solid ${RULE};border-radius:10px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.hb figcaption{font-size:14px;color:${MUTED};line-height:1.5}
-.hb .hb-figtitle{font-weight:700;font-size:15px;color:${T.text}}
-.hb .hb-chart{width:100%;overflow-x:auto}
-.hb .hb-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:${MUTED}}
-.hb .hb-legend span{display:inline-flex;align-items:center;gap:7px}
-.hb .hb-sw{width:12px;height:12px;border-radius:2px;display:inline-block}
-.hb .hb-tw{overflow-x:auto;border:1px solid ${RULE};border-radius:10px;background:${T.surface}}
-.hb table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
-.hb th,.hb td{padding:9px 12px;text-align:right;border-bottom:1px solid ${RULE};font-variant-numeric:tabular-nums}
-.hb th:first-child,.hb td:first-child{text-align:left}
-.hb th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:${MUTED};font-weight:600}
-.hb tbody tr:last-child td{border-bottom:0}
-.hb td.n{font-family:${FONT};font-size:13.5px;font-variant-numeric:tabular-nums}
-.hb td.heat{font-size:12.5px;text-align:center;border-radius:4px}
-.hb .hb-flag{font-family:${FONT};font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
-.hb .hb-warn{color:${T.bad}} .hb .hb-ok{color:${T.good}} .hb .hb-flat{color:${MUTED}}
-.hb .hb-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.hb .hb-note{border-left:3px solid ${AMBER};padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;color:${T.textSecondary}}
-.hb .hb-note h3{color:${AMBER}}
-.hb .hb-note.ok{border-color:${T.good}} .hb .hb-note.ok h3{color:${T.good}}
-.hb .hb-note.purple{border-color:${H}} .hb .hb-note.purple h3{color:${H}}
-.hb .hb-note.bad{border-color:${T.bad}} .hb .hb-note.bad h3{color:${T.bad}}
-.hb ul.hb-plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:${T.textSecondary}}
-.hb .hb-init{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid ${RULE};font-size:14px}
-.hb .hb-init:last-child{border-bottom:0}
-.hb .hb-init .hb-m{color:${MUTED};font-size:12.5px;grid-column:2}
-.hb .hb-imp{font-family:${FONT};font-size:11px;color:${MUTED};white-space:nowrap}
-.hb .hb-pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:${T.band};color:${H};margin-left:8px;vertical-align:middle}
-.hb footer{font-size:13.5px;color:${MUTED};border-top:1px solid ${RULE};padding-top:18px;display:flex;flex-direction:column;gap:6px}
-`;
+    const css = briefCss(col, AMBER);
     return (
       <div className="hb">
         <style>{css}</style>
@@ -5420,6 +5465,357 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  // ------------------------------ TV review (STB Stuck on Initializing) ------------------------------
+  function TvBriefPage() {
+    const col = colors.TV, R = TV_REVIEW, D = R.daily, L = R.looker;
+    const H = T.heading, MUTED = T.textMuted, RULE = T.border;
+    const AMBER = isDark ? "#F0A55B" : "#B86E00", ONE = isDark ? "#9B7BC2" : "#7C53A5", MULTI = T.textFaint;
+    const css = briefCss(col, AMBER);
+    const sum = (arr) => arr.reduce((a, b) => a + (b || 0), 0);
+    const num = (v, d = 0) => (v == null ? "—" : d ? v.toFixed(d) : Math.round(v).toLocaleString());
+    const pct = (a, b) => (b ? ((a - b) / b) * 100 : null);
+    const sp = (x, d = 0) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
+    const sd = (x, d = 2) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d));
+    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
+    const big = fmtBig;
+    const flag = (v, goodDown = true, thr = 3) => {
+      if (v == null) return null;
+      const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
+      return <span className={`hb-flag hb-${tone}`}>{tone === "flat" ? "flat" : v > 0 ? "up" : "down"}</span>;
+    };
+    const stat = (v, label, sub) => (
+      <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
+    );
+    const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.label}><i className="hb-sw" style={{ background: it.color, opacity: it.opacity == null ? 1 : it.opacity }} />{it.label}</span>)}</div>;
+
+    // ---- month totals from the daily exports ----
+    const KEYS = ["aug", "sep", "oct"];
+    const M = KEYS.map((k) => { const d = D[k]; return { key: k, label: d.label, short: d.label.slice(0, 3), days: d.days, tickets: sum(d.tickets), stuck: sum(d.stuck), all: sum(d.all), multi: sum(d.multi), one: sum(d.one) }; });
+    const perDay = (m, f) => m[f] / m.days;
+    const [A, S, O] = M;
+    const octNote = `Oct 1 – ${R.octDays}`;
+    // dashboard KPI months (Looker Assure / Reliability Deact KPIs); October is not yet reported there
+    const iAug = MONTHS.indexOf("Aug 2026"), iSep = MONTHS.indexOf("Sep 2026");
+    const K = { tv: DATA.ticketVolume.TV, tr: DATA.ticketRate.TV, calls: CALLS_SPLIT.TV.offered, rv: DATA.repairVolume.TV, rr: DATA.repairRate.TV, ch: DATA.churnRate.TV, base: DATA.subBase.TV };
+    const legacy = TV_PLATFORMS.find((p) => p.id === "legacy"), opus = TV_PLATFORMS.find((p) => p.id === "opus");
+    // Looker history
+    const li = (m) => L.months.indexOf(m);
+    const lSep = li("Sep 2026"), lOct = li("Oct 2026"), lAug = li("Aug 2026"), lJul = li("Jul 2026");
+    const octRun = (arr) => (arr[lOct] / L.mtdDays) * 31;
+    const yr26 = L.months.map((m, i) => i).filter((i) => L.months[i].endsWith("2026"));
+    // weekly blocks (Monday to Sunday) across Aug 1 – Oct 28
+    const dayList = [];
+    KEYS.forEach((k) => { const d = D[k]; const mon = { aug: 7, sep: 8, oct: 9 }[k]; for (let i = 0; i < d.days; i++) dayList.push({ date: new Date(Date.UTC(2026, mon, i + 1)), tickets: d.tickets[i], stuck: d.stuck[i], all: d.all[i], multi: d.multi[i], one: d.one[i] }); });
+    const weeks = [];
+    dayList.forEach((d) => {
+      const dow = (d.date.getUTCDay() + 6) % 7; // Monday = 0
+      const start = new Date(d.date); start.setUTCDate(d.date.getUTCDate() - dow);
+      let w = weeks.find((x) => x.start.getTime() === start.getTime());
+      if (!w) { w = { start, days: 0, tickets: 0, stuck: 0, all: 0, multi: 0, one: 0 }; weeks.push(w); }
+      w.days += 1; w.tickets += d.tickets; w.stuck += d.stuck; w.all += d.all; w.multi += d.multi; w.one += d.one;
+    });
+    const fmtDay = (dt) => `${dt.getUTCDate()} ${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.getUTCMonth()]}`;
+    const roll = (arr, n = 7) => arr.map((_, i) => (i < n - 1 ? null : +(sum(arr.slice(i - n + 1, i + 1)) / n).toFixed(1)));
+    const dAll = dayList.map((d) => d.all), dOne = dayList.map((d) => d.one), dMulti = dayList.map((d) => d.multi), dStuck = dayList.map((d) => d.stuck);
+    const rAll = roll(dAll), rOne = roll(dOne), rMulti = roll(dMulti), rStuck = roll(dStuck);
+
+    // ---- daily line figure (own SVG: no per-point labels, month separators, 7-day averages) ----
+    const svgText = { fontFamily: FONT, fontSize: 12, fill: MUTED };
+    const dailyChart = () => {
+      const W = 800, Hh = 260, left = 44, right = 16, top = 16, bottom = 28, n = dayList.length;
+      const pw = W - left - right, ph = Hh - top - bottom, max = 220;
+      const x = (i) => left + (i * pw) / (n - 1), y = (v) => top + ph - (v / max) * ph;
+      const path = (arr) => { let d = "", pen = false; arr.forEach((v, i) => { if (v == null) { pen = false; return; } d += `${pen ? " L" : " M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; }); return d; };
+      const dots = (arr, c) => arr.map((v, i) => <circle key={i} cx={x(i)} cy={y(v)} r={1.6} fill={c} opacity={0.35} />);
+      const monthStarts = dayList.map((d, i) => (d.date.getUTCDate() === 1 ? i : null)).filter((i) => i != null);
+      const sepIdx = dayList.findIndex((d) => d.date.getUTCMonth() === 8 && d.date.getUTCDate() === 25);
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 560 }}>
+          {[0, 50, 100, 150, 200].map((g) => <g key={g}><line x1={left} x2={W - right} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={left - 8} y={y(g) + 4} textAnchor="end" style={svgText}>{g}</text></g>)}
+          {monthStarts.map((i) => <g key={i}><line x1={x(i)} x2={x(i)} y1={top} y2={top + ph} stroke={T.borderStrong} strokeDasharray="3 3" /><text x={x(i) + 5} y={Hh - 8} style={{ ...svgText, fontWeight: 700 }}>{dayList[i].date.toLocaleString("en-CA", { month: "short", timeZone: "UTC" })} 2026</text></g>)}
+          {sepIdx > 0 && <g><line x1={x(sepIdx)} x2={x(sepIdx)} y1={top} y2={top + ph} stroke={AMBER} strokeDasharray="2 3" /><text x={x(sepIdx) + 4} y={top + 10} style={{ ...svgText, fill: AMBER, fontSize: 11 }}>Kujo off (25 Sep)</text></g>}
+          <line x1={left} x2={W - right} y1={y(L.baseline.all / 30.4)} y2={y(L.baseline.all / 30.4)} stroke={col} strokeDasharray="6 4" opacity={0.7} />
+          <text x={W - right} y={y(L.baseline.all / 30.4) - 5} textAnchor="end" style={{ ...svgText, fill: col, fontSize: 11 }}>All STBs baseline {Math.round(L.baseline.all / 30.4)}/day (Jan – Jul 2026)</text>
+          {dots(dAll, col)}{dots(dOne, ONE)}
+          <path d={path(rAll)} fill="none" stroke={col} strokeWidth={2.6} />
+          <path d={path(rOne)} fill="none" stroke={ONE} strokeWidth={2.6} />
+          <path d={path(rMulti)} fill="none" stroke={MULTI} strokeWidth={1.8} />
+        </svg>
+      );
+    };
+    // horizontal bars for the sub-categories (per day, three months)
+    const hbars3 = (rows, { max, fmt, labelW = 250 }) => {
+      const W = 700, Lw = labelW, Rw = 56, top = 22, bh = 12, gap = 3, gh = 3 * (bh + gap) + 14, Hh = top + rows.length * gh + 26, x = (v) => Lw + ((W - Lw - Rw) * v) / max;
+      const cols3 = [T.borderStrong, ONE, col];
+      const step = max <= 20 ? 5 : max <= 100 ? 20 : 50, ticks = []; for (let g = 0; g <= max + 1e-9; g += step) ticks.push(g);
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }}>
+          {ticks.map((g) => <g key={g}><line x1={x(g)} x2={x(g)} y1={top - 6} y2={Hh - 22} stroke={RULE} /><text x={x(g)} y={Hh - 6} textAnchor="middle" style={svgText}>{fmt(g)}</text></g>)}
+          {rows.map((r, i) => { const yy = top + i * gh; return (
+            <g key={r.name}>
+              <text x={0} y={yy + bh + 4} style={{ ...svgText, fill: T.text, fontSize: 12.5 }}>{r.name}</text>
+              {r.v.map((v, k) => <g key={k}><rect x={Lw} y={yy + k * (bh + gap)} width={Math.max(0, x(Math.min(v, max)) - Lw)} height={bh} rx={2} fill={cols3[k]} /><text x={x(Math.min(v, max)) + 5} y={yy + k * (bh + gap) + bh - 2} style={{ ...svgText, fontSize: 11 }}>{fmt(v)}</text></g>)}
+            </g>); })}
+        </svg>
+      );
+    };
+    const stackedPct = (rows, segs) => {
+      const W = 700, Lw = 150, Rw = 10, top = 8, rh = 40, bh = 22, Hh = top + rows.length * rh + 24, span = W - Lw - Rw;
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }}>
+          {[0, 25, 50, 75, 100].map((g) => <g key={g}><line x1={Lw + (span * g) / 100} x2={Lw + (span * g) / 100} y1={top} y2={Hh - 22} stroke={RULE} /><text x={Lw + (span * g) / 100} y={Hh - 6} textAnchor="middle" style={svgText}>{g}%</text></g>)}
+          {rows.map((r, i) => { const yy = top + i * rh; let acc = Lw; return (
+            <g key={r.label}><text x={0} y={yy + bh / 2 + 5} style={{ ...svgText, fill: T.text, fontSize: 13 }}>{r.label}</text>
+              {r.p.map((v, k) => { const w = (span * v) / 100, xx = acc; acc += w; return <g key={k}><rect x={xx} y={yy} width={w} height={bh} fill={segs[k].color} /><text x={xx + w / 2} y={yy + bh / 2 + 4} textAnchor="middle" style={{ ...svgText, fontSize: 12, fill: segs[k].dark ? T.bg : T.text }}>{w > 34 ? v.toFixed(0) + "%" : ""}</text></g>; })}
+            </g>); })}
+        </svg>
+      );
+    };
+
+    // ---- derived numbers for the prose ----
+    const allUpVsAug = pct(perDay(O, "all"), perDay(A, "all")), oneUpVsAug = pct(perDay(O, "one"), perDay(A, "one"));
+    const stuckSepVsAug = pct(S.stuck, A.stuck), stuckOctVsSep = pct(perDay(O, "stuck"), perDay(S, "stuck"));
+    const allShare = (m) => (m.all / m.stuck) * 100;
+    const allVsBase = pct(L.all[lSep], L.baseline.all), oneVsBase = pct(L.one[lSep], L.baseline.one), totVsBase = pct(L.total[lSep], L.baseline.total);
+    const risePts = (L.total[lSep] - L.baseline.total), riseAll = L.all[lSep] - L.baseline.all;
+    const kujoIdx = dayList.findIndex((d) => d.date.getUTCMonth() === 8 && d.date.getUTCDate() === 25);
+    const beforeKujo = sum(dStuck.slice(kujoIdx - 14, kujoIdx)) / 14, afterKujo = sum(dStuck.slice(kujoIdx, kujoIdx + 14)) / 14;
+    const restOct = (R.stbNoBootTotal[2] - O.stuck) / O.days, restSep = (R.stbNoBootTotal[1] - S.stuck) / S.days;
+    const inits = INITIATIVES.filter((it) => it.p === "TV" && R.actions.some((a) => a.kind === "initiative" && a.name === it.name));
+    const T3 = R.markers[0], SEQ = R.markers[5], DISP = R.markers[6], TECH = R.markers[7];
+    const mshare = (m, i) => ((m.v[i] / R.markersBase[i]) * 100).toFixed(1) + "%";
+    const STATUS_TONE = { leading: "bad", contributing: "", open: "purple", "ruled out": "ok" };
+    const STATUS_LABEL = { leading: "Leading hypothesis", contributing: "Contributing factor", open: "Open question", "ruled out": "Ruled out" };
+
+    return (
+      <div className="hb">
+        <style>{css}</style>
+        <section aria-labelledby="tb-kpis">
+          <h2 id="tb-kpis">August to October at a glance</h2>
+          <div className="hb-stats">
+            {stat(num(perDay(O, "stuck")), `Stuck on Initializing per day · ${octNote}`, `Aug ${num(perDay(A, "stuck"))} · Sep ${num(perDay(S, "stuck"))} · ${sp(stuckOctVsSep)} vs Sep`)}
+            {stat(num(perDay(O, "all")), `All STBs Affected per day · ${octNote}`, <>Aug {num(perDay(A, "all"))} · Sep {num(perDay(S, "all"))} · <span className="hb-warn" style={{ fontWeight: 700 }}>{sp(allUpVsAug)} vs Aug</span></>)}
+            {stat(num(perDay(O, "one")), `One STB Affected per day · ${octNote}`, `Aug ${num(perDay(A, "one"))} · Sep ${num(perDay(S, "one"))} · ${sp(oneUpVsAug)} vs Aug`)}
+            {stat(allShare(O).toFixed(0) + "%", "All STBs share of Stuck tickets · Oct", `Aug ${allShare(A).toFixed(0)}% · Sep ${allShare(S).toFixed(0)}%`)}
+            {stat(((O.stuck / O.tickets) * 100).toFixed(1) + "%", "Stuck on Initializing share of TV tickets · Oct", `Aug ${((A.stuck / A.tickets) * 100).toFixed(1)}% · Sep ${((S.stuck / S.tickets) * 100).toFixed(1)}%`)}
+            {stat(fmtRate(K.tr[iSep]), "TV ticket rate per 100 subs · Sep", <>Aug {fmtRate(K.tr[iAug])} · <span className={K.tr[iSep] > K.tr[iAug] ? "hb-warn" : "hb-ok"} style={{ fontWeight: 700 }}>{sd(K.tr[iSep] - K.tr[iAug])} per 100</span> · October not yet reported</>)}
+          </div>
+          <p className="hb-prose" style={{ marginTop: 10 }}>Daily figures come from the TV agent ticket exports (Aug 1 to Oct {R.octDays}); the dashboard's own KPIs run to {LATEST}. Rates are per 100 subscribers. Red is worse, green is better.</p>
+          <div className="hb-tw">
+            <table>
+              <thead><tr><th>Dashboard measure</th><th>Aug</th><th>Sep</th><th>Oct (to {R.octDays}th)</th><th>Sep vs Aug</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>TV tickets (Looker Assure)</td><td className="n">{num(K.tv[iAug])}</td><td className="n">{num(K.tv[iSep])}</td><td className="n">—</td><td className="n">{sp(pct(K.tv[iSep], K.tv[iAug]), 1)}</td><td>{flag(pct(K.tv[iSep], K.tv[iAug]))}</td></tr>
+                <tr><td>TV tickets in the agent exports</td><td className="n">{num(A.tickets)}</td><td className="n">{num(S.tickets)}</td><td className="n">{num(O.tickets)} <span style={{ color: MUTED }}>({num(perDay(O, "tickets"))}/day)</span></td><td className="n">{sp(pct(S.tickets, A.tickets), 1)}</td><td>{flag(pct(S.tickets, A.tickets))}</td></tr>
+                <tr><td>Ticket rate per 100 subs</td><td className="n">{fmtRate(K.tr[iAug])}</td><td className="n">{fmtRate(K.tr[iSep])}</td><td className="n">—</td><td className="n">{sd(K.tr[iSep] - K.tr[iAug])}</td><td>{flag(pct(K.tr[iSep], K.tr[iAug]))}</td></tr>
+                <tr><td>Calls offered</td><td className="n">{num(K.calls[iAug])}</td><td className="n">{num(K.calls[iSep])}</td><td className="n">—</td><td className="n">{sp(pct(K.calls[iSep], K.calls[iAug]), 1)}</td><td>{flag(pct(K.calls[iSep], K.calls[iAug]))}</td></tr>
+                <tr><td>Repairs / dispatches</td><td className="n">{num(K.rv[iAug])}</td><td className="n">{num(K.rv[iSep])}</td><td className="n">—</td><td className="n">{sp(pct(K.rv[iSep], K.rv[iAug]), 1)}</td><td>{flag(pct(K.rv[iSep], K.rv[iAug]))}</td></tr>
+                <tr><td>Repair rate per 100 subs</td><td className="n">{fmtRate(K.rr[iAug])}</td><td className="n">{fmtRate(K.rr[iSep])}</td><td className="n">—</td><td className="n">{sd(K.rr[iSep] - K.rr[iAug])}</td><td>{flag(pct(K.rr[iSep], K.rr[iAug]))}</td></tr>
+                <tr><td>Churn rate per 100 subs</td><td className="n">{fmtRate(K.ch[iAug])}</td><td className="n">{fmtRate(K.ch[iSep])}</td><td className="n">—</td><td className="n">{sd(K.ch[iSep] - K.ch[iAug])}</td><td>{flag(pct(K.ch[iSep], K.ch[iAug]))}</td></tr>
+                <tr><td>Optik TV Legacy tickets (Looker)</td><td className="n">{num(legacy.tickets[iAug])}</td><td className="n">{num(legacy.tickets[iSep])}</td><td className="n">—</td><td className="n">{sp(pct(legacy.tickets[iSep], legacy.tickets[iAug]), 1)}</td><td>{flag(pct(legacy.tickets[iSep], legacy.tickets[iAug]))}</td></tr>
+                <tr><td>Optik TV Legacy ticket rate per 100 subs</td><td className="n">{fmtRate(legacy.ticketRate[iAug])}</td><td className="n">{fmtRate(legacy.ticketRate[iSep])}</td><td className="n">—</td><td className="n">{sd(legacy.ticketRate[iSep] - legacy.ticketRate[iAug])}</td><td>{flag(pct(legacy.ticketRate[iSep], legacy.ticketRate[iAug]))}</td></tr>
+                <tr><td>TV Evolution tickets (Looker)</td><td className="n">{num(opus.tickets[iAug])}</td><td className="n">{num(opus.tickets[iSep])}</td><td className="n">—</td><td className="n">{sp(pct(opus.tickets[iSep], opus.tickets[iAug]), 1)}</td><td>{flag(pct(opus.tickets[iSep], opus.tickets[iAug]))}</td></tr>
+                <tr><td>Stuck on Initializing (Looker, Legacy)</td><td className="n">{num(L.total[lAug])}</td><td className="n">{num(L.total[lSep])}</td><td className="n">{num(L.total[lOct])} <span style={{ color: MUTED }}>(to {L.mtdDays}th)</span></td><td className="n">{sp(pct(L.total[lSep], L.total[lAug]), 1)}</td><td>{flag(pct(L.total[lSep], L.total[lAug]))}</td></tr>
+                <tr><td>Stuck on Initializing (agent exports)</td><td className="n">{num(A.stuck)}</td><td className="n">{num(S.stuck)}</td><td className="n">{num(O.stuck)} <span style={{ color: MUTED }}>({num(perDay(O, "stuck"))}/day)</span></td><td className="n">{sp(stuckSepVsAug, 1)}</td><td>{flag(stuckSepVsAug)}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>The Looker and agent-export counts differ by about 1% because the export is pulled a few days after month end and Looker is re-pulled later; both are shown so the trend can be read against either source. October dashboard KPIs (ticket rate, calls, repairs, churn) arrive with the November scorecard.</p>
+        </section>
+
+        <header className="hb-head">
+          <div className="hb-eyebrow">TV · {R.period} · STB No Boot › Stuck on Initializing: what happened in September, is October the same, and what is being done</div>
+          <h1>Stuck on Initializing jumped {sp(stuckSepVsAug)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.</h1>
+          <p className="hb-sub">TV performance for August to October {LATEST.slice(-4)} (October to the {R.octDays}th), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, and the fixes in flight.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Agent exports to {R.asOf}</span><span>Looker to Oct {L.mtdDays} (month to date)</span><span>Dashboard KPIs to {LATEST}</span><span>Interlocks 21, 22, 27 and 28 Oct 2026</span></div>
+        </header>
+
+        <section aria-labelledby="tb-short">
+          <div className="hb-answer">
+            <h3 id="tb-short" style={{ color: H }}>In short</h3>
+            <ol>
+              <li><strong>September was a step change, and October is the new level, not a further climb.</strong> Stuck on Initializing went from {num(A.stuck)} tickets in August to {num(S.stuck)} in September ({sp(stuckSepVsAug)}); October is running at {num(perDay(O, "stuck"))} a day against {num(perDay(S, "stuck"))} in September ({sp(stuckOctVsSep)}), on track for about {num((O.stuck / O.days) * 31)} for the month. Every October week sits between {num(Math.min(...weeks.filter((w) => w.start.getUTCMonth() === 9 && w.days >= 5).map((w) => w.stuck / w.days)))} and {num(Math.max(...weeks.filter((w) => w.start.getUTCMonth() === 9 && w.days >= 5).map((w) => w.stuck / w.days)))} a day.</li>
+              <li><strong>The rise is almost entirely All STBs Affected.</strong> In Looker, All STBs Affected ran at {num(L.baseline.all)} a month from January to July, {num(L.all[lAug])} in August and {num(L.all[lSep])} in September ({sp(allVsBase)} on the baseline); One STB Affected moved from {num(L.baseline.one)} to {num(L.one[lSep])} ({sp(oneVsBase)}). Of the {sn(risePts)} September tickets above baseline, {sn(riseAll)} ({((riseAll / risePts) * 100).toFixed(0)}%) are All STBs Affected. The agent exports agree: All STBs Affected is {sp(allUpVsAug)} per day on August in October, One STB Affected {sp(oneUpVsAug)}.</li>
+              <li><strong>Every box in the home failing at once is a gateway symptom.</strong> {mshare(T3, 1)} of October Stuck tickets name the T3200M gateway and it is {R.t3200ShareOfGatewayNamed[1]}% of the gateways named; the interlock data puts about 70% of affected customers on the T3200M. There is no correlation to STB model, number of STBs, or fibre versus copper, and the repeat rate is not elevated.</li>
+              <li><strong>Leading hypothesis: the CloudCheck agent side-load upgrade (v2.5 to 3.418, 6 Jul to 16 Aug) on T3200M gateways, aggravated by long gateway uptime.</strong> Onset lags two to four weeks, ticketed gateways skew to no reboot in more than 30 days, and the fault clears with a gateway-then-STB reboot. Rolling the agent back was rejected on security grounds. Kujo being disabled on 25 September did not move the series ({num(beforeKujo)} a day in the fortnight before, {num(afterKujo)} after).</li>
+              <li><strong>The fixes have not reached customers yet.</strong> The Sequential Reboot campaign (In flight, Nov 2026) is the only initiative aimed at the mechanism and its pilot cohort was agreed on 22 October; the InSight TV Hardware Check fix (Oct 2026) improves diagnosis; the agent release delta and gateway-marker analysis are due the week of 2 November. Expect the October full-month read to land flat on September.</li>
+              <li><strong>Wider TV performance moved with it.</strong> TV tickets rose {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 subscribers from August to September; Optik TV Legacy tickets rose {sp(pct(legacy.tickets[iSep], legacy.tickets[iAug]), 0)} on a base that shrank {Math.abs(pct(legacy.base[iSep], legacy.base[iAug])).toFixed(1)}%. The rest of STB No Boot (reboot loop, client errors, TELUS logo) is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October on September, so the elevated plateau is now this one symptom.</li>
+            </ol>
+          </div>
+        </section>
+
+        <details className="hb-sec" aria-labelledby="tb-s1">
+          <summary><h2 id="tb-s1">1. TV performance, August to October</h2></summary>
+          <div className="hb-body">
+            <div className="hb-stats">
+              {stat(big(K.tv[iSep]), `TV tickets · Sep`, `${big(K.tv[iAug])} in Aug · ${sp(pct(K.tv[iSep], K.tv[iAug]), 1)}`)}
+              {stat(fmtRate(K.tr[iSep]), "Ticket rate per 100 subs · Sep", `${fmtRate(K.tr[iAug])} in Aug · ${sd(K.tr[iSep] - K.tr[iAug])}`)}
+              {stat(big(K.calls[iSep]), "Calls offered · Sep", `${big(K.calls[iAug])} in Aug · ${sp(pct(K.calls[iSep], K.calls[iAug]), 1)}`)}
+              {stat(fmtRate(K.rr[iSep]), "Repair rate per 100 subs · Sep", `${fmtRate(K.rr[iAug])} in Aug · ${sd(K.rr[iSep] - K.rr[iAug])}`)}
+              {stat(fmtRate(K.ch[iSep]), "Churn rate per 100 subs · Sep", `${fmtRate(K.ch[iAug])} in Aug · ${sd(K.ch[iSep] - K.ch[iAug])}`)}
+              {stat(big(legacy.base[iSep]), "Optik TV Legacy base · Sep", `${big(legacy.base[iAug])} in Aug · ${sp(pct(legacy.base[iSep], legacy.base[iAug]), 1)}`)}
+            </div>
+            <p className="hb-prose">September is the seasonal peak for TV and 2026 followed the pattern, but harder: tickets rose {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} on August against {sp(pct(K.tv[iSep - 12], K.tv[iAug - 12]), 0)} over the same two months of 2025, and the ticket rate reached {fmtRate(K.tr[iSep])} per 100 subscribers, the highest since {MONTHS[K.tr.findIndex((v, i) => i < iSep && v >= K.tr[iSep])] || "Jan 2025"}. STB No Boot is the largest TV category and added {sn(TVA.tickets.agentCat[0].v[2] - TVA.tickets.agentCat[0].v[1])} tickets in September; Stuck on Initializing alone added {sn(S.stuck - A.stuck)}, about {((S.stuck - A.stuck) / (S.tickets - A.tickets) * 100).toFixed(0)}% of the whole TV increase in the agent exports. Repairs and churn did not follow: the repair rate stayed at {fmtRate(K.rr[iSep])} and churn at {fmtRate(K.ch[iSep])} per 100, because the fault is cleared by a reboot rather than a truck or a swap.</p>
+            <p className="hb-prose" style={{ fontSize: 13.5 }}>October in the agent exports is {num(perDay(O, "tickets"))} TV tickets a day against {num(perDay(S, "tickets"))} in September, so total TV demand has eased about {Math.abs(pct(perDay(O, "tickets"), perDay(S, "tickets"))).toFixed(0)}% while Stuck on Initializing has not. Video freezing and pixelization are the other October risers; Digital Box No Boot, remote programming and the TV+ app are down.</p>
+          </div>
+        </details>
+
+        <details className="hb-sec" aria-labelledby="tb-s2">
+          <summary><h2 id="tb-s2">2. Stuck on Initializing against its baseline</h2></summary>
+          <div className="hb-body">
+            <div className="hb-stats">
+              {stat(num(L.baseline2025.total), "2025 monthly average", `All STBs ${num(L.baseline2025.all)} · One STB ${num(L.baseline2025.one)}`)}
+              {stat(num(L.baseline.total), `${L.baselineLabel}`, `All STBs ${num(L.baseline.all)} · One STB ${num(L.baseline.one)}`)}
+              {stat(num(L.total[lSep]), "September 2026", <><span className="hb-warn" style={{ fontWeight: 700 }}>{sp(totVsBase)}</span> on the Jan – Jul average · {sp(pct(L.total[lSep], L.total[lSep - 12]))} YoY</>)}
+              {stat(num(octRun(L.total)), `October run rate (to ${L.mtdDays}th)`, `${num(L.total[lOct])} so far · All STBs on track for ${num(octRun(L.all))}`)}
+            </div>
+            <figure>
+              <div className="hb-figtitle">Optik TV Legacy › STB No Boot › Stuck on Initializing by Category 3, monthly, Jan 2025 to Oct 2026 (October month to date)</div>
+              <div className="hb-chart"><StackedBarChart labels={L.months} stacks={[{ name: "One STB Affected", data: L.one, color: ONE }, { name: "Multiple STBs Affected", data: L.multi, color: MULTI }, { name: "All STBs Affected", data: L.all, color: col }]} height={260} yFmt={(v) => (v >= 1000 ? (v / 1000).toFixed(1) + "K" : String(Math.round(v)))} T={T} /></div>
+              {legend([{ label: "All STBs Affected", color: col }, { label: "Multiple STBs Affected", color: MULTI }, { label: "One STB Affected", color: ONE }])}
+              <figcaption>Through 2025 and the first seven months of 2026 the category drifted down with the Legacy base (One STB Affected fell from about {num(L.one[0])} to {num(L.one[lJul])} a month) while All STBs Affected held near {num(L.baseline.all)}. From August All STBs Affected broke out: {num(L.all[lJul])} in July, {num(L.all[lAug])} in August, {num(L.all[lSep])} in September and {num(L.all[lOct])} in the first {L.mtdDays} days of October. One STB Affected rose with the season and is back near its baseline in October.</figcaption>
+            </figure>
+            <div className="hb-tw">
+              <table>
+                <thead><tr><th>2026</th>{yr26.map((i) => <th key={i}>{L.months[i].slice(0, 3)}{i === lOct ? "*" : ""}</th>)}</tr></thead>
+                <tbody>
+                  <tr><td>All STBs Affected</td>{yr26.map((i) => <td key={i} className="n" style={{ fontWeight: L.all[i] > L.baseline.all * 1.3 ? 700 : 400, color: L.all[i] > L.baseline.all * 1.3 ? T.bad : T.text }}>{num(L.all[i])}</td>)}</tr>
+                  <tr><td>Multiple STBs Affected</td>{yr26.map((i) => <td key={i} className="n">{num(L.multi[i])}</td>)}</tr>
+                  <tr><td>One STB Affected</td>{yr26.map((i) => <td key={i} className="n">{num(L.one[i])}</td>)}</tr>
+                  <tr><td style={{ fontWeight: 700 }}>Total</td>{yr26.map((i) => <td key={i} className="n" style={{ fontWeight: 700 }}>{num(L.total[i])}</td>)}</tr>
+                  <tr><td>All STBs share</td>{yr26.map((i) => <td key={i} className="n">{((L.all[i] / L.total[i]) * 100).toFixed(0)}%</td>)}</tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="hb-prose" style={{ fontSize: 13.5 }}>*October is month to date at the {L.mtdDays}th. Source: {L.source}</p>
+          </div>
+        </details>
+
+        <details className="hb-sec" aria-labelledby="tb-s3">
+          <summary><h2 id="tb-s3">3. Day by day: the rise is All STBs Affected, and October has plateaued</h2></summary>
+          <div className="hb-body">
+            <div className="hb-stats">
+              {stat(num(perDay(A, "all")) + " → " + num(perDay(S, "all")) + " → " + num(perDay(O, "all")), "All STBs Affected per day, Aug → Sep → Oct", <><span className="hb-warn" style={{ fontWeight: 700 }}>{sp(allUpVsAug)}</span> October on August</>)}
+              {stat(num(perDay(A, "one")) + " → " + num(perDay(S, "one")) + " → " + num(perDay(O, "one")), "One STB Affected per day, Aug → Sep → Oct", `${sp(oneUpVsAug)} October on August`)}
+              {stat(num(perDay(A, "multi"), 1) + " → " + num(perDay(S, "multi"), 1) + " → " + num(perDay(O, "multi"), 1), "Multiple STBs Affected per day, Aug → Sep → Oct", `${sp(pct(perDay(O, "multi"), perDay(A, "multi")))} October on August`)}
+              {stat(num(afterKujo) + " vs " + num(beforeKujo), "Stuck per day, 14 days after vs before Kujo was disabled (25 Sep)", "no step change either way")}
+            </div>
+            <figure>
+              <div className="hb-figtitle">Stuck on Initializing tickets per day by Category 3, Aug 1 to Oct {R.octDays} 2026 (lines are 7-day averages, dots are daily values)</div>
+              <div className="hb-chart">{dailyChart()}</div>
+              {legend([{ label: "All STBs Affected", color: col }, { label: "One STB Affected", color: ONE }, { label: "Multiple STBs Affected", color: MULTI }, { label: "Jan – Jul 2026 All STBs baseline", color: col, opacity: 0.5 }])}
+              <figcaption>All STBs Affected climbed through August from about {num(sum(dAll.slice(0, 7)) / 7)} a day in the first week to {num(sum(dAll.slice(24, 31)) / 7)} in the last, reached its September level in the second week of September and has stayed between {num(Math.min(...weeks.filter((w) => w.start.getUTCMonth() >= 8 && w.days >= 5).map((w) => w.all / w.days)))} and {num(Math.max(...weeks.filter((w) => w.start.getUTCMonth() >= 8 && w.days >= 5).map((w) => w.all / w.days)))} a day since. One STB Affected moved far less and is seasonal. The August climb starts about three weeks after the CloudCheck agent rollout began on 6 July and runs through the rollout's end on 16 August, consistent with the two to four week onset the interlock expects.</figcaption>
+            </figure>
+            <div className="hb-two">
+              <div className="hb-tw">
+                <table style={{ minWidth: 420 }}>
+                  <thead><tr><th>Week starting</th><th>Days</th><th>Stuck / day</th><th>All STBs / day</th><th>One STB / day</th><th>All share</th></tr></thead>
+                  <tbody>
+                    {weeks.map((w) => <tr key={w.start.getTime()}><td>{fmtDay(w.start)}</td><td className="n">{w.days}</td><td className="n" style={{ fontWeight: 700 }}>{num(w.stuck / w.days)}</td><td className="n" style={{ color: w.all / w.days > L.baseline.all / 30.4 * 1.3 ? T.bad : T.text, fontWeight: 600 }}>{num(w.all / w.days)}</td><td className="n">{num(w.one / w.days)}</td><td className="n">{((w.all / w.stuck) * 100).toFixed(0)}%</td></tr>)}
+                  </tbody>
+                </table>
+              </div>
+              <figure>
+                <div className="hb-figtitle">Share of Stuck on Initializing tickets by Category 3</div>
+                <div className="hb-chart">{stackedPct(M.map((m) => ({ label: m.key === "oct" ? `${m.short} (to ${R.octDays}th)` : m.label, p: [allShare(m), (m.multi / m.stuck) * 100, (m.one / m.stuck) * 100] })), [{ color: col, dark: true }, { color: MULTI }, { color: ONE, dark: true }])}</div>
+                {legend([{ label: "All STBs Affected", color: col }, { label: "Multiple STBs Affected", color: MULTI }, { label: "One STB Affected", color: ONE }])}
+                <figcaption>All STBs Affected was {allShare(A).toFixed(0)}% of Stuck tickets in August and {allShare(O).toFixed(0)}% in October. A single box failing to initialise is usually that box; every box failing at once is the gateway or the middleware session behind it.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </details>
+
+        <details className="hb-sec" aria-labelledby="tb-s4">
+          <summary><h2 id="tb-s4">4. The rest of STB No Boot, and what the notes say</h2></summary>
+          <div className="hb-body">
+            <p className="hb-prose">STB No Boot sub-categories from the agent exports, tickets per day in each month. Only Stuck on Initializing and Red X are above their August level in October; the other boot symptoms have eased, so the category's plateau is now one symptom.</p>
+            <figure>
+              <div className="hb-figtitle">STB No Boot sub-categories, tickets per day · Aug, Sep, Oct (to {R.octDays}th)</div>
+              <div className="hb-chart">{hbars3(R.stbNoBoot.map((r) => ({ name: r.name, v: [r.v[0] / A.days, r.v[1] / S.days, r.v[2] / O.days] })), { max: 200, fmt: (v) => num(v) })}</div>
+              {legend([{ label: "Aug", color: T.borderStrong }, { label: "Sep", color: ONE }, { label: "Oct (to the 28th)", color: col }])}
+              <figcaption>STB No Boot in total: {num(R.stbNoBootTotal[0] / A.days)}, {num(R.stbNoBootTotal[1] / S.days)} and {num(R.stbNoBootTotal[2] / O.days)} tickets a day. Stuck on Initializing is {((O.stuck / R.stbNoBootTotal[2]) * 100).toFixed(0)}% of the category in October against {((A.stuck / R.stbNoBootTotal[0]) * 100).toFixed(0)}% in August.</figcaption>
+            </figure>
+            <div className="hb-tw">
+              <table>
+                <thead><tr><th>Marker in the Stuck on Initializing ticket notes</th><th>Sep tickets</th><th>Sep share</th><th>Oct tickets (to {R.octDays}th)</th><th>Oct share</th></tr></thead>
+                <tbody>
+                  {R.markers.map((m) => <tr key={m.name}><td>{m.name}</td><td className="n">{num(m.v[0])}</td><td className="n">{mshare(m, 0)}</td><td className="n">{num(m.v[1])}</td><td className="n">{mshare(m, 1)}</td></tr>)}
+                </tbody>
+              </table>
+            </div>
+            <p className="hb-prose" style={{ fontSize: 13.5 }}>The profile of a Stuck ticket did not change between September and October: the T3200M is named in {mshare(T3, 0)} then {mshare(T3, 1)} of tickets and is {R.t3200ShareOfGatewayNamed[0]}% then {R.t3200ShareOfGatewayNamed[1]}% of the gateways named (the NH20 is the other). A sequential reboot is recorded in {mshare(SEQ, 0)} then {mshare(SEQ, 1)}, a dispatch in {mshare(DISP, 0)} then {mshare(DISP, 1)}, and a technician determination in {mshare(TECH, 0)} then {mshare(TECH, 1)}. The fix is still an agent-led reboot in the great majority of cases, which is why repairs and swaps have not moved with the tickets. Written agent comments cover {((R.commentCoverage.oct[0] / R.commentCoverage.oct[1]) * 100).toFixed(0)}% of October tickets.</p>
+          </div>
+        </details>
+
+        <details className="hb-sec" aria-labelledby="tb-s5">
+          <summary><h2 id="tb-s5">5. Possible root causes</h2></summary>
+          <div className="hb-body">
+            <p className="hb-prose">As the STB No Boot interlocks left them on 28 October. The working picture: a change on the T3200M gateway in July and August made gateways with long uptime lose the middleware session for every attached Mediaroom STB, and it clears when the gateway is rebooted before the boxes.</p>
+            <div className="hb-two" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+              {R.causes.map((c) => (
+                <div key={c.name} className={`hb-note ${STATUS_TONE[c.status]}`}>
+                  <h3>{c.name}<span className="hb-pill">{STATUS_LABEL[c.status]}</span></h3>
+                  <p>{c.evidence}</p>
+                  {c.next && c.next !== "None." && <p style={{ fontSize: 13, color: MUTED }}>Next: {c.next}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+
+        <details className="hb-sec" aria-labelledby="tb-s6">
+          <summary><h2 id="tb-s6">6. What is being done</h2></summary>
+          <div className="hb-body">
+            <p className="hb-prose">Register initiatives with live status, then the commitments from the October interlocks. The Sequential Reboot campaign is the only item aimed at the mechanism itself; the others improve diagnosis or confirm the cause. None has reached customers yet, so the October full-month figure should be read as the pre-fix baseline.</p>
+            <figure>
+              <div className="hb-figtitle">Initiatives in the register</div>
+              <div>
+                {inits.map((it) => { const a = R.actions.find((x) => x.name === it.name); return (
+                  <div key={it.name} className="hb-init" style={{ gridTemplateColumns: "auto 1fr" }}>
+                    <StatusChip status={it.status} T={T} />
+                    <span style={{ fontWeight: 600, color: T.text, fontSize: 13.5 }}>{it.name}</span>
+                    <span className="hb-m">{it.timeline} · {it.prime}{it.theme ? ` · ${it.theme}` : ""}</span>
+                    <span className="hb-m" style={{ color: T.textSecondary }}>{a ? a.detail : it.desc}</span>
+                  </div>); })}
+              </div>
+            </figure>
+            <div className="hb-tw">
+              <table>
+                <thead><tr><th>Interlock commitment</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+                <tbody>
+                  {R.actions.filter((a) => a.kind === "action").map((a) => <tr key={a.name}><td><div style={{ fontWeight: 600 }}>{a.name}</div><div style={{ fontSize: 12.5, color: MUTED, marginTop: 2 }}>{a.detail}</div></td><td style={{ textAlign: "left" }}>{a.owner}</td><td style={{ textAlign: "left", whiteSpace: "nowrap" }}>{a.when}</td><td style={{ textAlign: "left" }}>{a.status}</td></tr>)}
+                </tbody>
+              </table>
+            </div>
+            <div className="hb-two">
+              <div className="hb-note bad">
+                <h3>Gaps</h3>
+                <ul className="hb-plain">
+                  <li>No customer-facing fix is live. The reboot pilot has a cohort but no start date, and the campaign excludes mixed OPUS and SHS homes, so part of the base stays uncovered.</li>
+                  <li>About {num(((R.markersBase[1] - R.markers[6].v[1]) / R.markersBase[1]) * 100)}% of Stuck tickets close without a dispatch, mostly on an agent-led reboot, so the same gateways will fault again until the uptime driver is addressed proactively.</li>
+                  <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement.</li>
+                </ul>
+              </div>
+              <div className="hb-note ok">
+                <h3>Working</h3>
+                <ul className="hb-plain">
+                  <li>The rise has stopped: October is {sp(stuckOctVsSep)} per day on September, and the All STBs Affected weekly run rate has been flat since mid-September.</li>
+                  <li>The agent-led gateway-then-STB reboot clears the fault, so repairs and swaps have not followed tickets: the TV repair rate is {fmtRate(K.rr[iSep])} per 100 and STB replacements are flat.</li>
+                  <li>The cause has been narrowed to one gateway model and one change window, with the data to confirm it due the week of 2 November.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <footer>
+          <p>Sources: TV agent ticket exports, Aug 1 to Oct {R.octDays} 2026 (Category 1 to 3, agent notes and resolution text; counts per day, no customer data retained); Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories, Look 2154, Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3, Jan 2025 to Oct 2026 month to date); TS Calls Offered by Product; TV Customer Base Breakdown (platform base); STB No Boot interlock notes of 21, 22, 27 and 28 Oct 2026; Initiatives register.</p>
+          <p>Method notes: per-day figures divide month totals by days in the month (October by {R.octDays}); the 7-day averages are trailing; weeks run Monday to Sunday and partial weeks are shown with their day count. Baselines are simple monthly averages of the Looker series (2025, and January to July 2026). Note markers are regular-expression matches over the agent notes and resolution text of Stuck on Initializing tickets with the same patterns in both months; they count tickets that mention a thing, not confirmed causes. Interlock content is transcribed from the meeting notes and will be refreshed as the analyses land.</p>
+        </footer>
+      </div>
+    );
+  }
+
   // ------------------------------ executive summary deck ------------------------------
   // "Sep – Oct 2026" style ranges (SHS workbook rows) count for every month they span.
   const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -5685,6 +6081,8 @@ export default function ReliabilityScorecards() {
             ? "TV customer sentiment analysis"
             : page === "tvcross"
               ? "TV cross analysis"
+              : page === "tvbrief"
+                ? "STB Stuck on Initializing: trend against baseline, root causes and what is being done"
               : `${page} reliability scorecard`;
 
   return (
@@ -5779,6 +6177,8 @@ export default function ReliabilityScorecards() {
                     ? "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
                     : page === "tvcross"
                       ? "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims"
+                      : page === "tvbrief"
+                      ? `TV review · Aug – Oct 2026 (October to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: calls, tickets, repairs/dispatches, base"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA" : ""}`}</span>
@@ -5834,6 +6234,7 @@ export default function ReliabilityScorecards() {
             : page === "tvtickets" ? TvTicketAnalysisPage()
             : page === "tvsentiment" ? TvSentimentPage()
             : page === "tvcross" ? TvCrossPage()
+            : page === "tvbrief" ? TvBriefPage()
             : ProductPage({ product: page })}
         </div>
         <footer style={{ textAlign: "center", fontSize: 12, color: T.textFaint, padding: "0 0 24px" }}>

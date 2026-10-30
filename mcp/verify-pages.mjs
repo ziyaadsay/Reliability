@@ -95,7 +95,7 @@ const ser = w.sections.find((s) => s.kind === "series");
 if (ser.data.months[0] !== "Jan 2026" || ser.data.months.at(-1) !== "Jun 2026") fail("from/to not applied to series");
 if (w.asOf !== "Jun 2026" || w.sections[0].data[0].month !== "Jun 2026") fail("to not applied to cards/asOf");
 // not available
-const missing = [["SHS", "notes"], ["SH+", "review"], ["TV", "review"], ["HSIA", "platforms"], ["All", "notes"]];
+const missing = [["SHS", "notes"], ["SH+", "review"], ["SHS", "review"], ["HSIA", "platforms"], ["All", "notes"]];
 for (const [prod, pg] of missing) {
   try { await R.get_page({ product: prod, page: pg }); fail(`${prod}/${pg} did not throw`); rows.push({ product: prod, page: pg, status: "ERROR: no throw" }); }
   catch (e) { const ok = e.message === `page not available for ${prod}`; if (!ok) fail(`${prod}/${pg}: wrong error ${e.message}`); rows.push({ product: prod, page: pg, sections: 0, kinds: "", status: ok ? `throws "${e.message}"` : "ERROR: " + e.message }); }
