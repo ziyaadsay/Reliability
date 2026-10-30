@@ -68,6 +68,14 @@ ticket exports, the Looker Category 3 split (All STBs / One STB Affected) from
 Jan 2025, the root-cause hypotheses and the fixes in flight. Both are served by
 `get_page({ page: "review" })`.
 
+The TV Review also has a presentation mode (the Present button, or `#tvbrief/<n>`
+to open on slide n): a Slidev-style deck (`Deck` in `site/App.jsx`) with the
+review as 21 slides using Slidev's layout names (cover, section, default,
+two-cols, fact, statement, end), slide transitions, click-to-reveal steps,
+presenter notes (N), an overview grid (O), fullscreen (F) and Esc to exit. It is
+the test case for bringing the other Review pages and the Executive Summary onto
+the same component.
+
 ```bash
 node mcp/build.mjs        # writes mcp/dist (gitignored)
 node mcp/verify-pages.mjs # checks every product/page pair against the built worker

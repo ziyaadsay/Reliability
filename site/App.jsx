@@ -1357,6 +1357,167 @@ function StatusChip({ status, T }) {
 }
 
 // ---------------------------------------------------------------------------
+// Deck: Slidev-style presentation mode for a page. A slide is
+//   { layout, title, sub, body, notes, clicks }
+// layout: cover | section | default | two-cols | fact | statement | end (Slidev's built-in
+// layout names). body is JSX or a function (step, C) => JSX, where C(k, node) wraps a node
+// so it is revealed on click k (Slidev's v-click); clicks is how many reveal steps the
+// slide has. Keys: arrows / space / enter step forward and back, Home / End jump, O toggles
+// the overview grid, N the presenter notes, F fullscreen, Esc exits. Slides enter with a
+// horizontal slide-and-fade in the direction of travel; revealed nodes rise and fade in.
+// ---------------------------------------------------------------------------
+const DECK_VW = 1120, DECK_VH = 630;
+function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
+  const n = slides.length, i = Math.min(Math.max(index || 0, 0), n - 1), s = slides[i];
+  const clicks = s.clicks || 0;
+  const dirRef = useRef(1);
+  const [step, setStep] = useState(0);
+  const [scale, setScale] = useState(1);
+  const [notes, setNotes] = useState(false);
+  const [overview, setOverview] = useState(false);
+  const [idle, setIdle] = useState(false);
+  const idleTimer = useRef(null);
+  useEffect(() => { setStep(dirRef.current < 0 ? (slides[i].clicks || 0) : 0); }, [i]);
+  useEffect(() => {
+    const fit = () => setScale(Math.min(window.innerWidth / DECK_VW, (window.innerHeight - 48) / DECK_VH) * 0.97);
+    fit(); window.addEventListener("resize", fit); return () => window.removeEventListener("resize", fit);
+  }, []);
+  const go = (d) => {
+    if (d > 0) { if (step < clicks) setStep(step + 1); else if (i < n - 1) { dirRef.current = 1; onIndex(i + 1); } }
+    else if (step > 0) setStep(step - 1); else if (i > 0) { dirRef.current = -1; onIndex(i - 1); }
+  };
+  const jump = (k) => { dirRef.current = k >= i ? 1 : -1; onIndex(k); setOverview(false); };
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      const k = e.key;
+      if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) { e.preventDefault(); overview ? jump(Math.min(n - 1, i + 1)) : go(1); }
+      else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(k)) { e.preventDefault(); overview ? jump(Math.max(0, i - 1)) : go(-1); }
+      else if (k === "Home") jump(0); else if (k === "End") jump(n - 1);
+      else if (k === "Escape") { if (overview) setOverview(false); else onExit(); }
+      else if (k === "o" || k === "O") setOverview((v) => !v);
+      else if (k === "n" || k === "N") setNotes((v) => !v);
+      else if (k === "f" || k === "F") { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+    };
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  });
+  const poke = () => { setIdle(false); clearTimeout(idleTimer.current); idleTimer.current = setTimeout(() => setIdle(true), 2600); };
+  useEffect(() => { poke(); return () => clearTimeout(idleTimer.current); }, []);
+  const C = (k, node, extra) => <div className={`dk-click${step >= k ? " on" : ""}`} style={extra}>{node}</div>;
+  const body = typeof s.body === "function" ? s.body(step, C) : s.body;
+  const bg = isDark ? "#0c0b10" : "#15131a", surface = T.surface, ink = T.text, muted = T.textMuted;
+  const css = `
+.dk{position:fixed;inset:0;z-index:60;background:${bg};color:${ink};font-family:${FONT};display:flex;flex-direction:column;cursor:${idle ? "none" : "default"}}
+.dk-top{height:44px;display:flex;align-items:center;gap:8px;padding:0 14px;color:#cfc9d8;font-size:12.5px;transition:opacity .3s;opacity:${idle ? 0 : 1}}
+.dk-top .dk-title{font-weight:700;color:#fff;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dk-top button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:5px 12px;font:600 12px ${FONT};cursor:pointer}
+.dk-top button:hover{background:rgba(255,255,255,.18)}
+.dk-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.dk-slide{--s:${scale};position:absolute;width:${DECK_VW}px;height:${DECK_VH}px;background:${surface};color:${ink};border-radius:6px;box-shadow:0 30px 80px rgba(0,0,0,.55);transform:scale(var(--s));overflow:hidden;display:flex;flex-direction:column;padding:52px 64px 44px}
+.dk-in-r{animation:dkInR .55s cubic-bezier(.22,.8,.3,1) both}
+.dk-in-l{animation:dkInL .55s cubic-bezier(.22,.8,.3,1) both}
+@keyframes dkInR{from{opacity:0;transform:scale(var(--s)) translateX(70px)}to{opacity:1;transform:scale(var(--s)) translateX(0)}}
+@keyframes dkInL{from{opacity:0;transform:scale(var(--s)) translateX(-70px)}to{opacity:1;transform:scale(var(--s)) translateX(0)}}
+.dk-slide h1{font-size:34px;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin:0;color:${ink};text-wrap:balance}
+.dk-slide h1::after{content:"";display:block;width:64px;height:4px;border-radius:2px;background:${color};margin-top:12px}
+.dk-slide .dk-sub{font-size:16px;color:${muted};margin:10px 0 0;line-height:1.45}
+.dk-body{flex:1;min-height:0;margin-top:22px;font-size:16px;line-height:1.5;display:flex;flex-direction:column;gap:14px}
+.dk-foot{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:${muted};margin-top:14px;letter-spacing:.02em}
+.dk-foot b{color:${color}}
+.dk-cover,.dk-end,.dk-section{background:linear-gradient(135deg,${color} 0%,${isDark ? "#0f2a05" : "#163d00"} 100%);color:#fff;justify-content:flex-start}
+.dk-cover h1,.dk-end h1,.dk-section .dk-num{margin-top:auto}
+.dk-cover .dk-foot,.dk-end .dk-foot,.dk-section .dk-foot{margin-top:auto}
+.dk-cover h1,.dk-end h1,.dk-section h1{color:#fff;font-size:44px}
+.dk-cover h1::after,.dk-end h1::after,.dk-section h1::after{background:rgba(255,255,255,.7)}
+.dk-cover .dk-sub,.dk-end .dk-sub,.dk-section .dk-sub{color:rgba(255,255,255,.85);font-size:19px;max-width:860px}
+.dk-cover .dk-foot,.dk-end .dk-foot,.dk-section .dk-foot{color:rgba(255,255,255,.7)}
+.dk-cover .dk-foot b,.dk-end .dk-foot b,.dk-section .dk-foot b{color:#fff}
+.dk-section .dk-num{font-size:120px;font-weight:800;line-height:1;color:rgba(255,255,255,.18);margin-bottom:-26px}
+.dk-fact{justify-content:center;text-align:center}
+.dk-fact .dk-big{font-size:112px;font-weight:800;color:${color};line-height:1;letter-spacing:-.03em}
+.dk-fact .dk-sub{font-size:22px;color:${ink};max-width:820px;margin:18px auto 0}
+.dk-fact h1{display:none}
+.dk-statement{justify-content:center}
+.dk-statement h1{font-size:40px;line-height:1.25}
+.dk-statement h1::after{display:none}
+.dk-two{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;min-height:0}
+.dk-click{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease}
+.dk-click.on{opacity:1;transform:none}
+.dk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dk-stat{background:${T.band};border:1px solid ${T.border};border-radius:10px;padding:14px 16px}
+.dk-stat-v{font-size:30px;font-weight:700;color:${T.heading};line-height:1.05}
+.dk-stat-l{font-size:12.5px;font-weight:600;color:${T.textSecondary};margin-top:6px}
+.dk-stat-s{font-size:11.5px;color:${T.textFaint};margin-top:3px;line-height:1.4}
+.dk-body ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:9px}
+.dk-body li{color:${T.textSecondary}} .dk-body li strong{color:${ink}}
+.dk-body table{border-collapse:collapse;width:100%;font-size:13px}
+.dk-body th,.dk-body td{padding:6px 10px;text-align:right;border-bottom:1px solid ${T.border};font-variant-numeric:tabular-nums}
+.dk-body th:first-child,.dk-body td:first-child{text-align:left}
+.dk-body th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:${muted};font-weight:600}
+.dk-note{border-left:3px solid ${color};padding:2px 0 2px 14px;font-size:14px;color:${T.textSecondary}}
+.dk-note h3{margin:0 0 4px;font-size:14px;color:${ink}}
+.dk-note.bad{border-color:${T.bad}} .dk-note.ok{border-color:${T.good}} .dk-note.amber{border-color:${isDark ? "#F0A55B" : "#B86E00"}}
+.dk-pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:${T.band};color:${T.heading};margin-left:8px;vertical-align:middle}
+.dk-cap{font-size:13px;color:${muted};line-height:1.45}
+.dk-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:${muted}} .dk-legend span{display:inline-flex;align-items:center;gap:6px} .dk-legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.dk-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:none;border-radius:8px;background:rgba(255,255,255,.07);color:#fff;font-size:26px;cursor:pointer;transition:opacity .3s,background .2s;opacity:${idle ? 0 : 0.85}}
+.dk-nav:hover{background:rgba(255,255,255,.18)} .dk-nav:disabled{opacity:0;cursor:default}
+.dk-prev{left:10px} .dk-next{right:10px}
+.dk-progress{height:3px;background:rgba(255,255,255,.1)} .dk-progress i{display:block;height:100%;background:${color};transition:width .45s cubic-bezier(.22,.8,.3,1)}
+.dk-notes{position:absolute;right:16px;bottom:16px;width:380px;max-height:38%;overflow:auto;background:rgba(20,18,26,.94);color:#e8e3ef;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;animation:dkInR .3s ease both}
+.dk-notes b{display:block;color:#fff;margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.dk-grid{position:absolute;inset:44px 0 3px;background:${bg};overflow:auto;padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;align-content:start;animation:dkFade .25s ease both}
+@keyframes dkFade{from{opacity:0}to{opacity:1}}
+.dk-thumb{position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:${surface}}
+.dk-thumb.cur{border-color:${color}} .dk-thumb:hover{border-color:rgba(255,255,255,.5)}
+.dk-thumb .dk-slide{--s:0.2232;transform-origin:top left;transform:scale(var(--s));left:0;top:0;animation:none;box-shadow:none;border-radius:0;pointer-events:none}
+.dk-thumb .dk-click{opacity:1;transform:none}
+.dk-thumb span{position:absolute;left:8px;bottom:6px;font-size:11px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:1px 8px}
+`;
+  const renderSlide = (sl, k, cls, content) => (
+    <div className={`dk-slide dk-${sl.layout || "default"} ${cls || ""}`}>
+      {sl.layout === "section" && <div className="dk-num">{sl.num}</div>}
+      {sl.layout === "fact" ? <div className="dk-big">{sl.big}</div> : <h1>{sl.title}</h1>}
+      {sl.sub && <p className="dk-sub">{sl.sub}</p>}
+      {content && <div className={`dk-body${sl.layout === "two-cols" ? " dk-two" : ""}`}>{content}</div>}
+      <div className="dk-foot"><span><b>{title}</b> · Reliability Strategy</span><span>{k + 1} / {n}</span></div>
+    </div>
+  );
+  return (
+    <div className="dk" onMouseMove={poke} role="dialog" aria-label={`${title} presentation`}>
+      <style>{css}</style>
+      <div className="dk-top">
+        <span className="dk-title">{title}</span>
+        <span style={{ opacity: 0.7 }}>{i + 1} / {n}{clicks ? ` · step ${step} / ${clicks}` : ""}</span>
+        <button onClick={() => setOverview((v) => !v)} title="O">Overview</button>
+        <button onClick={() => setNotes((v) => !v)} title="N">{notes ? "Hide notes" : "Notes"}</button>
+        <button onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen && document.documentElement.requestFullscreen())} title="F">Fullscreen</button>
+        <button onClick={onExit} title="Esc">Exit ✕</button>
+      </div>
+      <div className="dk-stage" onClick={(e) => { if (e.target.closest("button, a, table")) return; go(1); }}>
+        <div key={i} className={`dk-slide-wrap`} style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {renderSlide(s, i, dirRef.current < 0 ? "dk-in-l" : "dk-in-r", body)}
+        </div>
+        <button className="dk-nav dk-prev" onClick={(e) => { e.stopPropagation(); go(-1); }} disabled={i === 0 && step === 0} aria-label="Previous">‹</button>
+        <button className="dk-nav dk-next" onClick={(e) => { e.stopPropagation(); go(1); }} disabled={i === n - 1 && step >= clicks} aria-label="Next">›</button>
+        {notes && <aside className="dk-notes" onClick={(e) => e.stopPropagation()}><b>Presenter notes · {i + 1} / {n}</b>{s.notes || "No notes for this slide."}</aside>}
+        {overview && (
+          <div className="dk-grid" onClick={(e) => e.stopPropagation()}>
+            {slides.map((sl, k) => (
+              <div key={k} className={`dk-thumb${k === i ? " cur" : ""}`} onClick={() => jump(k)}>
+                {renderSlide(sl, k, "", typeof sl.body === "function" ? sl.body(sl.clicks || 0, (kk, node, extra) => <div className="dk-click on" style={extra}>{node}</div>) : sl.body)}
+                <span>{k + 1}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="dk-progress"><i style={{ width: `${((i + (clicks ? step / (clicks + 1) : 0) + 1) / n) * 100}%` }} /></div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Commentary editor (Health Read). Commentary is an HTML document per product and
 // month: the repo's HEALTH_COMMENTARY seeds it for the latest month, and edits made
 // in the dashboard are saved in the viewer's own browser (localStorage), keyed by
@@ -1972,15 +2133,23 @@ export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
   const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps"];
-  const hashPage = () => { const h = typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#/, "")) : ""; return PAGE_IDS.includes(h) ? h : "home"; };
+  // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
+  // mode (Deck) on a given slide.
+  const parseHash = () => {
+    const h = typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#/, "")) : "";
+    const [id, slide] = h.split("/");
+    return { id: PAGE_IDS.includes(id) ? id : "home", slide: slide && /^\d+$/.test(slide) ? +slide : null };
+  };
+  const hashPage = () => parseHash().id;
   const [page, setPage] = useState(hashPage);
+  const [deckSlide, setDeckSlide] = useState(() => parseHash().slide); // 1-based slide while presenting, else null
   useEffect(() => {
-    const want = page === "home" ? "" : `#${encodeURIComponent(page)}`;
+    const want = page === "home" ? "" : `#${encodeURIComponent(page)}${deckSlide != null ? `/${deckSlide}` : ""}`;
     if (window.location.hash !== want && !(want === "" && window.location.hash === "")) window.history.replaceState(null, "", want || window.location.pathname + window.location.search);
-    const onHash = () => setPage(hashPage());
+    const onHash = () => { const p = parseHash(); setPage(p.id); setDeckSlide(p.slide); };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, [page]);
+  }, [page, deckSlide]);
   const [fromIdx, setFromIdx] = useState(12); // default view: 2026 months
   const [toIdx, setToIdx] = useState(MONTHS.length - 1);
   const [scope, setScope] = useState("All");
@@ -3544,7 +3713,7 @@ export default function ReliabilityScorecards() {
         {CHILD_PAGES[product] && (
           <div style={{ fontSize: 12.5, margin: "10px 2px 0", display: "flex", gap: 18, flexWrap: "wrap" }}>
             {CHILD_PAGES[product].map((id) => (
-              <button key={id} onClick={() => setPage(id)}
+              <button key={id} onClick={() => { setPage(id); setDeckSlide(null); }}
                 style={{ background: "transparent", border: "none", padding: 0, color: T.heading, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: FONT, textDecoration: "underline" }}>
                 {CHILD_LABEL[id]} →
               </button>
@@ -5587,9 +5756,153 @@ export default function ReliabilityScorecards() {
     const STATUS_TONE = { leading: "bad", contributing: "", open: "purple", "ruled out": "ok" };
     const STATUS_LABEL = { leading: "Leading hypothesis", contributing: "Contributing factor", open: "Open question", "ruled out": "Ruled out" };
 
+    // ---- presentation mode (Deck): the page as Slidev-style slides ----
+    const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
+    const dlegend = (items) => <div className="dk-legend">{items.map((it) => <span key={it.label}><i style={{ background: it.color, opacity: it.opacity == null ? 1 : it.opacity }} />{it.label}</span>)}</div>;
+    const fullWeeks = weeks.filter((w) => w.days === 7);
+    const causesBy = (statuses) => R.causes.filter((c) => statuses.includes(c.status));
+    const slides = [
+      { layout: "cover", title: "STB Stuck on Initializing", sub: `TV review · ${R.period} (October to the ${R.octDays}th) · TV performance, the trend against its baseline with the All STBs / One STB split, possible root causes and what is being done`,
+        notes: `Agent exports to ${R.asOf}; Looker to Oct ${L.mtdDays} month to date; dashboard KPIs to ${LATEST}; interlocks of 21, 22, 27 and 28 Oct 2026.` },
+      { layout: "statement", title: `Stuck on Initializing jumped ${sp(stuckSepVsAug)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.`,
+        notes: "The one-line answer to the two questions asked: is October trending like September, and what is causing it." },
+      { layout: "default", title: "August to October at a glance", sub: `Daily figures from the TV agent ticket exports (Aug 1 to Oct ${R.octDays}); dashboard KPIs to ${LATEST}; rates per 100 subscribers`, clicks: 6,
+        body: (step, C) => <div className="dk-stats">
+          {C(1, dstat(num(perDay(O, "stuck")), `Stuck on Initializing per day · ${octNote}`, `Aug ${num(perDay(A, "stuck"))} · Sep ${num(perDay(S, "stuck"))} · ${sp(stuckOctVsSep)} vs Sep`))}
+          {C(2, dstat(num(perDay(O, "all")), `All STBs Affected per day · ${octNote}`, `Aug ${num(perDay(A, "all"))} · Sep ${num(perDay(S, "all"))} · ${sp(allUpVsAug)} vs Aug`))}
+          {C(3, dstat(num(perDay(O, "one")), `One STB Affected per day · ${octNote}`, `Aug ${num(perDay(A, "one"))} · Sep ${num(perDay(S, "one"))} · ${sp(oneUpVsAug)} vs Aug`))}
+          {C(4, dstat(allShare(O).toFixed(0) + "%", "All STBs share of Stuck tickets · Oct", `Aug ${allShare(A).toFixed(0)}% · Sep ${allShare(S).toFixed(0)}%`))}
+          {C(5, dstat(((O.stuck / O.tickets) * 100).toFixed(1) + "%", "Stuck share of all TV tickets · Oct", `Aug ${((A.stuck / A.tickets) * 100).toFixed(1)}% · Sep ${((S.stuck / S.tickets) * 100).toFixed(1)}%`))}
+          {C(6, dstat(fmtRate(K.tr[iSep]), "TV ticket rate per 100 subs · Sep", `Aug ${fmtRate(K.tr[iAug])} · ${sd(K.tr[iSep] - K.tr[iAug])} per 100 · October not yet reported`))}
+        </div>,
+        notes: "Each click reveals one card. The first three are the daily run rates; the fourth is the share of Stuck tickets where every STB is affected; the last is the dashboard ticket rate, which only runs to September." },
+      { layout: "default", title: "In short", clicks: 6,
+        body: (step, C) => <ul>
+          <li>{C(1, <><strong>September was a step change, and October is the new level, not a further climb.</strong> {num(A.stuck)} tickets in August, {num(S.stuck)} in September ({sp(stuckSepVsAug)}); October runs at {num(perDay(O, "stuck"))} a day against {num(perDay(S, "stuck"))} ({sp(stuckOctVsSep)}), on track for about {num((O.stuck / O.days) * 31)}.</>)}</li>
+          <li>{C(2, <><strong>The rise is almost entirely All STBs Affected.</strong> {num(L.baseline.all)} a month from January to July, {num(L.all[lSep])} in September ({sp(allVsBase)}); One STB Affected {sp(oneVsBase)}. {((riseAll / risePts) * 100).toFixed(0)}% of the September excess over baseline is All STBs Affected.</>)}</li>
+          <li>{C(3, <><strong>Every box in the home failing at once is a gateway symptom.</strong> The T3200M is named in {mshare(T3, 1)} of October Stuck tickets and is {R.t3200ShareOfGatewayNamed[1]}% of gateways named; about 70% of affected customers are on it.</>)}</li>
+          <li>{C(4, <><strong>Leading hypothesis: the CloudCheck agent side-load upgrade on T3200M gateways, aggravated by long uptime.</strong> Onset lags two to four weeks; the fault clears with a gateway-then-STB reboot; rollback rejected on security grounds; Cujo off on 25 Sep did not move the series.</>)}</li>
+          <li>{C(5, <><strong>The fixes have not reached customers yet.</strong> Sequential Reboot (In flight, Nov 2026) is the only initiative aimed at the mechanism; the agent release delta and gateway-marker analysis are due the week of 2 November.</>)}</li>
+          <li>{C(6, <><strong>Wider TV performance moved with it.</strong> TV tickets {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 from August to September; the rest of STB No Boot is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October.</>)}</li>
+        </ul>,
+        notes: "Six points, one per click. Point two is the key finding for the audience: the split by Category 3 isolates the rise to All STBs Affected." },
+      { layout: "section", num: "01", title: "TV performance, August to October", sub: "The dashboard quarter, and what the agent exports say about October" },
+      { layout: "two-cols", title: "TV performance, August to October", clicks: 2,
+        body: (step, C) => <>
+          <div className="dk-stats" style={{ gridTemplateColumns: "1fr 1fr", alignContent: "start" }}>
+            {dstat(big(K.tv[iSep]), "TV tickets · Sep", `${big(K.tv[iAug])} in Aug · ${sp(pct(K.tv[iSep], K.tv[iAug]), 1)}`)}
+            {dstat(fmtRate(K.tr[iSep]), "Ticket rate per 100 · Sep", `${fmtRate(K.tr[iAug])} in Aug · ${sd(K.tr[iSep] - K.tr[iAug])}`)}
+            {dstat(big(K.calls[iSep]), "Calls offered · Sep", `${big(K.calls[iAug])} in Aug · ${sp(pct(K.calls[iSep], K.calls[iAug]), 1)}`)}
+            {dstat(fmtRate(K.rr[iSep]), "Repair rate per 100 · Sep", `${fmtRate(K.rr[iAug])} in Aug · ${sd(K.rr[iSep] - K.rr[iAug])}`)}
+            {dstat(fmtRate(K.ch[iSep]), "Churn rate per 100 · Sep", `${fmtRate(K.ch[iAug])} in Aug · ${sd(K.ch[iSep] - K.ch[iAug])}`)}
+            {dstat(big(legacy.base[iSep]), "Optik TV Legacy base · Sep", `${big(legacy.base[iAug])} in Aug · ${sp(pct(legacy.base[iSep], legacy.base[iAug]), 1)}`)}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, fontSize: 15 }}>
+            {C(1, <p style={{ margin: 0 }}>September is the seasonal peak and 2026 followed the pattern, but harder: tickets rose {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} on August against {sp(pct(K.tv[iSep - 12], K.tv[iAug - 12]), 0)} over the same months of 2025. Stuck on Initializing alone added {sn(S.stuck - A.stuck)} tickets, about {((S.stuck - A.stuck) / (S.tickets - A.tickets) * 100).toFixed(0)}% of the whole TV increase in the agent exports.</p>)}
+            {C(2, <p style={{ margin: 0 }}>Repairs and churn did not follow: the repair rate stayed at {fmtRate(K.rr[iSep])} and churn at {fmtRate(K.ch[iSep])} per 100, because the fault is cleared by a reboot rather than a truck or a swap. October demand overall has eased about {Math.abs(pct(perDay(O, "tickets"), perDay(S, "tickets"))).toFixed(0)}% per day while Stuck on Initializing has not.</p>)}
+          </div>
+        </>,
+        notes: "Left: the dashboard's September KPIs with August for comparison. Right, two clicks: the seasonal comparison and the repairs and churn read." },
+      { layout: "section", num: "02", title: "Stuck on Initializing against its baseline", sub: "Looker, Optik TV Legacy, by Category 3, Jan 2025 to Oct 2026" },
+      { layout: "default", title: "Monthly history by Category 3", sub: "Jan 2025 to Oct 2026; October is month to date at the 27th", clicks: 1,
+        body: (step, C) => <>
+          <StackedBarChart labels={L.months} stacks={[{ name: "One STB Affected", data: L.one, color: ONE }, { name: "Multiple STBs Affected", data: L.multi, color: MULTI }, { name: "All STBs Affected", data: L.all, color: col }]} height={230} yFmt={(v) => (v >= 1000 ? (v / 1000).toFixed(1) + "K" : String(Math.round(v)))} T={T} />
+          {dlegend([{ label: "All STBs Affected", color: col }, { label: "Multiple STBs Affected", color: MULTI }, { label: "One STB Affected", color: ONE }])}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Through 2025 and the first seven months of 2026 the category drifted down with the Legacy base while All STBs Affected held near {num(L.baseline.all)} a month. From August it broke out: {num(L.all[lJul])} in July, {num(L.all[lAug])} in August, {num(L.all[lSep])} in September and {num(L.all[lOct])} in the first {L.mtdDays} days of October. One STB Affected rose with the season and is back near its baseline.</p>)}
+        </>,
+        notes: "The green segment is All STBs Affected. Point at July to October: the green doubles while purple (One STB) barely moves." },
+      { layout: "fact", big: sp(allVsBase), sub: `All STBs Affected in September 2026 against its Jan to Jul 2026 average: ${num(L.baseline.all)} to ${num(L.all[lSep])} a month. One STB Affected over the same period: ${sp(oneVsBase)}. The whole category: ${sp(totVsBase)}.`,
+        notes: `Of the ${sn(risePts)} September tickets above baseline, ${sn(riseAll)} are All STBs Affected.` },
+      { layout: "section", num: "03", title: "Day by day", sub: "The rise is All STBs Affected, and October has plateaued" },
+      { layout: "default", title: `Stuck tickets per day by Category 3, 1 Aug to ${R.octDays} Oct`, sub: "Lines are 7-day averages, dots are daily values", clicks: 1,
+        body: (step, C) => <>
+          <div style={{ width: "100%" }}>{dailyChart()}</div>
+          {dlegend([{ label: "All STBs Affected", color: col }, { label: "One STB Affected", color: ONE }, { label: "Multiple STBs Affected", color: MULTI }, { label: "Jan – Jul 2026 All STBs baseline", color: col, opacity: 0.5 }])}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>All STBs Affected climbed through August from about {num(sum(dAll.slice(0, 7)) / 7)} a day to {num(sum(dAll.slice(24, 31)) / 7)}, reached its September level in the second week of September and has stayed between {num(Math.min(...fullWeeks.filter((w) => w.start.getUTCMonth() >= 8).map((w) => w.all / w.days)))} and {num(Math.max(...fullWeeks.filter((w) => w.start.getUTCMonth() >= 8).map((w) => w.all / w.days)))} a day since. The climb starts about three weeks after the CloudCheck agent rollout began on 6 July. Cujo being disabled on 25 September did not move the series ({num(beforeCujo)} a day before, {num(afterCujo)} after).</p>)}
+        </>,
+        notes: "The dashed green line is the Jan to Jul baseline for All STBs Affected, about 36 a day. The amber marker is 25 September, when Cujo was disabled on the T3200M." },
+      { layout: "two-cols", title: "Weekly run rate and the split", clicks: 1,
+        body: (step, C) => <>
+          <div style={{ overflow: "hidden" }}>
+            <table>
+              <thead><tr><th>Week starting</th><th>Stuck / day</th><th>All STBs / day</th><th>One STB / day</th><th>All share</th></tr></thead>
+              <tbody>{fullWeeks.map((w) => <tr key={w.start.getTime()}><td>{fmtDay(w.start)}</td><td style={{ fontWeight: 700 }}>{num(w.stuck / w.days)}</td><td style={{ color: w.all / w.days > L.baseline.all / 30.4 * 1.3 ? T.bad : T.text, fontWeight: 600 }}>{num(w.all / w.days)}</td><td>{num(w.one / w.days)}</td><td>{((w.all / w.stuck) * 100).toFixed(0)}%</td></tr>)}</tbody>
+            </table>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>Share of Stuck on Initializing tickets by Category 3</div>
+            {stackedPct(M.map((m) => ({ label: m.key === "oct" ? `${m.short} (to ${R.octDays}th)` : m.label, p: [allShare(m), (m.multi / m.stuck) * 100, (m.one / m.stuck) * 100] })), [{ color: col, dark: true }, { color: MULTI }, { color: ONE, dark: true }])}
+            {dlegend([{ label: "All STBs Affected", color: col }, { label: "Multiple STBs Affected", color: MULTI }, { label: "One STB Affected", color: ONE }])}
+            {C(1, <p className="dk-cap" style={{ margin: 0 }}>All STBs Affected was {allShare(A).toFixed(0)}% of Stuck tickets in August and {allShare(O).toFixed(0)}% in October. A single box failing to initialise is usually that box; every box failing at once is the gateway or the middleware session behind it.</p>)}
+          </div>
+        </>,
+        notes: "Full Monday-to-Sunday weeks only. Red figures are more than 30% above the All STBs baseline." },
+      { layout: "section", num: "04", title: "The rest of STB No Boot, and what the notes say" },
+      { layout: "two-cols", title: "Sub-categories per day, and markers in the ticket notes", clicks: 1,
+        body: (step, C) => <>
+          <div>
+            {hbars3(R.stbNoBoot.map((r) => ({ name: r.name, v: [r.v[0] / A.days, r.v[1] / S.days, r.v[2] / O.days] })), { max: 200, fmt: (v) => num(v), labelW: 190 })}
+            {dlegend([{ label: "Aug", color: T.borderStrong }, { label: "Sep", color: ONE }, { label: `Oct (to the ${R.octDays}th)`, color: col }])}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <table>
+              <thead><tr><th>Marker in Stuck ticket notes</th><th>Sep</th><th>Oct</th></tr></thead>
+              <tbody>{R.markers.map((m) => <tr key={m.name}><td>{m.name}</td><td>{mshare(m, 0)}</td><td>{mshare(m, 1)}</td></tr>)}</tbody>
+            </table>
+            {C(1, <p className="dk-cap" style={{ margin: 0 }}>Only Stuck on Initializing and Red X are above their August level in October. The profile of a Stuck ticket did not change: the T3200M is {R.t3200ShareOfGatewayNamed[1]}% of gateways named, a sequential reboot is recorded in {mshare(SEQ, 1)} of tickets, a dispatch in {mshare(DISP, 1)}. The fix is still an agent-led reboot in the great majority of cases.</p>)}
+          </div>
+        </>,
+        notes: "Left: STB No Boot sub-categories per day for the three months. Right: shares of Stuck tickets whose notes mention each marker, same regular expressions in both months." },
+      { layout: "section", num: "05", title: "Possible root causes", sub: "As the STB No Boot interlocks left them on 28 October" },
+      { layout: "default", title: "Leading hypothesis and contributing factors", clicks: causesBy(["leading", "contributing"]).length,
+        body: (step, C) => <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 24px" }}>
+          {causesBy(["leading", "contributing"]).map((c, k) => C(k + 1, <div className={`dk-note ${c.status === "leading" ? "bad" : "amber"}`} style={{ fontSize: 13 }}><h3>{c.name}<span className="dk-pill">{STATUS_LABEL[c.status]}</span></h3>{c.evidence}</div>))}
+        </div>,
+        notes: "The working picture: a change on the T3200M gateway in July and August made gateways with long uptime lose the middleware session for every attached Mediaroom STB, and it clears when the gateway is rebooted before the boxes." },
+      { layout: "default", title: "Ruled out", clicks: causesBy(["ruled out"]).length,
+        body: (step, C) => <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 24px" }}>
+          {causesBy(["ruled out"]).map((c, k) => C(k + 1, <div className="dk-note ok" style={{ fontSize: 13.5 }}><h3>{c.name}<span className="dk-pill">{STATUS_LABEL[c.status]}</span></h3>{c.evidence}{c.next && c.next !== "None." ? ` Next: ${c.next}` : ""}</div>))}
+        </div>,
+        notes: "Cujo and firmware are ruled out by the data; repeat callers by the repeat rate; the agent rollback by security." },
+      { layout: "section", num: "06", title: "What is being done" },
+      { layout: "two-cols", title: "Initiatives and interlock commitments",
+        body: <>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {inits.map((it) => { const a = R.actions.find((x) => x.name === it.name); return <div key={it.name} className="dk-note" style={{ fontSize: 13 }}><h3><StatusChip status={it.status} T={T} /> <span style={{ marginLeft: 6 }}>{it.name}</span></h3><div style={{ color: MUTED, fontSize: 12 }}>{it.timeline} · {it.prime}</div>{a ? a.detail : it.desc}</div>; })}
+          </div>
+          <table style={{ alignSelf: "start" }}>
+            <thead><tr><th>Interlock commitment</th><th style={{ textAlign: "left" }}>Owner</th><th style={{ textAlign: "left" }}>Due</th></tr></thead>
+            <tbody>{R.actions.filter((a) => a.kind === "action").map((a) => <tr key={a.name}><td><div style={{ fontWeight: 600 }}>{a.name}</div><div style={{ fontSize: 11.5, color: MUTED }}>{a.detail}</div></td><td style={{ textAlign: "left" }}>{a.owner}</td><td style={{ textAlign: "left", whiteSpace: "nowrap" }}>{a.when}</td></tr>)}</tbody>
+          </table>
+        </>,
+        notes: "Sequential Reboot is the only item aimed at the mechanism; the others improve diagnosis or confirm the cause. None has reached customers yet." },
+      { layout: "two-cols", title: "Gaps, and what is working", clicks: 2,
+        body: (step, C) => <>
+          {C(1, <div className="dk-note bad"><h3>Gaps</h3><ul style={{ paddingLeft: 18 }}>
+            <li>No customer-facing fix is live; the reboot pilot has a cohort but no start date and excludes mixed OPUS and SHS homes.</li>
+            <li>About {num(((R.markersBase[1] - R.markers[6].v[1]) / R.markersBase[1]) * 100)}% of Stuck tickets close without a dispatch on an agent-led reboot, so the same gateways will fault again until uptime is addressed proactively.</li>
+            <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement.</li></ul></div>)}
+          {C(2, <div className="dk-note ok"><h3>Working</h3><ul style={{ paddingLeft: 18 }}>
+            <li>The rise has stopped: October is {sp(stuckOctVsSep)} per day on September and the All STBs weekly run rate has been flat since mid-September.</li>
+            <li>The agent-led gateway-then-STB reboot clears the fault, so repairs and swaps have not followed tickets; the TV repair rate is {fmtRate(K.rr[iSep])} per 100.</li>
+            <li>The cause is narrowed to one gateway model and one change window, with the confirming data due the week of 2 November.</li></ul></div>)}
+        </>,
+        notes: "Close on the ask: a start date for the reboot pilot and the agent release review." },
+      { layout: "end", title: "Sources and method", sub: `TV agent ticket exports (Aug 1 to Oct ${R.octDays}, counts per day, no customer data retained) · Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories by Category 3) · TS Calls Offered by Product · TV Customer Base Breakdown · STB No Boot interlocks of 21, 22, 27 and 28 Oct 2026 · Initiatives register. Per-day figures divide month totals by days in the month; 7-day averages are trailing; baselines are simple monthly averages; note markers are regular-expression matches and count mentions, not confirmed causes.`,
+        notes: "The full write-up with every table is the TV › Review page on the dashboard." }
+    ];
+
     return (
-      <div className="hb">
+      <>
+        {deckSlide != null && <Deck slides={slides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={col} isDark={isDark} title="TV review · STB Stuck on Initializing" />}
+        <div className="hb">
         <style>{css}</style>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -26 }}>
+          <button onClick={() => setDeckSlide(1)} title="Open this review as slides (arrow keys to navigate, Esc to exit)"
+            style={{ background: col, color: "#fff", border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: FONT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 4px 14px rgba(0,0,0,.14)" }}>
+            <span style={{ fontSize: 10 }}>▶</span> Present · {slides.length} slides
+          </button>
+        </div>
         <section aria-labelledby="tb-kpis">
           <h2 id="tb-kpis">August to October at a glance</h2>
           <div className="hb-stats">
@@ -5812,7 +6125,8 @@ export default function ReliabilityScorecards() {
           <p>Sources: TV agent ticket exports, Aug 1 to Oct {R.octDays} 2026 (Category 1 to 3, agent notes and resolution text; counts per day, no customer data retained); Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories, Look 2154, Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3, Jan 2025 to Oct 2026 month to date); TS Calls Offered by Product; TV Customer Base Breakdown (platform base); STB No Boot interlock notes of 21, 22, 27 and 28 Oct 2026; Initiatives register.</p>
           <p>Method notes: per-day figures divide month totals by days in the month (October by {R.octDays}); the 7-day averages are trailing; weeks run Monday to Sunday and partial weeks are shown with their day count. Baselines are simple monthly averages of the Looker series (2025, and January to July 2026). Note markers are regular-expression matches over the agent notes and resolution text of Stuck on Initializing tickets with the same patterns in both months; they count tickets that mention a thing, not confirmed causes. Interlock content is transcribed from the meeting notes and will be refreshed as the analyses land.</p>
         </footer>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -6119,7 +6433,7 @@ export default function ReliabilityScorecards() {
             const hasKids = !!CHILD_PAGES[item.id];
             const kidsOpen = hasKids && (navOpen[item.id] || CHILD_PARENT[page] === item.id);
             return (
-              <button key={item.id} onClick={() => { setPage(item.id); setInitFilters(NO_INIT_FILTERS); }}
+              <button key={item.id} onClick={() => { setPage(item.id); setDeckSlide(null); setInitFilters(NO_INIT_FILTERS); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
                   background: active ? T.navActiveBg : "transparent", color: active ? T.navActiveText : T.textSecondary,
