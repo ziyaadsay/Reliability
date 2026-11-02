@@ -25,6 +25,10 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - Ticket, repair and churn rates are reported per 100 subscribers, not as percentages. Changes in
   those rates are absolute differences in that unit (e.g. 0.05), not basis points. Use `fmtRate` and
   `deltaRate` in `site/App.jsx`. Survey and notes-analysis shares stay as percentages with bps moves.
+- The Looker ticket categories (`LOOKER`, `LOOKER_EXTRA`, `OVERVIEW_ISSUES`) are refreshed a month
+  ahead of the KPI tabs. Their series align with `LOOKER_MONTHS` and their issue tables use the
+  `LOOKER_*` labels; `MONTHS` / `LATEST` and every KPI series stay at the last month the
+  "Reliability/Deact KPIs" tab reports. Move `MONTHS` forward only when that tab has the month.
 - HSIA initiatives come from the "Product Technical | Churn & VOC Projects Impact" Google Sheet
   (https://docs.google.com/spreadsheets/d/1hFqUsmWcpEBSlO8GV-zvRfKpj8mp9lTo_5Trm03lUac, current
   month's "Executive Summary" tab, gid 610989644 for Sept 2026), not the Churn Measurement 2026

@@ -10,8 +10,11 @@ Scripts that produce the aggregated data behind the HSIA "Notes Analysis",
   monthly volumes by agent category and closure code, sub-category movers,
   agent-vs-closure categorisation divergence (all closures and field visits
   only), technician determinations and fix themes, agent-comment themes,
-  device mentions and fibre vs copper access mentions. Movers compare the
-  latest month with the prior month (Aug vs Jul 2026).
+  device mentions and fibre vs copper access mentions. The window is the
+  `MONTHS` list at the top of the script (Aug-Sep-Oct 2026 at the moment; the
+  October export runs to 30 Oct); movers compare the last month of the window
+  with the one before it, and `gen_hsa_block.py` labels the output from the
+  same list.
 
 Agent symptom domains: Access line & ONT (ONT Not Ranged, No Sync, Losing
 Sync, Historical Data), Gateway / dataflow (No Dataflow, No IP), Speed,

@@ -17,7 +17,11 @@ Scripts that produce the aggregated data behind the TV "Notes Analysis",
 
 Raw exports are not committed because they contain customer details.
 
-Movers and month-over-month movements in `analyze_notes.py` / `notes_analysis.json`
-compare Sep 2026 with Aug 2026 (the notes-analysis window is Jul-Aug-Sep 2026).
-`analyze_survey.py` / `survey_analysis.json` still cover Jun-Jul-Aug 2026 and
-have not been rolled forward.
+The notes-analysis window is the `MONTHS` list at the top of `analyze_notes.py`
+(Aug-Sep-Oct 2026 at the moment; the October export runs to 30 Oct). Movers and
+month-over-month movements compare the last month of the window with the one
+before it, and `gen_tva_block.py` labels the output from the same list. The
+survey side (`analyze_survey.py` / `survey_analysis.json`) still covers
+Jun-Jul-Aug 2026 and is carried over unchanged when `survey_analysis.json` is
+absent (`gen_tva_block.py` then reads the survey block from `tva_prev.json`,
+the TVA currently in App.jsx).

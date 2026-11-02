@@ -11,7 +11,7 @@ const DISPLAY_AS = ["cards", "text", "quotes", "list", "table", "matrix", "bars"
 const GANTT_STATUS_ORDER = ["Launched", "In flight", "Ideation", "Stalled", "On Hold"];
 
 // ---- display rules ----
-const T3 = ["Jul 2026", "Aug 2026", "Sep 2026"], SV = ["Jun", "Jul", "Aug"];
+const T3 = ["Aug 2026", "Sep 2026", "Oct 2026"], SV = ["Jun", "Jul", "Aug"];
 const seriesKeys = (s) => Object.keys(s.data.series);
 const tbl = (s, extra) => ({ as: "table", ...(extra || {}) });
 const wide = { wide: true };
@@ -174,9 +174,9 @@ const NOTE_OVERRIDES = {
   "s06-timeline": [{ when: /undated/, note: "Initiatives by pillar on a monthly timeline; initiatives without a firm date are listed separately. Latest reported month is Sep 2026." }],
   "s09-timeline": [{ when: /undated/, note: "Initiatives by pillar on a monthly timeline; initiatives without a firm date are listed separately. Latest reported month is Sep 2026." }],
   "s06-quarterly": [{ when: /null = TBD/, note: "Receipts marked TBD are not yet reported in the source." }],
-  "slide2-HSIA-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Sep 2026." }],
-  "slide2-TV-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Sep 2026." }],
-  "slide2-SHS-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Sep 2026." }]
+  "slide2-HSIA-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }],
+  "slide2-TV-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }],
+  "slide2-SHS-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }]
 };
 const CODE_RE = /`|\bdata\.|series shape|\bkeys?\b|priorQuarter|priorValue|vsTarget|schemaVersion|browser-local|This table is [^.]*\.|\b[a-z]+[A-Z][a-zA-Z]*\b|\b[a-z]+_[a-z_]+\b/;
 const CHART_RE = /left axis|right axis|\bbars?\b|\bsparkline\b|carry their chart|carry the comparison|drawn on/i;

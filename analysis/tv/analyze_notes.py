@@ -1,6 +1,6 @@
 import json, collections, re, statistics
 rows = json.load(open('notes_all.json'))
-MONTHS = ['2026-07', '2026-08', '2026-09']
+MONTHS = ['2026-08', '2026-09', '2026-10']
 
 def month(r):
     d = r['Ticket Created Date']
@@ -38,7 +38,7 @@ def movers(tbl, floor=150):
         if v[1] >= floor or v[2] >= floor:
             d = v[2] - v[1]
             pct = (d / v[1] * 100) if v[1] else None
-            items.append({'key': k, 'jun': v[0], 'jul': v[1], 'aug': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
+            items.append({'key': k, 'm0': v[0], 'm1': v[1], 'm2': v[2], 'delta': d, 'pct': None if pct is None else round(pct, 1)})
     rising = sorted([i for i in items if i['delta'] > 0], key=lambda i: -i['delta'])[:8]
     falling = sorted([i for i in items if i['delta'] < 0], key=lambda i: i['delta'])[:8]
     return rising, falling
