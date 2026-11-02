@@ -37,15 +37,14 @@ jobs:
       - name: Verify page model
         run: node mcp/verify-pages.mjs
 
-      # The stock CLI hardcodes auth_mode dev_keys on every `push --mcp`, and the hub has
-      # no auth-mode setting. The patched copy reads GIZMOS_AUTH_MODE instead, so the
-      # server deploys in user_auth mode (browser SSO, no API key). Every push must use
-      # it: a stock-CLI push flips the app back to key mode and the connector loads no tools.
-      - name: Fetch and patch the gizmos CLI for user_auth
+      # `gizmos push --mcp` defaults to auth_mode dev_keys; --auth-mode user_auth deploys the
+      # server in user_auth mode (browser SSO, no API key). Every push must carry the flag:
+      # a push without it flips the app back to key mode and the connector loads no tools.
+      - name: Fetch the gizmos CLI
         run: |
-          curl -fsSL https://gizmos.run/skills/gizmos.mjs -o "$RUNNER_TEMP/gizmos-stock.mjs"
-          node mcp/patch-cli.mjs "$RUNNER_TEMP/gizmos-stock.mjs" "$RUNNER_TEMP/gizmos-userauth.mjs"
-          echo "GIZMOS_CLI=$RUNNER_TEMP/gizmos-userauth.mjs" >> "$GITHUB_ENV"
+          curl -fsSL https://gizmos.run/skills/gizmos.mjs -o "$RUNNER_TEMP/gizmos.mjs"
+          node "$RUNNER_TEMP/gizmos.mjs" push --help 2>&1 | grep -q -- "--auth-mode" || { echo "the gizmos CLI no longer documents --auth-mode; inspect it before deploying"; exit 1; }
+          echo "GIZMOS_CLI=$RUNNER_TEMP/gizmos.mjs" >> "$GITHUB_ENV"
 
       # The CLI lists files with `git ls-files`, so the gitignored mcp/dist must
       # be pushed from a copy outside the repository.
@@ -58,13 +57,12 @@ jobs:
       # Pushes the app root (the folder holding wrangler.toml), not src/, so the platform
       # keeps the declared bindings.
       - name: Preview upload
-        run: node "$GIZMOS_CLI" push --dry-run --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
+        run: node "$GIZMOS_CLI" push --dry-run --mcp --auth-mode user_auth --app "$GIZMOS_APP" --org "$GIZMOS_ORG" "$DEPLOY_DIR"
 
       - name: Deploy (user_auth)
         env:
           GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
-          GIZMOS_AUTH_MODE: user_auth
-        run: node "$GIZMOS_CLI" push --mcp --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
+        run: node "$GIZMOS_CLI" push --mcp --auth-mode user_auth --app "$GIZMOS_APP" --org "$GIZMOS_ORG" -m "${GITHUB_REF_NAME} ${GITHUB_SHA::7}" "$DEPLOY_DIR"
 
       # Proof: in user_auth mode the protected-resource document names the org's
       # authorization server. In dev_keys mode this URL answers 401 invalid_token.

@@ -89,14 +89,13 @@ demand). The app is visible to everyone in the TELUS org and runs in
 **User Auth** mode: colleagues sign in with TELUS SSO in the browser, and no
 API key is issued or shared.
 
-User Auth needs a patched CLI. The stock `gizmos push --mcp` hardcodes
-`auth_mode: dev_keys` and the hub has no auth-mode setting, so the workflow
-downloads the stock CLI, runs `mcp/patch-cli.mjs` to make it honour
-`GIZMOS_AUTH_MODE`, and pushes with `GIZMOS_AUTH_MODE=user_auth`. It then
-checks `https://relstrat-mcp.telus.gizmos.run/.well-known/oauth-protected-resource`
-names the TELUS authorization server. **Every push of relstrat-mcp must use the
-patched CLI**: a stock-CLI push flips the app back to key mode and the
-connector loads no tools. Always push the app root (the folder with
+User Auth is set on the push: the workflow downloads the stock CLI and runs
+`gizmos push --mcp --auth-mode user_auth` (the hub has no auth-mode setting, and
+a push without the flag defaults to dev_keys). It then checks
+`https://relstrat-mcp.telus.gizmos.run/.well-known/oauth-protected-resource`
+names the TELUS authorization server. **Every push of relstrat-mcp must carry
+`--auth-mode user_auth`**: a push without it flips the app back to key mode and
+the connector loads no tools. Always push the app root (the folder with
 `wrangler.toml`), never `src/`, or the platform drops the declared bindings.
 The `MCP` API key binding stays declared, so any `gzak_` keys issued earlier
 keep working.
