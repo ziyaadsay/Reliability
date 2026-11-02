@@ -55,7 +55,7 @@ const LOOKER_MOM = `${LOOKER_SHORT} vs ${LOOKER_PREV_SHORT}`;
 // `context` strings (prefixed with "@") render as the lead bullets above the themes.
 const HEALTH_COMMENTARY = {
   TV: [
-    "@TV tickets rose 1.1% in October to 37,944 (3.28 per 100 subscribers), 8.5% below October 2025. The platform split of October tickets is not yet reported. Stuck on Initializing held at its September level, while video quality and channel errors were the largest movers.",
+    "@TV tickets rose 1.1% in October to 37,944 (3.28 per 100 subscribers), 8.5% below October 2025. Legacy grew (25,442, +2.7% MoM) while TV+ eased (12,502, -2.0%), and Legacy still carries about two-thirds of the volume. Stuck on Initializing held at its September level, while video quality and channel errors were the largest movers.",
     { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,205 tickets (-0.6% MoM) · 14% of TV tickets · the top driver for the second month",
       causes: [
         "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (All STBs Affected ran 2,258 in October against 2,244 in September)",
@@ -714,14 +714,14 @@ const CALLS_SPLIT = {
 const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
-    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775,null],
+    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775,25442],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
-    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760,null],
+    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760,12502],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
