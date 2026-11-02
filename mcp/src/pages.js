@@ -555,7 +555,7 @@ function ffpsPage() {
 }
 
 // ---- Notes Analysis (mirrors HsiaTicketAnalysisPage / TvTicketAnalysisPage) ----
-const AN_MONTHS = ["Aug", "Sep", "Oct"], AN_SURVEY_MONTHS = ["Jun", "Jul", "Aug"];
+const AN_MONTHS = HSA.months.map((m) => m.slice(0, 3)), AN_SURVEY_MONTHS = ["Jun", "Jul", "Aug"];
 const recItems = (recs, product) => recs.map((r) => ({ title: `${r.pri} · ${r.title}`, body: `Evidence: ${r.evidence} Action: ${r.action}`, meta: { priority: r.pri, tag: r.tag, evidence: r.evidence, action: r.action, initiatives: r.initiatives || [], product } }));
 const moverItems = (rows) => rows.map((r) => ({ title: r.name, body: `${sNum(r.delta)}${r.unit || ""}${r.pct != null ? ` (${sPct(r.pct, 0)})` : ""}`, meta: { values: r.v || null, delta: r.delta, pct: r.pct ?? null } }));
 function notesPage(product) {
@@ -564,19 +564,19 @@ function notesPage(product) {
   const latest = months[2];
   S.push(sec("cards", "Notes analysis KPI cards", "cards", [
     cardFrom3(`${product} tickets analysed`, K.total, { unit: "count", months, note: `${latest} · agent + technician notes` }),
-    cardFrom3("Field visits", K.closure.map((c) => c.field_visit_pct), { unit: "% of tickets", isRate: true, goodWhenDown: false, months, note: `tickets with a technician determination · Aug ${K.closure[0].field_visit_pct}% · Sep ${K.closure[1].field_visit_pct}%` }),
+    cardFrom3("Field visits", K.closure.map((c) => c.field_visit_pct), { unit: "% of tickets", isRate: true, goodWhenDown: false, months, note: `tickets with a technician determination · ${months[0].slice(0, 3)} ${K.closure[0].field_visit_pct}% · ${months[1].slice(0, 3)} ${K.closure[1].field_visit_pct}%` }),
     cardFrom3("Education / no-fault closures", dAll.map((d) => d.nofault), { unit: "% of closed tickets", isRate: true, months }),
     cardFrom3("Categorisation divergence", dAll.map((d) => d.reattribution), { unit: "% (closure domain ≠ agent category, all closures)", isRate: true, months }),
     cardFrom3("Field-visit divergence", dF.map((d) => d.reattribution), { unit: "% (technician finding ≠ agent category)", isRate: true, months })
   ]));
   S.push(textSec("about", "About", [product === "HSIA"
-    ? `${fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, Aug – Oct 2026, from the weekly notes exports (the October export runs to the 30th); movements compare Oct 2026 with Sep 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on ${K.closure[2].field_visit_pct}% of tickets; ${K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative.`
-    : `${fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Aug – Oct 2026 (the October export runs to the 30th); movements compare Oct 2026 with Sep 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on ${K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.`]));
+    ? `${fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, ${months[0].slice(0, 3)} – ${latest}, from the weekly notes exports (the October export runs to the 30th); movements compare ${latest} with ${months[1]}. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on ${K.closure[2].field_visit_pct}% of tickets; ${K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative.`
+    : `${fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, ${months[0].slice(0, 3)} – ${latest} (the October export runs to the 30th); movements compare ${latest} with ${months[1]}. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on ${K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.`]));
   // 01 top issues by agent categorisation
   if (K.c1) S.push(sec("s01-category1", "01 · Top issues by agent categorisation · Category 1 (agent)", "cards", K.c1.map((c) => cardFrom3(c.name, c.v, { unit: "count", months, note: `${(c.v[2] / K.total[2] * 100).toFixed(1)}% of ${latest} tickets` }))));
   S.push(tableSec("s01-agent-categories", `01 · Top issues by agent categorisation · ${product === "HSIA" ? "Category 1 › Category 2 (agent)" : "Category 1 (agent)"}`, monthCols("Agent category", months, [col("share", `Share · ${latest}`, "%")]), monthRows(K.agentCat, months, (it) => ({ share: round((it.v[2] / K.total[2]) * 100, 1) }))));
-  S.push(listSec("s01-movers-rising", `01 · Sub-category movers · Rising · Oct vs Sep 2026`, moverItems(K.rising)));
-  S.push(listSec("s01-movers-falling", `01 · Sub-category movers · Falling · Oct vs Sep 2026`, moverItems(K.falling)));
+  S.push(listSec("s01-movers-rising", `01 · Sub-category movers · Rising · ${latest} vs ${months[1]}`, moverItems(K.rising)));
+  S.push(listSec("s01-movers-falling", `01 · Sub-category movers · Falling · ${latest} vs ${months[1]}`, moverItems(K.falling)));
   S.push(textSec("s01-notes", "01 · Sources & notes", [product === "HSIA"
     ? "Movers rank sub-categories with at least 150 tickets in Sep or Oct by absolute change (Oct vs Sep). October is a broad easing on the access side: Connectivity › No Dataflow › All Devices Affected fell 1,108 tickets (−9.2%), ONT Not Ranged › Alarm Light 443 (−12.0%) and No Sync › No DSL Light 321 (−14.1%). Wi-Fi is the one area still rising: Wireless › Can't Connect › Some Devices Affected is the top riser (+180, +21.4%) and Wireless › Disconnects edged up. Incompatible Equipment and its Connectivity sub-code fell together (3,466 → 3,170, −8.5%)."
     : "Movers rank sub-categories with at least 150 tickets in Sep or Oct by absolute change (Oct vs Sep). The September risers have stopped rising: STB No Boot › Stuck on Initializing eased 182 tickets (−3.5%, with the export ending on 30 Oct), Digital Box › No Boot fell 218 (−9.1%) and Reboot Loop 148 (−13.8%). The October risers are picture quality: Video Issues › Stop/Stuttering/Freezing +431 (+18.7%) and Pixelization +128 (+43.0%), with Channel Issues › Missing Channels +141 (+7.3%)."]));
@@ -590,7 +590,7 @@ function notesPage(product) {
     const base = { indicator: isField ? "Field visits" : "Closed tickets" }; months.forEach((m, i) => { base[m] = isField ? D[i].visits : D[i].closed; }); base.changeBps = null;
     return rows.concat([base]);
   };
-  const divCols = [col("indicator", "Indicator"), ...months.map((m) => col(m, m, "%")), col("changeBps", "Δ Oct vs Sep", "bps")];
+  const divCols = [col("indicator", "Indicator"), ...months.map((m) => col(m, m, "%")), col("changeBps", `Δ ${months[2].slice(0, 3)} vs ${months[1].slice(0, 3)}`, "bps")];
   S.push(tableSec("s02-all-closures", "02 · Agent vs technician categorisation · All closures (agent or technician)", divCols, divRows(dAll, false)));
   S.push(tableSec("s02-field-visits", "02 · Agent vs technician categorisation · Field visits only (technician determination)", divCols, divRows(dF, true)));
   if (K.domainMix) S.push(tableSec("s02-domain-mix", `02 · Where closures land — agent symptom domain × closure cause domain, all closures, ${latest}`, [col("agentDomain", "Agent domain"), col("closed", "Closed", "count"), ...K.closureDomains.map((h, i) => col(`d${i + 1}`, h, "% of closed"))], K.domainMix.map((r) => { const row = { agentDomain: r.agent, closed: r.n }; r.v.forEach((x, i) => { row[`d${i + 1}`] = r.n ? round((x / r.n) * 100, 0) : null; }); return row; })));
@@ -606,11 +606,11 @@ function notesPage(product) {
     ? "Non-TELUS-caused determinations eased again to 12.8% of visits in October (1,608 of 12,585) from 13.4% in September (1,969 of 14,673) and 13.8% in August, while determined visits fell 14.2% with the export ending on 30 Oct. Found OK › Not Required closures kept falling (705 → 452, −35.9%), although Found OK › Avoidable Dispatch rose 27.1% (214 → 272)."
     : "Non-TELUS-caused visits eased to 16.6% of determinations in October from 17.9% in September, still above August's 14.4%, so about one in six dispatches reaches a home where the fault is customer equipment or setup."));
   S.push(tableSec("s03-fixes", "03 · What technicians fixed (themes in Resolution Text, field visits)", monthCols("Fix theme", months, product === "HSIA" ? [col("shareOfVisits", `Share of visits · ${latest}`, "%")] : []), monthRows(K.fixes, months, product === "HSIA" ? (it) => ({ shareOfVisits: round((it.v[2] / dF[2].visits) * 100, 1) }) : undefined)));
-  S.push(listSec("s03-closure-rising", "03 · Closure movers (Resolution 1 › Resolution 2) · Rising · Oct vs Sep 2026", moverItems(K.techRising)));
-  S.push(listSec("s03-closure-falling", "03 · Closure movers (Resolution 1 › Resolution 2) · Falling · Oct vs Sep 2026", moverItems(K.techFalling)));
+  S.push(listSec("s03-closure-rising", `03 · Closure movers (Resolution 1 › Resolution 2) · Rising · ${latest} vs ${months[1]}`, moverItems(K.techRising)));
+  S.push(listSec("s03-closure-falling", `03 · Closure movers (Resolution 1 › Resolution 2) · Falling · ${latest} vs ${months[1]}`, moverItems(K.techFalling)));
   if (product === "HSIA") S.push(textSec("s03-notes", "03 · Sources & notes", ["Fibre work (ONT, light level, splice) is still the largest field fix at 33% of visits and Wi-Fi / Boost placement the second at 29%; both fell about 11% in volume with the smaller October export, and modem replacements fell 19%. Closures moved the same way: Education › HSIA −6.5%, HSIA › Modem/Gateway −14.7%, GPON › Inside Premise Equipment −8.8%, GPON › Outside Plant −12.8% and Found OK › Not Required −35.9%. The few risers are hardware-specific or back-office: Boost Wi-Fi 6 (+28.5%), Found OK › Avoidable Dispatch (+27.1%), NetCracker › Stuck (+10.0%) and Connectivity › Modem/Gateway (+1.6%)."]));
   // 04 what agents are writing
-  S.push(textSec("s04-about", "04 · What agents are writing", [`Themes are keyword-classified from the agent's own comment block (${product === "HSIA" ? "InSight" : "system"} diagnostic text excluded). A written agent comment was found on ${fmtNum(K.commentCoverage[2])} of ${fmtNum(K.total[2])} October tickets; counts are tickets whose comment mentions the theme.`]));
+  S.push(textSec("s04-about", "04 · What agents are writing", [`Themes are keyword-classified from the agent's own comment block (${product === "HSIA" ? "InSight" : "system"} diagnostic text excluded). A written agent comment was found on ${fmtNum(K.commentCoverage[2])} of ${fmtNum(K.total[2])} ${latest} tickets; counts are tickets whose comment mentions the theme.`]));
   S.push(tableSec("s04-themes", "04 · Theme in agent comments", monthCols("Theme", months), monthRows(K.themes, months)));
   S.push(tableSec("s04-devices", "04 · Equipment mentioned in notes", monthCols("Device", months), monthRows(K.devices, months)));
   if (K.platform) S.push(tableSec("s04-platform", "04 · Platform mentioned in notes", monthCols("Platform", months), monthRows(K.platform, months), "Legacy Mediaroom mentions fell back in October (VIP5662W PVR −9%, VIP5602W wireless STB −2%, Mediaroom −6%) while OPUS mentions edged up (+2%), consistent with the By Platform split where Legacy still carries two thirds of TV tickets on a shrinking base."));
@@ -994,13 +994,13 @@ const PAGE_SCOPE = {
   "All|selfserve": "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact",
   "All|ffps": `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`,
   "HSIA|overview": "HSIA: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
-  "HSIA|notes": "HSIA notes analysis · Oct vs Sep 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations",
+  "HSIA|notes": `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`,
   "HSIA|sentiment": "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment",
   "HSIA|cross": "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes",
   "HSIA|review": "HSIA review · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight",
   "TV|overview": "TV: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "TV|platforms": "TV platforms · Optik TV Legacy vs TV Evolution vs Mixed usage: base, tickets, repairs, swaps",
-  "TV|notes": "TV notes analysis · Oct vs Sep 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations",
+  "TV|notes": `TV notes analysis · ${TVA.months[2]} vs ${TVA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`,
   "TV|sentiment": "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)",
   "TV|cross": "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims",
   "TV|review": `TV review · Aug – Oct 2026 (agent exports to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`,

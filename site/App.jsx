@@ -3906,7 +3906,9 @@ export default function ReliabilityScorecards() {
   // Ticket/agent-notes window (rolls forward each month); the customer-survey
   // pages have their own window below since that pipeline hasn't been rolled
   // forward to the same month yet.
-  const AN_MONTHS = ["Jul", "Aug", "Sep"];
+  // Notes-analysis window: the three months carried by TVA / HSA (the two analyses share it).
+  const AN_FULL = TVA.months, AN_MONTHS = AN_FULL.map((m) => m.slice(0, 3)), AN_YR = AN_FULL[2].slice(-2);
+  const [AN_M0, AN_M1, AN_M2] = AN_MONTHS, AN_LAST = AN_FULL[2], AN_MOM = `${AN_M2} vs ${AN_M1}`, AN_MOM_FULL = `${AN_LAST} vs ${AN_FULL[1]}`;
   const AN_SURVEY_MONTHS = ["Jun", "Jul", "Aug"];
   const anTh = { padding: "9px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", textAlign: "left" };
   const anTd = { padding: "8px 12px", borderBottom: `1px solid ${T.border}`, fontSize: 12.5, verticalAlign: "middle" };
@@ -3942,7 +3944,7 @@ export default function ReliabilityScorecards() {
     return <span style={{ whiteSpace: "nowrap" }}><DeltaText d={d} T={T} />{v[1] ? <span style={{ color: T.textFaint, fontSize: 11.5 }}> ({yoyPctText(v[2], v[1])})</span> : null}</span>;
   }
 
-  function MoverCards({ rising, falling, risingTitle = "Rising · Oct vs Sep 2026", fallingTitle = "Falling · Oct vs Sep 2026" }) {
+  function MoverCards({ rising, falling, risingTitle = `Rising · ${AN_MOM_FULL}`, fallingTitle = `Falling · ${AN_MOM_FULL}` }) {
     const card = (title, rows, tone) => (
       <div style={{ flex: 1, minWidth: 280, background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${tone === "up" ? T.bad : T.good}`, borderRadius: 10, padding: "12px 16px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: tone === "up" ? T.bad : T.good, marginBottom: 8 }}>{title}</div>
@@ -3985,9 +3987,9 @@ export default function ReliabilityScorecards() {
     return (
       <tr>
         <th style={anTh}>{extra[0] || ""}</th>
-        {AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '26</th>)}
+        {AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m} '{AN_YR}</th>)}
         <th style={anTh}>Trend</th>
-        <th style={{ ...anTh, textAlign: "right" }}>Oct vs Sep</th>
+        <th style={{ ...anTh, textAlign: "right" }}>{AN_MOM}</th>
         {extra.slice(1).map((e) => <th key={e} style={anTh}>{e}</th>)}
       </tr>
     );
@@ -4030,11 +4032,11 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtBig(K.total[2])} sub="Oct 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.TV} icon="tickets" label="TV tickets analysed" value={fmtBig(K.total[2])} sub={`${AN_LAST} · agent + technician notes`}
             deltas={[<Move key="m" v={K.total} />]} />
-          <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Oct"
-            deltas={[<span key="a" style={{ color: T.textMuted }}>Aug {K.closure[0].field_visit_pct}% · Sep {K.closure[1].field_visit_pct}%</span>]} />
-          <StatCard T={T} color={colors.TV} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub="share of closed tickets · Oct"
+          <StatCard T={T} color={colors.TV} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub={`tickets with a technician determination · ${AN_M2}`}
+            deltas={[<span key="a" style={{ color: T.textMuted }}>{AN_M0} {K.closure[0].field_visit_pct}% · {AN_M1} {K.closure[1].field_visit_pct}%</span>]} />
+          <StatCard T={T} color={colors.TV} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub={`share of closed tickets · ${AN_M2}`}
             deltas={[<Move key="m" v={dAll.map((d) => d.nofault)} bps />]} />
           <StatCard T={T} color={colors.TV} icon="issues" label="Categorisation divergence" value={fmtPct(dAll[2].reattribution, 1)} sub="closure domain ≠ agent category · all closures"
             deltas={[<Move key="m" v={dAll.map((d) => d.reattribution)} bps />]} />
@@ -4042,14 +4044,14 @@ export default function ReliabilityScorecards() {
             deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, Aug – Oct 2026 (the October export runs to the 30th); movements compare Oct 2026 with Sep 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} TV tickets, {AN_M0} – {AN_LAST} (the October export runs to the 30th); movements compare {AN_LAST} with {AN_FULL[1]}. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; the rest are agent closures). Text themes are keyword-classified and indicative.
         </p>
 
         {sec("Top issues by agent categorisation", "tickets",
           <>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><MonthHeader extra={["Category 1 (agent)", "Share · Oct"]} /></thead>
+                <thead><MonthHeader extra={["Category 1 (agent)", `Share · ${AN_M2}`]} /></thead>
                 <tbody>
                   {K.agentCat.map((c) => (
                     <tr key={c.name}>
@@ -4100,7 +4102,7 @@ export default function ReliabilityScorecards() {
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — all closures, Oct 2026</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — all closures, {AN_LAST}</div>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Tickets</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>Divergence</th><th style={{ ...anTh, textAlign: "right" }}>Education / no fault</th><th style={anTh}>Most common closure domains</th></tr></thead>
@@ -4118,7 +4120,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — field visits only, Oct 2026</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — field visits only, {AN_LAST}</div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Visits</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>No fault found</th><th style={{ ...anTh, textAlign: "right" }}>Non-TELUS caused</th><th style={anTh}>Technician's top finding</th></tr></thead>
@@ -4161,7 +4163,7 @@ export default function ReliabilityScorecards() {
               <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
                 <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>Technician determination · field visits</div>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead><tr><th style={anTh}>Determination</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>Sep share</th></tr></thead>
+                  <thead><tr><th style={anTh}>Determination</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>{AN_M2} share</th></tr></thead>
                   <tbody>
                     {[["TELUS caused (no fee)", 0], ["Non-TELUS caused (fee applied)", 1]].map(([label, idx]) => (
                       <tr key={label}>
@@ -4199,7 +4201,7 @@ export default function ReliabilityScorecards() {
         {sec("What agents are writing", "notes",
           <>
             <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
-              Themes are keyword-classified from the agent's own comment block (system diagnostic text excluded). A written agent comment was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} October tickets; counts are tickets whose comment mentions the theme.
+              Themes are keyword-classified from the agent's own comment block (system diagnostic text excluded). A written agent comment was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} {AN_LAST} tickets; counts are tickets whose comment mentions the theme.
             </p>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -4446,7 +4448,7 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.TV} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, notes, technician and verbatims agree" deltas={[<span key="a" style={{ color: T.textMuted }}>legacy STB boot, OPUS onboarding, support friction</span>]} />
           <StatCard T={T} color={colors.TV} icon="cross" label="Emerging driver" value="1" sub="ticket-only signal so far" deltas={[<span key="a" style={{ color: T.textMuted }}>YouTube app, August</span>]} />
           <StatCard T={T} color={colors.TV} icon="initiatives" label="Falling drivers" value="2" sub="fixes visible in every source" deltas={[<span key="a" style={{ color: T.textMuted }}>recording playback, power supply</span>]} />
-          <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} bps />]} />
+          <StatCard T={T} color={colors.TV} icon="repairs" label="Field-visit divergence" value={fmtPct(TVA.tickets.divergence.field[2].reattribution, 1)} sub={`technician finding ≠ agent category · ${AN_M2}`} deltas={[<Move key="m" v={TVA.tickets.divergence.field.map((d) => d.reattribution)} bps />]} />
           <StatCard T={T} color={colors.TV} icon="sentiment" label="Negative verbatims" value={fmtPct(TVA.survey.polarity.negative[2], 1)} sub="reason-for-rating comments · Aug" deltas={[<Move key="m" v={TVA.survey.polarity.negative} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
@@ -4555,11 +4557,11 @@ export default function ReliabilityScorecards() {
     return (
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtBig(K.total[2])} sub="Oct 2026 · agent + technician notes"
+          <StatCard T={T} color={colors.HSIA} icon="tickets" label="HSIA tickets analysed" value={fmtBig(K.total[2])} sub={`${AN_LAST} · agent + technician notes`}
             deltas={[<Move key="m" v={K.total} />]} />
-          <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub="tickets with a technician determination · Oct"
-            deltas={[<span key="a" style={{ color: T.textMuted }}>Aug {K.closure[0].field_visit_pct}% · Sep {K.closure[1].field_visit_pct}%</span>]} />
-          <StatCard T={T} color={colors.HSIA} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub="share of closed tickets · Oct"
+          <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field visits" value={fmtPct(K.closure[2].field_visit_pct, 1)} sub={`tickets with a technician determination · ${AN_M2}`}
+            deltas={[<span key="a" style={{ color: T.textMuted }}>{AN_M0} {K.closure[0].field_visit_pct}% · {AN_M1} {K.closure[1].field_visit_pct}%</span>]} />
+          <StatCard T={T} color={colors.HSIA} icon="cx" label="Education / no-fault closures" value={fmtPct(dAll[2].nofault, 1)} sub={`share of closed tickets · ${AN_M2}`}
             deltas={[<Move key="m" v={dAll.map((d) => d.nofault)} bps />]} />
           <StatCard T={T} color={colors.HSIA} icon="issues" label="Categorisation divergence" value={fmtPct(dAll[2].reattribution, 1)} sub="closure domain ≠ agent category · all closures"
             deltas={[<Move key="m" v={dAll.map((d) => d.reattribution)} bps />]} />
@@ -4567,7 +4569,7 @@ export default function ReliabilityScorecards() {
             deltas={[<Move key="m" v={dF.map((d) => d.reattribution)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          {fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, Aug – Oct 2026, from the weekly notes exports (the October export runs to the 30th); movements compare Oct 2026 with Sep 2026. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; {K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative. Customer survey verbatims are not yet available for HSIA, so there is no sentiment page.
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} HSIA tickets, {AN_M0} – {AN_LAST}, from the weekly notes exports (the October export runs to the 30th); movements compare {AN_LAST} with {AN_FULL[1]}. Agent grouping = Category 1–3 and Agent Notes; closure grouping = Resolution 1–3 and Resolution Text (a technician determination is present on {K.closure[2].field_visit_pct}% of tickets; {K.closure[2].no_closure_code_pct}% carry no closure code). Text themes are keyword-classified and indicative. Customer survey verbatims are not yet available for HSIA, so there is no sentiment page.
         </p>
 
         {sec("Top issues by agent categorisation", "tickets",
@@ -4576,14 +4578,14 @@ export default function ReliabilityScorecards() {
               {K.c1.map((c) => (
                 <div key={c.name} style={{ flex: 1, minWidth: 150, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 14px" }}>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{c.name}</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: T.heading, marginTop: 2 }}>{fmtNum(c.v[2])} <span style={{ fontSize: 11.5, fontWeight: 500, color: T.textFaint }}>{(c.v[2] / K.total[2] * 100).toFixed(1)}% · Oct</span></div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: T.heading, marginTop: 2 }}>{fmtNum(c.v[2])} <span style={{ fontSize: 11.5, fontWeight: 500, color: T.textFaint }}>{(c.v[2] / K.total[2] * 100).toFixed(1)}% · {AN_M2}</span></div>
                   <div style={{ fontSize: 12, marginTop: 2 }}><Move v={c.v} /></div>
                 </div>
               ))}
             </div>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><MonthHeader extra={["Category 1 › Category 2 (agent)", "Share · Oct"]} /></thead>
+                <thead><MonthHeader extra={["Category 1 › Category 2 (agent)", `Share · ${AN_M2}`]} /></thead>
                 <tbody>
                   {K.agentCat.map((c) => (
                     <tr key={c.name}>
@@ -4633,7 +4635,7 @@ export default function ReliabilityScorecards() {
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Where closures land — agent symptom domain × closure cause domain, all closures, Oct 2026</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Where closures land — agent symptom domain × closure cause domain, all closures, {AN_LAST}</div>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><th style={anTh}>Agent domain</th><th style={{ ...anTh, textAlign: "right" }}>Closed</th>{K.closureDomains.map((h) => <th key={h} style={{ ...anTh, textAlign: "right", whiteSpace: "normal", fontSize: 10 }}>{h}</th>)}</tr></thead>
@@ -4651,7 +4653,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — all closures, Oct 2026</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — all closures, {AN_LAST}</div>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Tickets</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>Divergence</th><th style={{ ...anTh, textAlign: "right" }}>Education / no fault</th><th style={anTh}>Most common closure domains</th></tr></thead>
@@ -4669,7 +4671,7 @@ export default function ReliabilityScorecards() {
                 </tbody>
               </table>
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — field visits only, Oct 2026</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>By agent category — field visits only, {AN_LAST}</div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr><th style={anTh}>Agent category</th><th style={{ ...anTh, textAlign: "right" }}>Visits</th><th style={{ ...anTh, textAlign: "right" }}>Aligned</th><th style={{ ...anTh, textAlign: "right" }}>No fault found</th><th style={{ ...anTh, textAlign: "right" }}>Non-TELUS caused</th><th style={anTh}>Technician's top finding</th></tr></thead>
@@ -4712,7 +4714,7 @@ export default function ReliabilityScorecards() {
               <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
                 <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>Technician determination · field visits</div>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead><tr><th style={anTh}>Determination</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>Sep share</th></tr></thead>
+                  <thead><tr><th style={anTh}>Determination</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>{AN_M2} share</th></tr></thead>
                   <tbody>
                     {[["TELUS caused (no fee)", 0], ["Non-TELUS caused (fee applied)", 1]].map(([label, idx]) => (
                       <tr key={label}>
@@ -4729,7 +4731,7 @@ export default function ReliabilityScorecards() {
             <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>What technicians fixed (themes in Resolution Text, field visits)</div>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><MonthHeader extra={["Fix theme", "Share of visits · Oct"]} /></thead>
+                <thead><MonthHeader extra={["Fix theme", `Share of visits · ${AN_M2}`]} /></thead>
                 <tbody>
                   {K.fixes.map((c) => (
                     <tr key={c.name}>
@@ -4752,7 +4754,7 @@ export default function ReliabilityScorecards() {
         {sec("What agents are writing", "notes",
           <>
             <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
-              Themes are keyword-classified from the agent's own comment block (InSight diagnostic text excluded). A written agent comment was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} October tickets; counts are tickets whose comment mentions the theme.
+              Themes are keyword-classified from the agent's own comment block (InSight diagnostic text excluded). A written agent comment was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} {AN_LAST} tickets; counts are tickets whose comment mentions the theme.
             </p>
             <div style={{ overflowX: "auto", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -5128,8 +5130,8 @@ export default function ReliabilityScorecards() {
           <StatCard T={T} color={colors.HSIA} icon="issues" label="Confirmed rising drivers" value="3" sub="tickets, agent notes and technician findings agree" deltas={[<span key="a" style={{ color: T.textMuted }}>no dataflow, incompatible equipment, copper no sync</span>]} />
           <StatCard T={T} color={colors.HSIA} icon="cross" label="Diagnosis gap" value="1" sub="volume flat, closures diverging" deltas={[<span key="a" style={{ color: T.textMuted }}>Wireless dispatches</span>]} />
           <StatCard T={T} color={colors.HSIA} icon="initiatives" label="Falling drivers" value="2" sub="improvement visible in every lens" deltas={[<span key="a" style={{ color: T.textMuted }}>degraded fibre, speed</span>]} />
-          <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field-visit divergence" value={fmtPct(K.divergence.field[2].reattribution, 1)} sub="technician finding ≠ agent category · Aug" deltas={[<Move key="m" v={K.divergence.field.map((d) => d.reattribution)} bps />]} />
-          <StatCard T={T} color={colors.HSIA} icon="cx" label="Non-TELUS-caused visits" value={fmtPct(K.divergence.field[2].nontelus, 1)} sub="share of technician determinations · Aug" deltas={[<Move key="m" v={K.divergence.field.map((d) => d.nontelus)} bps />]} />
+          <StatCard T={T} color={colors.HSIA} icon="repairs" label="Field-visit divergence" value={fmtPct(K.divergence.field[2].reattribution, 1)} sub={`technician finding ≠ agent category · ${AN_M2}`} deltas={[<Move key="m" v={K.divergence.field.map((d) => d.reattribution)} bps />]} />
+          <StatCard T={T} color={colors.HSIA} icon="cx" label="Non-TELUS-caused visits" value={fmtPct(K.divergence.field[2].nontelus, 1)} sub={`share of technician determinations · ${AN_M2}`} deltas={[<Move key="m" v={K.divergence.field.map((d) => d.nontelus)} bps />]} />
         </div>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
           Each driver is read across the available lenses, comparing Aug 2026 with Jul 2026: ticket categories from the notes export (agent), Looker ticket volumes year over year (Aug 2026 vs Aug 2025), agent comment themes, and technician findings on field visits. A driver is confirmed when the direction agrees across sources. Customer survey verbatims are not yet available for HSIA and will be added as a fifth lens when they are.
@@ -6642,7 +6644,7 @@ export default function ReliabilityScorecards() {
               : page === "hsiabrief"
               ? "HSIA review · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight"
               : page === "hsiatickets"
-              ? "HSIA notes analysis · Oct vs Sep 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+              ? `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
               : page === "hsiasentiment"
               ? "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment"
               : page === "hsiacross"
@@ -6650,7 +6652,7 @@ export default function ReliabilityScorecards() {
               : page === "tvplatforms"
                 ? "TV platforms · Optik TV Legacy vs TV Evolution vs Mixed usage: base, tickets, repairs, swaps"
                 : page === "tvtickets"
-                  ? "TV notes analysis · Oct vs Sep 2026 · agent and technician notes: top issues, movers, categorisation divergence, recommendations"
+                  ? `TV notes analysis · ${TVA.months[2]} vs ${TVA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
                   : page === "tvsentiment"
                     ? "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
                     : page === "tvcross"

@@ -11,7 +11,7 @@ const DISPLAY_AS = ["cards", "text", "quotes", "list", "table", "matrix", "bars"
 const GANTT_STATUS_ORDER = ["Launched", "In flight", "Ideation", "Stalled", "On Hold"];
 
 // ---- display rules ----
-const T3 = ["Aug 2026", "Sep 2026", "Oct 2026"], SV = ["Jun", "Jul", "Aug"];
+const T3 = HSA.months, SV = ["Jun", "Jul", "Aug"];
 const seriesKeys = (s) => Object.keys(s.data.series);
 const tbl = (s, extra) => ({ as: "table", ...(extra || {}) });
 const wide = { wide: true };
