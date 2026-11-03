@@ -750,6 +750,64 @@ const TVA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[326
 const HSA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[58787,56761,53440],"c1":[{"name":"Connectivity","v":[42732,41325,38212],"pct":-7.5},{"name":"Wireless","v":[13135,12565,12532],"pct":-0.3},{"name":"Incompatible Equipment","v":[1994,2118,1989],"pct":-6.1},{"name":"Abandon","v":[848,702,643],"pct":-8.4},{"name":"NWH","v":[75,46,58],"pct":26.1}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[13151,13255,12151],"pct":-8.3},{"name":"Connectivity › Slow Speeds","v":[6348,6574,6591],"pct":0.3},{"name":"Connectivity › ONT Not Ranged","v":[7117,6358,5592],"pct":-12.0},{"name":"Connectivity › Losing Sync","v":[6391,6307,5984],"pct":-5.1},{"name":"Wireless › Can't Connect","v":[5728,5162,5312],"pct":2.9},{"name":"Wireless › Disconnects","v":[4149,4253,4318],"pct":1.5},{"name":"Connectivity › No Sync","v":[3717,3170,2707],"pct":-14.6},{"name":"Wireless › Slow Speeds","v":[3258,3149,2901],"pct":-7.9},{"name":"Connectivity › Historical Data","v":[2593,2600,2456],"pct":-5.5},{"name":"Incompatible Equipment › Incompatible","v":[1994,2117,1987],"pct":-6.1},{"name":"Connectivity › No IP","v":[1920,1710,1546],"pct":-9.6},{"name":"Connectivity › Incompatible Equipment","v":[1494,1349,1183],"pct":-12.3},{"name":"Abandon › Abandon","v":[848,702,643],"pct":-8.4}],"rising":[{"name":"Wireless › Can't Connect › Some Devices Affected","v":[865,840,1020],"delta":180,"pct":21.4},{"name":"Connectivity › Slow Speeds › Some Devices Affected","v":[654,659,733],"delta":74,"pct":11.2},{"name":"Wireless › Can't Connect › Single Device Affected","v":[1338,1266,1334],"delta":68,"pct":5.4},{"name":"Wireless › Disconnects › All Devices Affected","v":[2972,2990,3025],"delta":35,"pct":1.2},{"name":"Wireless › Disconnects › Some Devices Affected","v":[870,955,973],"delta":18,"pct":1.9},{"name":"Wireless › Disconnects › Single Device Affected","v":[306,306,319],"delta":13,"pct":4.2},{"name":"Connectivity › No Dataflow › Single Device Affected","v":[725,727,733],"delta":6,"pct":0.8}],"falling":[{"name":"Connectivity › No Dataflow › All Devices Affected","v":[11925,12026,10918],"delta":-1108,"pct":-9.2},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[3988,3688,3245],"delta":-443,"pct":-12.0},{"name":"Connectivity › No Sync › No DSL Light","v":[2595,2273,1952],"delta":-321,"pct":-14.1},{"name":"Connectivity › Losing Sync › Intermittent Connectivity","v":[6100,6065,5801],"delta":-264,"pct":-4.4},{"name":"Connectivity › ONT Not Ranged › No Power","v":[2003,1861,1646],"delta":-215,"pct":-11.6},{"name":"Wireless › Slow Speeds › All Devices Affected","v":[2135,2091,1909],"delta":-182,"pct":-8.7},{"name":"Connectivity › Incompatible Equipment › Not Required","v":[951,863,707],"delta":-156,"pct":-18.1},{"name":"Connectivity › No IP › No Internet Light","v":[1691,1543,1390],"delta":-153,"pct":-9.9}],"techR1":[{"name":"Education","v":[12410,11990,11123],"pct":-7.2},{"name":"Connectivity","v":[10663,10390,10345],"pct":-0.4},{"name":"(no closure code)","v":[7843,8061,8067],"pct":0.1},{"name":"GPON","v":[7544,7612,6896],"pct":-9.4},{"name":"HSIA","v":[7490,7030,6309],"pct":-10.3},{"name":"Customer","v":[4986,4666,4374],"pct":-6.3},{"name":"Cancel Ticket","v":[1370,1281,1186],"pct":-7.4},{"name":"Found OK","v":[1451,1138,929],"pct":-18.4},{"name":"Outside Plant","v":[1243,1190,903],"pct":-24.1},{"name":"IPTV","v":[753,771,709],"pct":-8.0},{"name":"Network Service Wire","v":[689,691,545],"pct":-21.1},{"name":"NetCracker","v":[702,460,493],"pct":7.2}],"techRising":[{"name":"Connectivity › Modem/Gateway","v":[7688,7701,7828],"delta":127,"pct":1.6},{"name":"HSIA › Boost Wi-Fi 6","v":[326,228,293],"delta":65,"pct":28.5},{"name":"Found OK › Avoidable Dispatch","v":[260,214,272],"delta":58,"pct":27.1},{"name":"NetCracker › Stuck","v":[645,411,452],"delta":41,"pct":10.0},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[125,182,201],"delta":19,"pct":10.4},{"name":"GPON › Provisioning","v":[404,388,389],"delta":1,"pct":0.3}],"techFalling":[{"name":"Education › HSIA","v":[11583,11174,10449],"delta":-725,"pct":-6.5},{"name":"HSIA › Modem/Gateway","v":[4410,4241,3617],"delta":-624,"pct":-14.7},{"name":"GPON › Inside Premise Equipment","v":[5130,5200,4742],"delta":-458,"pct":-8.8},{"name":"Customer › Customer Training/Education/Inquiry Only","v":[4311,4029,3754],"delta":-275,"pct":-6.8},{"name":"GPON › Outside Plant","v":[2010,2024,1765],"delta":-259,"pct":-12.8},{"name":"Found OK › Not Required","v":[965,705,452],"delta":-253,"pct":-35.9}],"divergence":{"all":[{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118},{"alignment":54.9,"nofault":39.0,"nontelus":4.1,"reattribution":45.1,"closed":48025},{"alignment":54.9,"nofault":38.7,"nontelus":3.6,"reattribution":45.1,"closed":44755}],"field":[{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452},{"alignment":83.6,"nofault":6.9,"nontelus":13.4,"reattribution":16.4,"visits":14636},{"alignment":83.9,"nofault":6.6,"nontelus":12.8,"reattribution":16.1,"visits":12543}],"perCat":[{"cat":"Connectivity › No Dataflow","n":12151,"alignment":55.7,"nofault":36.9,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6591,"alignment":56.6,"nofault":40.9,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Losing Sync","n":5984,"alignment":60.1,"nofault":32.2,"techTop":["Modem / gateway","Education / no fault"]},{"cat":"Connectivity › ONT Not Ranged","n":5592,"alignment":70.3,"nofault":26.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Wireless › Can't Connect","n":5312,"alignment":33.0,"nofault":57.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4318,"alignment":33.8,"nofault":55.3,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Slow Speeds","n":2901,"alignment":33.5,"nofault":56.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":2707,"alignment":66.7,"nofault":28.8,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Historical Data","n":2456,"alignment":81.3,"nofault":13.9,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":1987,"alignment":73.8,"nofault":21.9,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1546,"alignment":50.5,"nofault":45.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1183,"alignment":59.1,"nofault":36.5,"techTop":["Education / no fault","Modem / gateway"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":2769,"alignment":91.4,"nofault":4.9,"nontelus":20.8,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1671,"alignment":85.0,"nofault":6.4,"nontelus":9.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":1627,"alignment":79.0,"nofault":7.3,"nontelus":7.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1566,"alignment":92.6,"nofault":3.1,"nontelus":15.1,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1083,"alignment":89.3,"nofault":6.5,"nontelus":6.5,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1043,"alignment":85.5,"nofault":9.4,"nontelus":11.2,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1010,"alignment":89.8,"nofault":5.6,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":543,"alignment":47.9,"nofault":12.0,"nontelus":12.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":368,"alignment":45.8,"nofault":12.5,"nontelus":16.1,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":348,"alignment":87.6,"nofault":8.0,"nontelus":7.8,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":304,"alignment":80.4,"nofault":12.6,"nontelus":17.9,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":254,"alignment":50.8,"nofault":8.7,"nontelus":11.4,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3},{"tickets":56761,"field_visit_pct":25.9,"agent_education_closure_pct":28.4,"no_closure_code_pct":14.2},{"tickets":53440,"field_visit_pct":23.6,"agent_education_closure_pct":28.3,"no_closure_code_pct":15.1}],"determination":[[12490,2000],[12704,1969],[10977,1608]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4631,4647,4115],"pct":-11.4},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3887,4167,3686],"pct":-11.5},{"name":"Drop / service wire / outside plant","v":[1733,1597,1319],"pct":-17.4},{"name":"Inside wiring / jack / ethernet","v":[1352,1350,1176],"pct":-12.9},{"name":"Provisioning / profile / port fix","v":[1114,1046,998],"pct":-4.6},{"name":"Modem / gateway replaced","v":[1160,1109,901],"pct":-18.8},{"name":"Education / no fault found / working on arrival","v":[799,817,710],"pct":-13.1},{"name":"Power cycle / factory reset / firmware","v":[675,733,641],"pct":-12.6},{"name":"Power supply / power","v":[157,151,167],"pct":10.6},{"name":"Customer-owned equipment / third-party router","v":[74,64,54],"pct":-15.6}],"commentCoverage":[45489,43185,41042],"themes":[{"name":"ONT / fibre / light level","v":[15321,14339,13694],"pct":-4.5},{"name":"Slow speed / buffering","v":[11736,10884,10639],"pct":-2.3},{"name":"No internet / all devices down","v":[11426,10453,9414],"pct":-9.9},{"name":"Dispatch / technician booked","v":[9936,9720,8934],"pct":-8.1},{"name":"Boost / Wi-Fi extender","v":[9214,8564,8674],"pct":1.3},{"name":"Intermittent drops / disconnects","v":[8267,7882,7987],"pct":1.3},{"name":"Firmware / settings / factory reset","v":[7861,7194,7044],"pct":-2.1},{"name":"Work from home / streaming / gaming impact","v":[7098,7014,7288],"pct":3.9},{"name":"Outage / active network event","v":[7478,6666,6373],"pct":-4.4},{"name":"DSL / copper line","v":[6582,5932,5178],"pct":-12.7},{"name":"Red / alarm light / LOS on ONT or modem","v":[5862,5306,5067],"pct":-4.5},{"name":"Repeat / recurring issue","v":[5399,4871,4690],"pct":-3.7},{"name":"Wi-Fi: cannot connect / single device","v":[3058,2823,2897],"pct":2.6},{"name":"No power / dead equipment","v":[2837,2616,2527],"pct":-3.4},{"name":"Modem / gateway swap shipped","v":[1141,1131,1155],"pct":2.1},{"name":"Customer wants tech / refuses troubleshooting","v":[846,918,915],"pct":-0.3},{"name":"Third-party / customer-owned router","v":[399,407,435],"pct":6.9}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37555,35238,34588],"pct":-1.8},{"name":"NH20 / NAH (Network Access Hub)","v":[15519,14383,14132],"pct":-1.7},{"name":"T3200M gateway","v":[10778,10304,9430],"pct":-8.5},{"name":"Actiontec / legacy modem","v":[5395,5211,4651],"pct":-10.7},{"name":"Boost Wi-Fi 6","v":[3313,2948,2669],"pct":-9.5},{"name":"Boost Wi-Fi 7 (BV3)","v":[1551,1645,1727],"pct":5.0},{"name":"Wi-Fi Hub / WFH","v":[1852,1639,1409],"pct":-14.0},{"name":"Boost Lite (BLite)","v":[610,613,616],"pct":0.5}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[42320,39955,39022],"pct":-2.3},{"name":"Copper (DSL / bonded)","v":[27785,27108,25022],"pct":-7.7}],"domainMix":[{"agent":"Gateway / dataflow","n":12066,"v":[1967,3739,635,804,15,114,4570,212]},{"agent":"Access line & ONT","n":13995,"v":[5756,2814,311,847,55,209,3779,219]},{"agent":"Speed","n":5628,"v":[666,1972,321,223,1,54,2301,86]},{"agent":"Wi-Fi","n":10514,"v":[716,2821,599,155,0,84,5960,172]},{"agent":"Equipment compatibility","n":2552,"v":[842,735,107,51,0,43,704,68]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
 // ---------------------------------------------------------------------------
+// TV Review: side-load cohorts. Aggregates by deployment date from Chris Tanner's Sideload
+// Pre/Post Dashboard (No Boot and Valid IP by deployment date, shared 2 Nov 2026): the
+// deployment dates with more than 10,000 devices, each device compared over the days before
+// and after its own side-load date (preDays / postDays are the average window lengths). Each
+// measure is [before, after] as the % of devices in the window with one ticket (one) or two
+// or more tickets (two) in the No Boot and Valid IP ticket groups; two decimals in the source.
+// No customer data, and no split by sub-category or by All STBs / One STB.
+// ---------------------------------------------------------------------------
+const SIDELOAD = {
+  asOf: "2 Nov 2026", owner: "Chris Tanner",
+  cohorts: [
+    { date: "2026-05-11", devices: 13459, preDays: 84, postDays: 85, oneNB: [1.55, 2.62], twoNB: [0.13, 0.21], oneVIP: [0.59, 1.38], twoVIP: [0.01, 0.03] },
+    { date: "2026-05-12", devices: 14295, preDays: 84, postDays: 84, oneNB: [1.56, 2.77], twoNB: [0.14, 0.19], oneVIP: [0.48, 1.41], twoVIP: [0.00, 0.04] },
+    { date: "2026-07-15", devices: 38430, preDays: 87, postDays: 81, oneNB: [1.34, 2.75], twoNB: [0.15, 0.22], oneVIP: [0.44, 1.41], twoVIP: [0.01, 0.04] },
+    { date: "2026-07-16", devices: 26338, preDays: 87, postDays: 81, oneNB: [1.37, 2.96], twoNB: [0.14, 0.30], oneVIP: [0.41, 1.25], twoVIP: [0.01, 0.05] },
+    { date: "2026-07-28", devices: 35634, preDays: 85, postDays: 81, oneNB: [1.43, 2.78], twoNB: [0.18, 0.24], oneVIP: [0.43, 1.32], twoVIP: [0.03, 0.04] },
+    { date: "2026-07-29", devices: 16581, preDays: 85, postDays: 81, oneNB: [1.41, 2.73], twoNB: [0.08, 0.32], oneVIP: [0.45, 1.29], twoVIP: [0.00, 0.02] },
+    { date: "2026-07-30", devices: 10374, preDays: 86, postDays: 81, oneNB: [1.43, 2.61], twoNB: [0.16, 0.19], oneVIP: [0.53, 1.35], twoVIP: [0.01, 0.04] },
+    { date: "2026-08-04", devices: 25835, preDays: 86, postDays: 80, oneNB: [1.30, 2.67], twoNB: [0.09, 0.22], oneVIP: [0.45, 1.29], twoVIP: [0.00, 0.04] },
+    { date: "2026-08-05", devices: 36519, preDays: 86, postDays: 79, oneNB: [1.45, 2.81], twoNB: [0.15, 0.25], oneVIP: [0.48, 1.19], twoVIP: [0.01, 0.03] },
+    { date: "2026-08-10", devices: 23430, preDays: 86, postDays: 74, oneNB: [1.46, 2.61], twoNB: [0.14, 0.23], oneVIP: [0.38, 1.12], twoVIP: [0.00, 0.05] },
+    { date: "2026-08-11", devices: 13301, preDays: 86, postDays: 73, oneNB: [1.65, 2.51], twoNB: [0.14, 0.19], oneVIP: [0.43, 1.26], twoVIP: [0.00, 0.04] }
+  ]
+};
+// Derived figures shared by the Review page, the deck and the MCP page.
+function sideloadStats(SL) {
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const cs = [...SL.cohorts].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const sum = (a) => a.reduce((x, y) => x + y, 0);
+  const KEYS = ["oneNB", "twoNB", "oneVIP", "twoVIP"];
+  const rel = (a, b) => (a ? ((b - a) / a) * 100 : null);
+  const wavg = (list, k, j) => sum(list.map((c) => c.devices * c[k][j])) / sum(list.map((c) => c.devices));
+  const devices = sum(cs.map((c) => c.devices));
+  const m = {}; KEYS.forEach((k) => { m[k] = [wavg(cs, k, 0), wavg(cs, k, 1)]; });
+  const anyNB = [m.oneNB[0] + m.twoNB[0], m.oneNB[1] + m.twoNB[1]], anyVIP = [m.oneVIP[0] + m.twoVIP[0], m.oneVIP[1] + m.twoVIP[1]];
+  const per30 = (c, ks, j) => (sum(ks.map((k) => c[k][j])) * 30) / (j ? c.postDays : c.preDays);
+  const extra = (ks) => sum(cs.map((c) => (c.devices * (per30(c, ks, 1) - per30(c, ks, 0))) / 100));
+  const rows = cs.map((c) => ({ ...c, short: `${+c.date.slice(8)} ${MON[+c.date.slice(5, 7) - 1]}`, up: Object.fromEntries(KEYS.map((k) => [k, rel(c[k][0], c[k][1])])), totalPp: sum(KEYS.map((k) => c[k][1] - c[k][0])) }));
+  const group = (list) => ({ devices: sum(list.map((c) => c.devices)), upOneNB: rel(wavg(list, "oneNB", 0), wavg(list, "oneNB", 1)) });
+  const upOne = rows.map((r) => r.up.oneNB);
+  return {
+    n: cs.length, devices, m, anyNB, anyVIP, rows,
+    upOneNB: rel(...m.oneNB), upTwoNB: rel(...m.twoNB), upOneVIP: rel(...m.oneVIP), upTwoVIP: rel(...m.twoVIP), upAnyNB: rel(...anyNB), upAnyVIP: rel(...anyVIP),
+    repNB: [(m.twoNB[0] / anyNB[0]) * 100, (m.twoNB[1] / anyNB[1]) * 100],
+    repAddedNB: ((m.twoNB[1] - m.twoNB[0]) / (anyNB[1] - anyNB[0])) * 100,
+    pairs: cs.length * KEYS.length, worse: sum(cs.map((c) => KEYS.filter((k) => c[k][1] > c[k][0]).length)),
+    preDays: sum(cs.map((c) => c.devices * c.preDays)) / devices, postDays: sum(cs.map((c) => c.devices * c.postDays)) / devices,
+    postNotLonger: cs.filter((c) => c.postDays <= c.preDays).length,
+    extra: { nb: extra(["oneNB", "twoNB"]), vip: extra(["oneVIP", "twoVIP"]) },
+    may: group(cs.filter((c) => c.date < "2026-06-01")), julAug: group(cs.filter((c) => c.date >= "2026-06-01")),
+    upMin: Math.min(...upOne), upMax: Math.max(...upOne),
+    twoVIPRange: [Math.min(...cs.flatMap((c) => c.twoVIP)), Math.max(...cs.flatMap((c) => c.twoVIP))],
+    largest: rows.reduce((a, b) => (b.totalPp > a.totalPp ? b : a))
+  };
+}
+const SLS = sideloadStats(SIDELOAD);
+
+// ---------------------------------------------------------------------------
 // TV Review: STB No Boot › Stuck on Initializing, Aug – Oct 2026.
 // daily.*: agent ticket exports (TV notes files, Aug 1 – Oct 30; the October export ends on
 //   the 30th), counts per day of all TV
@@ -759,21 +817,23 @@ const HSA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[587
 //   Boot › Stuck on Initializing by Category 3, Jan 2025 – Oct 2026 (full months; workbook
 //   refreshed 2 Nov). markers: regex counts over the agent notes and resolution text of
 //   Stuck on Initializing tickets, Sep and Oct 1 – 30, same patterns both months.
+//   sideload: the SIDELOAD cohorts above (device-level pre/post test of the leading cause).
 //   causes / actions: the STB No Boot interlocks of 21, 22, 27 and 28 Oct 2026.
 // ---------------------------------------------------------------------------
 const TV_REVIEW = {"asOf":"30 Oct 2026","period":"Aug – Oct 2026","octDays":30,"daily":{"aug":{"label":"Aug 2026","days":31,"tickets":[715,611,1034,1088,1030,1151,1018,733,734,1113,1285,1192,1138,1120,955,729,1160,1191,1314,1217,1227,970,872,1161,1298,1219,1166,1285,905,820,1163],"stuck":[85,79,107,107,106,130,98,102,96,129,135,129,116,133,156,114,146,163,149,147,161,157,142,168,179,172,159,144,124,112,139],"all":[36,27,36,29,32,45,27,35,31,38,45,30,33,49,52,38,60,59,60,40,57,65,59,63,74,63,67,57,38,46,55],"multi":[5,6,14,6,8,14,2,9,5,18,13,18,12,13,14,8,13,14,11,14,17,10,13,15,19,23,12,16,8,10,10],"one":[44,46,57,72,66,71,69,58,60,73,77,81,71,71,90,68,73,90,78,93,87,82,70,90,86,86,80,71,78,56,74]},"sep":{"label":"Sep 2026","days":30,"tickets":[1255,1263,1312,1280,955,823,1145,1336,1354,1408,1362,1028,990,1446,1351,1308,1267,1304,1129,989,1306,1363,1386,1288,1374,1164,1018,1336,1415,1348],"stuck":[151,138,174,160,143,124,168,179,188,199,209,166,154,204,187,186,175,201,146,166,156,180,188,189,191,155,141,198,175,179],"all":[61,57,70,73,63,52,79,83,85,78,80,73,73,87,82,82,71,84,70,80,55,74,87,89,73,68,60,82,74,81],"multi":[12,16,15,12,11,13,6,17,10,18,23,16,13,17,12,17,16,19,8,11,13,17,18,14,13,13,11,11,13,14],"one":[78,65,89,75,69,59,83,79,93,103,106,77,68,100,93,87,88,98,68,75,88,89,83,86,105,74,70,105,88,84]},"oct":{"label":"Oct 2026","days":30,"tickets":[1275,1273,1057,979,1370,1318,1291,1122,1319,1086,876,1050,1307,1391,1218,1268,1204,1089,1341,1382,1155,1267,1288,1196,899,1311,1429,1303,1325,1278],"stuck":[195,156,181,165,190,158,190,165,163,149,142,161,149,176,179,172,167,182,193,201,158,175,151,158,131,180,164,141,148,148],"all":[92,60,80,76,88,72,86,66,79,68,60,64,74,61,81,81,75,92,79,100,66,88,65,66,57,64,67,60,66,47],"multi":[14,14,13,13,21,13,14,16,8,12,10,11,13,9,5,10,7,8,15,10,14,9,11,18,7,21,14,7,10,12],"one":[89,82,88,76,81,73,90,83,76,69,72,86,62,106,93,81,85,82,99,91,78,78,75,74,67,95,83,74,72,89]}},
   "looker":{"months":["Jan 2025","Feb 2025","Mar 2025","Apr 2025","May 2025","Jun 2025","Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026","Oct 2026"],"one":[3247,3154,3471,3454,3370,3191,3254,2772,2364,2626,2764,2773,2865,2377,2318,2286,2065,2108,2360,2301,2559,2569],"all":[1200,1232,1356,1255,1324,1321,1307,1168,1043,1187,1217,1209,1218,1018,1046,1179,1076,1084,1027,1470,2244,2258],"multi":[434,364,407,430,412,383,405,343,309,377,372,382,391,287,292,319,321,278,325,378,433,378],"total":[4881,4750,5234,5139,5106,4895,4966,4283,3716,4190,4353,4364,4474,3682,3656,3784,3462,3470,3712,4149,5236,5205],"mtdDays":31,"baseline":{"one":2340,"all":1093,"multi":316,"total":3749},"baseline2025":{"one":3037,"all":1235,"multi":385,"total":4656},"baselineLabel":"Jan – Jul 2026 average","source":"TV Looker Ticket Categories tab (Look 2154), Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3; October is the full month (workbook refreshed 2 Nov 2026)."},
   "stbNoBoot":[{"name":"Stuck on Initializing","v":[4084,5170,4988]},{"name":"Reboot Loop","v":[906,1070,922]},{"name":"Quick Client Initialization Error","v":[553,654,562]},{"name":"Stuck on PVR is Starting","v":[460,490,453]},{"name":"Registration Code","v":[417,364,344]},{"name":"Stuck on TELUS Logo","v":[233,309,241]},{"name":"Red X","v":[248,247,302]},{"name":"Stuck on Quit Client Error","v":[189,204,191]}],"stbNoBootTotal":[7097,8514,8005],
   "markers":[{"name":"T3200M gateway named","v":[1644,1527]},{"name":"NH20 gateway named","v":[76,73]},{"name":"VIP5662W (Mediaroom PVR) named","v":[1460,1306]},{"name":"VIP5602W (Mediaroom wSTB) named","v":[1330,1222]},{"name":"Hardwired / Ethernet mentioned","v":[789,767]},{"name":"Sequential reboot in notes","v":[1928,1696]},{"name":"Dispatch flag","v":[495,460]},{"name":"Technician determination","v":[363,312]}],"markersBase":[5170,4988],"t3200ShareOfGatewayNamed":[95.6,95.4],"commentCoverage":{"oct":[20495,36667],"sep":[20401,37303]},
+  sideload: SIDELOAD,
   // Root-cause hypotheses as the interlocks left them on 28 Oct 2026. status: leading | contributing | open | ruled out
   causes: [
-    { name: "CloudCheck agent side-load upgrade on the T3200M gateway", status: "leading", evidence: "Agent v2.5 to 3.418 rolled out 6 July to 16 August, app customers first and then randomly across the T3200M base; the update lets changes reach the gateway without a reboot. Onset lags two to four weeks, which matches the climb through August into September. About 70% of affected customers are on the T3200M and 95% of Stuck tickets that name a gateway name the T3200M; no correlation to STB model, single versus multi-STB, or fibre versus copper.", next: "Alan Chiu to compile the agent release delta; Chris Millman and Chris Tanner to analyse the pre/post signature on gateway markers; results due the week of 2 Nov." },
+    { name: "CloudCheck agent side-load upgrade on the T3200M gateway", status: "leading", evidence: `Agent v2.5 to 3.418 rolled out 6 July to 16 August, app customers first and then randomly across the T3200M base; the update lets changes reach the gateway without a reboot. Onset lags two to four weeks, which matches the climb through August into September. About 70% of affected customers are on the T3200M and 95% of Stuck tickets that name a gateway name the T3200M; no correlation to STB model, single versus multi-STB, or fibre versus copper. First device-level test (Chris Tanner, 2 Nov): across ${SLS.n} side-load dates, devices with a No Boot ticket rose from ${SLS.anyNB[0].toFixed(2)}% to ${SLS.anyNB[1].toFixed(2)}% after the side-load, in every cohort.`, next: "Alan Chiu to compile the agent release delta; Chris Tanner and Chris Havlin to analyse the pre/post signature on gateway markers; results due the week of 2 Nov." },
     { name: "Gateway uptime: stale NAT tables and memory or CPU build-up", status: "contributing", evidence: "Ticketed customers skew to gateways with no reboot in more than 30 days; relative risk rises past two weeks of uptime and technician notes point to a 90 to 120 day window. About 12% of ticketed gateways had no reboot even after the ticket. The symptom is middleware sync loss that presents as every STB stuck on Initializing, which is why the rise is almost entirely All STBs Affected.", next: "Sequential gateway-then-STB reboot campaign, small cohort first (Jawad data lead)." },
-    { name: "Miscategorised internet tickets", status: "contributing", evidence: "HS Valid IP and No Dataflow tickets for Mediaroom customers are also elevated and are likely the same fault logged under internet categories, so the ticket count here understates the customer impact.", next: "Include Mediaroom HSIA categories in the campaign measurement." },
+    { name: "Miscategorised internet tickets", status: "contributing", evidence: `HS Valid IP and No Dataflow tickets for Mediaroom customers are also elevated and are likely the same fault logged under internet categories, so the ticket count here understates the customer impact. The side-load cohorts confirm it: devices with a Valid IP ticket rose from ${SLS.anyVIP[0].toFixed(2)}% to ${SLS.anyVIP[1].toFixed(2)}% after the side-load.`, next: "Include Mediaroom HSIA categories in the campaign measurement." },
     { name: "Seasonal September and October peak", status: "contributing", evidence: "Both months peak every year, but the 2025 baseline was 1,043 to 1,187 All STBs Affected tickets a month against 2,244 in September 2026, so seasonality explains a small part of the rise at most.", next: "None; keep as context." },
     { name: "Cujo disabled on the T3200M from 25 September", status: "ruled out", evidence: "The issue predates the change and the daily series shows no step on or after 25 September.", next: "None." },
     { name: "T3200M firmware", status: "ruled out", evidence: "Unchanged for years; nothing shipped in the window.", next: "None." },
-    { name: "Repeat callers", status: "ruled out", evidence: "The repeat rate is not elevated; the growth is more customers hitting the fault once, not the same customers calling back.", next: "None." },
+    { name: "Repeat callers as the main driver", status: "ruled out", evidence: `Repeats rose too (devices with two or more No Boot tickets ${SLS.m.twoNB[0].toFixed(2)}% to ${SLS.m.twoNB[1].toFixed(2)}%), but they stay about ${Math.round(SLS.repNB[1])}% of affected devices and ${Math.round(SLS.repAddedNB)}% of the devices added; the growth is more customers hitting the fault once, not the same customers calling back.`, next: "None." },
     { name: "Roll the CloudCheck agent back", status: "ruled out", evidence: "Rejected: the earlier agent carries known security vulnerabilities.", next: "Fix forward through the reboot campaign and the agent release review." }
   ],
   // What is being done. kind: initiative (in the register) | action (interlock commitment)
@@ -782,9 +842,9 @@ const TV_REVIEW = {"asOf":"30 Oct 2026","period":"Aug – Oct 2026","octDays":30
     { kind: "initiative", name: "InSight TV Hardware Check fix", owner: "Z. Sayhebolay", when: "Oct 2026", status: "In flight", detail: "Fixes the InSight TV Hardware Check used on STB and gateway faults so agents see the gateway state before they swap the box." },
     { kind: "initiative", name: "PSU Replacement Campaign", owner: "D. Culp", when: "Sep 2025", status: "On Hold", detail: "OPUS power-supply swaps, not a Stuck on Initializing fix. On hold since August because the new courier requires a signature; 40k static list, 100k units in stock and 120k free units from Vantiva; list validation under way." },
     { kind: "action", name: "Agent release delta (CloudCheck v2.5 to 3.418)", owner: "Alan Chiu", when: "Week of 2 Nov 2026", status: "Open", detail: "Compile what changed in the side-loaded agent and when each cohort received it." },
-    { kind: "action", name: "Pre/post signature on gateway markers", owner: "Chris Millman, Chris Tanner", when: "Week of 2 Nov 2026", status: "Open", detail: "Compare gateway uptime, memory and NAT markers before and after the agent rollout for ticketed and non-ticketed T3200M customers." },
+    { kind: "action", name: "Pre/post signature on gateway markers", owner: "Chris Tanner, Chris Havlin", when: "Week of 2 Nov 2026", status: "In progress", detail: "Compare gateway uptime, memory and NAT markers before and after the agent rollout for ticketed and non-ticketed T3200M customers. A first cut by side-load date, on ticket rates per device, was shared on 2 Nov (section 5)." },
     { kind: "action", name: "Reboot cohort data and campaign list", owner: "Jawad", when: "Nov 2026", status: "Open", detail: "Build the no-reboot-over-30-days cohort and the two-play exclusion list for the sequential reboot pilot." },
-    { kind: "action", name: "October full-month read", owner: "Reliability Strategy", when: "Early Nov 2026", status: "Open", detail: "Re-run this analysis on the completed month and roll the TV notes analysis forward." }
+    { kind: "action", name: "October full-month read", owner: "Reliability Strategy", when: "Early Nov 2026", status: "Done", detail: "Re-run on the completed month on 2 Nov: Looker to the full month, agent exports to 30 Oct, TV notes analysis rolled to Aug to Oct." }
   ]
 };
 
@@ -5891,6 +5951,33 @@ export default function ReliabilityScorecards() {
       );
     };
 
+    // ---- side-load cohorts: before / after bars by side-load date ----
+    const SL = SLS, f2 = (v) => v.toFixed(2);
+    const cohortChart = (key, { max, W = 800, Hh = 280, fs = 11 }) => {
+      const left = 38, right = 6, top = 18, bottom = 36, n = SL.rows.length;
+      const pw = W - left - right, ph = Hh - top - bottom, gw = pw / n, bw = Math.min(20, gw * 0.36);
+      const y = (v) => top + ph - (v / max) * ph;
+      const step = max > 2 ? 1 : 0.5, ticks = []; for (let g = 0; g <= max + 1e-9; g += step) ticks.push(g);
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }}>
+          {ticks.map((g) => <g key={g}><line x1={left} x2={W - right} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={left - 5} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: fs }}>{g}%</text></g>)}
+          {SL.rows.map((r, i) => { const cx = left + gw * i + gw / 2; return (
+            <g key={r.date}>
+              <rect x={cx - bw - 1} y={y(r[key][0])} width={bw} height={Math.max(0, top + ph - y(r[key][0]))} fill={T.borderStrong} rx={1.5} />
+              <rect x={cx + 1} y={y(r[key][1])} width={bw} height={Math.max(0, top + ph - y(r[key][1]))} fill={col} rx={1.5} />
+              <text x={cx - bw / 2 - 1} y={y(r[key][0]) - 3} textAnchor="middle" style={{ ...svgText, fontSize: fs - 2 }}>{f2(r[key][0])}</text>
+              <text x={cx + 1 + bw / 2} y={y(r[key][1]) - 3} textAnchor="middle" style={{ ...svgText, fontSize: fs - 2, fill: T.text }}>{f2(r[key][1])}</text>
+              <text x={cx} y={Hh - 20} textAnchor="middle" style={{ ...svgText, fontSize: fs }}>{r.short}</text>
+              <text x={cx} y={Hh - 7} textAnchor="middle" style={{ ...svgText, fontSize: fs - 1.5 }}>{big(r.devices)}</text>
+            </g>); })}
+        </svg>
+      );
+    };
+    const nbS = LOOKER.TV.topCat.series; // STB No Boot (Looker, TV) by LOOKER_MONTHS
+    const nbBase = sum(nbS.slice(12, 19)) / 7, nbOctExcess = nbS[21] - nbBase, stuckOctExcess = L.total[lOct] - L.baseline.total;
+    const nbJulVsJun = pct(nbS[18], nbS[17]);
+    const num10 = (v) => num(Math.round(v / 10) * 10);
+
     // ---- derived numbers for the prose ----
     const allUpVsAug = pct(perDay(O, "all"), perDay(A, "all")), oneUpVsAug = pct(perDay(O, "one"), perDay(A, "one"));
     const stuckSepVsAug = pct(S.stuck, A.stuck), stuckOctVsSep = pct(perDay(O, "stuck"), perDay(S, "stuck"));
@@ -5926,14 +6013,15 @@ export default function ReliabilityScorecards() {
           {C(6, dstat(fmtRate(K.tr[iSep]), "TV ticket rate per 100 subs · Sep", `Aug ${fmtRate(K.tr[iAug])} · ${sd(K.tr[iSep] - K.tr[iAug])} per 100 · October not yet reported`))}
         </div>,
         notes: "Each click reveals one card. The first three are the daily run rates; the fourth is the share of Stuck tickets where every STB is affected; the last is the dashboard ticket rate, which only runs to September." },
-      { layout: "default", title: "In short", clicks: 6,
+      { layout: "default", title: "In short", clicks: 7,
         body: (step, C) => <ul>
           <li>{C(1, <><strong>September was a step change, and October is the new level, not a further climb.</strong> {num(A.stuck)} tickets in August, {num(S.stuck)} in September ({sp(stuckSepVsAug)}); October runs at {num(perDay(O, "stuck"))} a day against {num(perDay(S, "stuck"))} ({sp(stuckOctVsSep)}); {num(O.stuck)} tickets in the 30 days exported.</>)}</li>
           <li>{C(2, <><strong>The rise is almost entirely All STBs Affected.</strong> {num(L.baseline.all)} a month from January to July, {num(L.all[lSep])} in September ({sp(allVsBase)}); One STB Affected {sp(oneVsBase)}. {((riseAll / risePts) * 100).toFixed(0)}% of the September excess over baseline is All STBs Affected.</>)}</li>
           <li>{C(3, <><strong>Every box in the home failing at once is a gateway symptom.</strong> The T3200M is named in {mshare(T3, 1)} of October Stuck tickets and is {R.t3200ShareOfGatewayNamed[1]}% of gateways named; about 70% of affected customers are on it.</>)}</li>
           <li>{C(4, <><strong>Leading hypothesis: the CloudCheck agent side-load upgrade on T3200M gateways, aggravated by long uptime.</strong> Onset lags two to four weeks; the fault clears with a gateway-then-STB reboot; rollback rejected on security grounds; Cujo off on 25 Sep did not move the series.</>)}</li>
-          <li>{C(5, <><strong>The fixes have not reached customers yet.</strong> Sequential Reboot (In flight, Nov 2026) is the only initiative aimed at the mechanism; the agent release delta and gateway-marker analysis are due the week of 2 November.</>)}</li>
-          <li>{C(6, <><strong>Wider TV performance moved with it.</strong> TV tickets {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 from August to September; the rest of STB No Boot is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October.</>)}</li>
+          <li>{C(5, <><strong>The first device-level test points the same way.</strong> Across {SL.n} side-load dates ({num(SL.devices)} devices), devices with a No Boot ticket rose from {f2(SL.anyNB[0])}% to {f2(SL.anyNB[1])}% after the side-load and with a Valid IP ticket from {f2(SL.anyVIP[0])}% to {f2(SL.anyVIP[1])}%, in every cohort. No control group yet.</>)}</li>
+          <li>{C(6, <><strong>The fixes have not reached customers yet.</strong> Sequential Reboot (In flight, Nov 2026) is the only initiative aimed at the mechanism; the agent release delta and gateway-marker analysis are due the week of 2 November.</>)}</li>
+          <li>{C(7, <><strong>Wider TV performance moved with it.</strong> TV tickets {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 from August to September; the rest of STB No Boot is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October.</>)}</li>
         </ul>,
         notes: "Six points, one per click. Point two is the key finding for the audience: the split by Category 3 isolates the rise to All STBs Affected." },
       { layout: "section", num: "01", title: "TV performance, August to October", sub: "The dashboard quarter, and what the agent exports say about October" },
@@ -6009,6 +6097,45 @@ export default function ReliabilityScorecards() {
           {causesBy(["leading", "contributing"]).map((c, k) => C(k + 1, <div className={`dk-note ${c.status === "leading" ? "bad" : "amber"}`} style={{ fontSize: 13 }}><h3>{c.name}<span className="dk-pill">{STATUS_LABEL[c.status]}</span></h3>{c.evidence}</div>))}
         </div>,
         notes: "The working picture: a change on the T3200M gateway in July and August made gateways with long uptime lose the middleware session for every attached Mediaroom STB, and it clears when the gateway is rebooted before the boxes." },
+      { layout: "default", title: "Testing it: the same devices before and after the side-load", sub: `${SL.n} side-load dates with 10,000+ devices each (${num(SL.devices)} devices) · about ${Math.round(SL.preDays)} days before and ${Math.round(SL.postDays)} after each device's own side-load date`, clicks: 6,
+        body: (step, C) => <div className="dk-stats">
+          {C(1, dstat(`${f2(SL.anyNB[0])}% → ${f2(SL.anyNB[1])}%`, "Devices with a No Boot ticket", `${sp(SL.upAnyNB, 0)} after the side-load`))}
+          {C(2, dstat(`${f2(SL.anyVIP[0])}% → ${f2(SL.anyVIP[1])}%`, "Devices with a Valid IP ticket", `${sp(SL.upAnyVIP, 0)} after the side-load`))}
+          {C(3, dstat(`${f2(SL.m.twoNB[0])}% → ${f2(SL.m.twoNB[1])}%`, "Two or more No Boot tickets", `${sp(SL.upTwoNB, 0)} · ${Math.round(SL.repNB[1])}% of affected devices (${Math.round(SL.repNB[0])}% before)`))}
+          {C(4, dstat(`${SL.worse} of ${SL.pairs}`, "Cohort and measure pairs worse after", `all ${SL.n} cohorts, all four measures`))}
+          {C(5, dstat(`+${num10(SL.extra.nb)}`, "More devices a month with a No Boot ticket", `these cohorts only · Looker Stuck ${sn(stuckOctExcess)} on baseline in Oct`))}
+          {C(6, dstat(`+${num10(SL.extra.vip)}`, "More devices a month with a Valid IP ticket", "same cohorts · not in the Stuck count"))}
+        </div>,
+        notes: `Chris Tanner's pre/post cut by deployment date, 2 Nov. The windows are close to the same length, and the post window is the shorter one in ${SL.postNotLonger} of ${SL.n} cohorts, so the comparison is conservative. One ticket and two or more are separate groups; the two-or-more Valid IP figure is rounded to two decimals in the source, so treat its relative change as indicative.` },
+      { layout: "two-cols", title: "Every cohort moved the same way", sub: "Devices with one ticket in the window, before and after the side-load, by side-load date (device count under each date)", clicks: 1,
+        body: (step, C) => <>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>No Boot, % of devices</div>
+            {cohortChart("oneNB", { max: 3.5, W: 520, Hh: 300, fs: 10 })}
+            {dlegend([{ label: "Before", color: T.borderStrong }, { label: "After", color: col }])}
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Valid IP, % of devices</div>
+            {cohortChart("oneVIP", { max: 1.6, W: 520, Hh: 300, fs: 10 })}
+            {C(1, <p className="dk-cap" style={{ margin: "8px 0 0" }}>One-ticket No Boot is up {sp(SL.upMin, 0)} to {sp(SL.upMax, 0)} by cohort and Valid IP {sp(SL.upOneVIP, 0)} overall. The two May cohorts rose {sp(SL.may.upOneNB, 0)}, the July and August cohorts {sp(SL.julAug.upOneNB, 0)}.</p>)}
+          </div>
+        </>,
+        notes: "Left: No Boot. Right: Valid IP. The May cohorts closed their post window in early August, before the fleet-wide climb, and still rose, so the effect follows the device's own side-load date rather than the calendar." },
+      { layout: "two-cols", title: "What the cohorts add, and what they leave open", clicks: 2, dense: true,
+        body: (step, C) => <>
+          {C(1, <div className="dk-note ok"><h3>Adds</h3><ul style={{ paddingLeft: 18, fontSize: 13.5 }}>
+            <li><strong>Devices, not timing.</strong> The same devices compared with themselves, {SL.worse} of {SL.pairs} pairs worse.</li>
+            <li><strong>The device's own date.</strong> May cohorts rose {sp(SL.may.upOneNB, 0)} before the fleet climb; Looker STB No Boot was {sp(nbJulVsJun, 0)} June to July.</li>
+            <li><strong>Valid IP is the same event.</strong> About {num10(SL.extra.vip)} more devices a month that the Stuck count misses.</li>
+            <li><strong>Big enough.</strong> About {num10(SL.extra.nb)} more devices a month with a No Boot ticket, against {sn(nbOctExcess)} STB No Boot tickets in Looker in Oct.</li>
+            <li><strong>Repeats follow, not lead.</strong> About {Math.round(SL.repNB[1])}% of affected devices, as before.</li></ul></div>)}
+          {C(2, <div className="dk-note amber"><h3>Leaves open</h3><ul style={{ paddingLeft: 18, fontSize: 13.5 }}>
+            <li><strong>No control group.</strong> Not-yet-side-loaded devices on the same days would test calendar effects.</li>
+            <li><strong>No time profile.</strong> A days-since-side-load curve would separate an immediate step from a two to four week build-up.</li>
+            <li><strong>No split.</strong> Not by sub-category, All STBs / One STB or gateway uptime, so the mechanism is not yet tied.</li>
+            <li><strong>May.</strong> The 11 and 12 May dates sit outside the 6 July to 16 August rollout window; what was deployed needs confirming.</li></ul></div>)}
+        </>,
+        notes: "Supports the leading hypothesis without proving the mechanism. The follow-ups are suggestions for Chris Tanner and Chris Havlin, not agreed commitments." },
       { layout: "default", title: "Ruled out", clicks: causesBy(["ruled out"]).length,
         body: (step, C) => <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 24px" }}>
           {causesBy(["ruled out"]).map((c, k) => C(k + 1, <div className="dk-note ok" style={{ fontSize: 13.5 }}><h3>{c.name}<span className="dk-pill">{STATUS_LABEL[c.status]}</span></h3>{c.evidence}{c.next && c.next !== "None." ? ` Next: ${c.next}` : ""}</div>))}
@@ -6031,14 +6158,14 @@ export default function ReliabilityScorecards() {
           {C(1, <div className="dk-note bad"><h3>Gaps</h3><ul style={{ paddingLeft: 18 }}>
             <li>No customer-facing fix is live; the reboot pilot has a cohort but no start date and excludes mixed OPUS and SHS homes.</li>
             <li>About {num(((R.markersBase[1] - R.markers[6].v[1]) / R.markersBase[1]) * 100)}% of Stuck tickets close without a dispatch on an agent-led reboot, so the same gateways will fault again until uptime is addressed proactively.</li>
-            <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement.</li></ul></div>)}
+            <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement; the side-load cohorts alone show about {num10(SL.extra.vip)} extra devices a month with a Valid IP ticket.</li></ul></div>)}
           {C(2, <div className="dk-note ok"><h3>Working</h3><ul style={{ paddingLeft: 18 }}>
             <li>The rise has stopped: October is {sp(stuckOctVsSep)} per day on September and the All STBs weekly run rate has been flat since mid-September.</li>
             <li>The agent-led gateway-then-STB reboot clears the fault, so repairs and swaps have not followed tickets; the TV repair rate is {fmtRate(K.rr[iSep])} per 100.</li>
-            <li>The cause is narrowed to one gateway model and one change window, with the confirming data due the week of 2 November.</li></ul></div>)}
+            <li>The cause is narrowed to one gateway model and one change window, with the first device-level test supporting it and the gateway-marker analysis due the week of 2 November.</li></ul></div>)}
         </>,
         notes: "Close on the ask: a start date for the reboot pilot and the agent release review." },
-      { layout: "end", title: "Sources and method", sub: `TV agent ticket exports (Aug 1 to Oct ${R.octDays}, counts per day, no customer data retained) · Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories by Category 3) · TS Calls Offered by Product · TV Customer Base Breakdown · STB No Boot interlocks of 21, 22, 27 and 28 Oct 2026 · Initiatives register. Per-day figures divide month totals by days in the month; 7-day averages are trailing; baselines are simple monthly averages; note markers are regular-expression matches and count mentions, not confirmed causes.`,
+      { layout: "end", title: "Sources and method", sub: `TV agent ticket exports (Aug 1 to Oct ${R.octDays}, counts per day, no customer data retained) · Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories by Category 3) · TS Calls Offered by Product · TV Customer Base Breakdown · STB No Boot interlocks of 21, 22, 27 and 28 Oct 2026 · Sideload Pre/Post Dashboard (Chris Tanner, 2 Nov 2026) · Initiatives register. Per-day figures divide month totals by days in the month; 7-day averages are trailing; baselines are simple monthly averages; note markers are regular-expression matches and count mentions, not confirmed causes.`,
         notes: "The full write-up with every table is the TV › Review page on the dashboard." }
     ];
 
@@ -6089,8 +6216,8 @@ export default function ReliabilityScorecards() {
         <header className="hb-head">
           <div className="hb-eyebrow">TV · {R.period} · STB No Boot › Stuck on Initializing: what happened in September, is October the same, and what is being done</div>
           <h1>Stuck on Initializing jumped {sp(stuckSepVsAug)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.</h1>
-          <p className="hb-sub">TV performance for August to October {LATEST.slice(-4)} (agent exports to Oct {R.octDays}), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, and the fixes in flight.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Agent exports to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Dashboard KPIs to {LATEST}</span><span>Interlocks 21, 22, 27 and 28 Oct 2026</span></div>
+          <p className="hb-sub">TV performance for August to October {LATEST.slice(-4)} (agent exports to Oct {R.octDays}), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, the first device-level test of the leading one, and the fixes in flight.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Agent exports to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Dashboard KPIs to {LATEST}</span><span>Interlocks 21, 22, 27 and 28 Oct 2026</span><span>Side-load cohorts shared 2 Nov</span></div>
         </header>
 
         <section aria-labelledby="tb-short">
@@ -6099,8 +6226,9 @@ export default function ReliabilityScorecards() {
             <ol>
               <li><strong>September was a step change, and October is the new level, not a further climb.</strong> Stuck on Initializing went from {num(A.stuck)} tickets in August to {num(S.stuck)} in September ({sp(stuckSepVsAug)}); October is running at {num(perDay(O, "stuck"))} a day against {num(perDay(S, "stuck"))} in September ({sp(stuckOctVsSep)}); {num(O.stuck)} tickets in the 30 days exported against {num(L.total[lOct])} in Looker for the full month. Every October week sits between {num(Math.min(...weeks.filter((w) => w.start.getUTCMonth() === 9 && w.days >= 5).map((w) => w.stuck / w.days)))} and {num(Math.max(...weeks.filter((w) => w.start.getUTCMonth() === 9 && w.days >= 5).map((w) => w.stuck / w.days)))} a day.</li>
               <li><strong>The rise is almost entirely All STBs Affected.</strong> In Looker, All STBs Affected ran at {num(L.baseline.all)} a month from January to July, {num(L.all[lAug])} in August and {num(L.all[lSep])} in September ({sp(allVsBase)} on the baseline); One STB Affected moved from {num(L.baseline.one)} to {num(L.one[lSep])} ({sp(oneVsBase)}). Of the {sn(risePts)} September tickets above baseline, {sn(riseAll)} ({((riseAll / risePts) * 100).toFixed(0)}%) are All STBs Affected. The agent exports agree: All STBs Affected is {sp(allUpVsAug)} per day on August in October, One STB Affected {sp(oneUpVsAug)}.</li>
-              <li><strong>Every box in the home failing at once is a gateway symptom.</strong> {mshare(T3, 1)} of October Stuck tickets name the T3200M gateway and it is {R.t3200ShareOfGatewayNamed[1]}% of the gateways named; the interlock data puts about 70% of affected customers on the T3200M. There is no correlation to STB model, number of STBs, or fibre versus copper, and the repeat rate is not elevated.</li>
+              <li><strong>Every box in the home failing at once is a gateway symptom.</strong> {mshare(T3, 1)} of October Stuck tickets name the T3200M gateway and it is {R.t3200ShareOfGatewayNamed[1]}% of the gateways named; the interlock data puts about 70% of affected customers on the T3200M. There is no correlation to STB model, number of STBs, or fibre versus copper, and repeat callers are not the driver: repeats are up in step but stay about {Math.round(SL.repNB[1])}% of affected devices.</li>
               <li><strong>Leading hypothesis: the CloudCheck agent side-load upgrade (v2.5 to 3.418, 6 Jul to 16 Aug) on T3200M gateways, aggravated by long gateway uptime.</strong> Onset lags two to four weeks, ticketed gateways skew to no reboot in more than 30 days, and the fault clears with a gateway-then-STB reboot. Rolling the agent back was rejected on security grounds. Cujo being disabled on 25 September did not move the series ({num(beforeCujo)} a day in the fortnight before, {num(afterCujo)} after).</li>
+              <li><strong>The first device-level test points the same way.</strong> Across {SL.n} side-load dates with more than 10,000 devices each ({num(SL.devices)} devices), the share of devices with a No Boot ticket rose from {f2(SL.anyNB[0])}% to {f2(SL.anyNB[1])}% after the side-load and with a Valid IP ticket from {f2(SL.anyVIP[0])}% to {f2(SL.anyVIP[1])}%, in every cohort and over windows of about {Math.round(SL.postDays)} to {Math.round(SL.preDays)} days either side. It is a before and after cut with no control group and no All STBs / One STB split, so it supports the hypothesis without yet proving the mechanism.</li>
               <li><strong>The fixes have not reached customers yet.</strong> The Sequential Reboot campaign (In flight, Nov 2026) is the only initiative aimed at the mechanism and its pilot cohort was agreed on 22 October; the InSight TV Hardware Check fix (Oct 2026) improves diagnosis; the agent release delta and gateway-marker analysis are due the week of 2 November. The full October month landed flat on September in Looker (5,205 tickets against 5,236).</li>
               <li><strong>Wider TV performance moved with it.</strong> TV tickets rose {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 subscribers from August to September; Optik TV Legacy tickets rose {sp(pct(legacy.tickets[iSep], legacy.tickets[iAug]), 0)} on a base that shrank {Math.abs(pct(legacy.base[iSep], legacy.base[iAug])).toFixed(1)}%. The rest of STB No Boot (reboot loop, client errors, TELUS logo) is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October on September, so the elevated plateau is now this one symptom.</li>
             </ol>
@@ -6223,6 +6351,62 @@ export default function ReliabilityScorecards() {
                 </div>
               ))}
             </div>
+            <p className="hb-prose" style={{ marginTop: 26 }}><strong>First device-level test of the leading hypothesis.</strong> Chris Tanner compared the same devices before and after their own side-load date for the {SL.n} deployment dates with more than 10,000 devices ({num(SL.devices)} devices: 11 and 12 May, then 15 July to 11 August), measuring the share of devices with a No Boot ticket and with a Valid IP ticket in each window. The windows are close to the same length (about {Math.round(SL.preDays)} days before and {Math.round(SL.postDays)} after, with the post window the shorter one in {SL.postNotLonger} of {SL.n} cohorts), so the shares are comparable and, if anything, understate the rise.</p>
+            <div className="hb-stats">
+              {stat(`${f2(SL.anyNB[0])}% → ${f2(SL.anyNB[1])}%`, "Devices with a No Boot ticket", `${sp(SL.upAnyNB, 0)} after the side-load · one ticket ${f2(SL.m.oneNB[0])}% → ${f2(SL.m.oneNB[1])}%`)}
+              {stat(`${f2(SL.anyVIP[0])}% → ${f2(SL.anyVIP[1])}%`, "Devices with a Valid IP ticket", `${sp(SL.upAnyVIP, 0)} after the side-load · one ticket ${f2(SL.m.oneVIP[0])}% → ${f2(SL.m.oneVIP[1])}%`)}
+              {stat(`${f2(SL.m.twoNB[0])}% → ${f2(SL.m.twoNB[1])}%`, "Devices with two or more No Boot tickets", `${sp(SL.upTwoNB, 0)} · ${Math.round(SL.repNB[1])}% of affected devices, ${Math.round(SL.repNB[0])}% before`)}
+              {stat(`${SL.worse} of ${SL.pairs}`, "Cohort and measure pairs worse after", `all ${SL.n} cohorts on all four measures`)}
+              {stat(`+${num10(SL.extra.nb)}`, "More devices a month with a No Boot ticket", `these ${SL.n} cohorts only · Looker Stuck on Initializing ${sn(stuckOctExcess)} on its baseline in October`)}
+              {stat(`+${num10(SL.extra.vip)}`, "More devices a month with a Valid IP ticket", "same cohorts · not in the Stuck on Initializing count")}
+            </div>
+            <figure>
+              <div className="hb-figtitle">Devices with one No Boot ticket, % of devices in the window, by side-load date</div>
+              <div className="hb-chart">{cohortChart("oneNB", { max: 3.5 })}</div>
+              {legend([{ label: "Before the side-load", color: T.borderStrong }, { label: "After the side-load", color: col }])}
+              <figcaption>Every cohort is up, by {sp(SL.upMin, 0)} to {sp(SL.upMax, 0)}. The rate before the side-load is steady across cohorts ({f2(Math.min(...SL.rows.map((r) => r.oneNB[0])))}% to {f2(Math.max(...SL.rows.map((r) => r.oneNB[0])))}%) and so is the rate after ({f2(Math.min(...SL.rows.map((r) => r.oneNB[1])))}% to {f2(Math.max(...SL.rows.map((r) => r.oneNB[1])))}%). The labels under each date are the cohort's device count.</figcaption>
+            </figure>
+            <figure>
+              <div className="hb-figtitle">Devices with one Valid IP ticket, % of devices in the window, by side-load date</div>
+              <div className="hb-chart">{cohortChart("oneVIP", { max: 1.6 })}</div>
+              {legend([{ label: "Before the side-load", color: T.borderStrong }, { label: "After the side-load", color: col }])}
+              <figcaption>Valid IP tickets rise {sp(SL.upOneVIP, 0)} on one ticket per device, a bigger relative move than No Boot, in every cohort.</figcaption>
+            </figure>
+            <div className="hb-tw">
+              <table>
+                <thead><tr><th>Side-load date</th><th>Devices</th><th>Days before / after</th><th>One No Boot</th><th>Two or more No Boot</th><th>One Valid IP</th><th>Two or more Valid IP</th></tr></thead>
+                <tbody>
+                  {SL.rows.map((r) => (
+                    <tr key={r.date}><td>{r.short}</td><td className="n">{num(r.devices)}</td><td className="n">{r.preDays} / {r.postDays}</td>
+                      {["oneNB", "twoNB", "oneVIP", "twoVIP"].map((k) => <td key={k} className="n">{f2(r[k][0])} → {f2(r[k][1])}{k.startsWith("one") && r.up[k] != null && <span style={{ color: T.bad, fontWeight: 600 }}> {sp(r.up[k], 0)}</span>}</td>)}</tr>
+                  ))}
+                  <tr style={{ fontWeight: 700 }}><td>All cohorts</td><td className="n">{num(SL.devices)}</td><td className="n">{Math.round(SL.preDays)} / {Math.round(SL.postDays)}</td>
+                    {["oneNB", "twoNB", "oneVIP", "twoVIP"].map((k) => <td key={k} className="n">{f2(SL.m[k][0])} → {f2(SL.m[k][1])}{k.startsWith("one") && <span style={{ color: T.bad }}> {sp(SL["up" + k[0].toUpperCase() + k.slice(1)], 0)}</span>}</td>)}</tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="hb-prose" style={{ fontSize: 13.5 }}>Percentages are the share of devices in the window with one ticket, or with two or more tickets; weights are device counts and the relative change is after over before. The source rounds to two decimals, so the two-or-more Valid IP figures ({f2(SL.twoVIPRange[0])}% to {f2(SL.twoVIPRange[1])}%) are only indicative. The cut is by ticket group, not by sub-category.</p>
+            <div className="hb-two">
+              <div className="hb-note ok">
+                <h3>What it adds</h3>
+                <ul className="hb-plain">
+                  <li><strong>It moves the leading hypothesis from timing to devices.</strong> The case so far rested on the rollout dates and the gateway model. Here the same devices are compared with themselves, and all {SL.pairs} cohort and measure pairs worsened after the side-load.</li>
+                  <li><strong>The effect follows each device's own side-load date, not the calendar.</strong> The two May cohorts ({num(SL.may.devices)} devices) closed their post window in early August, when Looker STB No Boot tickets had moved only {sp(nbJulVsJun, 0)} from June to July, and still rose {sp(SL.may.upOneNB, 0)} on one-ticket No Boot, against {sp(SL.julAug.upOneNB, 0)} for the July and August cohorts. A fleet-wide or seasonal change starting in August cannot do that.</li>
+                  <li><strong>It ties the Valid IP rise to the same event.</strong> One-ticket Valid IP went from {f2(SL.m.oneVIP[0])}% to {f2(SL.m.oneVIP[1])}% of devices, about {num10(SL.extra.vip)} more devices a month across these cohorts alone. That is the first direct evidence that the miscategorised internet tickets belong to the same event, and they are not in the Stuck on Initializing count.</li>
+                  <li><strong>It is big enough to account for the rise.</strong> About {num10(SL.extra.nb)} more devices a month with a No Boot ticket from these cohorts alone, against {sn(nbOctExcess)} STB No Boot tickets a month in Looker over its January to July average in October ({sn(stuckOctExcess)} for Stuck on Initializing alone). Smaller deployment dates are not in the file.</li>
+                  <li><strong>Repeats rose in step but are not the driver.</strong> Devices with two or more No Boot tickets went from {f2(SL.m.twoNB[0])}% to {f2(SL.m.twoNB[1])}%, about {Math.round(SL.repNB[0])}% of affected devices before and {Math.round(SL.repNB[1])}% after, and {Math.round(SL.repAddedNB)}% of the devices added.</li>
+                </ul>
+              </div>
+              <div className="hb-note">
+                <h3>What it does not settle</h3>
+                <ul className="hb-plain">
+                  <li><strong>No control group.</strong> The after figures include anything that changed for every device between August and October. The staggered dates allow a cleaner test: side-loaded devices against not-yet-side-loaded devices on the same calendar days.</li>
+                  <li><strong>No time profile.</strong> Windows of about {Math.round(SL.postDays)} to {Math.round(SL.preDays)} days cannot show whether the rise starts straight after the side-load or builds over two to four weeks, as the uptime hypothesis predicts. A weekly days-since-side-load curve would separate the two.</li>
+                  <li><strong>No sub-category, All STBs / One STB split or gateway uptime.</strong> The cut cannot show that the extra tickets are Stuck on Initializing and All STBs Affected, or that they sit on long-uptime gateways, which is what would tie it to the mechanism.</li>
+                  <li><strong>May.</strong> The 11 and 12 May cohorts sit outside the 6 July to 16 August rollout window in the interlock notes. What was deployed on those dates, and whether it was the same agent, needs confirming.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </details>
 
@@ -6256,7 +6440,7 @@ export default function ReliabilityScorecards() {
                 <ul className="hb-plain">
                   <li>No customer-facing fix is live. The reboot pilot has a cohort but no start date, and the campaign excludes mixed OPUS and SHS homes, so part of the base stays uncovered.</li>
                   <li>About {num(((R.markersBase[1] - R.markers[6].v[1]) / R.markersBase[1]) * 100)}% of Stuck tickets close without a dispatch, mostly on an agent-led reboot, so the same gateways will fault again until the uptime driver is addressed proactively.</li>
-                  <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement.</li>
+                  <li>Miscategorised internet tickets (HS Valid IP, No Dataflow on Mediaroom homes) are not yet counted in the impact or the campaign measurement; the side-load cohorts alone show about {num10(SL.extra.vip)} extra devices a month with a Valid IP ticket.</li>
                 </ul>
               </div>
               <div className="hb-note ok">
@@ -6264,7 +6448,7 @@ export default function ReliabilityScorecards() {
                 <ul className="hb-plain">
                   <li>The rise has stopped: October is {sp(stuckOctVsSep)} per day on September, and the All STBs Affected weekly run rate has been flat since mid-September.</li>
                   <li>The agent-led gateway-then-STB reboot clears the fault, so repairs and swaps have not followed tickets: the TV repair rate is {fmtRate(K.rr[iSep])} per 100 and STB replacements are flat.</li>
-                  <li>The cause has been narrowed to one gateway model and one change window, with the data to confirm it due the week of 2 November.</li>
+                  <li>The cause has been narrowed to one gateway model and one change window, with the first device-level test supporting it and the gateway-marker analysis due the week of 2 November.</li>
                 </ul>
               </div>
             </div>
@@ -6272,8 +6456,8 @@ export default function ReliabilityScorecards() {
         </details>
 
         <footer>
-          <p>Sources: TV agent ticket exports, Aug 1 to Oct {R.octDays} 2026 (Category 1 to 3, agent notes and resolution text; counts per day, no customer data retained); Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories, Look 2154, Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3, Jan 2025 to Oct 2026); TS Calls Offered by Product; TV Customer Base Breakdown (platform base); STB No Boot interlock notes of 21, 22, 27 and 28 Oct 2026; Initiatives register.</p>
-          <p>Method notes: per-day figures divide month totals by days in the month (October by {R.octDays}); the 7-day averages are trailing; weeks run Monday to Sunday and partial weeks are shown with their day count. Baselines are simple monthly averages of the Looker series (2025, and January to July 2026). Note markers are regular-expression matches over the agent notes and resolution text of Stuck on Initializing tickets with the same patterns in both months; they count tickets that mention a thing, not confirmed causes. Interlock content is transcribed from the meeting notes and will be refreshed as the analyses land.</p>
+          <p>Sources: TV agent ticket exports, Aug 1 to Oct {R.octDays} 2026 (Category 1 to 3, agent notes and resolution text; counts per day, no customer data retained); Churn Measurement 2026 workbook (Reliability/Deact KPIs; TV Looker Ticket Categories, Look 2154, Optik TV (Legacy) › STB No Boot › Stuck on Initializing by Category 3, Jan 2025 to Oct 2026); TS Calls Offered by Product; TV Customer Base Breakdown (platform base); STB No Boot interlock notes of 21, 22, 27 and 28 Oct 2026; Sideload Pre/Post Dashboard (Chris Tanner, 2 Nov 2026; aggregates by deployment date, no customer data); Initiatives register.</p>
+          <p>Method notes: per-day figures divide month totals by days in the month (October by {R.octDays}); the 7-day averages are trailing; weeks run Monday to Sunday and partial weeks are shown with their day count. Baselines are simple monthly averages of the Looker series (2025, and January to July 2026). Note markers are regular-expression matches over the agent notes and resolution text of Stuck on Initializing tickets with the same patterns in both months; they count tickets that mention a thing, not confirmed causes. Side-load cohorts: the deployment dates with more than 10,000 devices from the Sideload Pre/Post Dashboard, each device compared over the days before and after its own side-load date (84 to 87 days before, 73 to 85 after); one ticket means exactly one ticket in the window and two or more means repeats, which I read as separate groups as the source adds them; weights are device counts. The cut is by ticket group, with no control group. Interlock content is transcribed from the meeting notes and will be refreshed as the analyses land.</p>
         </footer>
         </div>
       </>

@@ -65,7 +65,7 @@ HSIA one reads the year-over-year ticket analysis against the dashboard quarter;
 the TV one (`TV_REVIEW` in `site/App.jsx`) follows STB No Boot › Stuck on
 Initializing from August to October 2026 with daily counts from the TV agent
 ticket exports, the Looker Category 3 split (All STBs / One STB Affected) from
-Jan 2025, the root-cause hypotheses and the fixes in flight. Both are served by
+Jan 2025, the root-cause hypotheses, the side-load cohort pre/post test (`SIDELOAD`, aggregates by deployment date) and the fixes in flight. Both are served by
 `get_page({ page: "review" })`.
 
 The Review pages and the Executive Summary have a presentation mode (the Present
@@ -74,7 +74,7 @@ button, or `#<page>/<n>` to open on slide n, e.g. `#tvbrief/11`,
 `site/App.jsx`) using Slidev's layout names (cover, section, default, two-cols,
 fact, statement, end), slide transitions, click-to-reveal steps, presenter notes
 (N), an overview grid (O), fullscreen (F) and Esc to exit. Each page builds its
-slides from the same data and chart helpers as the page itself: TV Review 21
+slides from the same data and chart helpers as the page itself: TV Review 24
 slides, HSIA Review 21 slides, Executive Summary 6 (its four strip slides plus a
 cover and a sources slide).
 

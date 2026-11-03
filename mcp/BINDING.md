@@ -226,9 +226,10 @@ review.sections.map((s) => s.id); // ["kpis", "kpis-table", "header", "in-short"
 
 // TV review: STB No Boot › Stuck on Initializing, Aug – Oct 2026, with the All STBs / One STB split
 const tvReview = await env.RELIABILITY.get_page({ product: "TV", page: "review" });
-tvReview.sections.map((s) => s.id); // ["kpis", "kpis-table", "header", "in-short", "s1-stats", "s1-prose", "s2-stats", "s2-history", "s2-table", "s3-stats", "s3-daily", "s3-weekly", "s3-share", "s4-subcats", "s4-markers", "s5-causes", "s6-intro", "s6-initiatives", "s6-actions", "s6-gaps", "s6-working", "footer"]
+tvReview.sections.map((s) => s.id); // ["kpis", "kpis-table", "header", "in-short", "s1-stats", "s1-prose", "s2-stats", "s2-history", "s2-table", "s3-stats", "s3-daily", "s3-weekly", "s3-share", "s4-subcats", "s4-markers", "s5-causes", "s5-sideload-intro", "s5-sideload-stats", "s5-sideload-nb", "s5-sideload-vip", "s5-sideload-adds", "s5-sideload-open", "s6-intro", "s6-initiatives", "s6-actions", "s6-gaps", "s6-working", "footer"]
 sec(tvReview, "s2-history").display;  // { as: "stacked-bars", x: "months", stack: ["one","multi","all"], total: "total", alsoAs: "table" } — Looker monthly history by Category 3, Jan 2025 – Oct 2026 (last month is month to date)
 sec(tvReview, "s3-daily").display;    // { as: "line", x: "date", y: ["all7","one7","multi7"], alsoAs: "table" } — one row per day, Aug 1 – Oct 28, daily counts plus trailing 7-day averages
+sec(tvReview, "s5-sideload-nb").display; // { as: "paired-bars", label: "date", pair: ["oneBefore","oneAfter"], alsoAs: "table" } — one row per side-load date (Chris Tanner's pre/post cut, 2 Nov): % of devices with one No Boot ticket before and after
 sec(tvReview, "s5-causes").data[0];   // { title: "CloudCheck agent side-load upgrade … · Leading hypothesis", body: "…", meta: { status: "leading", statusLabel, next } }
 
 const deck = await env.RELIABILITY.get_page({ product: "All", page: "executive" });

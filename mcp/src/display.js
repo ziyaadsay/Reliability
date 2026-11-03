@@ -67,6 +67,7 @@ function tableDisplay(page, product, s) {
         if (s.id === "s3-share") return { as: "stacked-bars", label: "month", stack: ["all", "multi", "one"], alsoAs: "table" };
         if (s.id === "s4-subcats") return { as: "grouped-bars", label: "name", values: ["augPerDay", "sepPerDay", "octPerDay"], alsoAs: "table" };
         if (s.id === "s4-markers") return { as: "paired-bars", label: "name", pair: ["sepShare", "octShare"], alsoAs: "table" };
+        if (s.id === "s5-sideload-nb" || s.id === "s5-sideload-vip") return { as: "paired-bars", label: "date", pair: ["oneBefore", "oneAfter"], alsoAs: "table" };
         return tbl(s);
       }
       if (s.id === "kpis-table") return tbl(s, wide);
