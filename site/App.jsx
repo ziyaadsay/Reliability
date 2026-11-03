@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
   Sources:
   - "Reliability Deact KPIs" tab (main KPI table), Churn Measurement 2026
     workbook (tab now named "ReliabilityDeact KPIs"). Reporting window
-    Jan 2025 – Sep 2026; churn (go/national RGU) reported through Sep 2026.
+    Jan 2025 – Oct 2026; churn (go/national RGU) reported through Oct 2026.
   - "HSIA/TV/SHS Looker Ticket Categories" tabs, same workbook — monthly
     ticket counts by category, Jan 2025 – Oct 2026 (replaces the earlier
     Tableau DRD feed). For HSIA the category volumes come from the
@@ -32,18 +32,18 @@ import React, { useState, useEffect, useRef } from "react";
 const MONTHS = [
   "Jan 2025","Feb 2025","Mar 2025","Apr 2025","May 2025","Jun 2025",
   "Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025",
-  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"
+  "Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026","Oct 2026"
 ];
-// Latest reported month and its labels; the notes and survey analyses keep their own
-// window (Jun to Aug 2026) and say so on their pages.
-const LATEST = "Sep 2026", LATEST_PRIOR = "Sep 2025", LATEST_SHORT = "Sep'26", LATEST_PRIOR_SHORT = "Sep'25";
+// Latest reported month and its labels; the notes analyses run Aug to Oct 2026 and the survey
+// analyses keep their own window (Jun to Aug 2026); each says so on its page.
+const LATEST = "Oct 2026", LATEST_PRIOR = "Oct 2025", LATEST_SHORT = "Oct'26", LATEST_PRIOR_SHORT = "Oct'25";
 const LATEST_YOY = `${LATEST_SHORT} vs ${LATEST_PRIOR_SHORT}`;
-const LATEST_PREV_SHORT = "Aug'26";
+const LATEST_PREV_SHORT = "Sep'26";
 const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 // The Looker ticket categories (LOOKER / LOOKER_EXTRA / OVERVIEW_ISSUES) are refreshed a month
 // ahead of the KPI tabs: their series run to LOOKER_LATEST and their issue tables compare
 // LOOKER_LATEST with the month before and with the same month a year earlier.
-const LOOKER_MONTHS = [...MONTHS, "Oct 2026"];
+const LOOKER_MONTHS = MONTHS;
 const LOOKER_LATEST = "Oct 2026", LOOKER_SHORT = "Oct'26", LOOKER_PRIOR_SHORT = "Oct'25", LOOKER_PREV_SHORT = "Sep'26";
 const LOOKER_MOM = `${LOOKER_SHORT} vs ${LOOKER_PREV_SHORT}`;
 
@@ -55,94 +55,100 @@ const LOOKER_MOM = `${LOOKER_SHORT} vs ${LOOKER_PREV_SHORT}`;
 // `context` strings (prefixed with "@") render as the lead bullets above the themes.
 const HEALTH_COMMENTARY = {
   TV: [
-    "@Both platforms grew in September; TV+ grew faster (+19.5% vs +12.0%), but Legacy still carries about two-thirds of the volume, and Legacy growth is concentrated in STB No Boot / Stuck on Initializing.",
-    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,235 tickets (+26.2% MoM) · 14% of TV tickets · +1,086 MoM · the top driver in September",
+    "@TV tickets rose 1.1% in October to 37,944 (3.28 per 100 subscribers), 8.5% below October 2025. Legacy grew (25,442, +2.7% MoM) while TV+ eased (12,502, -2.0%), and Legacy still carries about two-thirds of the volume. Stuck on Initializing held at its September level, while video quality and channel errors were the largest movers.",
+    { t: "STB No Boot › Stuck on Initializing (Legacy)", share: "5,205 tickets (-0.6% MoM) · 14% of TV tickets · the top driver for the second month",
       causes: [
-        "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (+774 tickets on All STBs Affected alone)",
+        "Technician findings: gateways left 90 to 150+ days without a reboot accumulate stale NAT tables and memory leaks, causing middleware sync loss that presents as \"all STBs stuck on Initializing\" (All STBs Affected ran 2,258 in October against 2,244 in September)",
         "The rise coincides with the CloudCheck agent upgrade rolled out from 6 July to 16 August. The update included enhancements to the CloudCheck agent that allowed updates to be rolled out to the gateway without requiring a reboot",
         "The issue is strongly tied to the T3200M gateway: about 70% of All STBs Affected tickets"
       ],
       next: [
-        "Investigating whether any firmware or software updates are responsible for the increase",
-        "Sequential reboot proactive campaign now in flight (target Nov 2026) so affected gateways are cycled before customers are impacted"
+        "The InSight TV Hardware Check fix launched in October to improve diagnosis; it does not reduce the ticket volume itself",
+        "Sequential reboot proactive campaign (target Nov 2026) is the only item aimed at the mechanism; the pilot cohort was agreed on 22 October, so the October level is the pre-fix baseline"
       ],
       inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix"],
-      note: "+26% MoM and +41% YoY; the single largest TV mover in September" },
-    { t: "Digital Box power & boot (TV+)", share: "2,419 tickets (+28.2% MoM) · +532 MoM",
+      note: "Flat MoM, +24% YoY; the volume has held at the September step change" },
+    { t: "Video quality", share: "Stop/Stuttering/Freezing 2,813 (+21.9% MoM, +506) · Pixelization 444 (+48.5% MoM, +145)",
+      causes: ["Stop/Stuttering/Freezing and Pixelization drive the rise; Video Issues is up 8.5% MoM in total (8,202 tickets), while still 15% below October 2025"],
+      next: ["The Mediaroom OVQ proactive campaign restarts in October, after the Low RSSI and Low Bitrate campaign launched in August"],
+      inits: ["Mediaroom OVQ Campaign Restart", "Low RSSI + Low Bitrate Proactive Campaign"],
+      note: "The single largest TV mover in October" },
+    { t: "Channel errors", share: "Channel Not Working 2,355 (+4.7% MoM, +105) · Missing Channels 2,130 (+10.6% MoM, +204)",
+      causes: ["A defect temporarily preventing access to subscribed channels (fix in testing)", "Channel configuration gaps still being closed in AVS and Mediaroom"],
+      inits: ["Subscribed Channel Access Defect Fix", "Channel Config Gap Closing", "Mediaroom SD Downconvert Removal", "P001 Playback Error Monitoring"],
+      note: "Channel Issues up 8.2% MoM and 13% YoY; the SD downconvert removal launched in October to ease the perception of lost channels" },
+    { t: "Digital Box power & boot (TV+)", share: "Digital Box › No Boot 2,253 tickets (-6.9% MoM, -166)",
       causes: ["OPUS digital box power-supply unit failures"],
-      next: ["The PSU Replacement Campaign has been on hold since August because the new courier requires a signature for delivery of the replacement PSU. The team is working to resolve this and restart the campaign"],
+      next: ["The PSU Replacement Campaign remains on hold because the new courier requires a signature for delivery of the replacement PSU. The team is working to resolve this and restart the campaign"],
       inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
-      note: "+28% MoM, still 51% below Sep'25" },
-    { t: "Channel errors (TV+)", share: "Channel Not Working 2,250 (+35.0% MoM, +583) · Missing Channels 1,926 (+30.4% MoM, +449)",
-      causes: ["A defect temporarily preventing access to subscribed channels", "P001 Playback Error: users encountered this error preventing playback of content"],
-      inits: ["P001 Playback Error Monitoring", "Channel Config Gap Closing", "Subscribed Channel Access Defect Fix"],
-      note: "Channel errors up 57% MoM across TV+" }
+      note: "Eased from September and 62% below October 2025" }
   ],
   // HSIA themes: { t, share, causes: [...], inits: [string | { t, sub: [...] }], note }
   HSIA: [
-    { t: "Connection Instability & Disconnects", share: "58% of all HSIA tickets",
+    { t: "Connection Instability & Disconnects", share: "57% of all HSIA tickets (31,461)",
       causes: ["Fibre degradation", "New bucket of work: 'no dataflow provisioning'", "Outages"],
       inits: ["OLT clustering fibre degradation pilot", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", "GPONe Fibre Degradation Proactive Campaign", "Pulse & initial customer comms"],
-      note: "MoM drop of ~4% in tickets for September" },
-    { t: "Slow speeds", share: "23% of all HSIA tickets",
+      note: "MoM drop of ~6% in tickets for October; No Dataflow is still the largest issue at 12,797 (-4.6% MoM, +36% YoY)" },
+    { t: "Slow speeds", share: "24% of all HSIA tickets (13,039)",
       causes: ["Incompatible equipment / speed plans", "Customer education"],
-      inits: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention Program", "Server upgrades"] },
-    { t: "Wi-Fi coverage gaps", share: "18% of all HSIA tickets",
+      inits: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention Program", "Server upgrades"],
+      note: "Down 1% MoM but up 40% YoY" },
+    { t: "Wi-Fi coverage gaps", share: "18% of all HSIA tickets (9,915)",
       causes: ["Gateway location (customer education)", "Additional boosts"],
       inits: ["WAN Connectivity proactive campaign", "Wi-Fi Boost Down proactive campaign", "CloudCheck Wi-Fi QoE fine tuning", "Proactive add boost & poor Wi-Fi"],
-      note: "MoM drop of ~5% in September" }
+      note: "Up ~5% MoM in October; Can't Connect (+292) and Disconnects (+190) were the largest risers" }
   ],
   SHS: [],
   "SH+": []
 };
-const CHURN_THRU = "Sep 2026";
+const CHURN_THRU = "Oct 2026";
 
 const DATA = {
   callsOffered: {
-    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179,151541],
-    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978,56737],
-    "SH+": [1509,1337,1892,1619,1523,1096,1317,1282,1185,1163,1123,1359,1355,1699,1954,1937,1808,2320,2258,1990,1679]
+    FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179,151541,153567],
+    SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978,56737,59085],
+    "SH+": [1509,1337,1892,1619,1523,1096,1317,1282,1185,1163,1123,1359,1355,1699,1954,1937,1808,2320,2258,1990,1679,null]
   },
   callsAnswered: {
-    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856,131589],
-    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636,52997],
-    "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569]
+    FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856,131589,131951],
+    SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636,52997,55277],
+    "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569,null]
   },
   ticketRate: {
-    HSIA: [1.99,1.93,2.21,2.26,2.28,2.25,2.41,2.41,2.28,2.33,2.39,2.35,2.39,2.17,2.50,2.37,2.64,2.70,2.69,2.76,2.66],
-    TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24],
-    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01],
-    "SH+": [null,null,null,null,null,null,3.10,2.82,2.42,2.39,2.27,2.62,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74]
+    HSIA: [1.99,1.93,2.21,2.26,2.28,2.25,2.41,2.41,2.28,2.33,2.39,2.35,2.39,2.17,2.50,2.37,2.64,2.70,2.69,2.76,2.66,2.58],
+    TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24,3.28],
+    SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01,3.94],
+    "SH+": [null,null,null,null,null,null,3.10,2.82,2.42,2.39,2.27,2.62,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74,null]
   },
   ticketVolume: {
-    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789,56764],
-    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591],
-    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152],
-    "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062]
+    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789,56764,55153],
+    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591,37944],
+    SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152,36504],
+    "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062,null]
   },
   repairRate: {
-    HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.77,0.77,0.85,0.77,0.78,0.76,0.70,0.80,0.82,0.86,0.76,0.83,0.77,0.82],
-    TV:   [0.18,0.15,0.19,0.17,0.15,0.13,0.13,0.13,0.13,0.16,0.15,0.14,0.16,0.15,0.17,0.17,0.16,0.12,0.13,0.12,0.14],
-    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42],
-    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.092,0.110]
+    HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.77,0.77,0.85,0.77,0.78,0.76,0.70,0.80,0.82,0.86,0.76,0.83,0.77,0.82,0.81],
+    TV:   [0.18,0.15,0.19,0.17,0.15,0.13,0.13,0.13,0.13,0.16,0.15,0.14,0.16,0.15,0.17,0.17,0.16,0.12,0.13,0.12,0.14,0.16],
+    SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42,0.43],
+    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.092,0.110,null]
   },
   repairVolume: {
-    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,18301,16220,17695,16512,17496],
-    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390,1672],
-    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653,3884],
-    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,67]
+    HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,16392,14574,16717,17332,18301,16220,17695,16512,17496,17232],
+    TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390,1672,1810],
+    SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653,3884,3937],
+    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,67,null]
   },
   churnRate: {
-    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,1.05],
-    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,1.44,1.42,1.41],
-    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,1.44,1.42,1.39],
-    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,1.05,0.95],
+    TV:   [null,1.12,1.13,1.33,1.36,1.31,1.50,1.41,1.37,1.46,1.35,1.19,1.28,1.05,1.24,1.33,1.29,1.30,1.44,1.42,1.41,1.33],
+    SHS:  [null,1.14,1.27,1.52,1.53,1.34,1.53,1.47,1.29,1.60,1.39,1.00,1.60,1.04,1.25,1.40,1.26,1.51,1.44,1.42,1.39,1.34],
+    "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
-    HSIA: [2050488,2051969,2058211,2059523,2062721,2069802,2073105,2080818,2092231,2094989,2098082,2103708,2099575,2104231,2111098,2113465,2118011,2123842,2127014,2130670,2135120],
-    TV:   [1205452,1201529,1199443,1196987,1196062,1194035,1191503,1189366,1187756,1188117,1188298,1186983,1184435,1182482,1180294,1178353,1175469,1172778,1169649,1165379,1161960],
-    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318],
-    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,57531,60876]
+    HSIA: [2050488,2051969,2058211,2059523,2062721,2069802,2073105,2080818,2092231,2094989,2098082,2103708,2099575,2104231,2111098,2113465,2118011,2123842,2127014,2130670,2135120,2135195],
+    TV:   [1205452,1201529,1199443,1196987,1196062,1194035,1191503,1189366,1187756,1188117,1188298,1186983,1184435,1182482,1180294,1178353,1175469,1172778,1169649,1165379,1161960,1158517],
+    SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318,926347],
+    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,57531,60876,null]
   },
   // "consolidated national results" rows of the KPI tab (2026 YTD vs 2025). HSIA is the
   // West wired line (the KPI tab's HSIA base is HSIA West + TQ ILEC HS + PFE Vulcan HS from the
@@ -160,9 +166,9 @@ const DATA = {
   // I:T, 2026 actuals in AG:AO). Lower is better. SmartHome is not yet restated in the source, so
   // SHS keeps the earlier pull until that row is populated.
   b2bVoC: {
-    HSIA: [23.7,23.2,20.8,19.5,20.4,22.2,22.3,21.6,18.7,20.3,21.9,18.4,22.1,20.8,21.6,20.4,20.9,20.9,20.7,21.1,20.9],
-    TV:   [23.9,25.2,22.2,20.7,23.0,23.6,22.6,22.8,20.2,21.2,25.1,21.4,23.3,22.3,22.9,24.5,22.5,21.5,22.8,21.7,21.5],
-    SHS:  [29.0,32.0,26.0,27.0,30.0,27.0,31.0,28.0,32.0,32.0,29.0,27.0,28.0,28.0,22.0,28.0,30.0,28.0,24.0,29.0,null]
+    HSIA: [23.7,23.2,20.8,19.5,20.4,22.2,22.3,21.6,18.7,20.3,21.9,18.4,22.1,20.8,21.6,20.4,20.9,20.9,20.7,21.1,20.9,null],
+    TV:   [23.9,25.2,22.2,20.7,23.0,23.6,22.6,22.8,20.2,21.2,25.1,21.4,23.3,22.3,22.9,24.5,22.5,21.5,22.8,21.7,21.5,null],
+    SHS:  [29.0,32.0,26.0,27.0,30.0,27.0,31.0,28.0,32.0,32.0,29.0,27.0,28.0,28.0,22.0,28.0,30.0,28.0,24.0,29.0,null,null]
   }
 };
 
@@ -388,7 +394,7 @@ const INITIATIVES = [
     desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets. On hold since August: the new courier requires a signature on delivery of the replacement PSU." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "In flight", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
     desc: "Sequential reboot procedure for Optik TV (Legacy) set-top boxes stuck on Initializing." },
-  { p: "TV", pillar: 2, theme: "Hardware", name: "InSight TV Hardware Check fix", status: "In flight", timeline: "Oct 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"],
+  { p: "TV", pillar: 2, theme: "Hardware", name: "InSight TV Hardware Check fix", status: "Launched", timeline: "Oct 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"],
     desc: "Fixes the InSight TV Hardware Check diagnostic used on set-top box and gateway faults." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Shipment Notification Redesign", status: "Launched", timeline: "Feb 2026", prime: "K. Liu", issues: ["TV", "Support"],
     desc: "Redesigns equipment-shipment notifications to reduce fulfilment confusion and missed activations." },
@@ -416,7 +422,7 @@ const INITIATIVES = [
     desc: "Six new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Channel Config Gap Closing", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV"],
     desc: "Closes channel configuration gaps: 18 channel updates in AVS and 172 in Mediaroom before Sep 30." },
-  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Mediaroom SD Downconvert Removal", status: "In flight", timeline: "Oct 2026", prime: "N. Desrosiers", issues: ["TV"],
+  { p: "TV", pillar: 2, theme: "Channel Issues", name: "Mediaroom SD Downconvert Removal", status: "Launched", timeline: "Oct 2026", prime: "N. Desrosiers", issues: ["TV"],
     desc: "Removes the Mediaroom SD downconvert to mitigate the perception of lost channels during migration." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Subscribed Channel Access Defect Fix", status: "In flight", timeline: "Nov 2026", prime: "C. Carter", issues: ["TV"],
     desc: "New defect identified temporarily preventing customers from accessing subscribed channels. Fix currently in testing." },
@@ -458,7 +464,7 @@ const INITIATIVES = [
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // Self-serve customer workflows (Sweepr) — HSIA West Scorecard workbook, rows 49-55.
-// Arrays align with MONTHS (Jan 2025 – Sep 2026). a = actuals; t = 2026 monthly targets.
+// Arrays align with MONTHS (Jan 2025 – Oct 2026). a = actuals; t = 2026 monthly targets.
 // Re-read in full each month because the source restates earlier 2026 months (the Oct 2026 pull
 // restated Sweepr involved churn and deacts saved for Jan–Aug 2026).
 // (the source sets targets for 2026 only; churn impact and deacts saved carry no target).
@@ -478,32 +484,32 @@ const HSS = {"months":["Jun 2026","Jul 2026","Aug 2026"],"respondents":[1914,193
 
 const SWEEPR = {
   resolved: {
-    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,48614],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,47551,47439,47595,46384,45971,45988,45989,45987,46075]
+    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,48614,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,47551,47439,47595,46384,45971,45988,45989,45987,46075,46201]
   },
   webAppRate: {
-    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,65.4],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,59.4,59.7,60.1,60.4,60.7,61.0,61.4,61.7,62.0]
+    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,65.4,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,59.4,59.7,60.1,60.4,60.7,61.0,61.4,61.7,62.0,62.35]
   },
   ivrRate: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,13.9,12.7,12.5,12.4,null,null,null,null,null],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,13.9,12.7,12.5,12.4,null,null,null,null,null,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0]
   },
   cxEasy: {
-    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.50],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00]
+    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.50,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.0]
   },
   cxSent: {
-    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,-0.64],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50]
+    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,-0.64,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.5]
   },
   churn: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.89,2.16,1.98,2.12,2.12,1.98,2.06,2.56,2.40],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.89,2.16,1.98,2.12,2.12,1.98,2.06,2.56,2.40,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   deacts: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426],
-    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426,null],
+    t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   }
 };
 
@@ -668,7 +674,7 @@ const HSIA_YOY = {
 
 // ---------------------------------------------------------------------------
 // FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
-// Arrays align with MONTHS (Jan 2025 – Sep 2026); the whole series is re-read each month
+// Arrays align with MONTHS (Jan 2025 – Oct 2026); the whole series is re-read each month
 // because the source restates earlier months.
 // HSIA = every field containing "HSIA" (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA).
 // TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
@@ -678,18 +684,18 @@ const HSIA_YOY = {
 // ---------------------------------------------------------------------------
 const CALLS_SPLIT = {
   HSIA: {
-    offered:  [71683,62931,62986,62532,65485,65903,70866,75667,87327,80838,74636,79126,73968,61292,77567,73609,82934,87199,91756,92975,85329],
-    answered: [62721,53784,58863,58588,59488,60466,65899,65376,61542,56698,62221,62803,63318,57377,69168,66119,74837,78649,80243,78238,74993]
+    offered:  [71683,62931,62986,62532,65485,65903,70866,75667,87327,80838,74636,79126,73968,61292,77567,73609,82934,87199,91756,92975,85329,null],
+    answered: [62721,53784,58863,58588,59488,60466,65899,65376,61542,56698,62221,62803,63318,57377,69168,66119,74837,78649,80243,78238,74993,null]
   },
   TV: {
-    offered:  [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53102,58357],
-    answered: [62745,54821,55965,53508,54032,48853,49214,47720,45777,52571,55079,52475,52707,45712,51195,47674,44732,45382,45249,45127,51607]
+    offered:  [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53102,58357,null],
+    answered: [62745,54821,55965,53508,54032,48853,49214,47720,45777,52571,55079,52475,52707,45712,51195,47674,44732,45382,45249,45127,51607,null]
   }
 };
 
 // ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
-// Arrays align with MONTHS (Jan 2025 – Sep 2026).
+// Arrays align with MONTHS (Jan 2025 – Oct 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
 //   (Optik TV (Legacy) = Legacy; TV Evolution = OPUS).
 // Base: TV Customer Base Breakdown workbook, "Customer Base - Provisioned" tab
@@ -702,28 +708,28 @@ const CALLS_SPLIT = {
 //   2026 onward only (2025 = null).
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
-//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September pull was not yet available from the
+//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September and October pulls were not yet available from the
 //   dashboard at the time of this update.
 // ---------------------------------------------------------------------------
 const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
-    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775],
-    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468],
-    base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167],
-    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null]
+    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775,25442],
+    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
+    base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
-    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760],
-    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390],
-    base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664],
-    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null]
+    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760,12502],
+    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390,353],
+    base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
   }
 ];
 // Mixed usage: customers provisioned on both Mediaroom and TTV+ (same source as the
 // platform bases); subscriber count only for now.
-const TV_MIXED = { id: "mixed", name: "Mixed usage", sub: "MR + TTV+", base: [7032,7520,7574,8320,8534,9516,8862,8429,9507,9390,10965,11191,10720,10064,10012,11740,16639,21847,15667,14998,30129] };
+const TV_MIXED = { id: "mixed", name: "Mixed usage", sub: "MR + TTV+", base: [7032,7520,7574,8320,8534,9516,8862,8429,9507,9390,10965,11191,10720,10064,10012,11740,16639,21847,15667,14998,30129,24320] };
 // Per-platform rates derived where both volume and base are reported
 TV_PLATFORMS.forEach((p) => {
   p.ticketRate = p.tickets.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(2) : null));
@@ -839,7 +845,7 @@ const TV_REVIEW = {"asOf":"30 Oct 2026","period":"Aug – Oct 2026","octDays":30
   // What is being done. kind: initiative (in the register) | action (interlock commitment)
   actions: [
     { kind: "initiative", name: "Sequential Reboot for Stuck on Initializing", owner: "Z. Sayhebolay", when: "Nov 2026", status: "In flight", detail: "Proactive gateway-then-STB reboot for Mediaroom plus internet two-play households, excluding OPUS and SHS mixed homes. InSight and Sweepr confirmed the sequence waits for the gateway before the STB. A small cohort campaign was agreed on 22 Oct; testing is still needed before scale." },
-    { kind: "initiative", name: "InSight TV Hardware Check fix", owner: "Z. Sayhebolay", when: "Oct 2026", status: "In flight", detail: "Fixes the InSight TV Hardware Check used on STB and gateway faults so agents see the gateway state before they swap the box." },
+    { kind: "initiative", name: "InSight TV Hardware Check fix", owner: "Z. Sayhebolay", when: "Oct 2026", status: "Launched", detail: "Fixes the InSight TV Hardware Check used on STB and gateway faults so agents see the gateway state before they swap the box." },
     { kind: "initiative", name: "PSU Replacement Campaign", owner: "D. Culp", when: "Sep 2025", status: "On Hold", detail: "OPUS power-supply swaps, not a Stuck on Initializing fix. On hold since August because the new courier requires a signature; 40k static list, 100k units in stock and 120k free units from Vantiva; list validation under way." },
     { kind: "action", name: "Agent release delta (CloudCheck v2.5 to 3.418)", owner: "Alan Chiu", when: "Week of 2 Nov 2026", status: "Open", detail: "Compile what changed in the side-loaded agent and when each cohort received it." },
     { kind: "action", name: "Pre/post signature on gateway markers", owner: "Chris Tanner, Chris Havlin", when: "Week of 2 Nov 2026", status: "In progress", detail: "Compare gateway uptime, memory and NAT markers before and after the agent rollout for ticketed and non-ticketed T3200M customers. A first cut by side-load date, on ticket rates per device, was shared on 2 Nov (section 5)." },
@@ -1005,8 +1011,10 @@ function useIsDark(mode) {
   for (let i = 0; i < n; i++) {
     const base = P.reduce((a, p) => a + DATA.subBase[p][i], 0);
     baseAll.push(base);
-    callsOffAll.push(CALLS_SPLIT.HSIA.offered[i] + CALLS_SPLIT.TV.offered[i] + DATA.callsOffered.SHS[i]);
-    callsAnsAll.push(CALLS_SPLIT.HSIA.answered[i] + CALLS_SPLIT.TV.answered[i] + DATA.callsAnswered.SHS[i]);
+    // The product call split can lag the KPI tab by a month; leave All calls blank until every part is reported.
+    const cOff = [CALLS_SPLIT.HSIA.offered[i], CALLS_SPLIT.TV.offered[i], DATA.callsOffered.SHS[i]], cAns = [CALLS_SPLIT.HSIA.answered[i], CALLS_SPLIT.TV.answered[i], DATA.callsAnswered.SHS[i]];
+    callsOffAll.push(cOff.some((x) => x == null) ? null : cOff[0] + cOff[1] + cOff[2]);
+    callsAnsAll.push(cAns.some((x) => x == null) ? null : cAns[0] + cAns[1] + cAns[2]);
     const tv = P.reduce((a, p) => a + DATA.ticketVolume[p][i], 0);
     tickVolAll.push(tv);
     tickRateAll.push(Math.round((tv / base) * 10000) / 100);
@@ -5331,7 +5339,7 @@ export default function ReliabilityScorecards() {
     const qy = { calls: sum(S.calls, yi), tv: sum(S.tv, yi), rv: sum(S.rv, yi), tr: avg(S.tr, yi), rr: avg(S.rr, yi) };
     const per100 = mi.map((i) => (S.rv[i] / S.tv[i]) * 100);
     const K = HSA.tickets, sv = HSS, svM = sv.months.map((m) => m.slice(0, 3));
-    const fibreIdx = DATA.hsiaFibreMonths.indexOf(LATEST), fibre = [2, 1, 0].map((k) => DATA.hsiaFibrePct[fibreIdx - k]);
+    const fibreIdx = DATA.hsiaFibreMonths.indexOf("Sep 2026"), fibre = [2, 1, 0].map((k) => DATA.hsiaFibrePct[fibreIdx - k]);
     const flag = (v, goodDown = true, thr = 3) => {
       if (v == null) return null;
       const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
@@ -6152,7 +6160,7 @@ export default function ReliabilityScorecards() {
             <tbody>{R.actions.filter((a) => a.kind === "action").map((a) => <tr key={a.name}><td><div style={{ fontWeight: 600 }}>{a.name}</div><div style={{ fontSize: 11.5, color: MUTED }}>{a.detail}</div></td><td style={{ textAlign: "left" }}>{a.owner}</td><td style={{ textAlign: "left", whiteSpace: "nowrap" }}>{a.when}</td></tr>)}</tbody>
           </table>
         </>,
-        notes: "Sequential Reboot is the only item aimed at the mechanism; the others improve diagnosis or confirm the cause. None has reached customers yet." },
+        notes: "Sequential Reboot is the only item aimed at the mechanism; the others improve diagnosis or confirm the cause. Only the InSight diagnosis fix has launched; nothing aimed at the mechanism has reached customers yet." },
       { layout: "two-cols", title: "Gaps, and what is working", clicks: 2,
         body: (step, C) => <>
           {C(1, <div className="dk-note bad"><h3>Gaps</h3><ul style={{ paddingLeft: 18 }}>
@@ -6229,7 +6237,7 @@ export default function ReliabilityScorecards() {
               <li><strong>Every box in the home failing at once is a gateway symptom.</strong> {mshare(T3, 1)} of October Stuck tickets name the T3200M gateway and it is {R.t3200ShareOfGatewayNamed[1]}% of the gateways named; the interlock data puts about 70% of affected customers on the T3200M. There is no correlation to STB model, number of STBs, or fibre versus copper, and repeat callers are not the driver: repeats are up in step but stay about {Math.round(SL.repNB[1])}% of affected devices.</li>
               <li><strong>Leading hypothesis: the CloudCheck agent side-load upgrade (v2.5 to 3.418, 6 Jul to 16 Aug) on T3200M gateways, aggravated by long gateway uptime.</strong> Onset lags two to four weeks, ticketed gateways skew to no reboot in more than 30 days, and the fault clears with a gateway-then-STB reboot. Rolling the agent back was rejected on security grounds. Cujo being disabled on 25 September did not move the series ({num(beforeCujo)} a day in the fortnight before, {num(afterCujo)} after).</li>
               <li><strong>The first device-level test points the same way.</strong> Across {SL.n} side-load dates with more than 10,000 devices each ({num(SL.devices)} devices), the share of devices with a No Boot ticket rose from {f2(SL.anyNB[0])}% to {f2(SL.anyNB[1])}% after the side-load and with a Valid IP ticket from {f2(SL.anyVIP[0])}% to {f2(SL.anyVIP[1])}%, in every cohort and over windows of about {Math.round(SL.postDays)} to {Math.round(SL.preDays)} days either side. It is a before and after cut with no control group and no All STBs / One STB split, so it supports the hypothesis without yet proving the mechanism.</li>
-              <li><strong>The fixes have not reached customers yet.</strong> The Sequential Reboot campaign (In flight, Nov 2026) is the only initiative aimed at the mechanism and its pilot cohort was agreed on 22 October; the InSight TV Hardware Check fix (Oct 2026) improves diagnosis; the agent release delta and gateway-marker analysis are due the week of 2 November. The full October month landed flat on September in Looker (5,205 tickets against 5,236).</li>
+              <li><strong>The fixes have not reached customers yet.</strong> The Sequential Reboot campaign (In flight, Nov 2026) is the only initiative aimed at the mechanism and its pilot cohort was agreed on 22 October; the InSight TV Hardware Check fix (Launched, Oct 2026) improves diagnosis; the agent release delta and gateway-marker analysis are due the week of 2 November. The full October month landed flat on September in Looker (5,205 tickets against 5,236).</li>
               <li><strong>Wider TV performance moved with it.</strong> TV tickets rose {sp(pct(K.tv[iSep], K.tv[iAug]), 0)} and the ticket rate {sd(K.tr[iSep] - K.tr[iAug])} per 100 subscribers from August to September; Optik TV Legacy tickets rose {sp(pct(legacy.tickets[iSep], legacy.tickets[iAug]), 0)} on a base that shrank {Math.abs(pct(legacy.base[iSep], legacy.base[iAug])).toFixed(1)}%. The rest of STB No Boot (reboot loop, client errors, TELUS logo) is down {Math.abs(pct(restOct, restSep)).toFixed(0)}% per day in October on September, so the elevated plateau is now this one symptom.</li>
             </ol>
           </div>
@@ -6413,7 +6421,7 @@ export default function ReliabilityScorecards() {
         <details className="hb-sec" aria-labelledby="tb-s6">
           <summary><h2 id="tb-s6">6. What is being done</h2></summary>
           <div className="hb-body">
-            <p className="hb-prose">Register initiatives with live status, then the commitments from the October interlocks. The Sequential Reboot campaign is the only item aimed at the mechanism itself; the others improve diagnosis or confirm the cause. None has reached customers yet, so the October full-month figure should be read as the pre-fix baseline.</p>
+            <p className="hb-prose">Register initiatives with live status, then the commitments from the October interlocks. The Sequential Reboot campaign is the only item aimed at the mechanism itself; the others improve diagnosis or confirm the cause. Only the diagnosis fix has launched and nothing aimed at the mechanism has reached customers yet, so the October full-month figure should be read as the pre-fix baseline.</p>
             <figure>
               <div className="hb-figtitle">Initiatives in the register</div>
               <div>
