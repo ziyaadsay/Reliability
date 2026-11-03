@@ -37,3 +37,7 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   workbook's Initiatives tab. TV and SHS initiatives still use the Churn Measurement workbook.
   Re-pull from it into `INITIATIVES` in `site/App.jsx`: map "Launched monitoring" to "Launched",
   and keep the Health Read and HSIA Review initiative lists in step with any new or renamed projects.
+- The **Archive** menu item is always the last menu option, set off by a divider, and hosts completed
+  reviews and miscellaneous pages (`ARCHIVE_ITEMS`, `CHILD_PAGES.archive` in `site/App.jsx`). Archived
+  pages are frozen: do not roll them forward with the monthly update. The HSIA Review (`hsiabrief`) is
+  archived and pinned to Q3 2026 via `HSIA_REVIEW_LATEST`; it ignores `LATEST`.

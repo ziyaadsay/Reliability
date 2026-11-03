@@ -52,7 +52,6 @@ const PAGES = [
   { product: "HSIA", id: "notes", nav: "HSIA › Notes Analysis" },
   { product: "HSIA", id: "sentiment", nav: "HSIA › Customer Sentiment Analysis" },
   { product: "HSIA", id: "cross", nav: "HSIA › Cross Analysis" },
-  { product: "HSIA", id: "review", nav: "HSIA › Review" },
   { product: "TV", id: "overview", nav: "TV" },
   { product: "TV", id: "platforms", nav: "TV › By Platform" },
   { product: "TV", id: "notes", nav: "TV › Notes Analysis" },
@@ -62,7 +61,8 @@ const PAGES = [
   { product: "SHS", id: "overview", nav: "SHS" },
   { product: "SH+", id: "overview", nav: "SH+" },
   { product: "All", id: "selfserve", nav: "Self-serve" },
-  { product: "All", id: "ffps", nav: "Friction Free Program" }
+  { product: "All", id: "ffps", nav: "Friction Free Program" },
+  { product: "HSIA", id: "review", nav: "Archive › HSIA Review" }
 ];
 const pageUrl = (product, id) => `${DASHBOARD_URL}#${encodeURIComponent(PAGE_HASH[`${product}|${id}`])}`;
 
@@ -724,7 +724,7 @@ function crossPage(product) {
 // ---- HSIA Review (mirrors HsiaBriefPage) ----
 function reviewPage() {
   const Y = HSIA_YOY, out = [];
-  const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
+  const i2 = MONTHS.indexOf("Sep 2026"), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
   const mons = mi.map((i) => MONTHS[i]), shortMon = (m) => m.slice(0, 3);
   const range = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${mons[2].slice(-4)}`, prevRange = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${MONTHS[yi[2]].slice(-4)}`;
   const S = { calls: CALLS_SPLIT.HSIA.offered, tv: DATA.ticketVolume.HSIA, tr: DATA.ticketRate.HSIA, rv: DATA.repairVolume.HSIA, rr: DATA.repairRate.HSIA, base: DATA.subBase.HSIA };
@@ -756,7 +756,7 @@ function reviewPage() {
   out.push(textSec("header", `HSIA · ${Y.period} ${Y.y1} vs ${Y.y0} · why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it`, [
     `HSIA tickets are up ${Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.`,
     `The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for ${range}, agent and technician notes, the customer survey and the initiative register.`,
-    `Reliability Strategy · Analysis data to ${Y.dataThrough} · Dashboard data to ${LATEST} · Survey to ${sv.months[sv.months.length - 1]}`]));
+    `Reliability Strategy · Analysis data to ${Y.dataThrough} · Dashboard data to Sep 2026 · Survey to ${sv.months[sv.months.length - 1]}`]));
   // derived
   const drivers = Y.drivers, growth = drivers[0], adj = drivers[drivers.length - 1];
   const condTotal = drivers.filter((d) => d.group !== "Base growth" && d.group !== "Adjustment").reduce((x, d) => x + d.v, 0);

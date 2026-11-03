@@ -39,6 +39,9 @@ const MONTHS = [
 const LATEST = "Oct 2026", LATEST_PRIOR = "Oct 2025", LATEST_SHORT = "Oct'26", LATEST_PRIOR_SHORT = "Oct'25";
 const LATEST_YOY = `${LATEST_SHORT} vs ${LATEST_PRIOR_SHORT}`;
 const LATEST_PREV_SHORT = "Sep'26";
+// The HSIA Review lives in the Archive and is frozen at the last month it was written for (Q3 2026);
+// it does not follow LATEST.
+const HSIA_REVIEW_LATEST = "Sep 2026";
 const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 // The Looker ticket categories (LOOKER / LOOKER_EXTRA / OVERVIEW_ISSUES) are refreshed a month
 // ahead of the KPI tabs: their series run to LOOKER_LATEST and their issue tables compare
@@ -907,6 +910,7 @@ const ICON_PATHS = {
   selfserve: "M13 2 3 14h7l-1 8 10-12h-7z",
   program: "M4 20h16M4 16l5-5 4 3 7-7M15 7h5v5",
   brief: "M6 3h12v18H6zM9 8h6M9 12h6M9 16h4",
+  archive: "M3 4h18v4H3zM5 8v12h14V8M10 12h4",
   hexes: "M12 2.5l3.5 2v4l-3.5 2-3.5-2v-4zM7 12.5l3.5 2v4L7 20.5l-3.5-2v-4zM17 12.5l3.5 2v4l-3.5 2-3.5-2v-4z",
   notes: "M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6",
   slides: "M3 5h18v12H3zM8 21h8M12 17v4M7 9h6M7 12h10",
@@ -1889,14 +1893,18 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross"], archive: ["hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiabrief: "Review",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
-const PARENT_LABEL = { home: "Overview" };
+const PARENT_LABEL = { home: "Overview", archive: "Archive" };
+// Previously completed reviews and miscellaneous pages. Frozen: not refreshed with each month's update.
+const ARCHIVE_ITEMS = [
+  { id: "hsiabrief", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." }
+];
 
 // Initiatives covering a recurring-issue group, product-scoped
 function initiativesCovering(product, grp) {
@@ -2212,7 +2220,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiabrief", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2294,7 +2302,6 @@ export default function ReliabilityScorecards() {
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
-    { id: "hsiabrief", label: "Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
@@ -2304,7 +2311,10 @@ export default function ReliabilityScorecards() {
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
-    { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS }
+    { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS },
+    // Archive is always the last menu option, set off by a divider.
+    { id: "archive", label: "Archive", icon: "archive", color: T.textMuted, divider: true },
+    { id: "hsiabrief", label: "HSIA Review", icon: "brief", color: colors.HSIA, child: true, parent: "archive" }
   ];
 
   const selectStyle = {
@@ -5321,9 +5331,29 @@ export default function ReliabilityScorecards() {
 `;
   }
 
+  function ArchivePage() {
+    return (
+      <div style={{ marginTop: 18 }}>
+        <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 16px", maxWidth: 760 }}>
+          Previously completed reviews and other pages. Archived pages are kept as they were written: they are not refreshed with the monthly update.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
+          {ARCHIVE_ITEMS.map((it) => (
+            <button key={it.id} onClick={() => { setPage(it.id); setDeckSlide(null); }}
+              style={{ textAlign: "left", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 18px", cursor: "pointer", fontFamily: FONT, color: T.text }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>{it.period}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: T.heading, margin: "4px 0 6px" }}>{it.title} →</div>
+              <div style={{ fontSize: 12.5, color: T.textSecondary, lineHeight: 1.55 }}>{it.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   function HsiaBriefPage() {
     const col = colors.HSIA, Y = HSIA_YOY;
-    const i2 = MONTHS.indexOf(LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
+    const i2 = MONTHS.indexOf(HSIA_REVIEW_LATEST), mi = [i2 - 2, i2 - 1, i2], yi = mi.map((i) => i - 12);
     const mons = mi.map((i) => MONTHS[i]), shortMon = (m) => m.slice(0, 3);
     const range = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${mons[2].slice(-4)}`, prevRange = `${shortMon(mons[0])} – ${shortMon(mons[2])} ${MONTHS[yi[2]].slice(-4)}`;
     const S = { calls: CALLS_SPLIT.HSIA.offered, tv: DATA.ticketVolume.HSIA, tr: DATA.ticketRate.HSIA, rv: DATA.repairVolume.HSIA, rr: DATA.repairRate.HSIA, base: DATA.subBase.HSIA };
@@ -5452,7 +5482,7 @@ export default function ReliabilityScorecards() {
     const noSyncRow = K.divergence.perCat.find((r) => r.cat.endsWith("No Sync"));
     const slides = [
       { layout: "cover", title: `HSIA review · ${Y.period} ${Y.y1} vs ${Y.y0}`, sub: "Why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it. The year-over-year ticket analysis read against the dashboard's own quarter, the agent and technician notes, the customer survey and the initiative register.",
-        notes: `Analysis data to ${Y.dataThrough}; dashboard data to ${LATEST}; survey to ${sv.months[sv.months.length - 1]}.` },
+        notes: `Analysis data to ${Y.dataThrough}; dashboard data to ${HSIA_REVIEW_LATEST}; survey to ${sv.months[sv.months.length - 1]}.` },
       { layout: "statement", title: `HSIA tickets are up ${Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.`, notes: "The one-sentence answer." },
       { layout: "default", title: `${qPrev} to ${qNow} at a glance`, sub: `${qNow} is ${range}, against ${prevRange}; calls, tickets and repairs are quarter totals, rates are quarter averages per 100 subscribers`, clicks: 6 + (cq.now != null && cq.prev != null ? 1 : 0),
         body: (step, C) => <div className="dk-stats" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
@@ -5616,7 +5646,7 @@ export default function ReliabilityScorecards() {
           <div className="hb-eyebrow">HSIA · {Y.period} {Y.y1} vs {Y.y0} · why tickets rose, what drives No Dataflow, and whether the fixes are aimed at it</div>
           <h1>HSIA tickets are up {Y.tickets.pct}% on last year. A quarter of that is a bigger base; the rest is degraded fibre, orders and provisioning, and unstable gateways.</h1>
           <p className="hb-sub">The year-over-year ticket analysis for all TELUS internet (excluding Koodo), read against the dashboard's own quarter: KPIs for {range}, agent and technician notes, the customer survey and the initiative register.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Analysis data to {Y.dataThrough}</span><span>Dashboard data to {HSIA_REVIEW_LATEST}</span><span>Survey to {sv.months[sv.months.length - 1]}</span></div>
         </header>
 
         <section aria-labelledby="hb-short">
@@ -6737,8 +6767,10 @@ export default function ReliabilityScorecards() {
       ? "Friction Free Product Systems program"
       : page === "execsummary"
       ? "Executive summary"
+      : page === "archive"
+      ? "Previously completed reviews and other pages"
       : page === "hsiabrief"
-      ? `Q${Math.floor((MONTHS.indexOf(LATEST) % 12) / 3) + 1} ${LATEST.slice(-4)} and why tickets rose and what is being done`
+      ? `Q${Math.floor((MONTHS.indexOf(HSIA_REVIEW_LATEST) % 12) / 3) + 1} ${HSIA_REVIEW_LATEST.slice(-4)} and why tickets rose and what is being done`
     : page === "hsiatickets"
       ? "HSIA notes analysis"
       : page === "hsiasentiment"
@@ -6787,11 +6819,13 @@ export default function ReliabilityScorecards() {
             const active = page === item.id;
             // Sub-pages stay hidden until their product is expanded (or one of
             // them is open, so the active state is always visible).
-            if (item.child && !navOpen[item.parent] && CHILD_PARENT[page] !== item.parent) return null;
+            if (item.child && !navOpen[item.parent] && CHILD_PARENT[page] !== item.parent && !(item.parent === "archive" && page === "archive")) return null;
             const hasKids = !!CHILD_PAGES[item.id];
-            const kidsOpen = hasKids && (navOpen[item.id] || CHILD_PARENT[page] === item.id);
+            const kidsOpen = hasKids && (navOpen[item.id] || CHILD_PARENT[page] === item.id || (item.id === "archive" && page === "archive"));
             return (
-              <button key={item.id} onClick={() => { setPage(item.id); setDeckSlide(null); setInitFilters(NO_INIT_FILTERS); }}
+              <React.Fragment key={item.id}>
+              {item.divider && <div role="separator" style={{ height: 1, background: T.border, margin: "8px 4px" }} />}
+              <button onClick={() => { setPage(item.id); setDeckSlide(null); setInitFilters(NO_INIT_FILTERS); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
                   background: active ? T.navActiveBg : "transparent", color: active ? T.navActiveText : T.textSecondary,
@@ -6806,6 +6840,7 @@ export default function ReliabilityScorecards() {
                     style={{ marginLeft: "auto", color: T.textMuted, fontSize: 12, padding: "0 4px", transform: kidsOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }}>▾</span>
                 )}
               </button>
+              </React.Fragment>
             );
           })}
         </nav>
@@ -6833,8 +6868,10 @@ export default function ReliabilityScorecards() {
               ? `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`
               : page === "execsummary"
               ? `Executive summary · slide view of the overview for ${latestLabel}: KPIs, top ticket issues, initiative milestones, self-serve`
+              : page === "archive"
+              ? "Archive · completed reviews and other pages; frozen at the month they were written for"
               : page === "hsiabrief"
-              ? "HSIA review · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight"
+              ? "HSIA review (archived) · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight"
               : page === "hsiatickets"
               ? `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
               : page === "hsiasentiment"
@@ -6854,8 +6891,8 @@ export default function ReliabilityScorecards() {
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: calls, tickets, repairs/dispatches, base"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA" : ""}`}</span>
-            <span><b style={{ color: T.textSecondary }}>Reviewing</b> · {latestLabel}</span>
-            <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>
+            <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>
+            {page !== "archive" && CHILD_PARENT[page] !== "archive" && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
           </div>
 
           {/* filters */}
@@ -6879,7 +6916,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            {!PRODUCTS.includes(CHILD_PARENT[page]) && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "archive" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
@@ -6898,6 +6935,7 @@ export default function ReliabilityScorecards() {
             : page === "selfserve" ? SelfServePage()
             : page === "ffps" ? FfpsPage()
             : page === "execsummary" ? <ExecSummaryPage />
+            : page === "archive" ? ArchivePage()
             : page === "hsiabrief" ? HsiaBriefPage()
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
