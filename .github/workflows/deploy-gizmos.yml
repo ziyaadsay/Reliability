@@ -16,6 +16,15 @@ on:
         type: choice
         options: [publish, save]
         default: publish
+      app:
+        description: "Gizmos app to deploy to (use relstrat-dev for a test copy)"
+        type: string
+        default: relstrat
+      hosting:
+        description: "static = the plain dashboard; worker = dashboard served by a worker with the Ask-the-data AI endpoint"
+        type: choice
+        options: [static, worker]
+        default: static
 
 concurrency:
   group: deploy-gizmos
@@ -26,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GIZMOS_URL: https://gizmos.run
-      GIZMOS_APP: relstrat
+      GIZMOS_APP: ${{ inputs.app || 'relstrat' }}
       GIZMOS_ORG: telus
     steps:
       - uses: actions/checkout@v4
@@ -54,9 +63,15 @@ jobs:
       # dist/ inside the checkout yields "No files found". Push from a copy that
       # lives outside the repository instead.
       - name: Stage build output outside the repository
+        env:
+          HOSTING: ${{ inputs.hosting || 'static' }}
         run: |
           rm -rf "$RUNNER_TEMP/deploy"
-          cp -r site/dist "$RUNNER_TEMP/deploy"
+          if [ "$HOSTING" = "worker" ]; then
+            node site/worker/build.mjs site/dist "$RUNNER_TEMP/deploy"
+          else
+            cp -r site/dist "$RUNNER_TEMP/deploy"
+          fi
           echo "DEPLOY_DIR=$RUNNER_TEMP/deploy" >> "$GITHUB_ENV"
 
       - name: Preview upload

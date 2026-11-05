@@ -36,6 +36,20 @@ everyone, update `HEALTH_COMMENTARY` and deploy. "Reset to published" in the
 editor drops a user's local edits. All commentary HTML is sanitised before it
 is saved or shown.
 
+## Ask a question about the data (Health Read)
+
+Each Health Read has a collapsed "Ask a question about the data" box. The page sends the
+question plus a plain-text digest of the dashboard data (`buildAskContext` in `site/App.jsx`:
+13 months of KPIs, ticket categories, notes analysis, the initiative register, the Health Read
+commentary and the TV Review) to `/api/ask`. The answer comes from a Gizmos AI binding
+(`[[gizmos_ai]]`, Fuel iX gateway, model set in `site/worker/build.mjs`), so only a worker can serve
+it. `site/worker/build.mjs` embeds the built `site/dist` in a worker with that endpoint.
+
+The box only appears when `GET /api/ask` answers, so the plain static deployment is unchanged.
+Deploy the worker build with the "Deploy to Gizmos" workflow: set `hosting` to `worker` and `app`
+to `relstrat-dev` for a private test copy, or `relstrat` to go live. Questions are metered per app
+and the platform enforces a weekly spend cap.
+
 ## MCP server
 
 `mcp/` is a Model Context Protocol server that exposes the dashboard's data to

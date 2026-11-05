@@ -1393,6 +1393,136 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 // small arrow, matching the product sub-page arrows in the left menu.
 // variant "button" renders the toggle as a lavender pill (purple label, chevron that
 // turns when open), matching the deacts-report style; the default is the small caps link.
+// ---------------------------------------------------------------------------
+// Ask the data (Health Read). The page sends the question plus a plain-text digest of the dashboard
+// data to /api/ask, which the Gizmos worker answers through its AI binding. The digest is built here
+// so it carries exactly the numbers and hand-written commentary the dashboard shows.
+function buildAskContext(view, month) {
+  const n = MONTHS.length, from = Math.max(0, n - 13);
+  const mon = MONTHS.slice(from);
+  const num = (v) => (v == null ? "n/a" : typeof v === "number" ? (Math.abs(v) >= 100 ? Math.round(v).toLocaleString("en-CA") : String(+v.toFixed(2))) : String(v));
+  const series = (arr) => (arr ? mon.map((m, i) => `${m.slice(0, 3)}${m.slice(-2)} ${num(arr[from + i])}`).join(", ") : null);
+  const flat = (x) => String(x == null ? "" : x).replace(/\s+/g, " ").trim();
+  const out = [];
+  out.push(`DASHBOARD DATA: TELUS Reliability Strategy. Latest reported month ${LATEST}; churn through ${CHURN_THRU}. The user is viewing ${view === "All" ? "the all-products overview" : view} for ${month}.`);
+  out.push("Units: ticket, repair and churn rates are per 100 subscribers (not percentages); changes in those rates are absolute differences. Volumes are counts. YoY compares with the same month a year earlier.");
+  const metricRows = [["Ticket rate per 100 subs", "ticketRate"], ["Ticket volume", "ticketVolume"], ["Repair rate per 100 subs", "repairRate"], ["Repair volume (dispatches)", "repairVolume"], ["Churn rate per 100 subs", "churnRate"], ["Subscriber base", "subBase"], ["B2B reliability score", "b2bVoC"]];
+  for (const sc of ["HSIA", "TV", "SHS", "SH+"]) {
+    out.push(`\n== ${sc} KPIs, last 13 months ==`);
+    for (const [label, key] of metricRows) { const sr = DATA[key] && series(DATA[key][sc]); if (sr) out.push(`${label}: ${sr}`); }
+    const callsKey = sc === "HSIA" ? null : sc;
+    if (callsKey && DATA.callsOffered[callsKey]) out.push(`Calls offered: ${series(DATA.callsOffered[callsKey])}`);
+    if (DATA.annualChurn && DATA.annualChurn[sc]) out.push(`Annual churn per 100 subs: 2026 YTD ${num(DATA.annualChurn[sc].y2026)}, 2025 ${num(DATA.annualChurn[sc].y2025)}`);
+  }
+  out.push("\nCalls offered for the combined fixed-home base (FFH = HSIA plus TV): " + series(DATA.callsOffered.FFH));
+  for (const sc of ["HSIA", "TV", "SHS"]) {
+    const L = LOOKER[sc]; if (!L) continue;
+    out.push(`\n== ${sc} ticket categories (Looker), ${LATEST} vs prior month vs same month last year ==`);
+    out.push(`Monthly total tickets: ${series(L.monthlyTotal)}`);
+    (L.topIssues || []).slice(0, 10).forEach((t) => out.push(`- ${t.issue}: ${num(t.a26)} (prev month ${num(t.prev)}, last year ${num(t.a25)})`));
+    if (L.rising && L.rising.length) out.push("Rising MoM: " + L.rising.slice(0, 5).map((t) => `${t.issue} ${num(t.a26)} (${t.delta > 0 ? "+" : ""}${num(t.delta)})`).join("; "));
+    if (L.falling && L.falling.length) out.push("Falling MoM: " + L.falling.slice(0, 5).map((t) => `${t.issue} ${num(t.a26)} (${num(t.delta)})`).join("; "));
+    if (L.topCat) out.push(`Largest category ${L.topCat.name}: ${series(L.topCat.series)}`);
+  }
+  for (const [lab, A] of [["HSIA", HSA], ["TV", TVA]]) {
+    if (!A || !A.tickets) continue;
+    out.push(`\n== ${lab} agent and technician notes analysis, ${A.months.join(", ")} ==`);
+    (A.tickets.rising || []).slice(0, 6).forEach((r) => out.push(`- rising: ${r.name} ${(r.v || []).map(num).join(" > ")} (${r.pct > 0 ? "+" : ""}${num(r.pct)}%)`));
+    (A.tickets.falling || []).slice(0, 4).forEach((r) => out.push(`- falling: ${r.name} ${(r.v || []).map(num).join(" > ")} (${num(r.pct)}%)`));
+  }
+  out.push("\n== Reliability initiatives (register) ==");
+  for (const it of INITIATIVES) out.push(`- [${it.p}] ${it.name} | ${it.status} | ${it.timeline} | prime ${it.prime} | issues ${(it.issues || []).join("/")} | ${flat(it.desc)}`);
+  for (const sc of ["HSIA", "TV", "SHS", "SH+"]) {
+    const items = HEALTH_COMMENTARY[sc] || [];
+    if (!items.length) continue;
+    out.push(`\n== ${sc} Health Read commentary (${LATEST}) ==`);
+    for (const c of items) {
+      if (typeof c === "string") { out.push("- " + flat(c.replace(/^@/, ""))); continue; }
+      out.push(`- THEME ${c.t} | ${flat(c.share)} | ${flat(c.note)}`);
+      (c.causes || []).forEach((x) => out.push(`  cause: ${flat(x)}`));
+      (c.next || []).forEach((x) => out.push(`  next: ${flat(x)}`));
+    }
+  }
+  if (typeof TV_REVIEW !== "undefined" && TV_REVIEW.causes) {
+    out.push("\n== TV Review: STB No Boot > Stuck on Initializing (as of " + TV_REVIEW.asOf + ") ==");
+    TV_REVIEW.causes.forEach((c) => out.push(`- cause [${c.status}] ${c.name}: ${flat(c.evidence)}`));
+    TV_REVIEW.actions.forEach((a) => out.push(`- action [${a.status}] ${a.name} | ${a.owner} | ${a.when}: ${flat(a.detail)}`));
+  }
+  return out.join("\n");
+}
+
+// Answer panel on the Health Read. Hidden unless the host serves /api/ask (the Gizmos worker build),
+// so the plain static deployment is unaffected.
+let ASK_AVAILABLE = null;
+function AskPanel({ T, sc, month }) {
+  const [avail, setAvail] = useState(ASK_AVAILABLE);
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [thread, setThread] = useState([]);
+  const url = () => new URL("api/ask", window.location.href.split("#")[0]).toString();
+  useEffect(() => {
+    if (ASK_AVAILABLE !== null) return;
+    let live = true;
+    fetch(url(), { headers: { accept: "application/json" } })
+      .then((r) => (r.ok && /json/.test(r.headers.get("content-type") || "") ? r.json() : null))
+      .then((j) => { ASK_AVAILABLE = !!(j && j.ok); if (live) setAvail(ASK_AVAILABLE); })
+      .catch(() => { ASK_AVAILABLE = false; if (live) setAvail(false); });
+    return () => { live = false; };
+  }, []);
+  if (!avail) return null;
+  const label = sc === "All" ? "the portfolio" : sc;
+  const examples = [
+    `Why did the ${label} ticket rate move in ${month}?`,
+    `What are the biggest ticket drivers for ${label}?`,
+    `Which initiatives address them, and what is their status?`,
+    `How does ${month} compare with a year ago?`
+  ];
+  async function ask(text) {
+    const question = (text || q).trim();
+    if (!question || busy) return;
+    setBusy(true); setQ("");
+    const id = Date.now();
+    setThread((t) => [{ id, question, answer: null, error: null }, ...t]);
+    try {
+      const history = thread.filter((x) => x.answer).slice(0, 3).reverse().flatMap((x) => [{ role: "user", content: x.question }, { role: "assistant", content: x.answer }]);
+      const res = await fetch(url(), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, view: sc, month, context: buildAskContext(sc, month), history }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || !j.answer) throw new Error(j.error || `The assistant could not answer (${res.status}).`);
+      setThread((t) => t.map((x) => (x.id === id ? { ...x, answer: j.answer } : x)));
+    } catch (e) {
+      setThread((t) => t.map((x) => (x.id === id ? { ...x, error: e.message || "Something went wrong." } : x)));
+    } finally { setBusy(false); }
+  }
+  const chip = { background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.text, cursor: "pointer", fontFamily: FONT };
+  return (
+    <Disclosure key={`ask|${sc}|${month}`} label="Ask a question about the data" variant="button" T={T} style={{ marginTop: 14 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+        {examples.map((x) => <button key={x} type="button" style={chip} disabled={busy} onClick={() => ask(x)}>{x}</button>)}
+      </div>
+      <form onSubmit={(e) => { e.preventDefault(); ask(); }} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+        <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={500} placeholder={`Ask about ${label}, tickets, repairs, calls, churn or initiatives`}
+          aria-label="Question about the dashboard data"
+          style={{ flex: 1, minWidth: 0, padding: "9px 12px", borderRadius: 8, border: `1px solid ${T.border}`, background: T.surface, color: T.text, fontFamily: FONT, fontSize: 13 }} />
+        <button type="submit" disabled={busy || !q.trim()}
+          style={{ background: T.heading, color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontWeight: 700, fontSize: 13, cursor: busy || !q.trim() ? "default" : "pointer", opacity: busy || !q.trim() ? 0.6 : 1, fontFamily: FONT }}>
+          {busy ? "Thinking" : "Ask"}
+        </button>
+      </form>
+      {thread.map((x) => (
+        <div key={x.id} style={{ marginTop: 12, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: T.heading, marginBottom: 6 }}>{x.question}</div>
+          {x.error ? <div style={{ fontSize: 13, color: T.bad }}>{x.error}</div>
+            : x.answer == null ? <div style={{ fontSize: 13, color: T.textFaint }}>Reading the dashboard data...</div>
+            : <div style={{ fontSize: 13, lineHeight: 1.65, color: T.text, whiteSpace: "pre-wrap" }}>{x.answer}</div>}
+        </div>
+      ))}
+      <p style={{ margin: "10px 0 0", fontSize: 11.5, color: T.textFaint, lineHeight: 1.5 }}>
+        Answers come from the dashboard data as of {LATEST} and the hand-written commentary, summarised by an AI model, so check key figures against the charts. Questions are sent to the TELUS Fuel iX AI gateway.
+      </p>
+    </Disclosure>
+  );
+}
+
 function Disclosure({ label = "Sources & notes", T, children, style, align = "left", defaultOpen = false, variant = "link", count }) {
   const [open, setOpen] = useState(defaultOpen);
   const isBtn = variant === "button";
@@ -2754,6 +2884,7 @@ export default function ReliabilityScorecards() {
             {block("issues", `Top issues — ${LOOKER_SHORT}`, topIssuesText)}
           </div>
         </Disclosure>
+        <AskPanel T={T} sc={sc} month={f.month} />
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
           Month-over-month against {f.prevMonth}; rate movements are per 100 subscribers. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
         </p>
