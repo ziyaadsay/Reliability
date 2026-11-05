@@ -518,54 +518,55 @@ const SWEEPR = {
 
 // ---------------------------------------------------------------------------
 // Friction Free Product Systems (FFPS) program — transcribed from the "Friction Free
-// Product Systems Program Update - August 2026" deck (Google Slides). Dollar values are
+// Product Systems Program Update - September 2026" deck (Google Slides). Dollar values are
 // in dollars unless the field name says K or M; CR benefit run-rates are $K per month.
+// The September deck has no "CRs delivered" slide, so `delivered` is still the August edition.
 // ---------------------------------------------------------------------------
 const FFPS = {
-  asOf: "Aug 2026", period: "Jan – Aug 2026 (YTD)",
-  source: "Friction Free Product Systems Program Update - August 2026 (Google Slides deck)",
+  asOf: "Sep 2026", period: "Jan – Sep 2026 (YTD)",
+  source: "Friction Free Product Systems Program Update - September 2026 (Google Slides deck)",
   burndown: {
     crs: { label: "Change Requests (CRs)", sub: "Open CR volume across the year",
-      points: [{ label: "Start of year (Jan)", v: 20 }, { label: "End of Q2 (Jun)", v: 47, net: 27, opened: 37, closed: 10 }, { label: "End of Aug", v: 42, net: -5, opened: 3, closed: 8 }],
-      ytd: { net: 22, opened: 40, closed: 18 } },
+      points: [{ label: "Start of year (Jan)", v: 20 }, { label: "End of Q2 (Jun)", v: 47, net: 27, opened: 37, closed: 10 }, { label: "End of Q3 (Sep)", v: 41, net: -6, opened: 5, closed: 11 }],
+      ytd: { net: 21, opened: 42, closed: 21, through: "September" } },
     tickets: { label: "Tickets: billing + non-billing (combined)", sub: "Total open ticket volume across the year",
-      points: [{ label: "Start of year (Jan)", v: 292 }, { label: "End of Q2 (Jun)", v: 407, net: 115 }, { label: "End of Aug", v: 418, net: 11 }],
-      ytd: { net: 126, opened: 1144, openedTickets: 876, openedProactive: 268, closed: 391, cancelled: 326 },
+      points: [{ label: "Start of year (Jan)", v: 292 }, { label: "End of Q2 (Jun)", v: 407, net: 115 }, { label: "End of Sep", v: 402, net: -5 }],
+      ytd: { net: 110, opened: 1196, openedTickets: 928, openedProactive: 268, closed: 427, cancelled: 373, through: "August" },
       note: "Billing tracking began in June." }
   },
   benefits: {
-    headline: "Change request, non-billing and billing defect fix benefits are all compounding through Q3: $3.7M recurring benefit at end of Q3 against $4M spent.",
+    headline: "Change request, non-billing and billing defect fix benefits are all compounding through Q3: $3.7M recurring benefit at end of Q3 against $4M spent.", recurring: 3.7,
     sub: "Cumulative benefit tracking by quarter, sourced from monthly reporting data",
     crs: { title: "CRs: benefit by quarter", labels: ["Q1", "Q2", "Q3"],
       churn: [18541, 336664, 1375541], calls: [0, 77499, 272226], sbc: [0, 0, 234163],
       notes: ["Q1: Churn $18,541 (100%), 240 customers saved", "Q2: Churn $336,664 (81%), 4,142 customers saved · Calls $77,499 (19%), 7,000 calls", "Q3: Churn $1,375,541 (73%) · Calls $272,226 (15%), 25,000 calls · SBC $234,163 (12%)"] },
     nonBilling: { title: "Non-billing defects: benefit by quarter", labels: ["Q2", "Q3"], total: [75244, 529560],
       notes: ["Q2 (Apr–Jun): $75,244 cumulative (72% calls, 5,000 / 28% TRs, 108)", "Q3 (Jul–Sep): $529,560 cumulative (65% calls, 25,000 / 35% TRs, 810)"] },
-    billing: { title: "Billing defects: cumulative EBITDA benefit, Jun–Aug", labels: ["Jun", "Jul", "Aug"], ebitda: [330000, 520000, 1000000],
-      drivers: [{ m: "June", calls: 3800, contra: 268000 }, { m: "July", calls: 9700, contra: 400000 }, { m: "August", calls: 19500, contra: 728000 }],
+    billing: { title: "Billing defects: cumulative EBITDA benefit, Jun–Sep", labels: ["Jun", "Jul", "Aug", "Sep"], ebitda: [330000, 520000, 1000000, 1490000],
+      drivers: [{ m: "June", calls: 3800, contra: 268000 }, { m: "July", calls: 9700, contra: 400000 }, { m: "August", calls: 19500, contra: 728000 }, { m: "September", calls: 30760, contra: 1061000 }],
       note: "Calls = call/ticket volume (count). Contra = $ value, not part of the EBITDA total." },
-    totals: [{ v: 1881930, label: "CRs benefit (Q3 cumulative)" }, { v: 529560, label: "Non-billing benefit (Q3 cumulative)" }, { v: 1000000, label: "Billing EBITDA benefit (August)" }]
+    totals: [{ v: 1881930, label: "CRs benefit (Q3 cumulative)" }, { v: 529560, label: "Non-billing benefit (Q3 cumulative)" }, { v: 1490000, label: "Billing EBITDA benefit (September)" }]
   },
-  billingTickets: { period: "June to August", start: { m: "June", v: 107 }, end: { m: "August", v: 206 }, delta: 99, closed: 104, cancelled: 61 },
+  billingTickets: { period: "June to September", start: { m: "June", v: 107 }, end: { m: "September", v: 229 }, delta: 122, closed: 176, cancelled: 105 },
   finance: { // $M unless noted
-    month: "August", monthSpend: 1.08, monthForecast: 1.04, spendToDate: { q1: 0.372, q2: 1.82, q3: 1.75, ytd: 4.0 },
-    h2Forecast: { q3: 2.3, q4: 1.1 }, remaining: 1.6, remainingPct: 28,
-    h1: { spend: 2.19, benefits: 0.46 }, h2: { spend: 3.4, benefits: 3.7 },
-    projects: [ // $K: August spend, spend to date, allocation, remaining
-      { name: "HSIA/wHSIA/Home Phone", aug: 337, toDate: 1600, alloc: 2180, remaining: 590 },
-      { name: "FIFA Defects Squad", aug: 704, toDate: 1700, alloc: 2660, remaining: 975 },
-      { name: "BO Optimization", aug: 36, toDate: 550, alloc: 567, remaining: 14 },
-      { name: "Systems Health - Green", aug: -7, toDate: 65, alloc: 129, remaining: 64 },
-      { name: "TV", aug: 9, toDate: 61, alloc: 69, remaining: 8 }
+    month: "September", monthSpend: 0.37, monthForecast: 0.76, spendToDate: { q1: 0.372, q2: 1.82, q3: 2.1, ytd: 4.3 },
+    h2Forecast: { q3: 2.1, q4: 1.3 }, remaining: 1.3, remainingPct: 22,
+    h1: { spend: 2.19, benefits: 0.46 }, h2: { spend: 3.5, benefits: 3.4 },
+    projects: [ // $K: month spend, spend to date, allocation, remaining
+      { name: "HSIA/wHSIA/Home Phone", m: 214, toDate: 1600, alloc: 2240, remaining: 440 },
+      { name: "FIFA Defects Squad", m: 111, toDate: 1700, alloc: 2600, remaining: 1040 },
+      { name: "BO Optimization", m: 3.5, toDate: 550, alloc: 556, remaining: 0 },
+      { name: "Systems Health - Green", m: 30, toDate: 65, alloc: 129, remaining: 34 },
+      { name: "TV", m: 13, toDate: 61, alloc: 80, remaining: 6 }
     ],
-    projectTotal: { name: "Total", aug: 1080, toDate: 4000, alloc: 5600, remaining: 1600 },
-    quarterly: [ // $K [spend, receipts]; Q3 and Q4 are forecasts; null = TBD
-      { name: "HSIA/wHSIA/Home Phone / TV", q1: [176, 63], q2: [840, 396], q3: [814, 1500], q4: [417, 2200] },
-      { name: "FIFA Defects Squad", q1: [0, 0], q2: [790, null], q3: [1200, null], q4: [670, null] },
-      { name: "BO Optimization", q1: [196, null], q2: [148, null], q3: [220, null], q4: [0, null] },
-      { name: "Systems Health - Green", q1: [0, null], q2: [44, null], q3: [70, null], q4: [15, null] }
+    projectTotal: { name: "Total", m: 371.5, toDate: 4000, alloc: 5600, remaining: 1520 },
+    quarterly: [ // $K [spend, receipts]; Q1 to Q3 actual, Q4 forecast; null = TBD
+      { name: "HSIA/wHSIA/Home Phone / TV", q1: [176, 63], q2: [840, 396], q3: [860, 1500], q4: [445, 1900] },
+      { name: "FIFA Defects Squad", q1: [0, 0], q2: [790, null], q3: [1000, null], q4: [800, null] },
+      { name: "BO Optimization", q1: [196, null], q2: [148, null], q3: [210, null], q4: [0, null] },
+      { name: "Systems Health - Green", q1: [0, 0], q2: [44, null], q3: [51, null], q4: [34, null] }
     ],
-    quarterlyTotal: { name: "Total", q1: [372, 63], q2: [1820, 396], q3: [2300, 1500], q4: [1100, 2200] }
+    quarterlyTotal: { name: "Total", q1: [372, 63], q2: [1820, 396], q3: [2120, 1500], q4: [1300, 1900] }
   },
   delivered: [ // CRs delivered Feb–Aug 2026; add = run-rate added that month, rate = monthly run-rate, cum = cumulative benefit ($K)
     { m: "February", add: null, rate: 18.5, cum: 18.5, crs: [{ id: "ITSS-8027", t: "Customer is left waiting for a DIY assist appointment.", tag: "8% churn" }, { id: "ITSS-7828", t: "Customer address not correct due to no MDU unit numbers.", tag: "Churn" }] },
@@ -577,10 +578,10 @@ const FFPS = {
     { m: "August", add: 4, rate: 321, cum: 1890, crs: [{ id: "ITSS-7981", t: "Customer has price re-rate due to GPON/XGS on move.", tag: "Call avoidance / churn" }] }
   ],
   pipeline: [ // CR delivery timeline Sep–Dec 2026; rate = expected monthly benefit ($K)
-    { m: "September", rate: 36, crs: [{ id: "BAU-5258", t: "Customer cannot complete certain day 2 transactions" }, { id: "ITSS-8433", t: "Customer can order TV when it is not available to them" }, { id: "ITSS-8234", t: "Customer doesn't get DIY assist appointment" }, { id: "BAU-6313", t: "Customer receives incremental NAH when not required" }] },
-    { m: "October", rate: 32, crs: [{ id: "OF-4761", t: "Customer picks wrong TV tier combo, doesn't get what they wanted" }, { id: "CIO-622", name: "Project Flicker: TechHub Integration", t: "Customer experiences a service interruption that we can prevent" }] },
-    { m: "November", rate: 217, crs: [{ id: "ITSS-8277", name: "1G for Boost Lite in NGM units", t: "Customer receives Boost7 when not required; maintain instant NGM customer activations" }, { id: "ITSS-8049", name: "DIY Revamp", t: "Customer gets told they have a new service when they do not" }, { id: "ITSS-8145", name: "EasyPay transfer after TOWN", t: "Customer gets invalid credit" }, { id: "ITSS-6945", name: "Billing fallout: move orders", t: "Customer delays in refund cheque" }, { id: "ITSS-8252", name: "SHS install-credit email quotes", t: "Customer quote is confusing" }] },
-    { m: "December", rate: 475, crs: [{ id: "ITSS-8286", name: "Records reconciliation", t: "Customer has wrong device for install / activation" }, { id: "ITSS-7790", name: "HSIA business rule modernization", t: "Customer gets sent multiples of the same hardware" }, { id: "ITSS-8141", name: "Credit automation", t: "Customer has to call in for Custom Home equipment credit" }, { id: "OF-7580", name: "FIFA F2F quoting tool rounding fix", t: "Customer gets incorrect quote for services" }, { id: "ITSS-8256", t: "Customer has to wait unnecessarily for Custom Home install" }, { id: "ITSS-8111", name: "SHSSAVE coupon discount fix", t: "Customer does not get expected discounts" }] }
+    { m: "September", rate: 36, crs: [{ id: "ITSS-8234", t: "Customer doesn't get DIY assist appointment" }, { id: "ITSS-8433", t: "Customer can order TV when it's not available to them" }, { id: "BAU-6313", t: "Customer receives incremental NAH when not required" }, { id: "ITSS-5682", t: "Update 911 fees to correctly reflect the rates and description" }] },
+    { m: "October", rate: 13, crs: [{ id: "CIO-622", name: "Project Flicker: TechHub Integration", t: "Customer experiences a service interruption that we can prevent" }, { id: "ITSS-8328", t: "Linked to ITSS-5682, for existing customers" }] },
+    { m: "November", rate: 220, crs: [{ id: "ITSS-8049", name: "DIY Revamp", t: "Customer gets told they have a new service when they do not" }, { id: "HDDP (ITSS-8049)", name: "DIY Revamp", t: "Enabling HDDP to pull AMS/GPONe data" }, { id: "ITSS-8252", name: "SHS install-credit email quotes", t: "Customer quote is confusing" }] },
+    { m: "December", rate: 20, crs: [{ id: "ITSS-8256", t: "Customer has to wait unnecessarily for Custom Home install" }, { id: "OF-4761", t: "Customer picks wrong TV tier combo, doesn't get what they wanted" }, { id: "ITSS-8277", name: "1G for Boost Lite in NGM units", t: "Customer receives Boost7 when not required, and maintain instant NGM customer activations" }] }
   ],
   pipelineNote: "Source: CR/Defect Priority List. Target delivery dates reflect current planning and may shift with prioritization and funding."
 };
@@ -3644,7 +3645,7 @@ export default function ReliabilityScorecards() {
             deltas={[dl(crsEnd.net, "vs end of Q2"), dl(F.burndown.crs.ytd.net, "YTD")]} />
           <StatCard T={T} color={col} icon="tickets" label="Open tickets" value={tkEnd.v} sub={`${tkEnd.label} · billing + non-billing`}
             deltas={[dl(tkEnd.net, "vs end of Q2"), dl(F.burndown.tickets.ytd.net, "YTD")]} />
-          <StatCard T={T} color={col} icon="saved" label="Recurring benefit" value={`$${FIN.h2.benefits.toFixed(1)}M`} sub="End of Q3 · against $4M spent"
+          <StatCard T={T} color={col} icon="saved" label="Recurring benefit" value={`$${B.recurring.toFixed(1)}M`} sub="End of Q3 · against $4M spent"
             deltas={[<span key="b" style={{ color: T.textSecondary }}>{moneyM(totalBenefit)} across CRs, non-billing and billing</span>]} />
           <StatCard T={T} color={col} icon="program" label="CR run-rate benefit" value={`$${lastDelivered.rate}K/mo`} sub={`${lastDelivered.m} · ${F.delivered.reduce((a, m) => a + m.crs.length, 0)} CRs delivered since Feb`}
             deltas={[<span key="c" style={{ color: T.textSecondary }}>{`$${(lastDelivered.cum / 1000).toFixed(2)}M cumulative`}</span>]} />
@@ -3660,7 +3661,7 @@ export default function ReliabilityScorecards() {
             {card(<>
               {cardTitle(F.burndown.crs.label, F.burndown.crs.sub)}
               {flow(F.burndown.crs.points, { showOpenClosed: true })}
-              {sectionLabel(`Activity, year to date (through August) · net change ${signed(F.burndown.crs.ytd.net)}`)}
+              {sectionLabel(`Activity, year to date (through ${F.burndown.crs.ytd.through}) · net change ${signed(F.burndown.crs.ytd.net)}`)}
               <div style={{ display: "flex", gap: 10 }}>
                 {tile(F.burndown.crs.ytd.opened, "New CRs", null, AMBER)}
                 {tile(F.burndown.crs.ytd.closed, "Closed", null, T.good)}
@@ -3670,7 +3671,7 @@ export default function ReliabilityScorecards() {
               {cardTitle(F.burndown.tickets.label, F.burndown.tickets.sub)}
               {flow(F.burndown.tickets.points)}
               <div style={{ textAlign: "center", marginTop: 12, fontSize: 12.5, fontWeight: 700, color: T.bad }}>Net change vs start of year: {signed(F.burndown.tickets.ytd.net)}</div>
-              {sectionLabel("Activity, year to date (through August)")}
+              {sectionLabel(`Activity, year to date (through ${F.burndown.tickets.ytd.through})`)}
               <div style={{ display: "flex", gap: 10 }}>
                 {tile(F.burndown.tickets.ytd.opened.toLocaleString(), "New (total)", `${F.burndown.tickets.ytd.openedTickets} tickets · ${F.burndown.tickets.ytd.openedProactive} proactive`)}
                 {tile(F.burndown.tickets.ytd.closed, "Closed")}
@@ -3728,7 +3729,7 @@ export default function ReliabilityScorecards() {
               {tile(F.billingTickets.start.v, F.billingTickets.start.m.toUpperCase(), "total billing tickets")}
               <div style={{ alignSelf: "center", color: T.textFaint, fontSize: 20 }}>→</div>
               {tile(F.billingTickets.end.v, F.billingTickets.end.m.toUpperCase(), "total billing tickets")}
-              {tile(signed(F.billingTickets.delta), "Change", "Jun → Aug", T.bad)}
+              {tile(signed(F.billingTickets.delta), "Change", `${F.billingTickets.start.m.slice(0, 3)} → ${F.billingTickets.end.m.slice(0, 3)}`, T.bad)}
               {tile(F.billingTickets.closed, "Closed to date", null, T.good)}
               {tile(F.billingTickets.cancelled, "Cancelled to date")}
             </div>
@@ -3773,7 +3774,7 @@ export default function ReliabilityScorecards() {
                     return (
                       <tr key={p.name} style={total ? { background: T.panel } : undefined}>
                         <td style={{ ...td, color: total ? T.heading : T.textSecondary, fontWeight: total ? 700 : 600 }}>{p.name}</td>
-                        <td style={{ ...s, color: p.aug < 0 ? T.good : s.color }}>{p.aug < 0 ? "−" : ""}{kFmt(Math.abs(p.aug))}</td>
+                        <td style={{ ...s, color: p.m < 0 ? T.good : s.color }}>{p.m < 0 ? "−" : ""}{kFmt(Math.abs(p.m))}</td>
                         <td style={s}>{kFmt(p.toDate)}</td><td style={s}>{kFmt(p.alloc)}</td><td style={s}>{kFmt(p.remaining)}</td>
                       </tr>
                     );
@@ -3788,7 +3789,7 @@ export default function ReliabilityScorecards() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr>
                   <th style={{ ...th, textAlign: "left" }}>Project</th>
-                  {["Q1", "Q2", "Q3 forecast", "Q4 forecast"].flatMap((q) => [<th key={q + "s"} style={{ ...th, textAlign: "right" }}>{q} spend</th>, <th key={q + "r"} style={{ ...th, textAlign: "right" }}>{q} receipts</th>])}
+                  {["Q1", "Q2", "Q3", "Q4 forecast"].flatMap((q) => [<th key={q + "s"} style={{ ...th, textAlign: "right" }}>{q} spend</th>, <th key={q + "r"} style={{ ...th, textAlign: "right" }}>{q} receipts</th>])}
                 </tr></thead>
                 <tbody>
                   {[...FIN.quarterly, FIN.quarterlyTotal].map((p, i) => {
