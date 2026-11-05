@@ -1,0 +1,39 @@
+# Deletes a Gizmos test copy (an app whose name ends in -dev, such as relstrat-dev). Run it from
+# the Actions tab. Refuses any other name, so the live relstrat and relstrat-mcp apps are safe.
+# Gizmos keeps a deleted app for 7 days, so it can be restored from the hub in that window.
+name: Remove Gizmos test app
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Test app to delete (must end in -dev)"
+        type: string
+        default: relstrat-dev
+
+jobs:
+  remove:
+    runs-on: ubuntu-latest
+    env:
+      GIZMOS_URL: https://gizmos.run
+      GIZMOS_ORG: telus
+      APP: ${{ inputs.app }}
+    steps:
+      - name: Check the name
+        run: |
+          case "$APP" in
+            relstrat|relstrat-mcp) echo "Refusing to delete $APP"; exit 1 ;;
+            *-dev) ;;
+            *) echo "Only apps whose name ends in -dev can be removed here"; exit 1 ;;
+          esac
+          [[ "$APP" =~ ^[a-zA-Z0-9_-]{1,64}$ ]] || { echo "Bad app name"; exit 1; }
+
+      - name: Delete the app
+        env:
+          GIZMOS_API_KEY: ${{ secrets.GIZMOS_API_KEY }}
+        run: |
+          code=$(curl -sS -o resp.txt -w "%{http_code}" -X DELETE \
+            -H "authorization: Bearer $GIZMOS_API_KEY" -H "x-gizmos-org-slug: $GIZMOS_ORG" \
+            "$GIZMOS_URL/api/apps/$APP")
+          echo "HTTP $code"; head -c 600 resp.txt; echo
+          case "$code" in 200|202|204) echo "Deleted $APP" ;; *) exit 1 ;; esac
