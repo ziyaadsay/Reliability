@@ -1893,14 +1893,15 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross"], archive: ["hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiabrief: "HSIA Review",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
 const PARENT_LABEL = { home: "Overview", archive: "Archive" };
+const ARCHITECTURE_URL = "https://claude.ai/artifact/A1ZcUPDQ119QdFpa36edPX?sk=w28b8ZTHHIB5SiZM_L_SDA";
 // Previously completed reviews and miscellaneous pages. Frozen: not refreshed with each month's update.
 const ARCHIVE_ITEMS = [
   { id: "hsiabrief", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." }
@@ -2220,7 +2221,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2302,6 +2303,7 @@ export default function ReliabilityScorecards() {
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
@@ -5331,6 +5333,41 @@ export default function ReliabilityScorecards() {
 `;
   }
 
+  // HSIA Architecture: a hand-written Claude artifact, linked rather than copied so edits to it show up here.
+  function ArchitecturePage() {
+    const col = colors.HSIA;
+    const layers = [
+      ["Channels", "Customer self-serve, call center tools and technician tools on one journey."],
+      ["Orchestration", "Jarvis as the central troubleshooting AI, with dispatch guardrails and auto truck roll."],
+      ["Context", "A unified customer and device view built from billing, network and provisioning sources."],
+      ["Telemetry and action", "Line telemetry, CPE and firmware management, and in-home diagnostics."],
+      ["Closed loop", "Outage clustering, chronic degradation detection and root-cause trends back to engineering."]
+    ];
+    return (
+      <div style={{ marginTop: 18 }}>
+        <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 16px", maxWidth: 760 }}>
+          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each layer is tagged as in use today, in trial or development, or speculative. Sources: the tools ecosystem deck, the service blueprint and stakeholder meetings, Aug to Nov 2026.
+        </p>
+        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 18px", maxWidth: 760 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>Layers</div>
+          <div style={{ display: "grid", gridTemplateColumns: "max-content 1fr", gap: "8px 16px", margin: "10px 0 16px", fontSize: 13, lineHeight: 1.5 }}>
+            {layers.map(([n, d]) => (
+              <React.Fragment key={n}>
+                <b style={{ color: col }}>{n}</b>
+                <span style={{ color: T.textSecondary }}>{d}</span>
+              </React.Fragment>
+            ))}
+          </div>
+          <a href={ARCHITECTURE_URL} target="_blank" rel="noopener noreferrer"
+            style={{ display: "inline-block", background: col, color: "#fff", borderRadius: 6, padding: "8px 16px", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: FONT }}>
+            Open the full architecture page →
+          </a>
+          <div style={{ fontSize: 11.5, color: T.textFaint, marginTop: 8 }}>Opens in a new tab. The page is shared with specific people, so you may need to sign in to Claude.</div>
+        </div>
+      </div>
+    );
+  }
+
   function ArchivePage() {
     return (
       <div style={{ marginTop: 18 }}>
@@ -6777,6 +6814,8 @@ export default function ReliabilityScorecards() {
       ? "HSIA customer sentiment analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
+      : page === "hsiaarch"
+      ? "HSIA reliability architecture"
       : page === "tvplatforms"
         ? "TV by platform"
         : page === "tvtickets"
@@ -6876,6 +6915,8 @@ export default function ReliabilityScorecards() {
               ? `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
               : page === "hsiasentiment"
               ? "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment"
+              : page === "hsiaarch"
+              ? "HSIA reliability Northstar · layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "tvplatforms"
@@ -6940,6 +6981,7 @@ export default function ReliabilityScorecards() {
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
+            : page === "hsiaarch" ? ArchitecturePage()
             : page === "tvplatforms" ? TvPlatformsPage()
             : page === "tvtickets" ? TvTicketAnalysisPage()
             : page === "tvsentiment" ? TvSentimentPage()
