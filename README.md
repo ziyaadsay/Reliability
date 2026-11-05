@@ -46,8 +46,8 @@ commentary and the TV Review) to `/api/ask`. The answer comes from a Gizmos AI b
 it. `site/worker/build.mjs` embeds the built `site/dist` in a worker with that endpoint.
 
 The box only appears when `GET /api/ask` answers, so the plain static deployment is unchanged.
-Deploy the worker build with the "Deploy to Gizmos" workflow: set `hosting` to `worker` and `app`
-to `relstrat-dev` for a private test copy, or `relstrat` to go live. Questions are metered per app
+The "Deploy to Gizmos" workflow deploys the worker build by default (`hosting=worker`); use
+`app=relstrat-dev` for a private test copy. `hosting=static` deploys the plain dashboard without Ask. Questions are metered per app
 and the platform enforces a weekly spend cap.
 
 ## MCP server

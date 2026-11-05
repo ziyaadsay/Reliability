@@ -21,10 +21,10 @@ on:
         type: string
         default: relstrat
       hosting:
-        description: "static = the plain dashboard; worker = dashboard served by a worker with the Ask-the-data AI endpoint"
+        description: "worker = dashboard served by a worker with the Ask-the-data AI endpoint (live default); static = plain dashboard without Ask"
         type: choice
-        options: [static, worker]
-        default: static
+        options: [worker, static]
+        default: worker
 
 concurrency:
   group: deploy-gizmos
@@ -64,7 +64,7 @@ jobs:
       # lives outside the repository instead.
       - name: Stage build output outside the repository
         env:
-          HOSTING: ${{ inputs.hosting || 'static' }}
+          HOSTING: ${{ inputs.hosting || 'worker' }}
         run: |
           rm -rf "$RUNNER_TEMP/deploy"
           if [ "$HOSTING" = "worker" ]; then

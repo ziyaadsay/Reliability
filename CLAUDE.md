@@ -16,6 +16,9 @@ dashboard (`site/`) or MCP server (`mcp/`):
      mode (`gizmos push --mcp --auth-mode user_auth`) and verifies
      `/.well-known/oauth-protected-resource`. Never push `relstrat-mcp` without
      `--auth-mode user_auth`: it resets the app to Dev Keys mode and the connector loads no tools.
+   The dashboard is served by a worker (`site/worker/build.mjs`) so the Health Read "Ask a question
+   about the data" box can call the Gizmos AI binding. `hosting` defaults to `worker`: never deploy
+   `relstrat` with `hosting=static`, it drops the Ask box. Use `app=relstrat-dev` for test copies.
 2. Wait for both runs to finish and confirm they succeeded before reporting the update as live.
 
 Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a deploy.
