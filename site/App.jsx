@@ -2735,7 +2735,7 @@ export default function ReliabilityScorecards() {
         </div>
 
         {sc !== "All" && (
-          <Disclosure label="Commentary" variant="button" T={T} defaultOpen style={{ marginTop: 22 }}>
+          <Disclosure key={`commentary|${sc}|${f.month}`} label="Commentary" variant="button" T={T} style={{ marginTop: 22 }}>
             {commentary}
           </Disclosure>
         )}
