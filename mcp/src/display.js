@@ -109,7 +109,7 @@ const SENTIMENT_GROUPS = { HSIA: { 1: "Perceived reliability", 2: "What drives a
 const CROSS_GROUPS = { 1: "Signal alignment matrix", 2: "Consolidated rising and falling drivers", 3: "Prioritised recommendations" };
 const PLATFORM_GROUPS = { 1: "Subscriber base", 2: "Tickets", 3: "Repairs / Dispatches", 4: "Repair swaps", 5: "Mixed usage" };
 const SELFSERVE_GROUPS = { 1: "Resolved sessions vs target", 2: "Resolution rates", 3: "Customer experience", 4: "Churn impact" };
-const FFPS_GROUPS = { 1: "Burndown", 2: "Benefits", 3: "Billing tickets", 4: "CRs delivered (Feb – Aug 2026)", 5: "CR delivery timeline (Sep – Dec 2026)", 6: "Finance" };
+const FFPS_GROUPS = { 1: "Burndown", 2: "Benefits", 3: "Billing tickets", 4: "CR delivery timeline (Sep – Dec 2026)", 5: "Finance" };
 const HOME_GROUPS = (month) => [
   { id: "g01", title: "01 · All products at a glance", open: true, test: (id) => ["cards", "top-issues", "how-to-read"].includes(id) },
   { id: "g02", title: `02 · Health Read — ${month}`, open: true, test: (id) => id.startsWith("s02-") },
@@ -141,7 +141,7 @@ function groupDefs(page, product, sections, asOfMonth) {
     case "sentiment": return byNumber(SENTIMENT_GROUPS[product], () => false);
     case "cross": return byNumber(CROSS_GROUPS, () => false);
     case "selfserve": return byNumber(SELFSERVE_GROUPS, (n) => n <= 1);
-    case "ffps": return byNumber(FFPS_GROUPS, (n) => ![3, 6].includes(n));
+    case "ffps": return byNumber(FFPS_GROUPS, (n) => ![3, 5].includes(n));
     case "review": {
       const first = (re) => (sections.find((s) => re.test(s.id)) || {}).title;
       // TV review: six numbered sections, each titled by its first section; the HSIA review keeps its explicit titles.
@@ -174,7 +174,7 @@ const NOTE_OVERRIDES = {
   "s05-fibre-spotlight": [{ when: /not filtered by/, note: "Share of HSIA repairs coded as severely degraded fibre line. Currently the single largest identified driver of HSIA repairs." }],
   "s06-timeline": [{ when: /undated/, note: "Initiatives by pillar on a monthly timeline; initiatives without a firm date are listed separately. Latest reported month is Sep 2026." }],
   "s09-timeline": [{ when: /undated/, note: "Initiatives by pillar on a monthly timeline; initiatives without a firm date are listed separately. Latest reported month is Sep 2026." }],
-  "s06-quarterly": [{ when: /null = TBD/, note: "Receipts marked TBD are not yet reported in the source." }],
+  "s05-quarterly": [{ when: /null = TBD/, note: "Receipts marked TBD are not yet reported in the source." }],
   "slide2-HSIA-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }],
   "slide2-TV-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }],
   "slide2-SHS-trend": [{ when: /Sparkline/, note: "Monthly tickets for the top ticket category, Jan 2025 – Oct 2026 (Looker runs a month ahead of the KPIs)." }]

@@ -3620,18 +3620,6 @@ export default function ReliabilityScorecards() {
         ))}
       </div>
     );
-    const deliveredFooter = (mo, i) => (
-      <div style={{ marginTop: 12, textAlign: "center" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: T.good, lineHeight: 1.4 }}>
-          {mo.add != null && <div>{signed(mo.add, (x) => `$${x}K`)}</div>}
-          <div>{`$${mo.rate}K/mo`}</div>
-        </div>
-        <div style={{ marginTop: 8, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "8px 6px", fontSize: i === F.delivered.length - 1 ? 18 : 15, fontWeight: 700, color: T.heading }}>
-          {mo.cum >= 1000 ? `$${(mo.cum / 1000).toFixed(2)}M` : `$${mo.cum}K`}
-        </div>
-        {i === F.delivered.length - 1 && <div style={{ fontSize: 11, color: T.textFaint, marginTop: 4 }}>Cumulative total</div>}
-      </div>
-    );
     const lastDelivered = F.delivered[F.delivered.length - 1];
     const crsEnd = F.burndown.crs.points[2], crsMid = F.burndown.crs.points[1], crsStart = F.burndown.crs.points[0];
     const tkEnd = F.burndown.tickets.points[2], tkMid = F.burndown.tickets.points[1], tkStart = F.burndown.tickets.points[0];
@@ -3736,12 +3724,7 @@ export default function ReliabilityScorecards() {
           </>)}
         </Section>
 
-        <Section key="ffps-04" num="04" eyebrow="Friction Free Program" title="CRs delivered (Feb – Aug 2026)" icon="initiatives" T={T} collapsible>
-          {timeline(F.delivered, { footer: deliveredFooter })}
-          <p style={{ fontSize: 11.5, color: T.textFaint, margin: "12px 0 0", lineHeight: 1.5 }}>Run-rate figures are the monthly benefit added by that month's CRs and the resulting monthly run-rate; the boxed figure is the cumulative benefit to date.</p>
-        </Section>
-
-        <Section key="ffps-05" num="05" eyebrow="Friction Free Program" title="CR delivery timeline (Sep – Dec 2026)" icon="initiatives" T={T} collapsible>
+        <Section key="ffps-04" num="04" eyebrow="Friction Free Program" title="CR delivery timeline (Sep – Dec 2026)" icon="initiatives" T={T} collapsible>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${F.pipeline.length}, minmax(150px, 1fr))`, gap: 12, marginBottom: 14, overflowX: "auto" }}>
             {F.pipeline.map((mo, i) => (
               <div key={i} style={{ textAlign: "center", background: T.band, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 10px", fontSize: 15, fontWeight: 600, color: T.heading }}>~${mo.rate}K/month</div>
@@ -3751,7 +3734,7 @@ export default function ReliabilityScorecards() {
           <p style={{ fontSize: 11.5, color: T.textFaint, fontStyle: "italic", margin: "12px 0 0", lineHeight: 1.5 }}>{F.pipelineNote}</p>
         </Section>
 
-        <Section key="ffps-06" num="06" eyebrow="Friction Free Program" title="Finance" icon="churn" T={T} collapsible defaultOpen={false}>
+        <Section key="ffps-05" num="05" eyebrow="Friction Free Program" title="Finance" icon="churn" T={T} collapsible defaultOpen={false}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 12 }}>
             {tile(`$${FIN.monthSpend.toFixed(2)}M`, `${FIN.month} spend`, `vs forecast $${FIN.monthForecast.toFixed(2)}M`)}
             {tile(`$${FIN.spendToDate.ytd.toFixed(1)}M`, "Spend to date", `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M`)}
