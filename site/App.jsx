@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import ARCH_HTML from "./architecture.html?raw";
+import { ARCH_DECK } from "./arch-deck.js";
 
 /*
   FFH Reliability Scorecards — HSIA / TV / SHS
@@ -1395,6 +1397,139 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 // variant "button" renders the toggle as a lavender pill (purple label, chevron that
 // turns when open), matching the deacts-report style; the default is the small caps link.
 // ---------------------------------------------------------------------------
+// HSIA Architecture. The artifact is plain HTML and CSS (no scripts), so it is shown in a sandboxed
+// iframe built from site/architecture.html. The slide is 1280px wide, so it is scaled to the space
+// available, and "Full screen" opens it larger. The page follows the dashboard's light and dark mode.
+const ARCH_W = 1312, ARCH_H = 776;
+function ArchEmbed({ isDark, maxScale = 1 }) {
+  const ref = useRef(null);
+  const [w, setW] = useState(960);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const measure = () => setW(el.clientWidth || 960);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure); ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const sc = Math.min(maxScale, Math.max(0.3, w / ARCH_W));
+  const doc = ARCH_HTML.replace("<html>", `<html data-theme="${isDark ? "dark" : "light"}">`);
+  return (
+    <div ref={ref} style={{ width: "100%", height: Math.round(ARCH_H * sc), overflow: "hidden" }}>
+      <iframe title="HSIA Reliability Northstar: layered architecture" srcDoc={doc} sandbox=""
+        style={{ width: ARCH_W, height: ARCH_H, border: 0, transform: `scale(${sc})`, transformOrigin: "0 0", display: "block" }} />
+    </div>
+  );
+}
+function ArchView({ T, isDark, col }) {
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e) => { if (e.key === "Escape") setFull(false); };
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+  const btn = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
+  return (
+    <>
+      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: 14 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+          <button type="button" style={btn} onClick={() => setFull(true)}>Full screen</button>
+        </div>
+        <ArchEmbed isDark={isDark} />
+      </div>
+      <p style={{ fontSize: 11.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.5 }}>
+        Snapshot of the architecture artifact as of 5 Nov 2026. Sources named on the slide: the HSIA Reliability Tools Ecosystem deck, the service blueprint and stakeholder meetings, Aug to Nov 2026.
+      </p>
+      {full && (
+        <div role="dialog" aria-label="HSIA architecture, full screen" onClick={() => setFull(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 60, overflow: "auto", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 1400, margin: "0 auto", background: T.surface, borderRadius: 12, padding: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>HSIA Reliability Northstar: Layered Architecture</div>
+              <button type="button" style={btn} onClick={() => setFull(false)} aria-label="Close">Close</button>
+            </div>
+            <ArchEmbed isDark={isDark} maxScale={1.1} />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// Supporting deck: slides 5 to 18 as one view, shown all at once or one at a time.
+function ArchDeckView({ T, col, onBack }) {
+  const SL = ARCH_DECK.slides;
+  const [mode, setMode] = useState("all"); // "all" | "one"
+  const [idx, setIdx] = useState(0);
+  const seg = (on) => ({ background: on ? T.heading : T.surface, color: on ? "#fff" : T.heading, border: `1px solid ${on ? T.heading : T.borderStrong}`, padding: "6px 16px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT });
+  const nav = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
+  const list = (items, color) => (
+    <ul style={{ margin: "10px 0 0", paddingLeft: 18, fontSize: 13, lineHeight: 1.55, color: T.text }}>
+      {items.map((t, i) => <li key={i} style={{ marginBottom: 6 }}><span style={{ color: T.text }}>{t}</span></li>)}
+    </ul>
+  );
+  const card = (s, k) => (
+    <section key={s.n} aria-label={`Slide ${s.n}: ${s.title}`} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 20px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: T.textMuted, textTransform: "uppercase" }}>Slide {s.n}</span>
+        <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: T.heading }}>{s.title}</h2>
+      </div>
+      <div style={{ fontSize: 12.5, fontStyle: "italic", color: T.textMuted, margin: "4px 0 14px" }}>{s.sub}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
+        <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 700, color: T.heading }}><span style={{ width: 10, height: 10, borderRadius: "50%", background: T.heading, display: "inline-block" }} />Pain points</div>
+          {list(s.pain)}
+        </div>
+        <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 700, color: T.good }}><span style={{ width: 10, height: 10, borderRadius: "50%", background: T.good, display: "inline-block" }} />Northstar goals</div>
+          {list(s.goals)}
+        </div>
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: T.heading, margin: "16px 0 10px" }}>{s.journeyTitle}</div>
+      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(${s.steps.length > 5 ? 140 : 160}px, 1fr))`, gap: 12 }}>
+        {s.steps.map((t, i) => (
+          <li key={i} style={{ textAlign: "center", fontSize: 12.3, lineHeight: 1.45, color: T.textSecondary }}>
+            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, borderRadius: "50%", background: T.heading, color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{i + 1}</span>
+            <div>{t}</div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+  const cur = SL[idx];
+  return (
+    <div onKeyDown={(e) => { if (mode !== "one") return; if (e.key === "ArrowRight") setIdx((i) => Math.min(SL.length - 1, i + 1)); if (e.key === "ArrowLeft") setIdx((i) => Math.max(0, i - 1)); }} tabIndex={-1} style={{ outline: "none" }}>
+      <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 12px", maxWidth: 820 }}>
+        The use cases behind the architecture: {SL.length} slides (5 to 18) from the {ARCH_DECK.title} deck, each with the pain points, the Northstar goals and the journey it enables. Slides 1 to 4 and 19 are not shown.
+      </p>
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
+        <div role="group" aria-label="View" style={{ display: "inline-flex" }}>
+          <button type="button" aria-pressed={mode === "all"} style={{ ...seg(mode === "all"), borderRadius: "8px 0 0 8px" }} onClick={() => setMode("all")}>All slides</button>
+          <button type="button" aria-pressed={mode === "one"} style={{ ...seg(mode === "one"), borderRadius: "0 8px 8px 0", borderLeft: "none" }} onClick={() => setMode("one")}>One at a time</button>
+        </div>
+        {mode === "one" && (
+          <>
+            <button type="button" style={{ ...nav, opacity: idx === 0 ? 0.5 : 1 }} disabled={idx === 0} onClick={() => setIdx(idx - 1)} aria-label="Previous slide">← Previous</button>
+            <select value={idx} onChange={(e) => setIdx(+e.target.value)} aria-label="Slide" style={{ ...nav, fontWeight: 600 }}>
+              {SL.map((s, i) => <option key={s.n} value={i}>{s.n}. {s.title}</option>)}
+            </select>
+            <button type="button" style={{ ...nav, opacity: idx === SL.length - 1 ? 0.5 : 1 }} disabled={idx === SL.length - 1} onClick={() => setIdx(idx + 1)} aria-label="Next slide">Next →</button>
+            <span style={{ fontSize: 12, color: T.textFaint }}>{idx + 1} of {SL.length}</span>
+          </>
+        )}
+        <button type="button" onClick={onBack} style={{ ...nav, marginLeft: "auto" }}>← Architecture</button>
+      </div>
+      {mode === "all"
+        ? <div style={{ display: "grid", gap: 16 }}>{SL.map(card)}</div>
+        : card(cur)}
+      <p style={{ fontSize: 11.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.5 }}>
+        Rebuilt from the text of the slides ({ARCH_DECK.title}, Google Slides; <a href={ARCH_DECK.url} target="_blank" rel="noopener noreferrer" style={{ color: T.heading }}>open the deck</a>), snapshot of 5 Nov 2026.
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Ask the data (Health Read). The page sends the question plus a plain-text digest of the dashboard
 // data to /api/ask, which the Gizmos worker answers through its AI binding. The digest is built here
 // so it carries exactly the numbers and hand-written commentary the dashboard shows.
@@ -2024,14 +2159,14 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiabrief: "HSIA Review",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
-const PARENT_LABEL = { home: "Overview", archive: "Archive" };
+const PARENT_LABEL = { home: "Overview", archive: "Archive", hsiaarch: "HSIA · Architecture" };
 const ARCHITECTURE_URL = "https://claude.ai/artifact/A1ZcUPDQ119QdFpa36edPX?sk=w28b8ZTHHIB5SiZM_L_SDA";
 // Previously completed reviews and miscellaneous pages. Frozen: not refreshed with each month's update.
 const ARCHIVE_ITEMS = [
@@ -2352,7 +2487,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2435,6 +2570,7 @@ export default function ReliabilityScorecards() {
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiaarchdeck", label: "Supporting deck", icon: "slides", color: colors.HSIA, child: true, grand: true, parent: "hsiaarch" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
@@ -5448,37 +5584,30 @@ export default function ReliabilityScorecards() {
 `;
   }
 
-  // HSIA Architecture: a hand-written Claude artifact, linked rather than copied so edits to it show up here.
+  // HSIA Architecture: the Northstar layered-architecture page, embedded in full (a snapshot of the
+  // Claude artifact, kept in site/architecture.html), with the supporting deck one click away.
   function ArchitecturePage() {
     const col = colors.HSIA;
-    const layers = [
-      ["Channels", "Customer self-serve, call center tools and technician tools on one journey."],
-      ["Orchestration", "Jarvis as the central troubleshooting AI, with dispatch guardrails and auto truck roll."],
-      ["Context", "A unified customer and device view built from billing, network and provisioning sources."],
-      ["Telemetry and action", "Line telemetry, CPE and firmware management, and in-home diagnostics."],
-      ["Closed loop", "Outage clustering, chronic degradation detection and root-cause trends back to engineering."]
-    ];
+    const link = { color: T.heading, fontWeight: 700, fontSize: 12.5, textDecoration: "underline", background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: FONT };
     return (
       <div style={{ marginTop: 18 }}>
-        <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 16px", maxWidth: 760 }}>
-          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each layer is tagged as in use today, in trial or development, or speculative. Sources: the tools ecosystem deck, the service blueprint and stakeholder meetings, Aug to Nov 2026.
+        <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 12px", maxWidth: 820 }}>
+          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each chip is tagged as in use today, in trial or development, or speculative; hover or focus a chip for detail.
         </p>
-        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 18px", maxWidth: 760 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>Layers</div>
-          <div style={{ display: "grid", gridTemplateColumns: "max-content 1fr", gap: "8px 16px", margin: "10px 0 16px", fontSize: 13, lineHeight: 1.5 }}>
-            {layers.map(([n, d]) => (
-              <React.Fragment key={n}>
-                <b style={{ color: col }}>{n}</b>
-                <span style={{ color: T.textSecondary }}>{d}</span>
-              </React.Fragment>
-            ))}
-          </div>
-          <a href={ARCHITECTURE_URL} target="_blank" rel="noopener noreferrer"
-            style={{ display: "inline-block", background: col, color: "#fff", borderRadius: 6, padding: "8px 16px", fontSize: 13, fontWeight: 700, textDecoration: "none", fontFamily: FONT }}>
-            Open the full architecture page →
-          </a>
-          <div style={{ fontSize: 11.5, color: T.textFaint, marginTop: 8 }}>Opens in a new tab. The page is shared with specific people, so you may need to sign in to Claude.</div>
+        <div style={{ display: "flex", gap: 18, flexWrap: "wrap", margin: "0 0 14px" }}>
+          <button type="button" style={link} onClick={() => { setPage("hsiaarchdeck"); setDeckSlide(null); }}>Supporting deck: the use cases behind it →</button>
+          <a href={ARCHITECTURE_URL} target="_blank" rel="noopener noreferrer" style={link}>Open the original artifact (needs access) →</a>
         </div>
+        <ArchView T={T} isDark={isDark} col={col} />
+      </div>
+    );
+  }
+
+  // HSIA Architecture › Supporting deck: slides 5 to 18 of the Tools Ecosystem deck as one view.
+  function ArchitectureDeckPage() {
+    return (
+      <div style={{ marginTop: 18 }}>
+        <ArchDeckView T={T} col={colors.HSIA} onBack={() => { setPage("hsiaarch"); setDeckSlide(null); }} />
       </div>
     );
   }
@@ -6911,6 +7040,7 @@ export default function ReliabilityScorecards() {
     );
   }
 
+  const ARCH_PAGE = page === "hsiaarch" || page === "hsiaarchdeck"; // static pages: no month context
   const pageTitle = page === "home"
     ? "Reliability monthly performance scorecard"
     : page === "selfserve"
@@ -6931,6 +7061,8 @@ export default function ReliabilityScorecards() {
       ? "HSIA cross analysis"
       : page === "hsiaarch"
       ? "HSIA reliability architecture"
+      : page === "hsiaarchdeck"
+      ? "HSIA architecture: supporting use cases"
       : page === "tvplatforms"
         ? "TV by platform"
         : page === "tvtickets"
@@ -6973,7 +7105,13 @@ export default function ReliabilityScorecards() {
             const active = page === item.id;
             // Sub-pages stay hidden until their product is expanded (or one of
             // them is open, so the active state is always visible).
-            if (item.child && !navOpen[item.parent] && CHILD_PARENT[page] !== item.parent && !(item.parent === "archive" && page === "archive")) return null;
+            if (item.child) {
+              const gp = CHILD_PARENT[item.parent]; // grandparent (HSIA) for the third-level item
+              const show = item.grand
+                ? (navOpen[item.parent] || CHILD_PARENT[page] === item.parent || page === item.parent) && (navOpen[gp] || CHILD_PARENT[page] === gp || CHILD_PARENT[CHILD_PARENT[page]] === gp)
+                : navOpen[item.parent] || CHILD_PARENT[page] === item.parent || CHILD_PARENT[CHILD_PARENT[page]] === item.parent || (item.parent === "archive" && page === "archive");
+              if (!show) return null;
+            }
             const hasKids = !!CHILD_PAGES[item.id];
             const kidsOpen = hasKids && (navOpen[item.id] || CHILD_PARENT[page] === item.id || (item.id === "archive" && page === "archive"));
             return (
@@ -6984,7 +7122,7 @@ export default function ReliabilityScorecards() {
                   display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
                   background: active ? T.navActiveBg : "transparent", color: active ? T.navActiveText : T.textSecondary,
                   border: "none", borderLeft: `3px solid ${active ? T.heading : "transparent"}`,
-                  borderRadius: 8, padding: item.child ? "6px 12px 6px 32px" : "9px 12px",
+                  borderRadius: 8, padding: item.grand ? "6px 12px 6px 48px" : item.child ? "6px 12px 6px 32px" : "9px 12px",
                   fontSize: item.child ? 12.5 : 13.5, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: FONT
                 }}>
                 <span style={{ color: item.color, display: "inline-flex" }}><Icon name={item.icon} size={item.child ? 13 : 15} /></span>
@@ -7030,6 +7168,8 @@ export default function ReliabilityScorecards() {
               ? `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
               : page === "hsiasentiment"
               ? "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment"
+              : page === "hsiaarchdeck"
+              ? "HSIA Reliability Tools Ecosystem deck, slides 5 to 18 · one use case per slide: pain points, Northstar goals and the journey it enables"
               : page === "hsiaarch"
               ? "HSIA reliability Northstar · layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
@@ -7047,8 +7187,8 @@ export default function ReliabilityScorecards() {
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: calls, tickets, repairs/dispatches, base"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA" : ""}`}</span>
-            <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>
-            {page !== "archive" && CHILD_PARENT[page] !== "archive" && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
+            {!ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>}
+            {page !== "archive" && CHILD_PARENT[page] !== "archive" && !ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
           </div>
 
           {/* filters */}
@@ -7072,7 +7212,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "archive" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "archive" && CHILD_PARENT[page] !== "hsiaarch" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
@@ -7097,6 +7237,7 @@ export default function ReliabilityScorecards() {
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
             : page === "hsiaarch" ? ArchitecturePage()
+            : page === "hsiaarchdeck" ? ArchitectureDeckPage()
             : page === "tvplatforms" ? TvPlatformsPage()
             : page === "tvtickets" ? TvTicketAnalysisPage()
             : page === "tvsentiment" ? TvSentimentPage()
