@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ARCH_HTML from "./architecture.html?raw";
-import { ARCH_DECK } from "./arch-deck.js";
+import { ARCH_DECK, ARCH_LINKS } from "./arch-deck.js";
 
 /*
   FFH Reliability Scorecards — HSIA / TV / SHS
@@ -1401,8 +1401,25 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 // iframe built from site/architecture.html. The slide is 1280px wide, so it is scaled to the space
 // available, and "Full screen" opens it larger. The page follows the dashboard's light and dark mode.
 const ARCH_W = 1312, ARCH_H = 776;
-function ArchEmbed({ isDark, maxScale = 1 }) {
-  const ref = useRef(null);
+// Small script injected into the architecture page: chips that have a slide become buttons that tell this
+// page which slides to show. The iframe has an opaque origin (sandbox without allow-same-origin).
+function archLinkScript() {
+  const links = ARCH_LINKS.map(([l, g, sl]) => ({ l, g, s: sl }));
+  const data = JSON.stringify(links).replace(/</g, "\\u003c");
+  return `<script>(function(){var L=${data};
+function box(c){var b=c.closest('.box');var h=b&&b.querySelector('b');return h?h.textContent.trim():'';}
+document.querySelectorAll('.box .t').forEach(function(c){var lab=c.textContent.trim(),grp=box(c),m=null;
+for(var i=0;i<L.length;i++){if(L[i].l===lab&&(!L[i].g||L[i].g===grp)){m=L[i];break;}}
+if(!m)return;var tip=c.getAttribute('data-tip')||'';
+var st=c.classList.contains('t-today')?'today':c.classList.contains('t-trial')?'trial':'spec';
+c.classList.add('lnk');c.setAttribute('role','button');
+c.setAttribute('data-tip',tip+' Click for the slide'+(m.s.length>1?'s':'')+' that expand on it.');
+function go(){parent.postMessage({type:'arch-chip',label:lab,group:grp,slides:m.s,status:st,tip:tip},'*');}
+c.addEventListener('click',go);c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});
+var css=document.createElement('style');css.textContent='.t.lnk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}.t.lnk:hover{filter:brightness(.94)}';document.head.appendChild(css);})();<\/script>`;
+}
+function ArchEmbed({ isDark, maxScale = 1, onChip }) {
+  const ref = useRef(null), frame = useRef(null);
   const [w, setW] = useState(960);
   useEffect(() => {
     const el = ref.current; if (!el) return;
@@ -1412,64 +1429,74 @@ function ArchEmbed({ isDark, maxScale = 1 }) {
     const ro = new ResizeObserver(measure); ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  useEffect(() => {
+    if (!onChip) return;
+    const h = (e) => {
+      if (!frame.current || e.source !== frame.current.contentWindow) return;
+      const d = e.data;
+      if (!d || d.type !== "arch-chip" || !Array.isArray(d.slides)) return;
+      const slides = d.slides.filter((n) => ARCH_DECK.slides.some((x) => x.n === n));
+      if (slides.length) onChip({ label: String(d.label).slice(0, 120), group: String(d.group || "").slice(0, 120), slides, status: ["today", "trial", "spec"].includes(d.status) ? d.status : "spec", tip: String(d.tip || "").slice(0, 400) });
+    };
+    window.addEventListener("message", h);
+    return () => window.removeEventListener("message", h);
+  }, [onChip]);
   const sc = Math.min(maxScale, Math.max(0.3, w / ARCH_W));
-  const doc = ARCH_HTML.replace("<html>", `<html data-theme="${isDark ? "dark" : "light"}">`);
+  const doc = ARCH_HTML.replace("<html>", `<html data-theme="${isDark ? "dark" : "light"}">`).replace("</body>", () => archLinkScript() + "</body>");
   return (
     <div ref={ref} style={{ width: "100%", height: Math.round(ARCH_H * sc), overflow: "hidden" }}>
-      <iframe title="HSIA Reliability Northstar: layered architecture" srcDoc={doc} sandbox=""
+      <iframe ref={frame} title="HSIA Reliability Northstar: layered architecture" srcDoc={doc} sandbox="allow-scripts"
         style={{ width: ARCH_W, height: ARCH_H, border: 0, transform: `scale(${sc})`, transformOrigin: "0 0", display: "block" }} />
     </div>
   );
 }
-function ArchView({ T, isDark, col }) {
+function ArchView({ T, isDark, col, onOpenDeck }) {
   const [full, setFull] = useState(false);
+  const [sel, setSel] = useState(null); // the chip whose slides are open in the side panel
   useEffect(() => {
-    if (!full) return;
-    const onKey = (e) => { if (e.key === "Escape") setFull(false); };
+    if (!full && !sel) return;
+    const onKey = (e) => { if (e.key === "Escape") { if (sel) setSel(null); else setFull(false); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
-  }, [full]);
+  }, [full, sel]);
   const btn = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
   return (
     <>
       <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: 14 }}>
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          <span style={{ fontSize: 12, color: T.textMuted }}>Click an underlined chip to read the slide that expands on it.</span>
           <button type="button" style={btn} onClick={() => setFull(true)}>Full screen</button>
         </div>
-        <ArchEmbed isDark={isDark} />
+        <ArchEmbed isDark={isDark} onChip={full ? undefined : setSel} />
       </div>
       <p style={{ fontSize: 11.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.5 }}>
         Snapshot of the architecture artifact as of 5 Nov 2026. Sources named on the slide: the HSIA Reliability Tools Ecosystem deck, the service blueprint and stakeholder meetings, Aug to Nov 2026.
       </p>
       {full && (
-        <div role="dialog" aria-label="HSIA architecture, full screen" onClick={() => setFull(false)}
+        <div role="dialog" aria-label="HSIA architecture, full screen" onClick={() => { if (sel) setSel(null); else setFull(false); }}
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 60, overflow: "auto", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 1400, margin: "0 auto", background: T.surface, borderRadius: 12, padding: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>HSIA Reliability Northstar: Layered Architecture</div>
-              <button type="button" style={btn} onClick={() => setFull(false)} aria-label="Close">Close</button>
+              <button type="button" style={btn} onClick={() => { setSel(null); setFull(false); }} aria-label="Close">Close</button>
             </div>
-            <ArchEmbed isDark={isDark} maxScale={1.1} />
+            <ArchEmbed isDark={isDark} maxScale={1.1} onChip={setSel} />
           </div>
         </div>
       )}
+      {sel && <ArchSlidePanel key={`${sel.group}|${sel.label}`} T={T} sel={sel} onClose={() => setSel(null)} onOpenDeck={onOpenDeck} />}
     </>
   );
 }
 
-// Supporting deck: slides 5 to 18 as one view, shown all at once or one at a time.
-function ArchDeckView({ T, col, onBack }) {
-  const SL = ARCH_DECK.slides;
-  const [mode, setMode] = useState("all"); // "all" | "one"
-  const [idx, setIdx] = useState(0);
-  const seg = (on) => ({ background: on ? T.heading : T.surface, color: on ? "#fff" : T.heading, border: `1px solid ${on ? T.heading : T.borderStrong}`, padding: "6px 16px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT });
-  const nav = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
-  const list = (items, color) => (
+// One use-case slide of the supporting deck (shared by the deck page and the side panel).
+function ArchSlideCard({ T, s }) {
+  const list = (items) => (
     <ul style={{ margin: "10px 0 0", paddingLeft: 18, fontSize: 13, lineHeight: 1.55, color: T.text }}>
-      {items.map((t, i) => <li key={i} style={{ marginBottom: 6 }}><span style={{ color: T.text }}>{t}</span></li>)}
+      {items.map((t, i) => <li key={i} style={{ marginBottom: 6 }}>{t}</li>)}
     </ul>
   );
-  const card = (s, k) => (
-    <section key={s.n} aria-label={`Slide ${s.n}: ${s.title}`} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 20px" }}>
+  return (
+    <section aria-label={`Slide ${s.n}: ${s.title}`} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 20px" }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", color: T.textMuted, textTransform: "uppercase" }}>Slide {s.n}</span>
         <h2 style={{ margin: 0, fontSize: 19, fontWeight: 700, color: T.heading }}>{s.title}</h2>
@@ -1496,6 +1523,61 @@ function ArchDeckView({ T, col, onBack }) {
       </ol>
     </section>
   );
+}
+
+// Pop-up opened by clicking a linked chip: the slide(s) that expand on that component.
+function ArchSlidePanel({ T, sel, onClose, onOpenDeck }) {
+  const slides = sel.slides.map((n) => ARCH_DECK.slides.find((x) => x.n === n)).filter(Boolean);
+  const [k, setK] = useState(0);
+  const dlg = useRef(null);
+  useEffect(() => { if (dlg.current) dlg.current.focus(); }, []); // move focus out of the iframe so Escape reaches this page
+  const cur = slides[Math.min(k, slides.length - 1)];
+  const status = { today: ["In use today", T.heading], trial: ["Trial / in development", "#8A5A00"], spec: ["Speculative", T.textMuted] }[sel.status];
+  const btn = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
+  return (
+    <div ref={dlg} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Slides for ${sel.label}`} onClick={onClose}
+      onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}
+      style={{ outline: "none", position: "fixed", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 80, overflowY: "auto", padding: "4vh 16px" }}>
+    <aside onClick={(e) => e.stopPropagation()}
+      style={{ maxWidth: 780, margin: "0 auto", background: T.bg, border: `1px solid ${T.borderStrong}`, borderRadius: 14, boxShadow: "0 14px 40px rgba(0,0,0,.35)", padding: "16px 18px 22px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: T.textMuted }}>{sel.group || "Architecture"}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: T.heading, margin: "2px 0 4px" }}>{sel.label}</div>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: status[1], border: `1px solid ${status[1]}`, borderRadius: 999, padding: "1px 9px" }}>{status[0]}</span>
+        </div>
+        <button type="button" style={btn} onClick={onClose} aria-label="Close slide panel">Close</button>
+      </div>
+      {sel.tip && <p style={{ fontSize: 12.5, color: T.textSecondary, lineHeight: 1.5, margin: "10px 0 0" }}>{sel.tip}</p>}
+      {slides.length > 1 && (
+        <div role="tablist" aria-label="Slides" style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "14px 0 2px" }}>
+          {slides.map((x, i) => (
+            <button key={x.n} type="button" role="tab" aria-selected={i === k} onClick={() => setK(i)}
+              style={{ ...btn, background: i === k ? T.heading : T.surface, color: i === k ? "#fff" : T.heading, borderColor: i === k ? T.heading : T.borderStrong }}>
+              Slide {x.n}: {x.title.length > 26 ? x.title.slice(0, 25) + "..." : x.title}
+            </button>
+          ))}
+        </div>
+      )}
+      <div style={{ marginTop: 14 }}><ArchSlideCard T={T} s={cur} /></div>
+      <div style={{ marginTop: 14 }}>
+        <button type="button" style={btn} onClick={() => onOpenDeck && onOpenDeck(cur.n)}>Open in the supporting deck →</button>
+      </div>
+    </aside>
+    </div>
+  );
+}
+
+// Supporting deck: slides 5 to 18 as one view, shown all at once or one at a time.
+function ArchDeckView({ T, col, onBack, startSlide, onConsumed }) {
+  const SL = ARCH_DECK.slides;
+  const start = startSlide != null ? SL.findIndex((x) => x.n === startSlide) : -1;
+  const [mode, setMode] = useState(start >= 0 ? "one" : "all"); // "all" | "one"
+  const [idx, setIdx] = useState(start >= 0 ? start : 0);
+  useEffect(() => { if (startSlide != null && onConsumed) onConsumed(); }, []);
+  const seg = (on) => ({ background: on ? T.heading : T.surface, color: on ? "#fff" : T.heading, border: `1px solid ${on ? T.heading : T.borderStrong}`, padding: "6px 16px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT });
+  const nav = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
+  const card = (s) => <ArchSlideCard key={s.n} T={T} s={s} />;
   const cur = SL[idx];
   return (
     <div onKeyDown={(e) => { if (mode !== "one") return; if (e.key === "ArrowRight") setIdx((i) => Math.min(SL.length - 1, i + 1)); if (e.key === "ArrowLeft") setIdx((i) => Math.max(0, i - 1)); }} tabIndex={-1} style={{ outline: "none" }}>
@@ -2512,6 +2594,7 @@ export default function ReliabilityScorecards() {
   const [openTables, setOpenTables] = useState({});
   const [issueFilter, setIssueFilter] = useState({});
   const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
+  const [archSlide, setArchSlide] = useState(null); // slide the Architecture page asked the Supporting deck to open on
   const [expandedChart, setExpandedChart] = useState(null); // { title, labels, seriesDefs, fmt } shown in an overlay
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
   const [navOpen, setNavOpen] = useState({}); // per-product nav subsections, collapsed by default
@@ -5592,13 +5675,13 @@ export default function ReliabilityScorecards() {
     return (
       <div style={{ marginTop: 18 }}>
         <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 12px", maxWidth: 820 }}>
-          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each chip is tagged as in use today, in trial or development, or speculative; hover or focus a chip for detail.
+          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each chip is tagged as in use today, in trial or development, or speculative; hover or focus a chip for detail. Underlined chips open the slide of the supporting deck that expands on them.
         </p>
         <div style={{ display: "flex", gap: 18, flexWrap: "wrap", margin: "0 0 14px" }}>
           <button type="button" style={link} onClick={() => { setPage("hsiaarchdeck"); setDeckSlide(null); }}>Supporting deck: the use cases behind it →</button>
           <a href={ARCHITECTURE_URL} target="_blank" rel="noopener noreferrer" style={link}>Open the original artifact (needs access) →</a>
         </div>
-        <ArchView T={T} isDark={isDark} col={col} />
+        <ArchView T={T} isDark={isDark} col={col} onOpenDeck={(n) => { setArchSlide(n); setPage("hsiaarchdeck"); setDeckSlide(null); }} />
       </div>
     );
   }
@@ -5607,7 +5690,7 @@ export default function ReliabilityScorecards() {
   function ArchitectureDeckPage() {
     return (
       <div style={{ marginTop: 18 }}>
-        <ArchDeckView T={T} col={colors.HSIA} onBack={() => { setPage("hsiaarch"); setDeckSlide(null); }} />
+        <ArchDeckView T={T} col={colors.HSIA} startSlide={archSlide} onConsumed={() => setArchSlide(null)} onBack={() => { setPage("hsiaarch"); setDeckSlide(null); }} />
       </div>
     );
   }

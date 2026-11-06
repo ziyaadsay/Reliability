@@ -356,3 +356,405 @@ export const ARCH_DECK = {
   }
 ]
 };
+
+// Architecture chips that expand into one or more slides of the deck above: [chip label, box it sits in
+// (null = any box), deck slide numbers in order of relevance]. Chips that no slide covers are left unlinked.
+export const ARCH_LINKS = [
+ [
+  "telus.com",
+  "Customer self-serve",
+  [
+   7
+  ]
+ ],
+ [
+  "SmartHome+ app",
+  "Customer self-serve",
+  [
+   9,
+   8,
+   10
+  ]
+ ],
+ [
+  "My Telus",
+  "Customer self-serve",
+  [
+   13
+  ]
+ ],
+ [
+  "IVR / voice",
+  "Customer self-serve",
+  [
+   11,
+   7
+  ]
+ ],
+ [
+  "Proactive push / SMS",
+  "Customer self-serve",
+  [
+   6
+  ]
+ ],
+ [
+  "Sweepr self-serve",
+  "Customer self-serve",
+  [
+   7
+  ]
+ ],
+ [
+  "CCAI intent bot",
+  "Customer self-serve",
+  [
+   11
+  ]
+ ],
+ [
+  "Internet backup status",
+  "Customer self-serve",
+  [
+   9
+  ]
+ ],
+ [
+  "CUJO parental controls",
+  "Customer self-serve",
+  [
+   10
+  ]
+ ],
+ [
+  "RouteThis Rava",
+  "Customer self-serve",
+  [
+   8
+  ]
+ ],
+ [
+  "E2E health check",
+  null,
+  [
+   17
+  ]
+ ],
+ [
+  "Support Hub intake",
+  "Customer self-serve",
+  [
+   13
+  ]
+ ],
+ [
+  "RouteThis cert in SH+ app",
+  "Customer self-serve",
+  [
+   8
+  ]
+ ],
+ [
+  "Casa",
+  "Call center",
+  [
+   11,
+   14
+  ]
+ ],
+ [
+  "Genesys Cloud",
+  "Call center",
+  [
+   11
+  ]
+ ],
+ [
+  "Transfer widget",
+  "Call center",
+  [
+   11
+  ]
+ ],
+ [
+  "CloudCheck T1 GUI",
+  "Call center",
+  [
+   9
+  ]
+ ],
+ [
+  "RouteThis Certify & Resolve",
+  null,
+  [
+   8
+  ]
+ ],
+ [
+  "Casa CX co-pilot",
+  "Call center",
+  [
+   14
+  ]
+ ],
+ [
+  "Horizon (HRAIZN) help desk",
+  "Call center",
+  [
+   14
+  ]
+ ],
+ [
+  "CUJO per-device overview",
+  "Call center",
+  [
+   10
+  ]
+ ],
+ [
+  "TechHub",
+  "Technician",
+  [
+   15,
+   16,
+   17
+  ]
+ ],
+ [
+  "FieldFrame",
+  "Technician",
+  [
+   16,
+   17
+  ]
+ ],
+ [
+  "SignalStream insights",
+  "Technician",
+  [
+   16
+  ]
+ ],
+ [
+  "Project Flickr",
+  "Technician",
+  [
+   17
+  ]
+ ],
+ [
+  "Visual AI install scoring",
+  "Technician",
+  [
+   18
+  ]
+ ],
+ [
+  "TechHub auto test tool",
+  "Technician",
+  [
+   15
+  ]
+ ],
+ [
+  "Jarvis (central troubleshooting AI)",
+  "Care orchestration & AI co-pilot",
+  [
+   6,
+   7
+  ]
+ ],
+ [
+  "Dispatch guardrails",
+  "Care orchestration & AI co-pilot",
+  [
+   14
+  ]
+ ],
+ [
+  "AI summaries across transfers",
+  "Care orchestration & AI co-pilot",
+  [
+   11
+  ]
+ ],
+ [
+  "Auto truck roll",
+  "Care orchestration & AI co-pilot",
+  [
+   7
+  ]
+ ],
+ [
+  "Cerebro",
+  "Care orchestration & AI co-pilot",
+  [
+   7
+  ]
+ ],
+ [
+  "Fabric (Sweepr)",
+  "Care orchestration & AI co-pilot",
+  [
+   7
+  ]
+ ],
+ [
+  "FieldFrame live line / alarms",
+  "Care orchestration & AI co-pilot",
+  [
+   17,
+   16
+  ]
+ ],
+ [
+  "Ontology Layer",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "SignalStream Observation Store",
+  "Customer, device & diagnostic context",
+  [
+   16
+  ]
+ ],
+ [
+  "Identity stitching",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "One record of service",
+  "Customer, device & diagnostic context",
+  [
+   15,
+   12
+  ]
+ ],
+ [
+  "Visual AI \"digital home\"",
+  "Customer, device & diagnostic context",
+  [
+   18
+  ]
+ ],
+ [
+  "Netcracker",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "FIFA",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "Wiser (WSIR)",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "GPONe",
+  "Line & outside the home",
+  [
+   17
+  ]
+ ],
+ [
+  "AMS network alarms",
+  "Line & outside the home",
+  [
+   5
+  ]
+ ],
+ [
+  "Remote reboot & speed profile",
+  "CPE & firmware",
+  [
+   6
+  ]
+ ],
+ [
+  "Internet backup (cellular)",
+  "CPE & firmware",
+  [
+   9
+  ]
+ ],
+ [
+  "CloudCheck",
+  "In-home diagnostics",
+  [
+   9,
+   10
+  ]
+ ],
+ [
+  "RouteThis",
+  "In-home diagnostics",
+  [
+   8
+  ]
+ ],
+ [
+  "CUJO quality of outcome & RCA",
+  "In-home diagnostics",
+  [
+   10
+  ]
+ ],
+ [
+  "Pulse clustering",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   5
+  ]
+ ],
+ [
+  "Horizon issue patterning",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   14,
+   5
+  ]
+ ],
+ [
+  "Chronic degradation clustering",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   5
+  ]
+ ],
+ [
+  "Flaky equipment → network integrity",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   5
+  ]
+ ],
+ [
+  "Richer CloudCheck event data",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   5
+  ]
+ ],
+ [
+  "Auto-ticketing",
+  "Telemetry returns to CPE, firmware & network engineering",
+  [
+   5
+  ]
+ ]
+];
