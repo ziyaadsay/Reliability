@@ -1400,7 +1400,7 @@ function ChartCard({ title, T, children, tableOpen, onToggleTable, note }) {
 // HSIA Architecture. The artifact is plain HTML and CSS (no scripts), so it is shown in a sandboxed
 // iframe built from site/architecture.html. The slide is 1280px wide, so it is scaled to the space
 // available, and "Full screen" opens it larger. The page follows the dashboard's light and dark mode.
-const ARCH_W = 1312, ARCH_H = 776;
+const ARCH_W = 1312, ARCH_H = 900;
 // Small script injected into the architecture page: chips that have a slide become buttons that tell this
 // page which slides to show. The iframe has an opaque origin (sandbox without allow-same-origin).
 function archLinkScript() {
@@ -1411,16 +1411,19 @@ function box(c){var b=c.closest('.box');var h=b&&b.querySelector('b');return h?h
 document.querySelectorAll('.box .t').forEach(function(c){var lab=c.textContent.trim(),grp=box(c),m=null;
 for(var i=0;i<L.length;i++){if(L[i].l===lab&&(!L[i].g||L[i].g===grp)){m=L[i];break;}}
 if(!m)return;var tip=c.getAttribute('data-tip')||'';
-var st=c.classList.contains('t-today')?'today':c.classList.contains('t-trial')?'trial':'spec';
+var st=c.classList.contains('t-today')?'today':c.classList.contains('t-trial')?'trial':c.classList.contains('t-open')?'open':'spec';
 c.classList.add('lnk');c.setAttribute('role','button');
 c.setAttribute('data-tip',tip+' Click for the slide'+(m.s.length>1?'s':'')+' that expand on it.');
 function go(){parent.postMessage({type:'arch-chip',label:lab,group:grp,slides:m.s,status:st,tip:tip},'*');}
 c.addEventListener('click',go);c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});
-var css=document.createElement('style');css.textContent='.t.lnk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}.t.lnk:hover{filter:brightness(.94)}';document.head.appendChild(css);})();<\/script>`;
+var css=document.createElement('style');css.textContent='.t.lnk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px}.t.lnk:hover{filter:brightness(.94)}';document.head.appendChild(css);
+function size(){parent.postMessage({type:'arch-size',h:Math.ceil(document.body.getBoundingClientRect().height)},'*');}
+size();window.addEventListener('load',size);if(window.ResizeObserver)new ResizeObserver(size).observe(document.body);})();<\/script>`;
 }
 function ArchEmbed({ isDark, maxScale = 1, onChip }) {
   const ref = useRef(null), frame = useRef(null);
   const [w, setW] = useState(960);
+  const [ah, setAh] = useState(ARCH_H); // the artifact's height; it is reported by the page itself
   useEffect(() => {
     const el = ref.current; if (!el) return;
     const measure = () => setW(el.clientWidth || 960);
@@ -1430,13 +1433,14 @@ function ArchEmbed({ isDark, maxScale = 1, onChip }) {
     return () => ro.disconnect();
   }, []);
   useEffect(() => {
-    if (!onChip) return;
     const h = (e) => {
       if (!frame.current || e.source !== frame.current.contentWindow) return;
       const d = e.data;
-      if (!d || d.type !== "arch-chip" || !Array.isArray(d.slides)) return;
+      if (!d) return;
+      if (d.type === "arch-size" && Number.isFinite(d.h)) { setAh(Math.min(2400, Math.max(500, Math.round(d.h)))); return; }
+      if (!onChip || d.type !== "arch-chip" || !Array.isArray(d.slides)) return;
       const slides = d.slides.filter((n) => ARCH_DECK.slides.some((x) => x.n === n));
-      if (slides.length) onChip({ label: String(d.label).slice(0, 120), group: String(d.group || "").slice(0, 120), slides, status: ["today", "trial", "spec"].includes(d.status) ? d.status : "spec", tip: String(d.tip || "").slice(0, 400) });
+      if (slides.length) onChip({ label: String(d.label).slice(0, 120), group: String(d.group || "").slice(0, 120), slides, status: ["today", "trial", "spec", "open"].includes(d.status) ? d.status : "spec", tip: String(d.tip || "").slice(0, 400) });
     };
     window.addEventListener("message", h);
     return () => window.removeEventListener("message", h);
@@ -1444,9 +1448,9 @@ function ArchEmbed({ isDark, maxScale = 1, onChip }) {
   const sc = Math.min(maxScale, Math.max(0.3, w / ARCH_W));
   const doc = ARCH_HTML.replace("<html>", `<html data-theme="${isDark ? "dark" : "light"}">`).replace("</body>", () => archLinkScript() + "</body>");
   return (
-    <div ref={ref} style={{ width: "100%", height: Math.round(ARCH_H * sc), overflow: "hidden" }}>
-      <iframe ref={frame} title="HSIA Reliability Northstar: layered architecture" srcDoc={doc} sandbox="allow-scripts"
-        style={{ width: ARCH_W, height: ARCH_H, border: 0, transform: `scale(${sc})`, transformOrigin: "0 0", display: "block" }} />
+    <div ref={ref} style={{ width: "100%", height: Math.round(ah * sc), overflow: "hidden" }}>
+      <iframe ref={frame} title="HSIA Reliability Ecosystem: North Star layered architecture" srcDoc={doc} sandbox="allow-scripts"
+        style={{ width: ARCH_W, height: ah, border: 0, transform: `scale(${sc})`, transformOrigin: "0 0", display: "block" }} />
     </div>
   );
 }
@@ -1469,14 +1473,14 @@ function ArchView({ T, isDark, col, onOpenDeck }) {
         <ArchEmbed isDark={isDark} onChip={full ? undefined : setSel} />
       </div>
       <p style={{ fontSize: 11.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.5 }}>
-        Snapshot of the architecture artifact as of 5 Nov 2026. Sources named on the slide: the HSIA Reliability Tools Ecosystem deck, the service blueprint and stakeholder meetings, Aug to Nov 2026.
+        Snapshot of the architecture artifact as of 6 Nov 2026: five layers, each rated and tied to a reliability pillar, with the North Star goals and TELUS enablers on the right.
       </p>
       {full && (
         <div role="dialog" aria-label="HSIA architecture, full screen" onClick={() => { if (sel) setSel(null); else setFull(false); }}
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 60, overflow: "auto", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 1400, margin: "0 auto", background: T.surface, borderRadius: 12, padding: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>HSIA Reliability Northstar: Layered Architecture</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: T.heading }}>HSIA Reliability Ecosystem: North Star Layered Architecture</div>
               <button type="button" style={btn} onClick={() => { setSel(null); setFull(false); }} aria-label="Close">Close</button>
             </div>
             <ArchEmbed isDark={isDark} maxScale={1.1} onChip={setSel} />
@@ -1532,7 +1536,7 @@ function ArchSlidePanel({ T, sel, onClose, onOpenDeck }) {
   const dlg = useRef(null);
   useEffect(() => { if (dlg.current) dlg.current.focus(); }, []); // move focus out of the iframe so Escape reaches this page
   const cur = slides[Math.min(k, slides.length - 1)];
-  const status = { today: ["In use today", T.heading], trial: ["Trial / in development", "#8A5A00"], spec: ["Speculative", T.textMuted] }[sel.status];
+  const status = { today: ["In use today", T.heading], trial: ["Trial / in development", "#8A5A00"], spec: ["Ideation", T.textMuted], open: ["Open question", "#A33A00"] }[sel.status];
   const btn = { background: T.surface, border: `1px solid ${T.borderStrong}`, color: T.heading, borderRadius: 8, padding: "6px 14px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: FONT };
   return (
     <div ref={dlg} tabIndex={-1} role="dialog" aria-modal="true" aria-label={`Slides for ${sel.label}`} onClick={onClose}
@@ -5675,7 +5679,7 @@ export default function ReliabilityScorecards() {
     return (
       <div style={{ marginTop: 18 }}>
         <p style={{ fontSize: 13.5, color: T.textSecondary, lineHeight: 1.6, margin: "0 0 12px", maxWidth: 820 }}>
-          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each chip is tagged as in use today, in trial or development, or speculative; hover or focus a chip for detail. Underlined chips open the slide of the supporting deck that expands on them.
+          How the HSIA reliability tools should connect, from telemetry in the home up to the customer, agent and technician channels. Each chip is tagged as in use today, in trial or development, ideation, or an open question; hover or focus a chip for detail. Underlined chips open the slide of the supporting deck that expands on them.
         </p>
         <div style={{ display: "flex", gap: 18, flexWrap: "wrap", margin: "0 0 14px" }}>
           <button type="button" style={link} onClick={() => { setPage("hsiaarchdeck"); setDeckSlide(null); }}>Supporting deck: the use cases behind it →</button>
@@ -7254,7 +7258,7 @@ export default function ReliabilityScorecards() {
               : page === "hsiaarchdeck"
               ? "HSIA Reliability Tools Ecosystem deck, slides 5 to 18 · one use case per slide: pain points, Northstar goals and the journey it enables"
               : page === "hsiaarch"
-              ? "HSIA reliability Northstar · layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
+              ? "HSIA reliability ecosystem · North Star layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "tvplatforms"

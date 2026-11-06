@@ -3,7 +3,8 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* One 16:9 slide; channels on top, telemetry at the bottom feeding context -> orchestration -> channels,
-   closed loop back to engineering. Chips encode maturity; hover/focus a chip for detail. */
+   closed loop back to engineering. Layer labels carry the reliability pillar each layer serves.
+   Goals column is written from the customer's view. Chips encode maturity; hover/focus a chip for detail. */
 :root{
   --bg:#E9E7EC; --slide:#FFFFFF; --fg:#2A2C2E; --muted:#54595F; --line:#D8D8D8;
   --purple:#4B286D; --purple-tint:#EDE7F3;
@@ -11,6 +12,7 @@
   --today:#4B286D; --today-bg:#E4DAF0;
   --trial:#8A5A00; --trial-bg:#FFF3D6; --trial-line:#D9A233;
   --spec:#6E7178; --spec-line:#9A9DA1;
+  --open:#A33A00; --open-bg:#FDEBDD; --open-line:#E0894D;
   --tip-bg:#2A2C2E; --tip-fg:#FFFFFF;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -20,6 +22,7 @@
   --today:#E4DAF0; --today-bg:#43355A;
   --trial:#F2C46B; --trial-bg:#3A2E14; --trial-line:#B7862A;
   --spec:#A9ACB2; --spec-line:#6E7178;
+  --open:#FFB98A; --open-bg:#3D2414; --open-line:#B8693A;
   --tip-bg:#EDEDEF; --tip-fg:#1F2023; color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#141416; --slide:#1F2023; --fg:#EDEDEF; --muted:#B7BABF; --line:#3A3C40;
@@ -28,30 +31,69 @@
   --today:#E4DAF0; --today-bg:#43355A;
   --trial:#F2C46B; --trial-bg:#3A2E14; --trial-line:#B7862A;
   --spec:#A9ACB2; --spec-line:#6E7178;
+  --open:#FFB98A; --open-bg:#3D2414; --open-line:#B8693A;
   --tip-bg:#EDEDEF; --tip-fg:#1F2023; color-scheme:dark;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif;margin:0;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
 .stage{overflow-x:auto;padding-top:4px}
-.slide{width:1280px;aspect-ratio:16/9;margin:0 auto;background:var(--slide);border-radius:6px;
+.slide{width:1280px;min-height:720px;margin:0 auto;background:var(--slide);border-radius:6px;
   box-shadow:0 4px 18px rgba(0,0,0,.12);padding:20px 30px 14px;display:grid;
   grid-template-rows:auto 1fr auto;gap:8px}
-.head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.head{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
 .sub{margin:2px 0 0;font-size:13px;font-style:italic;color:var(--muted)}
-.legend{display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-size:11px;color:var(--muted)}
+.legend{margin-top:12px;display:flex;flex-direction:row;flex-wrap:wrap;gap:4px 20px;align-items:center;font-size:11px;color:var(--muted)}
 .legend div{display:flex;gap:6px;align-items:center;white-space:nowrap}
-.grid{display:grid;grid-template-columns:108px 1fr 300px;
-  grid-template-rows:auto auto auto auto auto auto;column-gap:12px;row-gap:14px}
-.goalhead{grid-column:3;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--goal);align-self:end}
-.label{background:#4B286D;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6px;font-weight:700;font-size:13px}
-.label small{font-weight:400;font-size:10.5px;color:#D9CCE8;margin-top:2px}
+.grid{display:grid;grid-template-columns:150px 34px minmax(0,1fr) 300px;
+  grid-template-rows:0 auto 1fr 1fr 1fr auto;column-gap:12px;row-gap:14px}
+.goalhead{grid-column:4;grid-row:1;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--goal);align-self:end;line-height:1.3}
+.goalhead span{display:block;font-weight:400;letter-spacing:0;font-style:italic;color:var(--muted);font-size:10px}
+.gtitle{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--goal);line-height:1.3}
+.grid{margin-top:-14px}
+.goals.gall{grid-column:4;grid-row:2/7;justify-content:flex-start;align-items:stretch;gap:8px;padding:14px 12px 12px 22px}
+.goals.gall > .gtitle{margin:0 0 4px;align-self:flex-start}
+.gall > .gsec{padding-bottom:5px;border-bottom:1px solid var(--goal-line)}
+.gall > .gsec.sugh{margin-top:12px;border-bottom-color:var(--line)}
+.gall ul{margin-top:2px}
+.gall .enabbox{margin-top:14px;padding:8px 10px}
+.gall .enabbox .gsec{padding-bottom:5px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+.gall .sugh{color:var(--muted)}
+.gall .sugl{font-size:10.5px}
+.enrow+.enrow{margin-top:3px}
+.enrow b{color:var(--fg);font-weight:700}
+.gl{grid-column:1}.gr3{grid-column:3}.gr23{grid-column:2/4}.gg{grid-column:4}
+.g2{grid-row:2}.g3{grid-row:3}.g4{grid-row:4}.g5{grid-row:5}.g6{grid-row:6}
+.p1bar{grid-column:2;grid-row:3/6;display:flex;align-items:center;justify-content:center;background:var(--purple);color:#fff;border-radius:6px;padding:8px 2px}
+.p1bar span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.p1bar small{font-size:11px;font-weight:400;color:#E4DAF0;letter-spacing:.02em}
+.label{background:#3F4348;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6px;font-weight:700;font-size:13px}
+.label small{font-weight:400;font-size:10.5px;color:#D5D8DC;margin-top:2px}
+.label .pillar{margin-top:6px;font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:rgba(255,255,255,.18);border-radius:8px;padding:2px 7px;line-height:1.3}
+.label .status{margin-top:6px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:8px;padding:2px 8px;line-height:1.3;color:#1F2023}
+.label .st-strong{background:#7BD35A}.label .st-good{background:#C2E58F}.label .st-dev{background:#F2C46B}.label .st-weak{background:#FF9E7A}
+.label .take{margin-top:4px;font-size:10px;font-weight:400;line-height:1.3;color:#E4E6E9}
+.r4{row-gap:6px}
+.rowloop{row-gap:6px}
+.pbar{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 8px;background:var(--purple);color:#fff;font-size:13px;font-weight:700;border-radius:6px;padding:6px 10px;letter-spacing:.02em;text-align:center}
+.pbar small{font-size:11px;font-weight:400;color:#E4DAF0}
+.pbar .how{flex-basis:100%;font-size:10.5px;font-weight:400;letter-spacing:0;line-height:1.35;color:#F1EAF8}
+.pbar .how b{font-size:10.5px;color:#fff}
+.pbanner{grid-column:span 2;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--purple);color:#fff;font-size:13px;font-weight:700;border-radius:6px;padding:6px 10px;letter-spacing:.02em}
+.pbanner small{font-size:11px;font-weight:400;color:#E4DAF0}
 .row{display:grid;gap:12px;position:relative}
-.r3{grid-template-columns:repeat(3,1fr)} .r1{grid-template-columns:1fr}
-.box{border:1px solid var(--line);border-radius:6px;padding:6px 8px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:4px;background:var(--slide);position:relative}
+.r3{grid-template-columns:repeat(3,minmax(0,1fr))} .r4{grid-template-columns:repeat(4,minmax(0,1fr))} .r1{grid-template-columns:1fr}
+.box{border:1px solid var(--line);border-radius:6px;padding:6px 8px;text-align:center;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:4px;background:var(--slide);position:relative}
+.box .chips{width:100%}
+/* title (and its description) stay at the top; the pill groups are centered in the space below */
+.box{padding-top:9px;padding-bottom:9px}
+.box > div:first-of-type{margin-top:auto}
+.box > div:last-of-type{margin-bottom:auto}
 .box b{font-size:13.5px;color:var(--fg)}
 .box .desc{font-size:10.5px;color:var(--muted);line-height:1.3}
 .sublabel{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.sublabel.open{color:var(--open)}
+.brk{flex-basis:100%;height:0}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:3px 4px}
 .ctx{background:var(--purple-tint);border:2px solid var(--purple)}
 .ctx b{color:var(--purple);font-size:15px}
@@ -62,14 +104,21 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
 .down::before{content:"";position:absolute;left:50%;top:-14px;height:14px;border-left:1px solid var(--arrow)}
 .down::after{content:"▼";position:absolute;left:50%;top:-6px;transform:translateX(-50%);font-size:8px;color:var(--arrow);line-height:1}
 .note{position:absolute;right:8px;top:-13px;font-size:10px;font-style:italic;color:var(--muted);background:var(--slide);padding:0 4px}
-.goals{background:var(--goal-bg);border:1px solid var(--goal-line);padding:6px 10px 6px 20px;display:flex;align-items:center}
+.loopnote{font-size:10.5px;color:var(--muted);line-height:1.35;max-width:900px;margin:0 auto}
+.loopnote b{font-size:10.5px;color:var(--purple)}
+.goals{background:var(--goal-bg);border:1px solid var(--goal-line);padding:6px 10px 6px 20px;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .goals ul{margin:0;padding:0;font-size:11px;color:var(--goal);line-height:1.35}
 .goals li.sug{color:var(--muted);font-style:italic}
 .goals li.sug::marker{content:"✦ "}
+.gsec{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--goal)}
+.goals li+li{margin-top:3px}
+.enabbox{margin-top:2px;padding:5px 8px;background:var(--loop);border:1px solid var(--line);border-radius:4px;font-size:10.5px;line-height:1.3;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.enabbox .gsec{color:var(--muted)}
+.goals .enab::before{content:"TELUS enabler: ";font-style:normal;font-weight:700;letter-spacing:.03em}
 .src{font-size:10.5px;font-style:italic;color:var(--muted)}
 
 /* maturity chips */
-.t{display:inline-block;font-size:10.5px;line-height:1.25;padding:1px 6px;border-radius:9px;white-space:nowrap;position:relative;cursor:help}
+.t{display:inline-block;font-size:10.5px;line-height:1.25;padding:1px 6px;border-radius:9px;white-space:normal;text-align:center;position:relative;cursor:help}
 .t::before{margin-right:3px}
 .t-today{background:var(--today-bg);color:var(--today);border:1px solid var(--today);font-weight:700}
 .t-today::before{content:"●"}
@@ -77,6 +126,8 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
 .t-trial::before{content:"◐"}
 .t-spec{background:transparent;color:var(--spec);border:1px dotted var(--spec-line);font-style:italic}
 .t-spec::before{content:"○";font-style:normal}
+.t-open{background:var(--open-bg);color:var(--open);border:1px solid var(--open-line);font-weight:700}
+.t-open::before{content:"?"}
 .t:focus-visible{outline:2px solid var(--purple);outline-offset:1px}
 /* hover / focus detail */
 .t[data-tip]:hover::after,.t[data-tip]:focus::after{
@@ -84,6 +135,9 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
   width:max-content;max-width:240px;white-space:normal;text-align:left;
   background:var(--tip-bg);color:var(--tip-fg);font-size:11.5px;font-style:normal;font-weight:400;line-height:1.35;
   padding:7px 9px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:20;pointer-events:none}
+/* lift the hovered or focused chip, and its tooltip, above every other element on the slide */
+.t:hover,.t:focus{z-index:1000}
+.t[data-tip]:hover::after,.t[data-tip]:focus::after{z-index:1000}
 .legend .t{cursor:default}
 @media (prefers-reduced-motion: no-preference){.t{transition:transform .12s}.t:hover{transform:translateY(-1px)}}
 </style>
@@ -91,21 +145,28 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
 <div class="stage"><div class="slide">
   <div class="head">
     <div>
-      <h1>HSIA Reliability Northstar: Layered Architecture</h1>
-      <p class="sub">Telemetry feeds one context (ontology) layer, which only reaches channels through one orchestration service; closed loop returns learning to engineering</p>
+      <h1>HSIA Reliability Ecosystem: North Star Layered Architecture</h1>
+      <p class="sub">HSIA view of the five-layer reliability tools ecosystem</p>
     </div>
     <div class="legend">
-      <div><span class="t t-today">In use today</span><span class="t t-trial">Trial / in development</span><span class="t t-spec">Speculative</span></div>
+      <div><span class="t t-today">In use today</span><span class="t t-trial">Trial / in development</span><span class="t t-spec">Ideation</span><span class="t t-open">Open question</span></div>
       <div>Hover any chip for detail · <span style="font-style:italic">✦ suggested goal (industry practice)</span></div>
     </div>
   </div>
 
   <div class="grid">
-    <div></div><div></div><div class="goalhead">NORTH STAR GOALS</div>
-
     <!-- CHANNELS -->
-    <div class="label">Channels<small>where customers, agents &amp; techs act</small></div>
-    <div class="row r3">
+    <div class="label gl g2">Channels<small>where customers, agents &amp; techs act</small><span class="status st-good">Good</span><span class="take">Streamlined, but no common orchestration source. Guidance conflicts and handoffs are limited.</span></div>
+    <div class="row r4 gr23 g2">
+      <div class="pbanner">Pillar 3 <small>Delight customers by shifting to proactive</small></div>
+      <div class="pbanner">Pillar 4 <small>Enable frontline to resolve first time</small></div>
+      <div class="box up"><b>Proactive</b><span class="desc">In development as a standalone channel</span><div class="chips">
+        <span class="t t-today" tabindex="0" data-tip="Cellular fallback status when the wireline is cut (Jacob Black-Lock).">Internet Backup</span>
+        <span class="t t-today" tabindex="0" data-tip="Existing campaigns (Adam Jamieson) still run through self-serve and call center: a tool link, or a direct call to an agent.">Proactive Campaigns</span>
+        <span class="brk"></span>
+        <span class="t t-spec" tabindex="0" data-tip="Vision: identify and fix issues during provisioning, or make the needed changes automatically, with no customer contact (Faraz Ahmed).">Fix in provisioning, no customer contact</span>
+        <span class="t t-spec" tabindex="0" data-tip="Auto-apply the changes an issue needs without the customer acting.">Automatic remediation</span>
+      </div></div>
       <div class="box up"><b>Customer self-serve</b><div class="chips">
         <span class="t t-today" tabindex="0" data-tip="Customer digital and voice entry points.">telus.com</span>
         <span class="t t-today" tabindex="0" data-tip="SmartHome+ app; Jarvis assistant lives here today.">SmartHome+ app</span>
@@ -114,10 +175,10 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
         <span class="t t-today" tabindex="0" data-tip="Proactive campaigns (Adam Jamieson). 60–70% of recipients report no issue today.">Proactive push / SMS</span>
         <span class="t t-today" tabindex="0" data-tip="Current self-serve troubleshooting workflows (contract to Jun 2027).">Sweepr self-serve</span>
         <span class="t t-today" tabindex="0" data-tip="CCAI call-intent detection in the IVR (Raphael Maffolini).">CCAI intent bot</span>
-        <span class="t t-today" tabindex="0" data-tip="Cellular fallback status when the wireline is cut (Jacob Black-Lock).">Internet backup status</span>
-        <span class="t t-today" tabindex="0" data-tip="CUJO device pause / parental controls; customers are asked to check paused devices.">CUJO parental controls</span>
+        <span class="brk"></span>
         <span class="t t-trial" tabindex="0" data-tip="RouteThis Rava: customer-facing evolution of self-help; room-by-room Wi-Fi heat map.">RouteThis Rava</span>
         <span class="t t-trial" tabindex="0" data-tip="Customer-facing end-to-end health check (provisioning → line → CPE).">E2E health check</span>
+        <span class="brk"></span>
         <span class="t t-spec" tabindex="0" data-tip="Automated intake: auto-triage, pre-filled ticket, customer released with no hold (Moiz Adamji).">Support Hub intake</span>
         <span class="t t-spec" tabindex="0" data-tip="Bringing RouteThis certification into the SH+ app.">RouteThis cert in SH+ app</span>
       </div></div>
@@ -125,84 +186,83 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
         <span class="t t-today" tabindex="0" data-tip="Agent desktop; account info auto-populates.">Casa</span>
         <span class="t t-today" tabindex="0" data-tip="Routing, transcription and real-time summaries (Carey Duncan).">Genesys Cloud</span>
         <span class="t t-today" tabindex="0" data-tip="Wait-time and callback visibility on transfer (Jul 2026).">Transfer widget</span>
-        <span class="t t-today" tabindex="0" data-tip="CloudCheck Tier 1 agent GUI.">CloudCheck T1 GUI</span>
         <span class="t t-today" tabindex="0" data-tip="RouteThis Certify &amp; Resolve agent tooling.">RouteThis Certify &amp; Resolve</span>
+        <span class="t t-today" tabindex="0" data-tip="Insight upgrading to Solvatio HRAIZN over the next 3–6 months (Amandeep Sidhu).">Solvatio HRAIZN help desk</span>
+        <span class="brk"></span>
+        <span class="t t-trial" tabindex="0" data-tip="CloudCheck Tier 1 agent GUI.">CloudCheck T1 GUI</span>
         <span class="t t-trial" tabindex="0" data-tip="Casa CX co-pilot for first-line agents.">Casa CX co-pilot</span>
-        <span class="t t-trial" tabindex="0" data-tip="Insight upgrading to Horizon over the next 3–6 months (Amandeep Sidhu).">Horizon (HRAIZN) help desk</span>
         <span class="t t-trial" tabindex="0" data-tip="Agent-facing end-to-end health check.">E2E health check</span>
+        <span class="brk"></span>
+        <span class="t t-spec" tabindex="0" data-tip="FieldFrame is a technician tool today. Make it available to customer experience agents too, so it is one tool counted once (Ziyaad Sayhebolay).">FieldFrame for agents</span>
         <span class="t t-spec" tabindex="0" data-tip="Per-device quality-of-outcome view for agents.">CUJO per-device overview</span>
       </div></div>
       <div class="box up"><b>Technician</b><div class="chips">
         <span class="t t-today" tabindex="0" data-tip="Technician job and workflow app.">TechHub</span>
         <span class="t t-today" tabindex="0" data-tip="Main HSIA test tool for techs; uses GPONe/DSLe to check registration and admin status. Run via Insight or set-top box.">KIT</span>
         <span class="t t-today" tabindex="0" data-tip="RouteThis Certify &amp; Resolve technician tooling.">RouteThis Certify &amp; Resolve</span>
-        <span class="t t-trial" tabindex="0" data-tip="Modular insight canvas in TechHub / Go (Paul Jackanich).">FieldFrame</span>
+        <span class="brk"></span>
         <span class="t t-trial" tabindex="0" data-tip="Up to 5 pertinent insights per job, or none.">SignalStream insights</span>
         <span class="t t-trial" tabindex="0" data-tip="Live jumper test and affected-line alerts (Jordan Jenkins).">Project Flickr</span>
         <span class="t t-trial" tabindex="0" data-tip="Scores install photos against 5 TELUS standards in real time (Rick Jellema).">Visual AI install scoring</span>
         <span class="t t-trial" tabindex="0" data-tip="Tech-facing end-to-end health check.">E2E health check</span>
+        <span class="brk"></span>
         <span class="t t-spec" tabindex="0" data-tip="Auto-run all tests when a tech accepts and closes a job (Ziyaad). The InSight connector line is marked Cancelled in the 2027 sheet.">TechHub auto test tool</span>
       </div></div>
     </div>
-    <div class="goals"><ul>
-      <li>One journey across app, web &amp; voice, in the customer's channel of choice</li>
-      <li>Seamless handoff: no repeat authentication or re-explaining</li>
-      <li>Same test &amp; verify tools for customers, agents and techs</li>
-      <li>Certify every install against TELUS standards</li>
-      <li class="sug">First-contact resolution and effort score tracked per channel</li>
-    </ul></div>
-
     <!-- ORCHESTRATION -->
-    <div class="label">Orchestration<small>decides what to do</small></div>
-    <div class="row r1"><div class="box up"><b>Care orchestration &amp; AI co-pilot</b><div class="chips">
-      <span class="t t-trial" tabindex="0" data-tip="Agreed Sep 11 as the central troubleshooting AI; reads content from CMS, PDFs and Sweepr workflows.">Jarvis (central troubleshooting AI)</span>
-      <span class="t t-trial" tabindex="0" data-tip="Block a truck roll when a known phone fix exists (targeted Q1/Q2 2027).">Dispatch guardrails</span>
-      <span class="t t-spec" tabindex="0" data-tip="Conversation summary follows the customer on every transfer.">AI summaries across transfers</span>
-      <span class="t t-spec" tabindex="0" data-tip="Recommended next action for customer, agent or tech.">Next best action</span>
-      <span class="t t-spec" tabindex="0" data-tip="Trigger dispatch automatically when remote resolution fails.">Auto truck roll</span>
-      <span class="t t-spec" tabindex="0" data-tip="Train once, available in every channel.">One shared knowledge base</span>
-      </div>
-      <div class="sublabel">Siloed orchestration in trial / development</div>
+    <div class="p1bar"><span>Pillar 1 <small>Instrument for reliability</small></span></div>
+    <div class="label gl g3">Orchestration<small>decides what to do</small><span class="status st-weak">Weak</span><span class="take">Siloed tools with no common decision engine. Jarvis and Solvatio HRAIZN lead.</span></div>
+    <div class="row r1 gr3 g3"><div class="box up"><b>Care orchestration &amp; AI co-pilot</b>
+      <div class="sublabel">Top contenders</div>
       <div class="chips">
-      <span class="t t-trial" tabindex="0" data-tip="CloudCheck's AI orchestration service.">Maestro (CloudCheck)</span>
-      <span class="t t-trial" tabindex="0" data-tip="In-house troubleshooting AI PoC (Kenneth Pun).">Cerebro</span>
-      <span class="t t-trial" tabindex="0" data-tip="AI layer inside Sweepr.">Fabric (Sweepr)</span>
-      <span class="t t-trial" tabindex="0" data-tip="Live line health and alarm events for techs.">FieldFrame live line / alarms</span>
-    </div></div></div>
-    <div class="goals"><ul>
-      <li>Jarvis as the one troubleshooting AI every channel connects to</li>
-      <li>Fold siloed orchestrations (Maestro, Cerebro, Fabric) into one service</li>
-      <li>~95% of issues resolved by AI-guided self-serve</li>
-      <li>Auto truck roll when remote fix fails; guardrails block avoidable dispatch</li>
-      <li class="sug">Explainable recommendations with human override and audit trail</li>
-    </ul></div>
-
+        <span class="t t-today" tabindex="0" data-tip="User-facing interface that agents and techs use to reach orchestration. It pulls account and services from Netcracker and knowledge from OneSource, but only works inside the Insight framework and reads the customer's current record, not history. Basic orchestration today.">Solvatio HRAIZN</span>
+        <span class="brk"></span>
+        <span class="t t-trial" tabindex="0" data-tip="Agreed Sep 11 as the central troubleshooting AI; reads content from CMS, PDFs and Sweepr workflows.">Jarvis (central troubleshooting AI)</span>
+      </div>
+      <div class="sublabel">Siloed orchestration options</div>
+      <div class="chips">
+        <span class="t t-trial" tabindex="0" data-tip="Modular insight canvas in TechHub / Go (Paul Jackanich). A technician tool today that pulls provisioning, account, history and telemetry into one view. Counted once here and planned for agents too. Includes live line health and alarm events for techs.">FieldFrame</span>
+        <span class="t t-trial" tabindex="0" data-tip="Block a truck roll when a known phone fix exists (targeted Q1/Q2 2027).">Automated Dispatch Guardrails</span>
+        <span class="t t-trial" tabindex="0" data-tip="CloudCheck's AI orchestration service.">Maestro (CloudCheck)</span>
+        <span class="t t-trial" tabindex="0" data-tip="In-house troubleshooting AI PoC (Kenneth Pun).">Cerebro</span>
+        <span class="t t-trial" tabindex="0" data-tip="AI layer inside Sweepr.">Fabric (Sweepr)</span>
+        <span class="brk"></span>
+        <span class="t t-spec" tabindex="0" data-tip="Conversation summary follows the customer on every transfer.">AI summaries across transfers</span>
+        <span class="t t-spec" tabindex="0" data-tip="Recommended next action for customer, agent or tech.">Next best action</span>
+        <span class="t t-spec" tabindex="0" data-tip="Trigger dispatch automatically when remote resolution fails.">Auto truck roll</span>
+        <span class="t t-spec" tabindex="0" data-tip="Train once, available in every channel.">One shared knowledge base</span>
+        <span class="brk"></span>
+        <span class="t t-open" tabindex="0" data-tip="Insight is upgrading to Solvatio HRAIZN. TELUS has not used Solvatio's recommendation or LLM features so far. Can the future-state Solvatio HRAIZN be the orchestration recommendation engine, so we build less new? Position still to be developed (Tyler Mooi).">Can Solvatio HRAIZN be the orchestration layer in its future state?</span>
+      </div></div></div>
     <!-- CONTEXT -->
-    <div class="label">Context<small>ontology layer · knows everything</small></div>
-    <div class="row r1"><div class="box ctx up"><span class="note">exposed to channels only through orchestration</span><b>Customer, device &amp; diagnostic context</b><div class="chips">
-      <span class="t t-spec" tabindex="0" data-tip="Combines Wi-Fi experience, provisioned plan, install date, orders, TV subscription and tech visits. No true ontology layer exists today (Jason Thompson).">Ontology Layer</span>
-      <span class="t t-trial" tabindex="0" data-tip="Per-customer store of calls, alarms, FDH and provisioning events.">SignalStream Observation Store</span>
-      <span class="t t-spec" tabindex="0" data-tip="One customer across SOD and Enterprise IDs, stitched by email or phone.">Identity stitching</span>
-      <span class="t t-spec" tabindex="0" data-tip="Tests, summaries and history shared by every channel.">One record of service</span>
-      <span class="t t-spec" tabindex="0" data-tip="Certified install record reused at the next contact.">Visual AI "digital home"</span>
-      </div>
-      <div class="sublabel">Source systems</div>
+    <div class="label gl g4">Context<small>ontology layer · knows everything</small><span class="status st-weak">Weak</span><span class="take">Data spans separate systems. SignalStream and Solvatio HRAIZN are top contenders.</span></div>
+    <div class="row r1 gr3 g4"><div class="box up"><span class="note">exposed to channels only through orchestration</span><b>Customer, device &amp; diagnostic context</b>
+      <div class="sublabel">Top contenders</div>
       <div class="chips">
-      <span class="t t-today" tabindex="0" data-tip="Customer records and provisioning.">Netcracker</span>
-      <span class="t t-today" tabindex="0" data-tip="Customer and account records.">FIFA</span>
-      <span class="t t-today" tabindex="0" data-tip="Provisioning system.">Wiser (WSIR)</span>
-    </div></div></div>
-    <div class="goals"><ul>
-      <li>One unified customer view across billing, network &amp; provisioning, no new data lake</li>
-      <li>Verify provisioning before troubleshooting diagnostics</li>
-      <li>Identity stitched across SOD &amp; Enterprise IDs</li>
-      <li class="sug">Privacy and access controls by design: consent, retention, role-based views</li>
-      <li class="sug">Freshness targets so context is real-time where decisions need it</li>
-    </ul></div>
-
+        <span class="t t-trial" tabindex="0" data-tip="Per-customer store of calls, alarms, FDH and provisioning events.">SignalStream Observation Store</span>
+        <span class="t t-open" tabindex="0" data-tip="Could the upgraded Solvatio HRAIZN store the ontology and make orchestration recommendations, instead of building a new tool? Evaluate its future state, not its current state. Decision deferred; the team needs a position (Tyler Mooi).">Solvatio HRAIZN as ontology store?</span>
+      </div>
+      <div class="sublabel">In use</div>
+      <div class="chips">
+        <span class="t t-today" tabindex="0" data-tip="Common API layer that feeds telus.com, Sweepr and some IVR functions. Not all Insight functions are built into it yet; the goal is for it to be the shared layer for every channel.">Middleware</span>
+        <span class="t t-today" tabindex="0" data-tip="Customer records and provisioning.">Netcracker</span>
+        <span class="t t-today" tabindex="0" data-tip="Customer and account records.">FIFA</span>
+        <span class="t t-today" tabindex="0" data-tip="Provisioning system.">Wiser (WSIR)</span>
+        <span class="t t-today" tabindex="0" data-tip="Remedy trouble ticket system: ticket history for the customer's reported issues.">Remedy Trouble Tickets</span>
+        <span class="t t-today" tabindex="0" data-tip="OneSource: internal support knowledge base used by agents and techs.">OneSource</span>
+        <span class="t t-today" tabindex="0" data-tip="Customer-facing support articles on telus.com/support. Managed by hand today and different from OneSource, the IVR and Sweepr.">telus.com/support</span>
+      </div>
+      <div class="sublabel">Ideation</div>
+      <div class="chips">
+        <span class="t t-spec" tabindex="0" data-tip="Combines Wi-Fi experience, provisioned plan, install date, orders, TV subscription and tech visits. No true ontology layer exists today (Jason Thompson).">Ontology Layer</span>
+        <span class="t t-spec" tabindex="0" data-tip="One customer across SOD and Enterprise IDs, stitched by email or phone.">Identity stitching</span>
+        <span class="t t-spec" tabindex="0" data-tip="Tests, summaries and history shared by every channel.">One record of service</span>
+        <span class="t t-spec" tabindex="0" data-tip="Certified install record reused at the next contact.">Visual AI "digital home"</span>
+        <span class="t t-spec" tabindex="0" data-tip="Decide where the one knowledge base lives. Every tool and app references it, and telus.com becomes a live view of it, so articles no longer need to be managed on telus.com (Tyler Mooi).">Single knowledge base (telus.com renders from it)</span>
+      </div></div></div>
     <!-- TELEMETRY -->
-    <div class="label">Telemetry &amp; Action<small>outside → CPE → in-home</small></div>
-    <div class="row r3">
+    <div class="label gl g5">Telemetry<small>outside → CPE → in-home</small><span class="status st-good">Good</span><span class="take">Data exists but is not real time, so tying it to customer experience lags.</span></div>
+    <div class="row r3 gr3 g5">
       <div class="box up"><b>Line &amp; outside the home</b><span class="desc">Fiber and copper line telemetry, network alarms</span><div class="chips">
         <span class="t t-today" tabindex="0" data-tip="GPON line telemetry (light levels, registration).">GPONe</span>
         <span class="t t-today" tabindex="0" data-tip="Copper access-line telemetry and diagnostics.">DSLe</span>
@@ -210,42 +270,40 @@ h1{margin:0;font-size:27px;color:var(--purple);font-weight:700}
       </div></div>
       <div class="box up"><b>CPE &amp; firmware</b><span class="desc">Device management &amp; remote remediation</span><div class="chips">
         <span class="t t-today" tabindex="0" data-tip="CPE and firmware management.">HDM / Motive</span>
+        <span class="t t-today" tabindex="0" data-tip="CloudCheck telemetry and remote management of the gateway and access points (CPE).">CloudCheck</span>
         <span class="t t-today" tabindex="0" data-tip="Device data model standard.">USP / TR-181</span>
         <span class="t t-today" tabindex="0" data-tip="Remote resolution actions used by self-serve and agents.">Remote reboot &amp; speed profile</span>
         <span class="t t-today" tabindex="0" data-tip="Cellular backup; also lets CloudCheck isolate outside-network issues.">Internet backup (cellular)</span>
+        <span class="brk"></span>
         <span class="t t-trial" tabindex="0" data-tip="In trial; not at mass rollout yet (Alison Broten).">HDDP</span>
       </div></div>
       <div class="box up"><b>In-home diagnostics</b><span class="desc">Wi-Fi &amp; device telemetry platforms</span><div class="chips">
-        <span class="t t-today" tabindex="0" data-tip="Gateway and access-point telemetry and QoE.">CloudCheck</span>
-        <span class="t t-today" tabindex="0" data-tip="Wi-Fi certification; only tool with geospatial in-home Wi-Fi telemetry.">RouteThis</span>
+        <span class="t t-today" tabindex="0" data-tip="Gateway and access-point telemetry and QoE.">CloudCheck Wi-Fi QoE</span>
+        <span class="t t-today" tabindex="0" data-tip="Wi-Fi certification; only tool with geospatial in-home Wi-Fi telemetry.">RouteThis Certify</span>
+        <span class="brk"></span>
+        <span class="t t-trial" tabindex="0" data-tip="RouteThis Rava: evolution of RouteThis self-help, with a room-by-room Wi-Fi heat map.">RouteThis RAVA</span>
+        <span class="brk"></span>
         <span class="t t-spec" tabindex="0" data-tip="Per-device quality of outcome and root-cause analysis; available but no reliability use case yet.">CUJO quality of outcome &amp; RCA</span>
       </div></div>
     </div>
-    <div class="goals"><ul>
-      <li>Line, CPE and in-home telemetry in one vendor-neutral view</li>
-      <li>Measure device-level quality of outcome, not AP performance</li>
-      <li>Cut 30–60 min line diagnostics to seconds</li>
-      <li class="sug">Coverage targets for every device class and legacy firmware</li>
-    </ul></div>
-
     <!-- CLOSED LOOP -->
-    <div class="label">Closed Loop<small>feedback to engineering &amp; BI</small></div>
-    <div class="row r1"><div class="box loop down"><b>Telemetry returns to CPE, firmware &amp; network engineering</b><div class="chips">
-      <span class="t t-today" tabindex="0" data-tip="Geospatial + temporal outage clustering; minutes instead of hours (Errol Barrie).">Pulse clustering</span>
-      <span class="t t-trial" tabindex="0" data-tip="Flags mass-impact issues such as fiber cuts and firmware rollouts.">Horizon issue patterning</span>
-      <span class="t t-spec" tabindex="0" data-tip="Hourly performance data to catch congestion before outages.">Chronic degradation clustering</span>
-      <span class="t t-spec" tabindex="0" data-tip="Equipment taking customers offline briefly, flagged for replacement.">Flaky equipment → network integrity</span>
-      <span class="t t-spec" tabindex="0" data-tip="Staged missed-heartbeat events and clean up/down pairs.">Richer CloudCheck event data</span>
-      <span class="t t-spec" tabindex="0" data-tip="Ticket automatically once classification confidence is high.">Auto-ticketing</span>
-    </div></div></div>
-    <div class="goals"><ul>
-      <li>Detect &amp; cluster outages automatically, largest first; auto-ticket when confident</li>
-      <li>Catch chronic degradation and flaky equipment before failure</li>
-      <li class="sug">Root-cause trends feed product and vendor roadmaps, tracked by repeat rate and avoidable dispatch</li>
-    </ul></div>
+    <div class="label gl g6">Closed Loop<small>feedback to engineering &amp; BI</small><span class="status st-good">Good</span><span class="take">Strong back-end capability.</span></div>
+    <div class="row r1 rowloop gr23 g6"><div class="pbar down">Pillar 2 <small>Reliability by design</small><span class="how"><b>How the loop works:</b> what failed and what fixed it returns to engineering to build reliability into new products.</span></div><div class="box loop"><b>Telemetry returns to CPE, firmware &amp; network engineering</b>
+      <div class="chips">
+        <span class="t t-today" tabindex="0" data-tip="Ad hoc dashboards that give engineering and BI teams a view of telemetry and ticket trends.">Adhoc Dashboards</span>
+        <span class="t t-today" tabindex="0" data-tip="Geospatial + temporal outage clustering; minutes instead of hours (Errol Barrie).">Pulse clustering</span>
+        <span class="brk"></span>
+        <span class="t t-trial" tabindex="0" data-tip="Flags mass-impact issues such as fiber cuts and firmware rollouts.">Solvatio HRAIZN issue patterning</span>
+        <span class="brk"></span>
+        <span class="t t-spec" tabindex="0" data-tip="Hourly performance data to catch congestion before outages.">Chronic degradation clustering</span>
+        <span class="t t-spec" tabindex="0" data-tip="Equipment taking customers offline briefly, flagged for replacement.">Flaky equipment → network integrity</span>
+        <span class="t t-spec" tabindex="0" data-tip="Staged missed-heartbeat events and clean up/down pairs.">Richer CloudCheck event data</span>
+        <span class="t t-spec" tabindex="0" data-tip="Ticket automatically once classification confidence is high.">Auto-ticketing</span>
+        <span class="t t-spec" tabindex="0" data-tip="Fault and fix outcomes from the orchestration layer reach hardware and firmware engineering, not only telemetry (Faraz Ahmed).">Orchestration outcomes → hardware &amp; firmware engineering</span>
+      </div></div></div>
+    <div class="goals gall"><div class="gtitle">NORTH STAR GOALS</div><div class="gsec">Customer experience</div><ul><li>When I switch channels, I want the same help and the same answer.</li><li>When I call in or I'm handed off, I want TELUS to already know me so I don't repeat myself.</li><li>When I have a problem, I want my provisioning checked first.</li><li>When I report an issue, I want it fixed the first time, with no truck roll if a phone fix exists.</li><li>When something breaks, I want it found in seconds, not 30–60 minutes.</li><li>When my install is done, I want it certified to TELUS standards.</li><li>When an outage hits, I want it fixed before I call.</li><li>When equipment is flaky, I want it replaced before it fails.</li><li>When a release ships, I want it more reliable than the last.</li></ul><div class="gsec sugh">Suggested (industry practice)</div><ul class="sugl"><li class="sug">First-contact resolution and effort tracked per channel</li><li class="sug">Explainable recommendations with human override</li><li class="sug">Privacy by design</li><li class="sug">Real-time freshness</li><li class="sug">Coverage for every device class</li><li class="sug">Root-cause trends feed roadmaps</li></ul><div class="enabbox"><div class="gsec">TELUS enabler</div><div class="enrow"><b>Channels:</b> shared test tools for customers, agents and techs; FieldFrame for agents</div><div class="enrow"><b>Orchestration:</b> Jarvis as one AI; Maestro, Cerebro, Fabric folded in; dispatch guardrails; auto truck roll</div><div class="enrow"><b>Context:</b> unified view with no new data lake; identity stitched; one knowledge base</div><div class="enrow"><b>Telemetry:</b> one vendor-neutral view of line, CPE and in-home</div><div class="enrow"><b>Closed Loop:</b> outage clustering; auto-ticketing; degradation detection</div></div></div>
   </div>
 
-  <div class="src">Sources: HSIA Reliability Tools Ecosystem deck (slides 4–18), HSIA Reliability service blueprint, stakeholder meetings Aug–Nov 2026 incl. Product Prime check-in Nov 4 · Maturity status as of Nov 2026</div>
 </div></div>
 
 </body></html>

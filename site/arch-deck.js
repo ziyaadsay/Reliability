@@ -361,6 +361,34 @@ export const ARCH_DECK = {
 // (null = any box), deck slide numbers in order of relevance]. Chips that no slide covers are left unlinked.
 export const ARCH_LINKS = [
  [
+  "Internet Backup",
+  "Proactive",
+  [
+   9
+  ]
+ ],
+ [
+  "Proactive Campaigns",
+  "Proactive",
+  [
+   6
+  ]
+ ],
+ [
+  "Fix in provisioning, no customer contact",
+  "Proactive",
+  [
+   6
+  ]
+ ],
+ [
+  "Automatic remediation",
+  "Proactive",
+  [
+   6
+  ]
+ ],
+ [
   "telus.com",
   "Customer self-serve",
   [
@@ -410,20 +438,6 @@ export const ARCH_LINKS = [
   "Customer self-serve",
   [
    11
-  ]
- ],
- [
-  "Internet backup status",
-  "Customer self-serve",
-  [
-   9
-  ]
- ],
- [
-  "CUJO parental controls",
-  "Customer self-serve",
-  [
-   10
   ]
  ],
  [
@@ -477,17 +491,24 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "CloudCheck T1 GUI",
-  "Call center",
-  [
-   9
-  ]
- ],
- [
   "RouteThis Certify & Resolve",
   null,
   [
    8
+  ]
+ ],
+ [
+  "Solvatio HRAIZN help desk",
+  "Call center",
+  [
+   14
+  ]
+ ],
+ [
+  "CloudCheck T1 GUI",
+  "Call center",
+  [
+   9
   ]
  ],
  [
@@ -498,10 +519,11 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "Horizon (HRAIZN) help desk",
+  "FieldFrame for agents",
   "Call center",
   [
-   14
+   16,
+   17
   ]
  ],
  [
@@ -516,14 +538,6 @@ export const ARCH_LINKS = [
   "Technician",
   [
    15,
-   16,
-   17
-  ]
- ],
- [
-  "FieldFrame",
-  "Technician",
-  [
    16,
    17
   ]
@@ -557,6 +571,13 @@ export const ARCH_LINKS = [
   ]
  ],
  [
+  "Solvatio HRAIZN",
+  "Care orchestration & AI co-pilot",
+  [
+   14
+  ]
+ ],
+ [
   "Jarvis (central troubleshooting AI)",
   "Care orchestration & AI co-pilot",
   [
@@ -565,24 +586,18 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "Dispatch guardrails",
+  "FieldFrame",
+  "Care orchestration & AI co-pilot",
+  [
+   17,
+   16
+  ]
+ ],
+ [
+  "Automated Dispatch Guardrails",
   "Care orchestration & AI co-pilot",
   [
    14
-  ]
- ],
- [
-  "AI summaries across transfers",
-  "Care orchestration & AI co-pilot",
-  [
-   11
-  ]
- ],
- [
-  "Auto truck roll",
-  "Care orchestration & AI co-pilot",
-  [
-   7
   ]
  ],
  [
@@ -600,18 +615,24 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "FieldFrame live line / alarms",
+  "AI summaries across transfers",
   "Care orchestration & AI co-pilot",
   [
-   17,
-   16
+   11
   ]
  ],
  [
-  "Ontology Layer",
-  "Customer, device & diagnostic context",
+  "Auto truck roll",
+  "Care orchestration & AI co-pilot",
   [
-   12
+   7
+  ]
+ ],
+ [
+  "Can Solvatio HRAIZN be the orchestration layer in its future state?",
+  "Care orchestration & AI co-pilot",
+  [
+   14
   ]
  ],
  [
@@ -619,6 +640,49 @@ export const ARCH_LINKS = [
   "Customer, device & diagnostic context",
   [
    16
+  ]
+ ],
+ [
+  "Solvatio HRAIZN as ontology store?",
+  "Customer, device & diagnostic context",
+  [
+   14,
+   12
+  ]
+ ],
+ [
+  "Netcracker",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "FIFA",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "Wiser (WSIR)",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "Remedy Trouble Tickets",
+  "Customer, device & diagnostic context",
+  [
+   12
+  ]
+ ],
+ [
+  "Ontology Layer",
+  "Customer, device & diagnostic context",
+  [
+   12
   ]
  ],
  [
@@ -644,27 +708,6 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "Netcracker",
-  "Customer, device & diagnostic context",
-  [
-   12
-  ]
- ],
- [
-  "FIFA",
-  "Customer, device & diagnostic context",
-  [
-   12
-  ]
- ],
- [
-  "Wiser (WSIR)",
-  "Customer, device & diagnostic context",
-  [
-   12
-  ]
- ],
- [
   "GPONe",
   "Line & outside the home",
   [
@@ -676,6 +719,14 @@ export const ARCH_LINKS = [
   "Line & outside the home",
   [
    5
+  ]
+ ],
+ [
+  "CloudCheck",
+  "CPE & firmware",
+  [
+   9,
+   10
   ]
  ],
  [
@@ -693,15 +744,22 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "CloudCheck",
+  "CloudCheck Wi-Fi QoE",
   "In-home diagnostics",
   [
-   9,
-   10
+   10,
+   9
   ]
  ],
  [
-  "RouteThis",
+  "RouteThis Certify",
+  "In-home diagnostics",
+  [
+   8
+  ]
+ ],
+ [
+  "RouteThis RAVA",
   "In-home diagnostics",
   [
    8
@@ -722,7 +780,7 @@ export const ARCH_LINKS = [
   ]
  ],
  [
-  "Horizon issue patterning",
+  "Solvatio HRAIZN issue patterning",
   "Telemetry returns to CPE, firmware & network engineering",
   [
    14,
