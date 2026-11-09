@@ -1048,8 +1048,7 @@ function tvOctReviewPage() {
   out.push(tableSec("missing-fixes", "Missing Channels: fixes in the notes (share of all tickets)", shareCols("Fix"), share(R.missing.fixes)));
   out.push(textSec("footer", "Sources, caveats and method", [
     `Sources: Looker ticket categories (Churn Measurement 2026 workbook), TV platform data, and the September and October TV ticket exports with agent notes and resolution text (${fmtNum(R.files)} October tickets to 30 October against ${fmtNum(R.looker)} in Looker for the month).`,
-    "Only aggregates are kept; no customer details are retained. Root causes and fixes come from keyword matching on free text, mostly the structured Copilot summaries, so shares are indicative. About 58% of tickets do not name the platform in the notes.",
-    "Suggested follow-ups (not agreed commitments): close out the Calgary outage; test whether the Legacy lift is real by comparing xVu packet-loss counts with September; review the Missing Channels sync path; add stuttering and Missing Channels to the Health Read."
+    "Only aggregates are kept; no customer details are retained. Root causes and fixes come from keyword matching on free text, mostly the structured Copilot summaries, so shares are indicative. About 58% of tickets do not name the platform in the notes."
   ]));
   return out;
 }

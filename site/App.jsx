@@ -6976,9 +6976,102 @@ export default function ReliabilityScorecards() {
       );
     };
 
+
+    // ---- presentation mode (Deck) ----
+    const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
+    const dshare = (head, rows) => (
+      <table>
+        <thead><tr><th style={{ textAlign: "left" }}>{head}</th><th>Sep</th><th>Oct</th><th>Change</th></tr></thead>
+        <tbody>{rows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{a}%</td><td className="n">{b}%</td><td className="n">{pp(a, b)}</td></tr>)}</tbody>
+      </table>
+    );
+    const dmove = (head, rows) => (
+      <table>
+        <thead><tr><th style={{ textAlign: "left" }}>{head}</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th></tr></thead>
+        <tbody>{rows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td></tr>)}</tbody>
+      </table>
+    );
+    const vid = R.categories[0], mv = R.movers;
+    const slides = [
+      { layout: "cover", title: "October TV video tickets", sub: `TV October review · what drove the rise in video quality and missing-channel tickets, and what the agent and technician notes say (notes to ${R.asOf})`,
+        notes: `Looker to Oct 2026 (full month); Sep and Oct note exports, ${num(R.files)} October tickets to 30 Oct. Aggregates only.` },
+      { layout: "statement", title: `October TV tickets were flat on September (${sp(pct(totOct, totSep), 0)}), but video quality tickets rose ${sp(pct(vid[2], vid[1]), 0)}. One Calgary outage explains about a fifth of it; the rest is a higher everyday level on Optik TV Legacy boxes.`,
+        notes: "The one-line answer to what is driving the rise." },
+      { layout: "default", title: "September to October at a glance", sub: "Looker counts; rates per 100 subscribers", clicks: 6,
+        body: (step, C) => <div className="dk-stats">
+          {C(1, dstat(num(totOct), "TV tickets · Oct", `Sep ${num(totSep)} · ${sp(pct(totOct, totSep), 1)}`))}
+          {C(2, dstat(num(vid[2]), "Video Issues · Oct", `Sep ${num(vid[1])} · ${sp(pct(vid[2], vid[1]), 1)}`))}
+          {C(3, dstat(num(mv[0][2]), "Stop/Stuttering/Freezing · Oct", `Sep ${num(mv[0][1])} · ${sp(pct(mv[0][2], mv[0][1]), 1)}`))}
+          {C(4, dstat(fmtRate(legacy.ticketRate[iOct]), "Optik TV Legacy tickets per 100 subs", `Sep ${fmtRate(legacy.ticketRate[iSep])} · ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets`))}
+          {C(5, dstat(fmtRate(opus.ticketRate[iOct]), "TV Evolution tickets per 100 subs", `Sep ${fmtRate(opus.ticketRate[iSep])} · ${sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets`))}
+          {C(6, dstat(num(mv[1][2]), "Missing Channels · Oct", `Sep ${num(mv[1][1])} · ${sp(pct(mv[1][2], mv[1][1]), 1)}`))}
+        </div>,
+        notes: "One card per click." },
+      { layout: "default", title: "In short", clicks: 6,
+        body: (step, C) => <ul>
+          <li>{C(1, <><strong>The total barely moved; the mix did.</strong> {num(totOct)} tickets against {num(totSep)} ({sn(totOct - totSep)}); the step-up came in September (+{num(totSep - R.lookerAug)} on August) and held. Video Issues {sn(vid[2] - vid[1])}, Channel Issues {sn(R.categories[1][2] - R.categories[1][1])}; STB No Boot {sn(R.categories[3][2] - R.categories[3][1])}.</>)}</li>
+          <li>{C(2, <><strong>Stuttering, pixelization and missing channels are the risers.</strong> {sn(mv[0][2] - mv[0][1])}, {sn(mv[2][2] - mv[2][1])} and {sn(mv[1][2] - mv[1][1])} tickets.</>)}</li>
+          <li>{C(3, <><strong>It is an Optik TV Legacy (Mediaroom) story.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100; TV Evolution {sn(opus.tickets[iOct] - opus.tickets[iSep])}.</>)}</li>
+          <li>{C(4, <><strong>One outage explains about a fifth.</strong> {O.area} area outage on {O.day} Oct: {O.peak} stuttering tickets that day against about {O.normal}, roughly {num(excess)} extra.</>)}</li>
+          <li>{C(5, <><strong>The rest is a broader lift, not a new fault.</strong> {(stOct / 30).toFixed(0)} a day against {(stSep / 30).toFixed(0)}, and the root causes match September's mix.</>)}</li>
+          <li>{C(6, <><strong>Missing Channels is a provisioning problem.</strong> About {R.missing.causes[0][2]}% of tickets with a cause cite middleware or subscription sync; the fix is a sync or Tier 2 escalation.</>)}</li>
+        </ul>,
+        notes: "Six points, one per click." },
+      { layout: "section", num: "01", title: "What moved", sub: "Looker ticket categories, September to October" },
+      { layout: "two-cols", title: "By category and largest movers", clicks: 1,
+        body: (step, C) => <>
+          <div>{dmove("Category", R.categories)}</div>
+          {C(1, <div>{dmove("Ticket type", R.movers)}</div>)}
+        </>,
+        notes: "Left: the six categories. Right (one click): the nine largest movers." },
+      { layout: "section", num: "02", title: "Stuttering and freezing", sub: "Day by day, September and October" },
+      { layout: "default", title: "Stop/Stuttering/Freezing tickets per day", sub: `Note exports: ${num(stSep)} in September, ${num(stOct)} in October (${sn(stOct - stSep)})`, clicks: 1,
+        body: (step, C) => <>
+          <div style={{ width: "100%" }}>{dailyChart()}</div>
+          <div className="dk-legend"><span><i style={{ background: col }} />October</span><span><i style={{ background: MUTED }} />September</span></div>
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>The one clear spike is {O.day} October. Outside it, October sits above September on most days, which is the broader lift.</p>)}
+        </>,
+        notes: "Orange marker is the Calgary outage day." },
+      { layout: "two-cols", title: "Outage, and everything else", clicks: 2,
+        body: (step, C) => <>
+          {C(1, <div className="dk-note amber"><h3>The {O.day} October outage</h3>{O.area}. Agents found an active area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} normally; {O.citing} and {O.citingNext} tickets name the outage. Agents educated customers and subscribed them to the outage portal; no field visit.</div>)}
+          {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
+        </>,
+        notes: "About 100 of the roughly 430 extra stuttering tickets are the outage." },
+      { layout: "section", num: "03", title: "What the notes say", sub: "Root causes and fixes cited, video quality and Missing Channels" },
+      { layout: "default", title: "Root causes cited: video quality", sub: `Share of the ${num(R.video.rca[1])} October tickets with a root-cause line (${num(R.video.n[1])} tickets); a ticket can cite more than one`, clicks: 1,
+        body: (step, C) => <>
+          {dshare("Root cause cited", R.causes)}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Packet loss and discontinuities lead and are quoted more than in September. Long uptime is not the story: gateway uptime is quoted in only {R.uptime.cited[1]} tickets (median {R.uptime.median[1]} days).</p>)}
+        </>,
+        notes: "Underrun, discontinuity and multicast mentions roughly doubled to tripled; that may be agents pasting more xVu output." },
+      { layout: "default", title: "Fixes applied: video quality", sub: `Share of the ${num(R.video.fixN[1])} October tickets with a resolution line; fixes are often combined`, clicks: 1,
+        body: (step, C) => <>
+          {dshare("Fix in the notes", R.fixes)}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>A box swap and a sequential reboot are each about 30%. The reboot fix is used less than in September while dispatch and escalation are used more, which suggests more cases were not cleared remotely.</p>)}
+        </>,
+        notes: "Remote Wi-Fi fixes are steady near 18%." },
+      { layout: "two-cols", title: "Missing Channels", sub: `${num(R.missing.n[1])} October tickets (${num(R.missing.n[0])} in September); Unsubscribed-type tickets ${num(R.missing.unsubscribed[0])} to ${num(R.missing.unsubscribed[1])}`, clicks: 1,
+        body: (step, C) => <>
+          <div>{dshare("Root cause cited", R.missing.causes)}</div>
+          {C(1, <div>{dshare("Fix in the notes", R.missing.fixes)}</div>)}
+        </>,
+        notes: "A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation." },
+      { layout: "end", title: "Sources and method", sub: `Looker ticket categories (Churn Measurement 2026 workbook) · TV platform data · September and October TV ticket exports with agent notes and resolution text (${num(R.files)} October tickets to 30 October, against ${num(totOct)} in Looker for the month). Aggregates only; shares come from keyword matching on free text and are indicative.`,
+        notes: "The full write-up is the TV › Oct Review page on the dashboard." }
+    ];
+
     return (
+      <>
+        {deckSlide != null && <Deck slides={slides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={col} isDark={isDark} title="TV October review" />}
       <div className="hb">
         <style>{css}</style>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -26 }}>
+          <button onClick={() => setDeckSlide(1)} title="Open this review as slides (arrow keys to navigate, Esc to exit)"
+            style={{ background: col, color: "#fff", border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: FONT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 4px 14px rgba(0,0,0,.14)" }}>
+            <span style={{ fontSize: 10 }}>▶</span> Present · {slides.length} slides
+          </button>
+        </div>
         <header className="hb-head">
           <div className="hb-eyebrow">TV · October 2026 · What drove the rise in TV video tickets, what the agent and technician notes say</div>
           <h1>October TV tickets were flat on September (+{pct(totOct, totSep).toFixed(0)}%), but video quality tickets rose {sp(pct(R.categories[0][2], R.categories[0][1]), 0)}. One Calgary outage explains about a fifth of it; the rest is a higher everyday level on Optik TV Legacy boxes.</h1>
@@ -7069,22 +7162,12 @@ export default function ReliabilityScorecards() {
           </ul>
         </section>
 
-        <section aria-labelledby="oc-next">
-          <h2 id="oc-next">Suggested follow-ups</h2>
-          <p className="hb-prose">These are suggestions from the analysis, not agreed commitments.</p>
-          <ul className="hb-prose">
-            <li><strong>Close out the {O.day} October Calgary outage.</strong> Confirm its cause and restoration with network operations, and whether the outage code on the tickets is consistent.</li>
-            <li><strong>Test the Legacy lift.</strong> Compare Mediaroom packet-loss and discontinuity counts from xVu against September to see whether the rise is real or a note-writing change, and which gateway models carry it.</li>
-            <li><strong>Review the Missing Channels sync path.</strong> The same sync and Tier 2 provisioning steps repeat across tickets, so a proactive sync after package changes or box swaps would remove the tickets.</li>
-            <li><strong>Add the two categories to the Health Read.</strong> Stuttering and Missing Channels are the October risers that the Health Read does not yet discuss.</li>
-          </ul>
-        </section>
-
         <section aria-labelledby="oc-method">
           <h2 id="oc-method">Sources and method</h2>
           <p className="hb-prose" style={{ fontSize: 13.5 }}>Looker ticket categories (Churn Measurement 2026 workbook), TV platform data (TV Customer Base Breakdown workbook and Looker), and the September and October TV ticket exports with agent notes and resolution text ({num(R.files)} October tickets to 30 October against {num(totOct)} in Looker for the month; the September export is complete). Only aggregates are kept; no customer details are retained. Root causes and fixes come from keyword matching on the free text, mostly the structured Copilot summaries, so shares are indicative. About 58% of tickets do not name the platform in the notes, so the Mediaroom and Evolution split uses the platform data above for totals and the notes only for direction. The archived <button onClick={() => setPage("tvbrief")} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: col, textDecoration: "underline", cursor: "pointer" }}>TV Review (Stuck on Initializing)</button> covers the September step-up in that category.</p>
         </section>
       </div>
+      </>
     );
   }
 
