@@ -26,7 +26,7 @@ const METRICS = {
 };
 const SOURCES = {
   kpis: "Churn Measurement 2026 workbook, Reliability/Deact KPIs tab (HSIA base = HSIA West + TQ ILEC HS + PFE Vulcan HS from the 2026 Redwood Scorecard; TV and SHS national).",
-  calls: "TS Calls Offered by Product workbook, Actuals tabs. HSIA = every field containing HSIA (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA); TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.",
+  calls: "TS Calls Offered by Product workbook, Actuals tabs. HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA excluded); TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.",
   tickets: "Looker Ticket Categories tabs of the Churn Measurement 2026 workbook; HSIA pain-point grouping from the hsia_ticket_recategorization tab.",
   initiatives: "HSIA: Product Technical | Churn & VOC Projects Impact sheet (Sept 2026 Executive Summary tab; carries an Impact rating). TV and SHS: Churn Measurement 2026 workbook, Initiatives tab.",
   tvPlatforms: "Tickets: Looker split by product. Base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (all regions except BTV and SPLUS). Repairs: 2026 Redwood Scorecard, Repair Tracking Detail (2026 onward). Swaps: Tableau Swapped Orders Combined View, Repair Swap Orders Volumes.",
@@ -93,7 +93,7 @@ function callTool(name, args = {}) {
         dashboard: DASHBOARD_URL, latestMonth: LATEST, months: MONTHS, churnReportedThrough: CHURN_THRU,
         products: [
           { id: "All", label: "All products (HSIA + TV + SHS)", tools: ["get_kpi_series", "get_kpi_summary", "list_pages", "get_page"], covers: COVERS.All, note: "Rates blended over the combined base; SH+ excluded" },
-          { id: "HSIA", label: "High Speed Internet (HSIA West, PFE - HSIA, TQ ILEC - HSIA)", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.HSIA },
+          { id: "HSIA", label: "High Speed Internet (HSIA West, TQ ILEC - HSIA)", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.HSIA },
           { id: "TV", label: "Optik TV (Legacy) and TV Evolution", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_tv_platforms", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.TV },
           { id: "SHS", label: "SmartHome Security", tools: ["get_kpi_series", "get_kpi_summary", "get_ticket_issues", "get_initiatives", "get_health_commentary", "list_pages", "get_page"], covers: COVERS.SHS },
           { id: "SH+", label: "SmartHome+", tools: ["get_kpi_series", "get_kpi_summary", "get_health_commentary", "list_pages", "get_page"], covers: COVERS["SH+"], note: "Calls, tickets and base from Jan 2025; rates from Jul 2025; no churn, ticket categories or initiatives yet" }

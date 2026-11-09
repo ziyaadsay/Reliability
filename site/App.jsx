@@ -684,7 +684,7 @@ const HSIA_YOY = {
 // FFH call split by product — TS Calls Offered by Product workbook, Actuals tabs.
 // Arrays align with MONTHS (Jan 2025 – Oct 2026); the whole series is re-read each month
 // because the source restates earlier months.
-// HSIA = every field containing "HSIA" (HSIA West, wHSIA, PFE - HSIA, TQ ILEC - HSIA).
+// HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA are excluded).
 // TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
 // These series also drive the overview scorecard's call rows and the derived
 // All-products calls; the KPI workbook's FFH rollup is retained in DATA only
@@ -692,8 +692,8 @@ const HSIA_YOY = {
 // ---------------------------------------------------------------------------
 const CALLS_SPLIT = {
   HSIA: {
-    offered:  [71683,62931,62986,62532,65485,65903,70866,75667,87327,80838,74636,79126,73968,61292,77567,73609,82934,87199,91756,93023,85518,86585],
-    answered: [62721,53784,58863,58588,59488,60466,65899,65376,61542,56698,62221,62803,63318,57377,69168,66119,74837,78649,80243,78238,74994,75557]
+    offered:  [71440,62605,62487,61919,64285,64905,69780,73989,85545,78496,71863,74917,70701,58600,74157,70240,78990,82705,86688,88987,82522,83985],
+    answered: [62488,53472,58417,58069,58541,59681,65013,64102,60163,54641,59607,58755,60147,54702,65796,62788,71047,74348,75227,74390,72173,73109]
   },
   TV: {
     offered:  [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53128,58481,61071],
@@ -4158,7 +4158,7 @@ export default function ReliabilityScorecards() {
       : product === "SH+"
         ? "SH+ contacts offered vs answered (SH+ reliability KPIs workbook)."
       : product === "HSIA"
-        ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs), summing every field containing HSIA."
+        ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs): HSIA West + TQ ILEC - HSIA."
         : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.";
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
@@ -7575,7 +7575,7 @@ export default function ReliabilityScorecards() {
                       ? `TV review · Aug – Oct 2026 (agent exports to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: calls, tickets, repairs/dispatches, base"
-                  : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA" : ""}`}</span>
+                  : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West & TQ ILEC - HSIA" : ""}`}</span>
             {!ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "tvbrief" ? `final, dashboard KPIs to ${TV_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>}
             {page !== "archive" && CHILD_PARENT[page] !== "archive" && !ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
           </div>
