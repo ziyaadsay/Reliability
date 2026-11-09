@@ -80,7 +80,10 @@ the TV one (`TV_REVIEW` in `site/App.jsx`) follows STB No Boot › Stuck on
 Initializing from August to October 2026 with daily counts from the TV agent
 ticket exports, the Looker Category 3 split (All STBs / One STB Affected) from
 Jan 2025, the root-cause hypotheses, the side-load cohort pre/post test (`SIDELOAD`, aggregates by deployment date) and the fixes in flight. Both are served by
-`get_page({ page: "review" })`.
+`get_page({ page: "review" })`. Both are archived (Archive menu, frozen). The current TV review is
+**TV › Oct Review** (`#tvoctreview`, `OCT_REVIEW` in `site/App.jsx`): what drove the rise in October video and
+missing-channel tickets, from the Sep and Oct note exports (aggregates only), served by
+`get_page({ product: "TV", page: "octreview" })`.
 
 The Review pages and the Executive Summary have a presentation mode (the Present
 button, or `#<page>/<n>` to open on slide n, e.g. `#tvbrief/11`,

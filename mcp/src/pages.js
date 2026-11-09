@@ -38,11 +38,11 @@ const shortM = (m) => (m ? m.replace(/ \d{2}(\d{2})$/, "'$1") : m);
 const LATEST_IDX = MONTHS.length - 1;
 
 // ---- page registry ----
-const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", selfserve: "Self-serve", ffps: "Friction Free Program" };
+const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", octreview: "Oct Review", selfserve: "Self-serve", ffps: "Friction Free Program" };
 const PAGE_HASH = {
   "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps",
   "HSIA|overview": "HSIA", "HSIA|notes": "hsiatickets", "HSIA|sentiment": "hsiasentiment", "HSIA|cross": "hsiacross", "HSIA|review": "hsiabrief",
-  "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross", "TV|review": "tvbrief",
+  "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross", "TV|review": "tvbrief", "TV|octreview": "tvoctreview",
   "SHS|overview": "SHS", "SH+|overview": "SH+"
 };
 const PAGES = [
@@ -57,12 +57,13 @@ const PAGES = [
   { product: "TV", id: "notes", nav: "TV › Notes Analysis" },
   { product: "TV", id: "sentiment", nav: "TV › Customer Sentiment Analysis" },
   { product: "TV", id: "cross", nav: "TV › Cross Analysis" },
-  { product: "TV", id: "review", nav: "TV › Review" },
+  { product: "TV", id: "octreview", nav: "TV › Oct Review" },
   { product: "SHS", id: "overview", nav: "SHS" },
   { product: "SH+", id: "overview", nav: "SH+" },
   { product: "All", id: "selfserve", nav: "Self-serve" },
   { product: "All", id: "ffps", nav: "Friction Free Program" },
-  { product: "HSIA", id: "review", nav: "Archive › HSIA Review" }
+  { product: "HSIA", id: "review", nav: "Archive › HSIA Review" },
+  { product: "TV", id: "review", nav: "Archive › TV Review (Stuck on Initializing)" }
 ];
 const pageUrl = (product, id) => `${DASHBOARD_URL}#${encodeURIComponent(PAGE_HASH[`${product}|${id}`])}`;
 
@@ -1018,6 +1019,41 @@ function tvReviewPage() {
   return out;
 }
 
+// ---- TV October Review (mirrors TvOctReviewPage): what drove the rise in TV video tickets in October ----
+function tvOctReviewPage() {
+  const R = OCT_REVIEW, out = [];
+  const sum = (arr) => arr.reduce((x, y) => x + (y || 0), 0);
+  const iSep = MONTHS.indexOf("Sep 2026"), iOct = MONTHS.indexOf("Oct 2026");
+  const legacy = TV_PLATFORMS.find((p) => p.id === "legacy"), opus = TV_PLATFORMS.find((p) => p.id === "opus");
+  const stSep = sum(R.stutter.sep), stOct = sum(R.stutter.oct), O = R.outage;
+  const excess = (O.peak - O.normal) + (O.next - O.normal);
+  const share = (rows) => rows.map(([name, sep, oct]) => ({ name, sep, oct, change: `${oct - sep >= 0 ? "+" : "−"}${Math.abs(oct - sep)} pts` }));
+  const shareCols = (first) => [col("name", first), col("sep", "Sep", "%"), col("oct", "Oct", "%"), col("change", "Change")];
+  const moveRows = (rows) => rows.map(([name, sep, oct]) => ({ name, sep, oct, change: oct - sep, changePct: round(pctChange(oct, sep), 1) }));
+  const moveCols = (first) => [col(first === "x" ? "name" : "name", first), col("sep", "Sep", "count"), col("oct", "Oct", "count"), col("change", "Change", "count"), col("changePct", "Change %", "%")];
+  out.push(textSec("short", "In short", [
+    `TV tickets were ${fmtNum(R.looker)} in October against ${fmtNum(R.lookerSep)} in September (${sNum(R.looker - R.lookerSep)}, ${sPct(pctChange(R.looker, R.lookerSep))}). The step-up came in September (${sNum(R.lookerSep - R.lookerAug)} on August) and held. Video Issues rose ${sNum(R.categories[0][2] - R.categories[0][1])} and Channel Issues ${sNum(R.categories[1][2] - R.categories[1][1])}; STB No Boot fell ${fmtNum(R.categories[3][1] - R.categories[3][2])} and Digital Box ${fmtNum(R.categories[4][1] - R.categories[4][2])}.`,
+    `Stop/Stuttering/Freezing ${sNum(R.movers[0][2] - R.movers[0][1])} (${sPct(pctChange(R.movers[0][2], R.movers[0][1]), 0)}), Pixelization ${sNum(R.movers[2][2] - R.movers[2][1])} (${sPct(pctChange(R.movers[2][2], R.movers[2][1]), 0)}) and Missing Channels ${sNum(R.movers[1][2] - R.movers[1][1])} (${sPct(pctChange(R.movers[1][2], R.movers[1][1]), 0)}) are the risers.`,
+    `It is an Optik TV Legacy (Mediaroom) story: Legacy tickets ${sNum(legacy.tickets[iOct] - legacy.tickets[iSep])} and its rate went from ${legacy.ticketRate[iSep]} to ${legacy.ticketRate[iOct]} per 100 subscribers; TV Evolution ${sNum(opus.tickets[iOct] - opus.tickets[iSep])} to ${opus.ticketRate[iOct]}. About half of pixelization notes name a Mediaroom box and almost none an Evolution box.`,
+    `One outage explains about a fifth: on ${O.day} October ${O.area} had an active Optik TV area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit ${O.peak} that day and ${O.next} the next against about ${O.normal} normally, roughly ${excess} extra tickets; ${O.citing} and ${O.citingNext} tickets name the outage.`,
+    `The rest is a broader lift, not a new fault: stuttering ran at ${Math.round(stOct / 30)} tickets a day in October against ${Math.round(stSep / 30)} in September and stayed there without the outage days. The root causes in the notes are close to September's mix.`,
+    `Missing Channels is a provisioning problem: about ${R.missing.causes[0][2]}% of tickets with a stated cause cite middleware or subscription sync; the fix is a sync or a Tier 2 provisioning escalation, not a box swap. Unsubscribed-type tickets rose ${sNum(R.missing.unsubscribed[1] - R.missing.unsubscribed[0])}.`
+  ]));
+  out.push(tableSec("categories", "By ticket category (Looker), Sep to Oct 2026", moveCols("Category"), moveRows(R.categories)));
+  out.push(tableSec("movers", "Largest movers (Category 1 › 2), Sep to Oct 2026", moveCols("Ticket type"), moveRows(R.movers), "Looker counts."));
+  out.push(sec("daily", "Stop/Stuttering/Freezing tickets per day, September and October 2026", "series", { months: R.stutter.oct.map((_, i) => `Day ${i + 1}`), series: [{ name: "September", data: R.stutter.sep }, { name: "October", data: R.stutter.oct }] }, `Note exports: ${fmtNum(stSep)} in September, ${fmtNum(stOct)} in October. The spike on ${O.day} October (${O.peak}) is the ${O.area} outage.`));
+  out.push(tableSec("causes", "Root causes cited, video quality (share of tickets with a root-cause line)", shareCols("Root cause"), share(R.causes), `${fmtNum(R.video.n[1])} October tickets (${fmtNum(R.video.n[0])} in September), ${fmtNum(R.video.rca[1])} with an explicit root-cause line. A ticket can cite more than one cause. Gateway uptime is quoted in only ${R.uptime.cited[1]} tickets (median ${R.uptime.median[1]} days against ${R.uptime.median[0]} in September).`));
+  out.push(tableSec("fixes", "Fixes applied, video quality (share of tickets with a resolution line)", shareCols("Fix"), share(R.fixes), `${fmtNum(R.video.fixN[1])} October tickets with resolution text (${fmtNum(R.video.fixN[0])} in September); fixes are often combined.`));
+  out.push(tableSec("missing-causes", "Missing Channels: root causes cited", shareCols("Root cause"), share(R.missing.causes), `${fmtNum(R.missing.n[1])} October tickets (${fmtNum(R.missing.n[0])} in September), ${fmtNum(R.missing.rca[1])} with a root-cause line.`));
+  out.push(tableSec("missing-fixes", "Missing Channels: fixes in the notes (share of all tickets)", shareCols("Fix"), share(R.missing.fixes)));
+  out.push(textSec("footer", "Sources, caveats and method", [
+    `Sources: Looker ticket categories (Churn Measurement 2026 workbook), TV platform data, and the September and October TV ticket exports with agent notes and resolution text (${fmtNum(R.files)} October tickets to 30 October against ${fmtNum(R.looker)} in Looker for the month).`,
+    "Only aggregates are kept; no customer details are retained. Root causes and fixes come from keyword matching on free text, mostly the structured Copilot summaries, so shares are indicative. About 58% of tickets do not name the platform in the notes.",
+    "Suggested follow-ups (not agreed commitments): close out the Calgary outage; test whether the Legacy lift is real by comparing xVu packet-loss counts with September; review the Missing Channels sync path; add stuttering and Missing Channels to the Health Read."
+  ]));
+  return out;
+}
+
 // ---- list_pages / get_page ----
 const PAGE_SCOPE = {
   "All|overview": `Overview home page, All scope: KPI cards, Health Read, scorecard, recurring issues, initiatives by pillar, initiative timeline`,
@@ -1035,10 +1071,11 @@ const PAGE_SCOPE = {
   "TV|sentiment": "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)",
   "TV|cross": "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims",
   "TV|review": `TV review · Aug – Oct 2026 (agent exports to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`,
+  "TV|octreview": `TV October review · Looker to Oct 2026, agent and technician notes to ${OCT_REVIEW.asOf} · what drove the rise in video quality and missing-channel tickets, root causes and fixes`,
   "SHS|overview": "SHS: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "SH+|overview": "SH+: calls, tickets, repairs/dispatches, base"
 };
-const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "ffps"]);
+const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "octreview", "ffps"]);
 function buildPage(product, id, a, b) {
   switch (id) {
     case "overview": return product === "All" ? homePage(a, b) : overviewPage(product, a, b);
@@ -1048,6 +1085,7 @@ function buildPage(product, id, a, b) {
     case "sentiment": return product === "HSIA" ? hsiaSentimentPage() : tvSentimentPage();
     case "cross": return crossPage(product);
     case "review": return product === "TV" ? tvReviewPage() : reviewPage();
+    case "octreview": return tvOctReviewPage();
     case "selfserve": return selfServePage(a, b);
     case "ffps": return ffpsPage();
     default: throw new Error(`page not available for ${product}`);
@@ -1061,7 +1099,7 @@ function pageEntry(p, a, b) {
   return { id: p.id, label: PAGE_LABEL[p.id], product: p.product, nav: p.nav, url: pageUrl(p.product, p.id), groups, sections: sections.map((s) => ({ id: s.id, title: s.title, kind: s.kind, display: s.display, groupId: s.groupId })) };
 }
 const PAGE_TOOLS = [
-  { name: "list_pages", description: "The dashboard's navigation as data: every page per product (executive, overview, platforms, notes, sentiment, cross, review, selfserve, ffps) with its URL and the ordered list of sections get_page returns. Pass product to narrow.", inputSchema: { type: "object", properties: { product: { type: "string", enum: SCOPES } } } },
+  { name: "list_pages", description: "The dashboard's navigation as data: every page per product (executive, overview, platforms, notes, sentiment, cross, review, octreview, selfserve, ffps) with its URL and the ordered list of sections get_page returns. Pass product to narrow.", inputSchema: { type: "object", properties: { product: { type: "string", enum: SCOPES } } } },
   { name: "get_page", description: "Everything a dashboard page shows, in page order, as typed sections: cards (KPI cards with MoM/YoY and a favourable/unfavourable read), series (charts: months + series), table (columns + rows), text (narratives, with the page's own read where it has one) and list (bullets, movers, recommendations). from/to follow get_kpi_series month rules; `to` is also the month the cards and Health Read are evaluated at. Pages built from a fixed analysis window (notes, sentiment, cross, review, ffps) ignore from/to.", inputSchema: { type: "object", properties: { product: { type: "string", enum: SCOPES }, page: { type: "string", enum: [...new Set(PAGES.map((p) => p.id))] }, from: { type: "string", description: 'First month, e.g. "Jan 2026" (default Jan 2025)' }, to: { type: "string", description: 'Last month, e.g. "Sep 2026" (default latest)' } }, required: ["product", "page"] } }
 ];
 const PAGE_TOOL_NAMES = PAGE_TOOLS.map((t) => t.name);

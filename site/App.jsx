@@ -44,6 +44,8 @@ const LATEST_PREV_SHORT = "Sep'26";
 // The HSIA Review lives in the Archive and is frozen at the last month it was written for (Q3 2026);
 // it does not follow LATEST.
 const HSIA_REVIEW_LATEST = "Sep 2026";
+// The archived TV Review (tvbrief) is frozen at the figures it was written with: dashboard KPIs to September.
+const TV_REVIEW_LATEST = "Sep 2026";
 const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 // The Looker ticket categories (LOOKER / LOOKER_EXTRA / OVERVIEW_ISSUES) are refreshed a month
 // ahead of the KPI tabs: their series run to LOOKER_LATEST and their issue tables compare
@@ -860,6 +862,43 @@ const TV_REVIEW = {"asOf":"30 Oct 2026","period":"Aug – Oct 2026","octDays":30
   ]
 };
 
+// TV October Review: what drove the rise in TV video tickets in October. Aggregates from the Sep and Oct
+// agent/technician note exports (Oct 1 - 30; no customer data retained). Notes are keyword-classified, so
+// shares are indicative. "Stutter" = Video Issues > Stop/Stuttering/Freezing; "Video quality" adds Pixelization.
+const OCT_REVIEW = {
+  asOf: "30 Oct 2026", files: 36667, looker: 37944, lookerSep: 37535, lookerAug: 32800,
+  stutter: {
+    sep: [83,62,74,73,64,46,56,86,69,96,78,77,59,78,82,96,93,79,56,65,96,77,95,67,96,75,53,81,87,104],
+    oct: [74,88,76,74,118,89,72,83,102,82,68,77,108,111,91,100,92,161,114,89,61,94,86,86,67,89,100,96,102,84]
+  },
+  outage: { day: 18, area: "Calgary, AB", peak: 161, next: 114, normal: 85, citing: 54, citingNext: 9 },
+  categories: [["Video Issues", 7558, 8202], ["Channel Issues", 4559, 4935], ["Recording Issues", 5115, 5264], ["STB No Boot", 8626, 8324], ["Digital Box", 4923, 4775], ["Other categories", 6754, 6444]],
+  movers: [
+    ["Video Issues › Stop/Stuttering/Freezing", 2307, 2813], ["Channel Issues › Missing Channels", 1926, 2130], ["Video Issues › Pixelization", 299, 444],
+    ["Channel Issues › Channel Not Working", 2250, 2355], ["Recording Issues › Cannot Set Recordings", 3403, 3454],
+    ["STB No Boot › Stuck on Initializing", 5236, 5205], ["Digital Box › No Boot", 2419, 2253], ["STB No Boot › Reboot Loop", 1077, 959], ["Remote › Programming", 1056, 975]
+  ],
+  video: { n: [2601, 3160], rca: [360, 425], fixN: [294, 342], stutterN: [2303, 2734] },
+  causes: [
+    ["Packet loss, discontinuities or multicast drops (xVu / InSight)", 36, 44], ["STB hardware degradation or failing box", 39, 40],
+    ["Middleware, provisioning or profile out of sync", 34, 34], ["Wi-Fi to wireless STBs (weak signal, 5 GHz interference, dead spots)", 28, 32],
+    ["Long uptime, buffer or cache corruption", 26, 24], ["Line, ONT, fibre or light level", 18, 17], ["Bandwidth or congestion", 12, 15],
+    ["Cabling, coax, splitters", 14, 12], ["Active area outage", 1, 3]
+  ],
+  fixes: [
+    ["Replaced the STB (swap kit, self-repair)", 32, 30], ["Sequential reboot (ONT, modem, STB)", 36, 30], ["Technician dispatch or field visit", 17, 21],
+    ["Education or setting expectations", 20, 21], ["Wired or moved the STB, booster, WPS, Wi-Fi channel change", 18, 18],
+    ["Escalated (Tier 2, outage team, Core)", 11, 16], ["IPD, middleware or stream-profile refresh", 4, 5]
+  ],
+  missing: {
+    n: [1919, 2060], rca: [266, 253], unsubscribed: [910, 1071],
+    causes: [["Middleware, provisioning or subscription out of sync", 80, 79], ["TELUS TV+ app cache or data", 18, 14], ["Gateway reboot, uptime or firmware", 9, 12], ["STB hardware", 5, 5]],
+    fixes: [["Education or advised the customer", 85, 84], ["Sync or refresh (Fix My Account, subscription, stream profile, guide)", 49, 46], ["Reboot", 44, 44], ["Escalated (Tier 2, Synapse provisioning)", 31, 31], ["STB swap", 8, 8]]
+  },
+  uptime: { cited: [54, 53], d30: [37, 32], d90: [20, 16], median: [54, 36] },
+  diag: [["Underruns", 23, 63], ["Discontinuities", 11, 34], ["Multicast", 18, 45]]
+};
+
 const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5", FFPS: "#A3268A" };
 const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2", FFPS: "#D77BC4" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
@@ -1670,6 +1709,16 @@ function buildAskContext(view, month) {
     TV_REVIEW.causes.forEach((c) => out.push(`- cause [${c.status}] ${c.name}: ${flat(c.evidence)}`));
     TV_REVIEW.actions.forEach((a) => out.push(`- action [${a.status}] ${a.name} | ${a.owner} | ${a.when}: ${flat(a.detail)}`));
   }
+  if (typeof OCT_REVIEW !== "undefined") {
+    const R = OCT_REVIEW, o = R.outage;
+    out.push("\n== TV Oct Review: what drove the rise in TV video tickets in October (notes to " + R.asOf + ") ==");
+    out.push(`- TV tickets ${R.looker} in Oct vs ${R.lookerSep} in Sep; the step-up came in Sep. Video Issues ${R.categories[0][1]} to ${R.categories[0][2]}, Channel Issues ${R.categories[1][1]} to ${R.categories[1][2]}.`);
+    R.movers.forEach(([n, a, b]) => out.push(`- mover ${n}: ${a} to ${b}`));
+    out.push(`- Calgary Optik TV area outage on ${o.day} Oct: stuttering tickets ${o.peak} that day and ${o.next} next vs about ${o.normal} normally; ${o.citing} and ${o.citingNext} tickets name the outage.`);
+    R.causes.forEach(([n, a, b]) => out.push(`- video quality cause cited: ${n}: ${a}% Sep, ${b}% Oct`));
+    R.fixes.forEach(([n, a, b]) => out.push(`- video quality fix: ${n}: ${a}% Sep, ${b}% Oct`));
+    R.missing.causes.forEach(([n, a, b]) => out.push(`- Missing Channels cause: ${n}: ${a}% Sep, ${b}% Oct`));
+  }
   return out.join("\n");
 }
 
@@ -2245,18 +2294,19 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
-  tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "Review"
+  tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "TV Review (Sep 2026)", tvoctreview: "Oct Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
 const PARENT_LABEL = { home: "Overview", archive: "Archive", hsiaarch: "HSIA · Architecture" };
 const ARCHITECTURE_URL = "https://claude.ai/artifact/A1ZcUPDQ119QdFpa36edPX?sk=w28b8ZTHHIB5SiZM_L_SDA";
 // Previously completed reviews and miscellaneous pages. Frozen: not refreshed with each month's update.
 const ARCHIVE_ITEMS = [
-  { id: "hsiabrief", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." }
+  { id: "hsiabrief", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." },
+  { id: "tvbrief", title: "TV Review (Stuck on Initializing)", period: "Aug to Oct 2026 (agent exports to 30 Oct 2026)", desc: "STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight. Final; superseded by the Oct Review." }
 ];
 
 // Initiatives covering a recurring-issue group, product-scoped
@@ -2573,7 +2623,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvbrief", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2663,14 +2713,15 @@ export default function ReliabilityScorecards() {
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
     { id: "tvsentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.TV, child: true, parent: "TV" },
     { id: "tvcross", label: "Cross Analysis", icon: "cross", color: colors.TV, child: true, parent: "TV" },
-    { id: "tvbrief", label: "Review", icon: "brief", color: colors.TV, child: true, parent: "TV" },
+    { id: "tvoctreview", label: "Oct Review", icon: "brief", color: colors.TV, child: true, parent: "TV" },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
     { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS },
     // Archive is always the last menu option, set off by a divider.
     { id: "archive", label: "Archive", icon: "archive", color: T.textMuted, divider: true },
-    { id: "hsiabrief", label: "HSIA Review", icon: "brief", color: colors.HSIA, child: true, parent: "archive" }
+    { id: "hsiabrief", label: "HSIA Review", icon: "brief", color: colors.HSIA, child: true, parent: "archive" },
+    { id: "tvbrief", label: "TV Review (Sep 2026)", icon: "brief", color: colors.TV, child: true, parent: "archive" }
   ];
 
   const selectStyle = {
@@ -6406,10 +6457,10 @@ export default function ReliabilityScorecards() {
     const causesBy = (statuses) => R.causes.filter((c) => statuses.includes(c.status));
     const slides = [
       { layout: "cover", title: "STB Stuck on Initializing", sub: `TV review · ${R.period} (agent exports to Oct ${R.octDays}) · TV performance, the trend against its baseline with the All STBs / One STB split, possible root causes and what is being done`,
-        notes: `Agent exports to ${R.asOf}; Looker to October (full month); dashboard KPIs to ${LATEST}; interlocks of 21, 22, 27 and 28 Oct 2026.` },
+        notes: `Agent exports to ${R.asOf}; Looker to October (full month); dashboard KPIs to ${TV_REVIEW_LATEST}; interlocks of 21, 22, 27 and 28 Oct 2026.` },
       { layout: "statement", title: `Stuck on Initializing jumped ${sp(stuckSepVsAug)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.`,
         notes: "The one-line answer to the two questions asked: is October trending like September, and what is causing it." },
-      { layout: "default", title: "August to October at a glance", sub: `Daily figures from the TV agent ticket exports (Aug 1 to Oct ${R.octDays}); dashboard KPIs to ${LATEST}; rates per 100 subscribers`, clicks: 6,
+      { layout: "default", title: "August to October at a glance", sub: `Daily figures from the TV agent ticket exports (Aug 1 to Oct ${R.octDays}); dashboard KPIs to ${TV_REVIEW_LATEST}; rates per 100 subscribers`, clicks: 6,
         body: (step, C) => <div className="dk-stats">
           {C(1, dstat(num(perDay(O, "stuck")), `Stuck on Initializing per day · ${octNote}`, `Aug ${num(perDay(A, "stuck"))} · Sep ${num(perDay(S, "stuck"))} · ${sp(stuckOctVsSep)} vs Sep`))}
           {C(2, dstat(num(perDay(O, "all")), `All STBs Affected per day · ${octNote}`, `Aug ${num(perDay(A, "all"))} · Sep ${num(perDay(S, "all"))} · ${sp(allUpVsAug)} vs Aug`))}
@@ -6596,7 +6647,7 @@ export default function ReliabilityScorecards() {
             {stat(((O.stuck / O.tickets) * 100).toFixed(1) + "%", "Stuck on Initializing share of TV tickets · Oct", `Aug ${((A.stuck / A.tickets) * 100).toFixed(1)}% · Sep ${((S.stuck / S.tickets) * 100).toFixed(1)}%`)}
             {stat(fmtRate(K.tr[iSep]), "TV ticket rate per 100 subs · Sep", <>Aug {fmtRate(K.tr[iAug])} · <span className={K.tr[iSep] > K.tr[iAug] ? "hb-warn" : "hb-ok"} style={{ fontWeight: 700 }}>{sd(K.tr[iSep] - K.tr[iAug])} per 100</span> · October not yet reported</>)}
           </div>
-          <p className="hb-prose" style={{ marginTop: 10 }}>Daily figures come from the TV agent ticket exports (Aug 1 to Oct {R.octDays}); the dashboard's own KPIs run to {LATEST}. Rates are per 100 subscribers. Red is worse, green is better.</p>
+          <p className="hb-prose" style={{ marginTop: 10 }}>Daily figures come from the TV agent ticket exports (Aug 1 to Oct {R.octDays}); the dashboard's own KPIs run to {TV_REVIEW_LATEST}. Rates are per 100 subscribers. Red is worse, green is better.</p>
           <div className="hb-tw">
             <table>
               <thead><tr><th>Dashboard measure</th><th>Aug</th><th>Sep</th><th>Oct (to {R.octDays}th)</th><th>Sep vs Aug</th><th></th></tr></thead>
@@ -6622,8 +6673,8 @@ export default function ReliabilityScorecards() {
         <header className="hb-head">
           <div className="hb-eyebrow">TV · {R.period} · STB No Boot › Stuck on Initializing: what happened in September, is October the same, and what is being done</div>
           <h1>Stuck on Initializing jumped {sp(stuckSepVsAug)} in September and has held there through October. The whole rise is households where every STB is stuck, which points at the gateway, not the box.</h1>
-          <p className="hb-sub">TV performance for August to October {LATEST.slice(-4)} (agent exports to Oct {R.octDays}), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, the first device-level test of the leading one, and the fixes in flight.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Agent exports to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Dashboard KPIs to {LATEST}</span><span>Interlocks 21, 22, 27 and 28 Oct 2026</span><span>Side-load cohorts shared 2 Nov</span></div>
+          <p className="hb-sub">TV performance for August to October {TV_REVIEW_LATEST.slice(-4)} (agent exports to Oct {R.octDays}), the Stuck on Initializing trend against its 2025 and Jan to Jul 2026 baselines with the All STBs Affected / One STB Affected split, the root-cause hypotheses as the STB No Boot interlocks left them, the first device-level test of the leading one, and the fixes in flight.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Agent exports to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Dashboard KPIs to {TV_REVIEW_LATEST}</span><span>Interlocks 21, 22, 27 and 28 Oct 2026</span><span>Side-load cohorts shared 2 Nov</span></div>
         </header>
 
         <section aria-labelledby="tb-short">
@@ -6873,6 +6924,170 @@ export default function ReliabilityScorecards() {
   // ------------------------------ executive summary deck ------------------------------
   // "Sep – Oct 2026" style ranges (SHS workbook rows) count for every month they span.
   const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function TvOctReviewPage() {
+    const col = colors.TV, R = OCT_REVIEW;
+    const H = T.heading, MUTED = T.textMuted, RULE = T.border;
+    const AMBER = isDark ? "#F0A55B" : "#B86E00";
+    const css = briefCss(col, AMBER);
+    const sum = (arr) => arr.reduce((a, b) => a + (b || 0), 0);
+    const num = (v) => (v == null ? "—" : Math.round(v).toLocaleString());
+    const pct = (a, b) => (b ? ((a - b) / b) * 100 : null);
+    const sp = (x, d = 0) => (x == null ? "n/a" : (x > 0 ? "+" : "") + x.toFixed(d) + "%");
+    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
+    const pp = (a, b) => { const d = b - a; return (d > 0 ? "+" : d < 0 ? "−" : "") + Math.abs(d) + " pts"; };
+    const iSep = MONTHS.indexOf("Sep 2026"), iOct = MONTHS.indexOf("Oct 2026");
+    const legacy = TV_PLATFORMS.find((x) => x.id === "legacy"), opus = TV_PLATFORMS.find((x) => x.id === "opus");
+    const totSep = R.lookerSep, totOct = R.looker;
+    const stSep = sum(R.stutter.sep), stOct = sum(R.stutter.oct);
+    const O = R.outage, excess = (O.peak - O.normal) + (O.next - O.normal);
+    const catRise = R.categories.map(([n, a, b]) => [n, a, b, b - a]);
+    const flag = (v, goodDown = true, thr = 3) => {
+      if (v == null) return null;
+      const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
+      return <span className={`hb-flag hb-${tone}`}>{tone === "flat" ? "flat" : v > 0 ? "up" : "down"}</span>;
+    };
+    const stat = (v, label, sub) => (
+      <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
+    );
+    const shareTable = (head, rows) => (
+      <div className="hb-tw"><table>
+        <thead><tr><th>{head}</th><th>Sep</th><th>Oct</th><th>Change</th></tr></thead>
+        <tbody>{rows.map(([n, a, b]) => <tr key={n}><td>{n}</td><td className="n">{a}%</td><td className="n">{b}%</td><td className="n">{pp(a, b)}</td></tr>)}</tbody>
+      </table></div>
+    );
+
+    // ---- daily chart: stuttering tickets per day, Sep vs Oct ----
+    const svgText = { fontFamily: FONT, fontSize: 12, fill: MUTED };
+    const dailyChart = () => {
+      const W = 800, Hh = 250, left = 44, right = 16, top = 16, bottom = 28, n = 30, max = 180;
+      const pw = W - left - right, ph = Hh - top - bottom;
+      const x = (i) => left + (i * pw) / (n - 1), y = (v) => top + ph - (v / max) * ph;
+      const path = (arr) => arr.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+      const oi = O.day - 1;
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }} role="img" aria-label="Stop/Stuttering/Freezing tickets per day, September and October 2026">
+          {[0, 50, 100, 150].map((g) => <g key={g}><line x1={left} x2={W - right} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={left - 8} y={y(g) + 4} textAnchor="end" style={svgText}>{g}</text></g>)}
+          {[1, 5, 10, 15, 20, 25, 30].map((d) => <text key={d} x={x(d - 1)} y={Hh - 8} textAnchor="middle" style={svgText}>{d}</text>)}
+          <path d={path(R.stutter.sep)} fill="none" stroke={MUTED} strokeWidth={2} opacity={0.8} />
+          <path d={path(R.stutter.oct)} fill="none" stroke={col} strokeWidth={2.8} />
+          <circle cx={x(oi)} cy={y(O.peak)} r={4.5} fill={AMBER} />
+          <text x={x(oi) - 8} y={y(O.peak) + 4} textAnchor="end" style={{ ...svgText, fill: AMBER, fontWeight: 700 }}>{O.day} Oct: {O.peak}, Calgary outage</text>
+        </svg>
+      );
+    };
+
+    return (
+      <div className="hb">
+        <style>{css}</style>
+        <header className="hb-head">
+          <div className="hb-eyebrow">TV · October 2026 · What drove the rise in TV video tickets, what the agent and technician notes say</div>
+          <h1>October TV tickets were flat on September (+{pct(totOct, totSep).toFixed(0)}%), but video quality tickets rose {sp(pct(R.categories[0][2], R.categories[0][1]), 0)}. One Calgary outage explains about a fifth of it; the rest is a higher everyday level on Optik TV Legacy boxes.</h1>
+          <p className="hb-sub">Looker ticket categories for September and October, the TV platform split, and the agent and technician notes from the September and October ticket exports ({num(R.files)} October tickets, 1 to 30 October, about {Math.round((R.files / totOct) * 100)}% of the month).</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>Notes to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Rates per 100 subscribers</span></div>
+        </header>
+
+        <section aria-labelledby="oc-short">
+          <div className="hb-answer">
+            <h3 id="oc-short" style={{ color: H }}>In short</h3>
+            <ol>
+              <li><strong>The total barely moved; the mix did.</strong> TV tickets were {num(totOct)} in October against {num(totSep)} in September ({sn(totOct - totSep)}). The step-up came in September (+{num(totSep - R.lookerAug)} on August) and held. Video Issues rose {sn(R.categories[0][2] - R.categories[0][1])} and Channel Issues {sn(R.categories[1][2] - R.categories[1][1])}; STB No Boot fell {num(R.categories[3][1] - R.categories[3][2])} and Digital Box {num(R.categories[4][1] - R.categories[4][2])}.</li>
+              <li><strong>Stuttering, pixelization and missing channels are the risers.</strong> Stop/Stuttering/Freezing {sn(R.movers[0][2] - R.movers[0][1])} ({sp(pct(R.movers[0][2], R.movers[0][1]), 0)}), Pixelization {sn(R.movers[2][2] - R.movers[2][1])} ({sp(pct(R.movers[2][2], R.movers[2][1]), 0)}), Missing Channels {sn(R.movers[1][2] - R.movers[1][1])} ({sp(pct(R.movers[1][2], R.movers[1][1]), 0)}).</li>
+              <li><strong>It is an Optik TV Legacy (Mediaroom) story.</strong> Legacy tickets rose {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} and its rate went from {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 subscribers; TV Evolution fell {num(opus.tickets[iSep] - opus.tickets[iOct])} to {fmtRate(opus.ticketRate[iOct])}. About half of pixelization notes name a Mediaroom box and almost none an Evolution box.</li>
+              <li><strong>One outage explains about a fifth.</strong> On {O.day} October {O.area} had an active Optik TV area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} on a normal day, roughly {num(excess)} extra tickets. {O.citing} tickets that day and {O.citingNext} the next name the outage.</li>
+              <li><strong>The rest is a broader lift, not a new fault.</strong> Stuttering ran at {(stOct / 30).toFixed(0)} tickets a day in October against {(stSep / 30).toFixed(0)} in September and stayed there once the outage days are removed. The root causes quoted in the notes are close to September's mix.</li>
+              <li><strong>Missing Channels is a provisioning problem.</strong> About {R.missing.causes[0][2]}% of the tickets with a stated cause cite middleware or subscription sync, and the fix is a sync or an escalation to Tier 2 provisioning, not a box swap. Unsubscribed-type tickets rose {sn(R.missing.unsubscribed[1] - R.missing.unsubscribed[0])}.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section aria-labelledby="oc-kpis">
+          <h2 id="oc-kpis">What moved, September to October</h2>
+          <div className="hb-stats">
+            {stat(num(totOct), "TV tickets · Oct", `Sep ${num(totSep)} · ${sp(pct(totOct, totSep), 1)}`)}
+            {stat(num(R.categories[0][2]), "Video Issues · Oct", `Sep ${num(R.categories[0][1])} · ${sp(pct(R.categories[0][2], R.categories[0][1]), 1)}`)}
+            {stat(num(R.movers[0][2]), "Stop/Stuttering/Freezing · Oct", `Sep ${num(R.movers[0][1])} · ${sp(pct(R.movers[0][2], R.movers[0][1]), 1)}`)}
+            {stat(fmtRate(legacy.ticketRate[iOct]), "Optik TV Legacy tickets per 100 subs · Oct", `Sep ${fmtRate(legacy.ticketRate[iSep])} · ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets`)}
+            {stat(fmtRate(opus.ticketRate[iOct]), "TV Evolution tickets per 100 subs · Oct", `Sep ${fmtRate(opus.ticketRate[iSep])} · ${sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets`)}
+            {stat(num(R.movers[1][2]), "Missing Channels · Oct", `Sep ${num(R.movers[1][1])} · ${sp(pct(R.movers[1][2], R.movers[1][1]), 1)}`)}
+          </div>
+          <h3 style={{ color: H, marginTop: 18 }}>By ticket category (Looker)</h3>
+          <div className="hb-tw"><table>
+            <thead><tr><th>Category</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th><th></th></tr></thead>
+            <tbody>{catRise.map(([n, a, b, d]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(d)}</td><td className="n">{sp(pct(b, a), 1)}</td><td>{flag(pct(b, a))}</td></tr>)}</tbody>
+          </table></div>
+          <h3 style={{ color: H, marginTop: 18 }}>Largest movers (Category 1 › 2)</h3>
+          <div className="hb-tw"><table>
+            <thead><tr><th>Ticket type</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th><th></th></tr></thead>
+            <tbody>{R.movers.map(([n, a, b]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td><td>{flag(pct(b, a))}</td></tr>)}</tbody>
+          </table></div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Looker counts. Rates are per 100 subscribers. Red is worse, green is better.</p>
+        </section>
+
+        <section aria-labelledby="oc-daily">
+          <h2 id="oc-daily">Stuttering and freezing, day by day</h2>
+          <div className="hb-tw" style={{ padding: 12 }}>{dailyChart()}</div>
+          <p className="hb-prose" style={{ marginTop: 10 }}><span style={{ color: col, fontWeight: 700 }}>October</span> against <span style={{ color: MUTED, fontWeight: 700 }}>September</span>, by day of month (note exports: {num(stSep)} in September, {num(stOct)} in October, {sn(stOct - stSep)}). The one clear spike is {O.day} October. Outside it, October sits above September on most days, which is the broader lift.</p>
+          <div className="hb-two">
+            <div className="hb-answer"><h3 style={{ color: H }}>The {O.day} October outage</h3>
+              <p style={{ margin: 0 }}>{O.area}. Agents found an active area outage in the issue tool (Stop/Stuttering/Freezing, under investigation, no restoration time) and a ticket to code against. Their notes record educating the customer, subscribing them to the outage portal for updates, and no field visit. {O.citing} tickets on the day and {O.citingNext} the next name it.</p></div>
+            <div className="hb-answer"><h3 style={{ color: H }}>Everything else</h3>
+              <p style={{ margin: 0 }}>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base rather than one box or region.</p></div>
+          </div>
+        </section>
+
+        <section aria-labelledby="oc-causes">
+          <h2 id="oc-causes">Root causes in the notes: video quality (stuttering and pixelization)</h2>
+          <p className="hb-prose">{num(R.video.n[1])} October tickets ({num(R.video.n[0])} in September). Only about {Math.round((R.video.rca[1] / R.video.n[1]) * 100)}% ({num(R.video.rca[1])}) carry an explicit root-cause line, so the shares below are the share of those, and a ticket can cite more than one cause.</p>
+          {shareTable("Root cause cited", R.causes)}
+          <ul className="hb-prose">
+            <li><strong>Packet loss and discontinuities lead.</strong> They are quoted more in October ({R.causes[0][2]}% against {R.causes[0][1]}%), and mentions of underruns, discontinuities and multicast roughly doubled to tripled ({R.diag.map(([n, a, b]) => `${n.toLowerCase()} ${a} to ${b}`).join(", ")} tickets). That may reflect agents pasting more xVu output rather than a new fault.</li>
+            <li><strong>Hardware and Wi-Fi follow.</strong> About four in ten point at a failing or degrading STB, and a third at the wireless link to a wireless STB (weak signal, 5 GHz interference, dead spots).</li>
+            <li><strong>Long uptime is not the story here.</strong> Gateway or modem uptime is quoted in only {R.uptime.cited[1]} of {num(R.video.n[1])} tickets ({R.uptime.d30[1]} at 30 days or more, {R.uptime.d90[1]} at 90 or more, median {R.uptime.median[1]} days against {R.uptime.median[0]} in September). Buffer or cache corruption after long uptime is cited in {R.causes[4][2]}% of the tickets with a cause.</li>
+            <li><strong>Active outages are small by count but real.</strong> {R.causes[8][2]}% of the tickets with a cause against {R.causes[8][1]}% in September, almost all from {O.day} October.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="oc-fixes">
+          <h2 id="oc-fixes">Fixes applied: video quality</h2>
+          <p className="hb-prose">Share of the {num(R.video.fixN[1])} October tickets whose notes include a resolution line ({num(R.video.fixN[0])} in September). Several fixes are often combined.</p>
+          {shareTable("Fix in the notes", R.fixes)}
+          <ul className="hb-prose">
+            <li><strong>Swap or reboot, then escalate.</strong> A box swap and a sequential reboot are each about 30%. The reboot fix is used less than in September (36% to 30%) while dispatch (17% to 21%) and escalation (11% to 16%) are used more, which suggests more cases were not cleared remotely.</li>
+            <li><strong>Remote Wi-Fi fixes are steady.</strong> Wiring or moving the STB, adding a booster, WPS or a Wi-Fi channel change stayed near 18%.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="oc-missing">
+          <h2 id="oc-missing">Missing Channels</h2>
+          <p className="hb-prose">{num(R.missing.n[1])} October tickets ({num(R.missing.n[0])} in September); {num(R.missing.rca[1])} with an explicit root-cause line. Unsubscribed-type tickets rose from {num(R.missing.unsubscribed[0])} to {num(R.missing.unsubscribed[1])}.</p>
+          {shareTable("Root cause cited", R.missing.causes)}
+          {shareTable("Fix in the notes (share of all tickets)", R.missing.fixes)}
+          <ul className="hb-prose">
+            <li><strong>The pattern is a subscription that exists but has not reached the box.</strong> Typical notes: a new package or channel provisioned to billing and middleware but not showing on the STB, or Evolution boxes after a hardware migration, fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation.</li>
+            <li><strong>Evolution boxes are over-represented.</strong> About 29% of Missing Channels tickets name a TELUS TV+ box, against roughly a tenth of the Stuttering tickets, and clearing the TV+ app data fixes some cases.</li>
+            <li><strong>Provider-side changes also appear.</strong> A programming change from a channel provider, or a provider outage, shows up as a handful of tickets that need no TELUS fix.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="oc-next">
+          <h2 id="oc-next">Suggested follow-ups</h2>
+          <p className="hb-prose">These are suggestions from the analysis, not agreed commitments.</p>
+          <ul className="hb-prose">
+            <li><strong>Close out the {O.day} October Calgary outage.</strong> Confirm its cause and restoration with network operations, and whether the outage code on the tickets is consistent.</li>
+            <li><strong>Test the Legacy lift.</strong> Compare Mediaroom packet-loss and discontinuity counts from xVu against September to see whether the rise is real or a note-writing change, and which gateway models carry it.</li>
+            <li><strong>Review the Missing Channels sync path.</strong> The same sync and Tier 2 provisioning steps repeat across tickets, so a proactive sync after package changes or box swaps would remove the tickets.</li>
+            <li><strong>Add the two categories to the Health Read.</strong> Stuttering and Missing Channels are the October risers that the Health Read does not yet discuss.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="oc-method">
+          <h2 id="oc-method">Sources and method</h2>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Looker ticket categories (Churn Measurement 2026 workbook), TV platform data (TV Customer Base Breakdown workbook and Looker), and the September and October TV ticket exports with agent notes and resolution text ({num(R.files)} October tickets to 30 October against {num(totOct)} in Looker for the month; the September export is complete). Only aggregates are kept; no customer details are retained. Root causes and fixes come from keyword matching on the free text, mostly the structured Copilot summaries, so shares are indicative. About 58% of tickets do not name the platform in the notes, so the Mediaroom and Evolution split uses the platform data above for totals and the notes only for direction. The archived <button onClick={() => setPage("tvbrief")} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: col, textDecoration: "underline", cursor: "pointer" }}>TV Review (Stuck on Initializing)</button> covers the September step-up in that category.</p>
+        </section>
+      </div>
+    );
+  }
+
   function timelineHasMonth(tl, month) {
     if (tl.includes(month)) return true;
     const m = tl.match(/^([A-Z][a-z]{2}) [–-] ([A-Z][a-z]{2}) (\d{4})$/), [mon, yr] = month.split(" ");
@@ -7158,6 +7373,8 @@ export default function ReliabilityScorecards() {
             ? "TV customer sentiment analysis"
             : page === "tvcross"
               ? "TV cross analysis"
+              : page === "tvoctreview"
+                ? "October TV video tickets: what drove the rise, what the notes say, root causes and fixes"
               : page === "tvbrief"
                 ? "STB Stuck on Initializing: trend against baseline, root causes and what is being done"
               : `${page} reliability scorecard`;
@@ -7269,12 +7486,14 @@ export default function ReliabilityScorecards() {
                     ? "Optik TV survey verbatims · Aug vs Jul 2026 · themes, TV issue mentions, text sentiment (scores excluded)"
                     : page === "tvcross"
                       ? "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims"
+                      : page === "tvoctreview"
+                      ? `TV October review · Looker to Oct 2026, agent and technician notes to ${OCT_REVIEW.asOf} · what drove the rise in video quality and missing-channel tickets, root causes and fixes`
                       : page === "tvbrief"
                       ? `TV review · Aug – Oct 2026 (agent exports to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`
                       : page === "SH+" || (page === "home" && scope === "SH+")
                   ? "SH+: calls, tickets, repairs/dispatches, base"
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West, PFE - HSIA & TQ ILEC - HSIA" : ""}`}</span>
-            {!ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>}
+            {!ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "tvbrief" ? `final, dashboard KPIs to ${TV_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>}
             {page !== "archive" && CHILD_PARENT[page] !== "archive" && !ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
           </div>
 
@@ -7329,6 +7548,7 @@ export default function ReliabilityScorecards() {
             : page === "tvtickets" ? TvTicketAnalysisPage()
             : page === "tvsentiment" ? TvSentimentPage()
             : page === "tvcross" ? TvCrossPage()
+            : page === "tvoctreview" ? TvOctReviewPage()
             : page === "tvbrief" ? TvBriefPage()
             : ProductPage({ product: page })}
         </div>

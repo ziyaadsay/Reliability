@@ -43,4 +43,6 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - The **Archive** menu item is always the last menu option, set off by a divider, and hosts completed
   reviews and miscellaneous pages (`ARCHIVE_ITEMS`, `CHILD_PAGES.archive` in `site/App.jsx`). Archived
   pages are frozen: do not roll them forward with the monthly update. The HSIA Review (`hsiabrief`) is
-  archived and pinned to Q3 2026 via `HSIA_REVIEW_LATEST`; it ignores `LATEST`.
+  archived and pinned to Q3 2026 via `HSIA_REVIEW_LATEST`; it ignores `LATEST`. The TV Review
+  (`tvbrief`, Stuck on Initializing) is archived too, pinned via `TV_REVIEW_LATEST`; TV › Oct Review
+  (`tvoctreview`, `OCT_REVIEW`) is the current TV review.
