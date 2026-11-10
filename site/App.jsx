@@ -555,11 +555,11 @@ const HSS = {"months":["Jun 2026","Jul 2026","Aug 2026"],"respondents":[1914,193
 
 const SWEEPR = {
   resolved: {
-    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,48614,null],
+    a: [40266,39898,43490,46000,44336,47147,43423,44346,51674,56387,52820,50953,50356,42781,53889,41283,43179,45867,45891,49069,48016,53650],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,47551,47439,47595,46384,45971,45988,45989,45987,46075,46201]
   },
   webAppRate: {
-    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.6,61.3,64.2,61.1,64.2,63.8,63.5,64.1,65.4,null],
+    a: [58.1,59.5,59.2,59.1,58.7,59.9,56.3,61.3,52.9,54.4,56.8,54.0,59.49,61.21,63.96,61.24,64.19,63.79,63.48,64.07,64.43,65.15],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,59.4,59.7,60.1,60.4,60.7,61.0,61.4,61.7,62.0,62.35]
   },
   ivrRate: {
@@ -567,19 +567,19 @@ const SWEEPR = {
     t: [null,null,null,null,null,null,null,null,null,null,null,null,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0,14.0]
   },
   cxEasy: {
-    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.50,null],
+    a: [null,null,null,null,null,null,null,null,null,3.29,3.35,3.43,3.43,3.49,3.45,3.51,3.45,3.49,3.48,3.44,3.5,3.49],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.00,4.0]
   },
   cxSent: {
-    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,-0.64,null],
+    a: [null,null,null,null,null,null,null,null,null,-0.68,-0.66,-0.55,-0.61,-0.57,-0.63,-0.64,-0.61,-0.58,-0.64,-0.67,-0.64,-0.54],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.5]
   },
   churn: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.89,2.16,1.98,2.12,2.12,1.98,2.06,2.56,2.40,null],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.67,1.85,1.76,1.88,1.85,1.78,1.93,2.17,2.06,2.06],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   deacts: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426,null],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426,476],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   }
 };
@@ -3984,7 +3984,7 @@ export default function ReliabilityScorecards() {
           </span>
         </a>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Self-serve customer workflows are powered by the Sweepr platform. Source: Self Assure metrics (current deterministic workflows), latest actual month September 2026. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
+          Self-serve customer workflows are powered by the Sweepr platform. Source: Self Assure metrics (current deterministic workflows), latest month October 2026 (Sweepr-involved churn and deacts saved for October are estimates in the source; churn is on the 15 Oct snapshot, pending sign-off). Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
         </p>
 
         <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T} collapsible>
