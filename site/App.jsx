@@ -46,6 +46,9 @@ const LATEST_PREV_SHORT = "Sep'26";
 const HSIA_REVIEW_LATEST = "Sep 2026";
 // The archived TV Review (tvbrief) is frozen at the figures it was written with: dashboard KPIs to September.
 const TV_REVIEW_LATEST = "Sep 2026";
+// KPI series the archived TV Review was written against (before the TV ticket volumes were restated to include Pik TV and the
+// TV calls to include PIK). It keeps these so its prose and figures stay as they were.
+const TV_REVIEW_FROZEN = { tv: [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591,37944], tr: [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24,3.28], calls: [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53128,58481,61071] };
 const LATEST_MOM = `${LATEST_SHORT} vs ${LATEST_PREV_SHORT}`;
 // The Looker ticket categories (LOOKER / LOOKER_EXTRA / OVERVIEW_ISSUES) are refreshed a month
 // ahead of the KPI tabs: their series run to LOOKER_LATEST and their issue tables compare
@@ -147,13 +150,13 @@ const DATA = {
   },
   ticketRate: {
     HSIA: [1.99,1.93,2.22,2.27,2.29,2.26,2.43,2.43,2.30,2.36,2.42,2.38,2.43,2.13,2.22,2.42,2.50,2.61,2.59,2.70,2.63,2.56],
-    TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24,3.28],
+    TV:   [3.21,3.18,3.5,3.55,3.53,3.1,3.13,3.02,2.94,3.58,3.55,3.33,3.38,2.88,2.84,3.02,2.7,2.84,2.76,2.92,3.34,3.38],
     SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01,3.94],
     "SH+": [null,null,null,null,null,null,2.86,2.63,2.28,2.27,2.05,2.30,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74,2.00]
   },
   ticketVolume: {
     HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50190,43999,46071,50134,51913,54249,53800,56018,54658,53384],
-    TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591,37944],
+    TV:   [38734,38259,41948,42525,42244,37068,37264,35969,34924,42540,42127,39474,40067,34009,33469,35615,31780,33334,32319,34026,38821,39170],
     SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152,36504],
     "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062,1267]
   },
@@ -252,7 +255,7 @@ const LOOKER = {
     ]
   },
   TV: {
-    monthlyTotal: [38204,37850,41374,41718,41538,36433,36644,35205,34178,41448,41064,38433,38961,33096,32600,34609,30737,32174,31357,32800,37535,37944],
+    monthlyTotal: [38204,37850,41374,41718,41538,36433,36644,35205,34178,41448,41064,38433,38961,33096,32600,34609,30737,32174,31356,32800,37535,37942],
     topCat: { name: "STB No Boot", series: [8480,7806,8505,8569,8455,8006,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8626,8324] },
     topIssues: [
       { issue: "STB No Boot › Stuck on Initializing", grp: "TV", a26: 5205, a25: 4190, prev: 5236 },
@@ -261,18 +264,18 @@ const LOOKER = {
       { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2813, a25: 2672, prev: 2307 },
       { issue: "Channel Issues › Channel Not Working", grp: "TV", a26: 2355, a25: 2134, prev: 2250 },
       { issue: "Digital Box › No Boot", grp: "TV", a26: 2253, a25: 5983, prev: 2419 },
-      { issue: "Digital Box › Setup", grp: "TV", a26: 2147, a25: 1548, prev: 2143 },
-      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 2130, a25: 1575, prev: 1926 }
+      { issue: "Digital Box › Setup", grp: "TV", a26: 2148, a25: 1548, prev: 2143 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 2128, a25: 1575, prev: 1926 }
     ],
     rising: [
       { issue: "Video Issues › Stop/Stuttering/Freezing", grp: "TV", a26: 2813, a25: 2672, prev: 2307, delta: 506 },
-      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 2130, a25: 1575, prev: 1926, delta: 204 },
+      { issue: "Channel Issues › Missing Channels", grp: "TV", a26: 2128, a25: 1575, prev: 1926, delta: 202 },
       { issue: "Video Issues › Pixelization", grp: "TV", a26: 444, a25: 304, prev: 299, delta: 145 }
     ],
     falling: [
       { issue: "Digital Box › No Boot", grp: "TV", a26: 2253, a25: 5983, prev: 2419, delta: -166 },
       { issue: "STB No Boot › Reboot Loop", grp: "TV", a26: 959, a25: 1105, prev: 1077, delta: -118 },
-      { issue: "Remote › Programming", grp: "TV", a26: 975, a25: 1086, prev: 1056, delta: -81 }
+      { issue: "Remote › Programming", grp: "TV", a26: 975, a25: 1086, prev: 1057, delta: -82 }
     ]
   },
   SHS: {
@@ -346,7 +349,7 @@ const OVERVIEW_ISSUES = [
 // pain points from the HSIA Recategorization Looker tab; TV and SHS use the Looker Category 1 groups (top 5 by Oct 2026 + other). Risers are the biggest
 // month-over-month percentage riser among Looker Category 1 › 2 issues with at least 100 tickets in
 // the prior month (2026); for HSIA these remain Looker context.
-const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33204,33263,31698,31838,31558,30713,28745,25001,26958,29915,31383,32470,33269,34889,33401,31461]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7747,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12515,13302,12812,13095,13190,13039]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10704,9470,9365,10018,9845,10583,10058,9879,9417,9915]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,798,917,1034,926,756,738]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037},"Sep 2026":{"issue":"Incompatible Equipment › Incompatible","pct":6.1,"from":2037,"to":2162},"Oct 2026":{"issue":"Wireless › Can't Connect","pct":5.6,"from":5201,"to":5493}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8569,8455,8006,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8626,8324]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6739,7558,8202]},{"name":"Recording Issues","series":[6674,6508,7897,7252,6668,5351,5449,5034,5008,5988,5973,5227,6249,5386,5352,5389,4249,4068,4673,4675,5115,5264]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504,4559,4935]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4724,4647,5286,6400,7885,7189,6630,5494,4292,3903,3950,3699,4336,3807,4373,4923,4775]},{"name":"Other categories","series":[6277,6580,7141,7143,7396,6073,6259,5784,5214,6260,8300,7497,7583,6376,6144,6291,5552,5766,5814,6306,6754,6444]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159},"Sep 2026":{"issue":"HS & TV Affected › No Dataflow","pct":51.3,"from":150,"to":227},"Oct 2026":{"issue":"Apps › Prime Video","pct":49.5,"from":105,"to":157}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9411,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273,7089,7313]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588,4819,4653]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324,4715,4562]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034,4554,4355]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643,3820,3491]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21340,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840,13224,12130]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103},"Sep 2026":{"issue":"Smart thermostat › Troubleshoot","pct":67.6,"from":145,"to":243},"Oct 2026":{"issue":"Indoor Camera › Recording issues","pct":20.2,"from":114,"to":137}}}};
+const LOOKER_EXTRA = {"HSIA":{"cats":[{"name":"Connection Instability & Disconnects","series":[26791,25602,29215,30068,31235,30631,33204,33263,31698,31838,31558,30713,28745,25001,26958,29915,31383,32470,33269,34889,33401,31461]},{"name":"Slow Speeds","series":[6299,5957,7080,7638,7677,7747,8290,8723,8710,9289,9937,10927,12226,10649,11089,11906,12515,13302,12812,13095,13190,13039]},{"name":"WiFi Coverage Gaps","series":[7132,7106,8457,8027,8007,8273,8916,8825,8193,8799,9701,9810,10704,9470,9365,10018,9845,10583,10058,9879,9417,9915]},{"name":"Other","series":[910,1182,1241,1448,1118,706,575,470,482,483,482,453,600,523,619,655,798,917,1034,926,756,738]}],"risers":{"Jan 2026":{"issue":"Connectivity › Incompatible Equipment","pct":64.0,"from":1400,"to":2296},"Mar 2026":{"issue":"Abandon › Abandon","pct":20.7,"from":522,"to":630},"Apr 2026":{"issue":"Connectivity › Losing Sync","pct":20.0,"from":5362,"to":6435},"May 2026":{"issue":"Abandon › Abandon","pct":19.2,"from":663,"to":790},"Jun 2026":{"issue":"Wireless › Slow Speeds","pct":12.7,"from":3394,"to":3825},"Jul 2026":{"issue":"Incompatible Equipment › Incompatible","pct":85.9,"from":909,"to":1690},"Aug 2026":{"issue":"Incompatible Equipment › Incompatible","pct":20.5,"from":1690,"to":2037},"Sep 2026":{"issue":"Incompatible Equipment › Incompatible","pct":6.1,"from":2037,"to":2162},"Oct 2026":{"issue":"Wireless › Can't Connect","pct":5.6,"from":5201,"to":5493}}},"TV":{"cats":[{"name":"STB No Boot","series":[8480,7806,8505,8569,8455,8006,8240,7379,6318,7336,7429,7366,7689,6716,6643,6938,6251,6342,6831,7203,8626,8324]},{"name":"Video Issues","series":[9774,9626,10568,10598,9887,9110,8974,8752,8272,9625,8959,7956,8548,7190,6984,7010,6831,6961,6823,6739,7558,8202]},{"name":"Recording Issues","series":[6674,6508,7897,7252,6668,5351,5449,5034,5008,5988,5973,5227,6249,5386,5352,5389,4249,4068,4673,4675,5115,5264]},{"name":"Channel Issues","series":[2761,3003,2667,3543,4656,3169,3075,2970,2966,4354,3214,3757,3398,3136,3574,5031,4155,4701,3409,3504,4559,4933]},{"name":"Digital Box","series":[4238,4327,4596,4613,4476,4724,4647,5286,6400,7885,7189,6630,5494,4292,3903,3950,3699,4336,3806,4373,4923,4776]},{"name":"Other categories","series":[6277,6580,7141,7143,7396,6073,6259,5784,5214,6260,8300,7497,7583,6376,6144,6291,5552,5766,5814,6306,6754,6443]}],"risers":{"Jan 2026":{"issue":"Audio Issues › Distorted Audio","pct":45.3,"from":161,"to":234},"Feb 2026":{"issue":"TV Features › Restart TV","pct":65.0,"from":117,"to":193},"Mar 2026":{"issue":"Abandon › Abandon","pct":45.2,"from":188,"to":273},"Apr 2026":{"issue":"Channel Issues › Channel Not Working","pct":58.2,"from":1735,"to":2744},"May 2026":{"issue":"STB No Boot › Stuck on PVR is Starting","pct":23.3,"from":318,"to":392},"Jun 2026":{"issue":"Channel Issues › Manage My Channels","pct":33.7,"from":460,"to":615},"Jul 2026":{"issue":"STB No Boot › Registration Code","pct":27.3,"from":297,"to":378},"Aug 2026":{"issue":"TV Features › Restart TV","pct":40.7,"from":113,"to":159},"Sep 2026":{"issue":"HS & TV Affected › No Dataflow","pct":51.3,"from":150,"to":227},"Oct 2026":{"issue":"Apps › Prime Video","pct":49.5,"from":105,"to":157}}},"SHS":{"cats":[{"name":"Main Panel","series":[6940,6526,8168,8443,8119,7973,9411,9359,8674,8338,8310,8700,7936,7092,6800,7132,6765,7727,7905,7273,7089,7313]},{"name":"Smoke Detector","series":[2576,2787,3356,3357,3282,3295,3986,4066,3967,4144,3630,3757,3672,3228,3064,3359,3047,3581,3956,4588,4819,4653]},{"name":"Door/Window Sensor","series":[4565,4521,4617,4364,4092,3757,4144,4123,4345,4586,4596,5765,5556,4468,4000,4224,4194,4183,4501,4324,4715,4562]},{"name":"Outdoor Camera","series":[4464,3952,5485,6147,6572,6461,6808,6109,5672,6116,5652,5056,5301,4213,4085,4838,4765,5294,5674,5034,4554,4355]},{"name":"Doorbell Camera","series":[4136,4141,4667,5012,4857,4626,5125,4683,4437,4315,3998,4133,4002,3241,3304,3610,3457,3883,4013,3643,3820,3491]},{"name":"Other categories","series":[13207,13906,17672,19181,19039,18111,21209,21781,21867,21340,18136,18021,17519,14735,13708,13559,12672,14325,14700,13840,13224,12130]}],"risers":{"Jan 2026":{"issue":"CO Detector › Education","pct":36.1,"from":155,"to":211},"Feb 2026":{"issue":"Motion Sensor › Education","pct":11.1,"from":198,"to":220},"Mar 2026":{"issue":"Webpage Portal Self-Serve › Education","pct":46.5,"from":310,"to":454},"Apr 2026":{"issue":"Main Panel › Customer unwilling to troubleshoot","pct":43.7,"from":103,"to":148},"May 2026":{"issue":"Smart thermostat › Troubleshoot","pct":45.0,"from":220,"to":319},"Jun 2026":{"issue":"Doorlock › Power issues","pct":49.0,"from":102,"to":152},"Jul 2026":{"issue":"Repair appointment › Repair appointment","pct":84.8,"from":461,"to":852},"Aug 2026":{"issue":"Smoke Detector › Power issues","pct":33.5,"from":826,"to":1103},"Sep 2026":{"issue":"Smart thermostat › Troubleshoot","pct":67.6,"from":145,"to":243},"Oct 2026":{"issue":"Indoor Camera › Recording issues","pct":20.2,"from":114,"to":137}}}};
 Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], x));
 
 // ---------------------------------------------------------------------------
@@ -743,7 +746,7 @@ const HSIA_YOY = {
 // Arrays align with MONTHS (Jan 2025 – Oct 2026); the whole series is re-read each month
 // because the source restates earlier months.
 // HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA are excluded).
-// TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
+// TV = IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
 // These series also drive the overview scorecard's call rows and the derived
 // All-products calls; the KPI workbook's FFH rollup is retained in DATA only
 // for reference and is no longer displayed.
@@ -754,8 +757,8 @@ const CALLS_SPLIT = {
     answered: [62488,53472,58417,58069,58541,59681,65013,64102,60163,54641,59607,58755,60147,54702,65796,62788,71047,74348,75227,74390,72173,73109]
   },
   TV: {
-    offered:  [70985,63302,60181,57649,60110,53867,53371,55743,64459,73650,65301,65046,60792,48534,56779,52498,49128,50060,51319,53128,58481,61071],
-    answered: [62745,54821,55965,53508,54032,48853,49214,47720,45777,52571,55079,52475,52707,45712,51195,47674,44732,45382,45249,45127,51608,53620]
+    offered:  [72229,64023,61102,58800,61175,54717,54251,56911,65677,75367,66999,66748,62455,49888,58263,53985,50736,51794,52789,55015,60401,62892],
+    answered: [63891,55459,56813,54565,54968,49626,50001,48670,46679,53910,56603,53993,54230,47012,52582,49073,46226,46977,46603,46792,53337,55255]
   }
 };
 
@@ -797,14 +800,14 @@ const PFE = {
 const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
-    tickets: [28724,28040,30652,30984,31535,26335,26637,24474,22010,26283,25560,24547,26833,23176,23159,23715,20858,20917,21489,22123,24775,25442],
+    tickets: [28724,28040,30652,30984,31535,26336,26637,24474,22010,26284,25560,24547,26833,23176,23159,23715,20858,20917,21489,22122,24775,25441],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
-    tickets: [9480,9810,10722,10734,10003,10096,10007,10731,12168,15164,15504,13886,12128,9921,9441,10894,9879,11256,9867,10678,12760,12502],
+    tickets: [9480,9810,10722,10734,10003,10097,10007,10731,12168,15164,15504,13886,12128,9920,9441,10894,9879,11257,9867,10678,12760,12501],
     repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
@@ -813,6 +816,10 @@ const TV_PLATFORMS = [
 // Mixed usage: customers provisioned on both Mediaroom and TTV+ (same source as the
 // platform bases); subscriber count only for now.
 const TV_MIXED = { id: "mixed", name: "Mixed usage", sub: "MR + TTV+", base: [7032,7520,7574,8320,8534,9516,8862,8429,9507,9390,10965,11191,10720,10064,10012,11740,16639,21847,15667,14998,30129,24320] };
+// Pik TV (minor product line): tickets only, from the TV Looker Ticket Categories tab (Product = Pik TV). Included in the
+// TV ticket volume and rate (the KPI tab total is Optik TV (Legacy) + TV Evolution + Pik TV); its base is not in the rate
+// denominator and it is left out of every analysis section.
+const TV_PIK = { name: "Pik TV", tickets: [530,409,574,807,706,635,620,764,746,1092,1063,1041,1106,913,869,1006,1043,1160,963,1226,1286,1228] };
 // Per-platform rates derived where both volume and base are reported
 TV_PLATFORMS.forEach((p) => {
   p.ticketRate = p.tickets.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(2) : null));
@@ -947,17 +954,17 @@ const TV_REVIEW = {"asOf":"30 Oct 2026","period":"Aug – Oct 2026","octDays":30
 // agent/technician note exports (Oct 1 - 30; no customer data retained). Notes are keyword-classified, so
 // shares are indicative. "Stutter" = Video Issues > Stop/Stuttering/Freezing; "Video quality" adds Pixelization.
 const OCT_REVIEW = {
-  asOf: "30 Oct 2026", files: 36667, looker: 37944, lookerSep: 37535, lookerAug: 32800,
+  asOf: "30 Oct 2026", files: 36667, looker: 37942, lookerSep: 37535, lookerAug: 32800, pik: [1286, 1228],
   stutter: {
     sep: [83,62,74,73,64,46,56,86,69,96,78,77,59,78,82,96,93,79,56,65,96,77,95,67,96,75,53,81,87,104],
     oct: [74,88,76,74,118,89,72,83,102,82,68,77,108,111,91,100,92,161,114,89,61,94,86,86,67,89,100,96,102,84]
   },
   outage: { day: 18, area: "Calgary, AB", peak: 161, next: 114, normal: 85, citing: 54, citingNext: 9 },
-  categories: [["Video Issues", 7558, 8202], ["Channel Issues", 4559, 4935], ["Recording Issues", 5115, 5264], ["STB No Boot", 8626, 8324], ["Digital Box", 4923, 4775], ["Other categories", 6754, 6444]],
+  categories: [["Video Issues", 7558, 8202], ["Channel Issues", 4559, 4933], ["Recording Issues", 5115, 5264], ["STB No Boot", 8626, 8324], ["Digital Box", 4923, 4776], ["Other categories", 6754, 6443]],
   movers: [
-    ["Video Issues › Stop/Stuttering/Freezing", 2307, 2813], ["Channel Issues › Missing Channels", 1926, 2130], ["Video Issues › Pixelization", 299, 444],
+    ["Video Issues › Stop/Stuttering/Freezing", 2307, 2813], ["Channel Issues › Missing Channels", 1926, 2128], ["Video Issues › Pixelization", 299, 444],
     ["Channel Issues › Channel Not Working", 2250, 2355], ["Recording Issues › Cannot Set Recordings", 3403, 3454],
-    ["STB No Boot › Stuck on Initializing", 5236, 5205], ["Digital Box › No Boot", 2419, 2253], ["STB No Boot › Reboot Loop", 1077, 959], ["Remote › Programming", 1056, 975]
+    ["STB No Boot › Stuck on Initializing", 5236, 5205], ["Digital Box › No Boot", 2419, 2253], ["STB No Boot › Reboot Loop", 1077, 959], ["Remote › Programming", 1057, 975]
   ],
   video: { n: [2601, 3160], rca: [360, 425], fixN: [294, 342], stutterN: [2303, 2734] },
   causes: [
@@ -3848,8 +3855,23 @@ export default function ReliabilityScorecards() {
             </div>
           );
         })()}
+        {(() => {
+          const pk = rowFigures(TV_PIK.tickets, 0, true, false, LAST);
+          return (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 2px 8px" }}>
+                <span style={{ color: T.textMuted, display: "inline-flex" }}><Icon name="tv" size={15} /></span>
+                <span style={{ fontWeight: 800, color: T.heading, fontSize: 14 }}>{TV_PIK.name}</span>
+                <span style={{ fontSize: 11.5, color: T.textFaint }}>· minor product line · ticket volume only</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14, maxWidth: 420 }}>
+                <StatCard T={T} color={T.textMuted} icon="tickets" label="Ticket volume" value={fmtBig(pk.latest)} sub={pk.latestMonth} deltas={[d(pk.mom, "MoM"), d(pk.yoy, "YoY")].filter(Boolean)} />
+              </div>
+            </div>
+          );
+        })()}
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy) vs TV Evolution). Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is reported for 2026 onward and is West-scope, so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is reported for 2026 onward and is West-scope, so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
 
         {sec("Subscriber base", "base",
@@ -4407,7 +4429,7 @@ export default function ReliabilityScorecards() {
         ? "SH+ contacts offered vs answered (SH+ reliability KPIs workbook)."
       : product === "HSIA"
         ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs): HSIA West + TQ ILEC - HSIA."
-        : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.";
+        : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV.";
     const yoyChurn = DATA.annualChurn[product];
     const L = LOOKER[product];
     const prodInits = INITIATIVES.filter((it) => it.p === product);
@@ -6746,7 +6768,7 @@ export default function ReliabilityScorecards() {
     const octNote = `Oct 1 – ${R.octDays}`;
     // dashboard KPI months (Looker Assure / Reliability Deact KPIs); October is not yet reported there
     const iAug = MONTHS.indexOf("Aug 2026"), iSep = MONTHS.indexOf("Sep 2026");
-    const K = { tv: DATA.ticketVolume.TV, tr: DATA.ticketRate.TV, calls: CALLS_SPLIT.TV.offered, rv: DATA.repairVolume.TV, rr: DATA.repairRate.TV, ch: DATA.churnRate.TV, base: DATA.subBase.TV };
+    const K = { tv: TV_REVIEW_FROZEN.tv, tr: TV_REVIEW_FROZEN.tr, calls: TV_REVIEW_FROZEN.calls, rv: DATA.repairVolume.TV, rr: DATA.repairRate.TV, ch: DATA.churnRate.TV, base: DATA.subBase.TV };
     const legacy = TV_PLATFORMS.find((p) => p.id === "legacy"), opus = TV_PLATFORMS.find((p) => p.id === "opus");
     // Looker history
     const li = (m) => L.months.indexOf(m);
@@ -7363,13 +7385,14 @@ export default function ReliabilityScorecards() {
     const kpiRows = [
       ["Calls offered", callsOff, num, "n", true], ["Calls answered", callsAns, num, "n", false], ["Answer rate", callsAns.map((v, i) => (callsOff[i] ? (v / callsOff[i]) * 100 : null)), (v) => v.toFixed(1) + "%", "r", false],
       ["Calls offered per 100 subs", callsOff.map((v, i) => (v / base[i]) * 100), (v) => v.toFixed(2), "r", true],
-      ["Tickets", tk, num, "n", true], ["Ticket rate per 100 subs", tr, (v) => fmtRate(v), "r", true],
+      ["Tickets (incl. Pik TV)", tk, num, "n", true], ["Ticket rate per 100 subs (incl. Pik TV)", tr, (v) => fmtRate(v), "r", true],
       ["Repairs / dispatches", rv, num, "n", true], ["Repair rate per 100 subs", rr, (v) => fmtRate(v), "r", true],
       ["Churn rate per 100 subs", ch, (v) => fmtRate(v), "r", true], ["Subscriber base", base, num, "n", false]
     ];
     const mp = (kind, ser, i, j) => (kind === "n" ? sp(pct(ser[i], ser[j]), 1) : sd(ser[i] - ser[j]));
     const dRepSep = rv[iSep], dRepOct = rv[iOct], platRepSep = legacy.repairs[iSep] + opus.repairs[iSep], platRepOct = legacy.repairs[iOct] + opus.repairs[iOct];
     const platTotSep = legacy.tickets[iSep] + opus.tickets[iSep], platTotOct = legacy.tickets[iOct] + opus.tickets[iOct];
+    const pikSep = TV_PIK.tickets[iSep], pikOct = TV_PIK.tickets[iOct];
     const Dl = TV_REVIEW.daily, dsum = (k, f) => sum(Dl[k][f]);
     const nbRows = TV_REVIEW.stbNoBoot.map((x) => [x.name, x.v[1], x.v[2]]);
     const nbTot = TV_REVIEW.stbNoBootTotal;
@@ -7474,7 +7497,7 @@ export default function ReliabilityScorecards() {
           </table>
           {C(1, <p className="dk-cap" style={{ margin: 0 }}>Mediaroom is the upside: {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets on a base that lost {num(legacy.base[iSep] - legacy.base[iOct])}. OPUS is the downside: {sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets on a base that grew {num(opus.base[iOct] - opus.base[iSep])}. Year over year OPUS is behind the improvement; Legacy's rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</p>)}
         </>,
-        notes: `Platform tickets total ${num(platTotOct)} against ${num(platTotSep)}; the KPI-tab total moves ${sn(tk[iOct] - tk[iSep])}, a source difference.` },
+        notes: `Mediaroom and OPUS tickets total ${num(platTotOct)} against ${num(platTotSep)}; the TV total of ${num(tk[iOct])} also includes Pik TV (${num(pikOct)}), a minor line left out of the analysis.` },
       { layout: "section", num: "03", title: "Video quality", sub: "Looker ticket categories, September to October" },
       { layout: "two-cols", title: "By category and largest movers", clicks: 1,
         body: (step, C) => <>
@@ -7583,7 +7606,7 @@ export default function ReliabilityScorecards() {
 
         <section aria-labelledby="oc-plat">
           <h2 id="oc-plat">What is driving it: Mediaroom or OPUS</h2>
-          <p className="hb-prose">Optik TV Legacy runs on Mediaroom boxes; TV Evolution runs on OPUS. Platform tickets total {num(platTotOct)} in October against {num(platTotSep)} in September ({sn(platTotOct - platTotSep)}): Mediaroom {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, OPUS {sn(opus.tickets[iOct] - opus.tickets[iSep])}. (The KPI tab total moves {sn(tk[iOct] - tk[iSep])}; the gap is the same source difference noted above.)</p>
+          <p className="hb-prose">Optik TV Legacy runs on Mediaroom boxes; TV Evolution runs on OPUS. Mediaroom and OPUS tickets total {num(platTotOct)} in October against {num(platTotSep)} in September ({sn(platTotOct - platTotSep)}): Mediaroom {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, OPUS {sn(opus.tickets[iOct] - opus.tickets[iSep])}. The TV ticket volume above also includes Pik TV, a minor product line ({num(pikOct)} in October against {num(pikSep)}) that is counted in the TV totals and rates and left out of every analysis section here, which is why the TV total is {num(tk[iOct])}.</p>
           <div className="hb-tw"><table>
             <thead><tr><th>Measure</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
             <tbody>

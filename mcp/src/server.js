@@ -26,8 +26,8 @@ const METRICS = {
 };
 const SOURCES = {
   kpis: "Churn Measurement 2026 workbook, Reliability/Deact KPIs tab (HSIA base = HSIA West + TQ ILEC HS from the 2026 Redwood Scorecard, PFE excluded; TV and SHS national).",
-  calls: "TS Calls Offered by Product workbook, Actuals tabs. HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA excluded); TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.",
-  tickets: "Looker Ticket Categories tabs of the Churn Measurement 2026 workbook; HSIA pain-point grouping from the hsia_ticket_recategorization tab.",
+  calls: "TS Calls Offered by Product workbook, Actuals tabs. HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA excluded); TV = IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV.",
+  tickets: "Looker Ticket Categories tabs of the Churn Measurement 2026 workbook (the TV ticket volume and rate include Pik TV, a minor product line; the TV ticket categories and analysis exclude it); HSIA pain-point grouping from the hsia_ticket_recategorization tab.",
   initiatives: "HSIA: Product Technical | Churn & VOC Projects Impact sheet (Sept 2026 Executive Summary tab; carries an Impact rating). TV and SHS: Churn Measurement 2026 workbook, Initiatives tab.",
   tvPlatforms: "Tickets: Looker split by product. Base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (all regions except BTV and SPLUS). Repairs: 2026 Redwood Scorecard, Repair Tracking Detail (2026 onward). Swaps: Tableau Swapped Orders Combined View, Repair Swap Orders Volumes.",
   b2b: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Reliability B2B rows. Lower is better.",
@@ -163,7 +163,8 @@ function callTool(name, args = {}) {
         months: MONTHS.slice(a, b + 1),
         platforms: TV_PLATFORMS.map((p) => ({ id: p.id, name: p.name, platform: p.sub, tickets: cut(p.tickets), ticketRate: cut(p.ticketRate), repairs: cut(p.repairs), repairRate: cut(p.repairRate), subscriberBase: cut(p.base), repairSwaps2026: cut(p.swaps2026) })),
         mixedUsage: { name: TV_MIXED.name, definition: "Customers provisioned on both Mediaroom and TTV+", subscriberBase: cut(TV_MIXED.base) },
-        notes: ["Rates are % of the platform's provisioned base. Repairs and swaps are reported for 2026 only; repairs are West-scope.", SOURCES.tvPlatforms]
+        pikTV: { name: TV_PIK.name, definition: "Minor product line: tickets only", tickets: cut(TV_PIK.tickets) },
+        notes: ["Rates are % of the platform's provisioned base. Repairs and swaps are reported for 2026 only; repairs are West-scope.", "The TV ticket volume and rate in the KPI tools include Pik TV (Optik TV (Legacy) + TV Evolution + Pik TV). Pik TV subscribers are not in the rate base and Pik TV is left out of the ticket-category analysis.", SOURCES.tvPlatforms]
       });
     }
     case "get_self_serve": {

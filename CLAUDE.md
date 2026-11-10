@@ -52,3 +52,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   base, tickets, repairs and churn from the PFE column of each month on the Churn Measurement 2026
   workbook's "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
   volume over the PFE base per 100.
+- TV scope: the TV ticket volume and rate (KPI tab) are Optik TV (Legacy) + TV Evolution + Pik TV, and TV calls
+  offered/answered are IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV (TS Calls Offered by Product,
+  Actuals tabs). Pik TV (`TV_PIK`) is a minor line: it is in the volumes and rates and shown on By Platform for
+  tickets only, but it is excluded from the Looker ticket categories, the TV analysis sections and the Oct Review.
+  The archived TV Review keeps its own snapshot of the earlier KPI series (`TV_REVIEW_FROZEN`).
