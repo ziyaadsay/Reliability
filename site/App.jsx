@@ -122,19 +122,19 @@ const DATA = {
     "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569,null]
   },
   ticketRate: {
-    HSIA: [1.99,1.93,2.21,2.26,2.28,2.25,2.41,2.41,2.28,2.33,2.39,2.35,2.39,2.17,2.50,2.37,2.64,2.70,2.69,2.76,2.66,2.58],
+    HSIA: [1.99,1.93,2.22,2.27,2.29,2.26,2.43,2.43,2.30,2.36,2.42,2.38,2.43,2.13,2.22,2.42,2.50,2.61,2.59,2.70,2.63,2.56],
     TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24,3.28],
     SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01,3.94],
     "SH+": [null,null,null,null,null,null,3.10,2.82,2.42,2.39,2.27,2.62,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74,null]
   },
   ticketVolume: {
-    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50194,45749,52806,50134,55891,57270,57173,58789,56764,55153],
+    HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50190,43999,46071,50134,51913,54249,53800,56018,54658,53384],
     TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591,37944],
     SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152,36504],
     "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062,null]
   },
   repairRate: {
-    HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.77,0.77,0.85,0.77,0.78,0.76,0.70,0.80,0.82,0.86,0.76,0.83,0.77,0.82,0.81],
+    HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.78,0.78,0.86,0.78,0.79,0.76,0.70,0.80,0.84,0.88,0.78,0.85,0.79,0.84,0.83],
     TV:   [0.18,0.15,0.19,0.17,0.15,0.13,0.13,0.13,0.13,0.16,0.15,0.14,0.16,0.15,0.17,0.17,0.16,0.12,0.13,0.12,0.14,0.16],
     SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42,0.43],
     "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.092,0.110,null]
@@ -152,14 +152,14 @@ const DATA = {
     "SH+": [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   subBase: {
-    HSIA: [2050488,2051969,2058211,2059523,2062721,2069802,2073105,2080818,2092231,2094989,2098082,2103708,2099575,2104231,2111098,2113465,2118011,2123842,2127014,2130670,2135120,2135195],
+    HSIA: [2046644,2047269,2052340,2052450,2053936,2058921,2059746,2065127,2073529,2073225,2073375,2074903,2067593,2069648,2073167,2071920,2072971,2075052,2074591,2077010,2080642,2082008],
     TV:   [1205452,1201529,1199443,1196987,1196062,1194035,1191503,1189366,1187756,1188117,1188298,1186983,1184435,1182482,1180294,1178353,1175469,1172778,1169649,1165379,1161960,1158517],
     SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318,926347],
     "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,57531,60876,null]
   },
   // "consolidated national results" rows of the KPI tab (2026 YTD vs 2025). HSIA is the
-  // West wired line (the KPI tab's HSIA base is HSIA West + TQ ILEC HS + PFE Vulcan HS from the
-  // 2026 Redwood Scorecard, restated Oct 2026); TV and SHS carry national lines only.
+  // West wired line (the KPI tab's HSIA base is HSIA West + TQ ILEC HS from the
+  // 2026 Redwood Scorecard; PFE is reported in its own column, restated Nov 2026); TV and SHS carry national lines only.
   annualChurn: {
     HSIA: { y2026: 1.10, y2025: 1.15, yoyPts: -0.05 },
     TV:   { y2026: 1.87, y2025: 1.51, yoyPts: 0.36 },
@@ -594,7 +594,7 @@ const FFPS = {
 // "TELUS Internet: why support tickets rose year over year" analysis (Jan – Sep 2026 vs
 // 2025, all TELUS-branded internet excluding Koodo, data through 4 Oct 2026). Figures are
 // transcribed from the analysis. They are not recomputed from the dashboard's KPI series,
-// whose base (HSIA West + TQ ILEC + PFE) and ticket source (Looker Assure) differ, so the
+// whose base (HSIA West + TQ ILEC) and ticket source (Looker Assure) differ, so the
 // two are shown side by side in the HSIA Review rather than reconciled.
 // ---------------------------------------------------------------------------
 const HSIA_YOY = {
@@ -6058,7 +6058,7 @@ export default function ReliabilityScorecards() {
               </tbody>
             </table>
           </div>
-          <p className="hb-prose" style={{ fontSize: 13.5 }}>The dashboard's quarter and the analysis measure different populations (HSIA West plus TQ ILEC and PFE on Looker Assure tickets, against all TELUS internet excluding Koodo on internet_daily), so the two are shown side by side and not reconciled. They tell the same story: demand up by a sixth, dispatches up far less.</p>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>The dashboard's quarter and the analysis measure different populations (HSIA West plus TQ ILEC on Looker Assure tickets, against all TELUS internet excluding Koodo on internet_daily), so the two are shown side by side and not reconciled. They tell the same story: demand up by a sixth, dispatches up far less.</p>
         </section>
 
         <header className="hb-head">

@@ -8,13 +8,13 @@ const SCHEMA_VERSION = 3;
 
 // Which scorecard boards each product rolls up (see list_products.covers).
 const COVERS = {
-  All: ["hsiawest", "pfe", "optikwest", "shs10"],
-  HSIA: ["hsiawest", "pfe"],
+  All: ["hsiawest", "optikwest", "shs10"],
+  HSIA: ["hsiawest"],
   TV: ["optikwest"],
   SHS: ["shs10"],
   "SH+": ["shplus"]
 };
-const COVERS_NOTE = "HSIA = HSIA West + PFE + TQ ILEC (TQ ILEC has no board key). whsia and koodo are not reported by the dashboard. The KPI series are not split by board in the source, so boards are not product keys.";
+const COVERS_NOTE = "HSIA = HSIA West + TQ ILEC (TQ ILEC has no board key); PFE is excluded from the HSIA KPIs. pfe, whsia and koodo are not reported by the dashboard. The KPI series are not split by board in the source, so boards are not product keys.";
 
 // ---- formatters (function declarations: INDICATORS above references fmtNumK/fmtRate at load) ----
 function fmtNum(v) { return v == null ? "—" : Math.round(v).toLocaleString("en-CA"); }

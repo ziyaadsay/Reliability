@@ -25,7 +25,7 @@ const METRICS = {
   b2bVoC: { label: "Voice of Customer (B2B) score", unit: "% (lower is better)", goodWhenDown: true, rate: true }
 };
 const SOURCES = {
-  kpis: "Churn Measurement 2026 workbook, Reliability/Deact KPIs tab (HSIA base = HSIA West + TQ ILEC HS + PFE Vulcan HS from the 2026 Redwood Scorecard; TV and SHS national).",
+  kpis: "Churn Measurement 2026 workbook, Reliability/Deact KPIs tab (HSIA base = HSIA West + TQ ILEC HS from the 2026 Redwood Scorecard, PFE excluded; TV and SHS national).",
   calls: "TS Calls Offered by Product workbook, Actuals tabs. HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA excluded); TV = IPTV West + TV+ (OPUS) + PFE - IPTV + TQ ILEC - IPTV.",
   tickets: "Looker Ticket Categories tabs of the Churn Measurement 2026 workbook; HSIA pain-point grouping from the hsia_ticket_recategorization tab.",
   initiatives: "HSIA: Product Technical | Churn & VOC Projects Impact sheet (Sept 2026 Executive Summary tab; carries an Impact rating). TV and SHS: Churn Measurement 2026 workbook, Initiatives tab.",
