@@ -2040,6 +2040,13 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-note.bad{border-color:${T.bad}} .dk-note.ok{border-color:${T.good}} .dk-note.amber{border-color:${isDark ? "#F0A55B" : "#B86E00"}}
 .dk-pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:${T.band};color:${T.heading};margin-left:8px;vertical-align:middle}
 .dk-cap{font-size:13px;color:${muted};line-height:1.45}
+.dk-callout{margin-top:26px;max-width:940px;font-size:21px;line-height:1.4;font-weight:600;border-left:4px solid rgba(255,255,255,.7);padding:4px 0 4px 18px;color:#fff}
+.dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:10px 12px} .dk-stats.tight .dk-stat-v{font-size:27px} .dk-stats.tight .dk-stat-l{font-size:12.5px} .dk-stats.tight .dk-stat-s{font-size:12px}
+.dk-ch{margin:0 0 6px;font-size:14px;font-weight:700;color:${ink}}
+.dk-brow{display:grid;grid-template-columns:38% 1fr;gap:10px;align-items:center;padding:4px 0;border-bottom:1px solid ${T.border}}
+.dk-bl{font-size:12.5px;color:${T.textSecondary};line-height:1.25}
+.dk-bar{display:flex;align-items:center;gap:6px;height:12px;margin:1px 0} .dk-bar i{display:block;height:100%;border-radius:2px;min-width:2px} .dk-bar b{font-size:11px;font-weight:600;color:${muted};font-variant-numeric:tabular-nums}
+.dk-dv{position:relative;height:20px} .dk-dv:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:${T.border}} .dk-dv i{position:absolute;top:4px;height:12px;border-radius:2px} .dk-dv b{position:absolute;top:2px;font-size:11px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 .dk-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:${muted}} .dk-legend span{display:inline-flex;align-items:center;gap:6px} .dk-legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
 .dk-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:none;border-radius:8px;background:rgba(255,255,255,.07);color:#fff;font-size:26px;cursor:pointer;transition:opacity .3s,background .2s;opacity:${idle ? 0 : 0.85}}
 .dk-nav:hover{background:rgba(255,255,255,.18)} .dk-nav:disabled{opacity:0;cursor:default}
@@ -2060,6 +2067,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
       {sl.layout === "section" && <div className="dk-num">{sl.num}</div>}
       {sl.layout === "fact" ? <div className="dk-big">{sl.big}</div> : <h1>{sl.title}</h1>}
       {sl.sub && <p className="dk-sub">{sl.sub}</p>}
+      {sl.callout && <div className="dk-callout">{sl.callout}</div>}
       {content && <div className={`dk-body${sl.layout === "two-cols" ? " dk-two" : ""}`}>{content}</div>}
       <div className="dk-foot"><span><b>{title}</b> · Reliability Strategy</span><span>{k + 1} / {n}</span></div>
     </div>
@@ -7437,75 +7445,92 @@ export default function ReliabilityScorecards() {
 
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
-    const dshare = (head, rows) => (
-      <table>
-        <thead><tr><th style={{ textAlign: "left" }}>{head}</th><th>Sep</th><th>Oct</th><th>Change</th></tr></thead>
-        <tbody>{rows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{a}%</td><td className="n">{b}%</td><td className="n">{pp(a, b)}</td></tr>)}</tbody>
-      </table>
-    );
-    const dmove = (head, rows) => (
-      <table>
-        <thead><tr><th style={{ textAlign: "left" }}>{head}</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th></tr></thead>
-        <tbody>{rows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td></tr>)}</tbody>
-      </table>
-    );
+    // MoM change coloured red for an increase and green for a decrease
+    const chg = (text, delta, invert) => <span style={{ fontWeight: 700, color: !delta ? MUTED : (delta > 0) !== !!invert ? T.bad : T.good }}>{text}</span>;
+    const mstat = (v, label, sepTxt, text, delta, invert) => dstat(v, label, <>{sepTxt} · {chg(text, delta, invert)}</>);
+    const pairLegend = <div className="dk-legend"><span><i style={{ background: MUTED, opacity: 0.55 }} />September</span><span><i style={{ background: col }} />October</span></div>;
+    // paired horizontal bars, September against October
+    const dpair = (rows, fmt = num) => {
+      const mx = Math.max(...rows.flatMap((r) => [r[1], r[2]])) || 1;
+      return <div>{rows.map(([n, a, b]) => (
+        <div key={n} className="dk-brow"><div className="dk-bl">{n}</div><div>
+          <div className="dk-bar"><i style={{ width: `${(a / mx) * 80}%`, background: MUTED, opacity: 0.55 }} /><b>{fmt(a)}</b></div>
+          <div className="dk-bar"><i style={{ width: `${(b / mx) * 80}%`, background: col }} /><b>{fmt(b)}</b></div>
+        </div></div>))}</div>;
+    };
+    // diverging bars of the change: increase red, decrease green
+    const ddelta = (rows) => {
+      const mx = Math.max(...rows.map((r) => Math.abs(r[2] - r[1]))) || 1;
+      return <div>{rows.map(([n, a, b]) => {
+        const d = b - a, w = (Math.abs(d) / mx) * 28, up = d >= 0, tone = up ? T.bad : T.good;
+        return <div key={n} className="dk-brow"><div className="dk-bl">{n}</div>
+          <div className="dk-dv"><i style={{ background: tone, width: `${w}%`, left: up ? "50%" : `${50 - w}%` }} />
+            <b style={{ color: tone, ...(up ? { left: `calc(${50 + w}% + 5px)` } : { right: `calc(${50 + w}% + 5px)` }) }}>{sn(d)} ({sp(pct(b, a), 1)})</b></div></div>;
+      })}</div>;
+    };
+    // monthly lines, October 2025 to October 2026
+    const dline = (series, fmt, startK = iYoY) => {
+      const lineMonths = []; for (let k = startK; k <= iOct; k++) lineMonths.push(k);
+      const W = 520, Hh = 270, l = 44, r = 54, t = 14, b = 28;
+      const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k]));
+      const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 0.1, lo = mn - pad, hi = mx + pad;
+      const pw = W - l - r, ph = Hh - t - b;
+      const x = (j) => l + (j * pw) / (lineMonths.length - 1), y = (v) => t + ph - ((v - lo) / (hi - lo)) * ph;
+      const ticks = [0, 1, 2, 3].map((q) => lo + ((hi - lo) * q) / 3);
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
+          {ticks.map((g, q) => <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: 11 }}>{fmt(g)}</text></g>)}
+          {lineMonths.map((k, j) => <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text>)}
+          {series.map((sr) => {
+            const pts = lineMonths.map((k, j) => `${j ? "L" : "M"}${x(j).toFixed(1)},${y(sr.vals[k]).toFixed(1)}`).join(" ");
+            const lastJ = lineMonths.length - 1, lv = sr.vals[iOct];
+            return <g key={sr.name}><path d={pts} fill="none" stroke={sr.color} strokeWidth={2.8} />
+              {lineMonths.map((k, j) => <circle key={k} cx={x(j)} cy={y(sr.vals[k])} r={j === lastJ ? 4.5 : 2.2} fill={sr.color} />)}
+              <text x={x(lastJ) + 8} y={y(lv) + 4} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text></g>;
+          })}
+        </svg>
+      );
+    };
+    const platLegend = <div className="dk-legend"><span><i style={{ background: col }} />Mediaroom (Optik TV Legacy)</span><span><i style={{ background: AMBER }} />OPUS (TV Evolution)</span></div>;
     const vid = R.categories[0], mv = R.movers;
     const slides = [
-      { layout: "cover", title: "TV in October", sub: `TV October review · calls, tickets, dispatches and churn for TV as a whole, whether Mediaroom or OPUS is driving it, and focus sections on video quality and STB No Boot (notes to ${R.asOf})`,
-        notes: `Looker to Oct 2026 (full month); Sep and Oct note exports, ${num(R.files)} October tickets to 30 Oct. Aggregates only.` },
-      { layout: "statement", title: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, with churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.`,
+      { layout: "cover", title: "TV in October", sub: "TV October review · calls, tickets, dispatches and churn for TV as a whole, whether Mediaroom or OPUS is driving it, and focus sections on video quality and STB No Boot",
+        callout: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, with churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.`,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", title: "September to October at a glance", sub: "Dashboard KPIs; rates per 100 subscribers", clicks: 6,
-        body: (step, C) => <div className="dk-stats">
-          {C(1, dstat(num(callsOff[iOct]), "Calls offered · Oct", `Sep ${num(callsOff[iSep])} · ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}`))}
-          {C(2, dstat(num(tk[iOct]), "Tickets · Oct", `Sep ${num(tk[iSep])} · ${sp(pct(tk[iOct], tk[iSep]), 1)}`))}
-          {C(3, dstat(num(rv[iOct]), "Repairs / dispatches · Oct", `Sep ${num(rv[iSep])} · ${sp(pct(rv[iOct], rv[iSep]), 1)}`))}
-          {C(4, dstat(fmtRate(tr[iOct]), "Ticket rate per 100 subs", `Sep ${fmtRate(tr[iSep])} · ${sd(tr[iOct] - tr[iSep])}`))}
-          {C(5, dstat(fmtRate(ch[iOct]), "Churn rate per 100 subs", `Sep ${fmtRate(ch[iSep])} · ${sd(ch[iOct] - ch[iSep])}`))}
-          {C(6, dstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`))}
-        </div>,
-        notes: "One card per click." },
-      { layout: "default", title: "In short", clicks: 6,
-        body: (step, C) => <ul>
-          <li>{C(1, <><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, dispatches {sp(pct(rv[iOct], rv[iSep]), 1)} (partly a source difference); churn {sd(ch[iOct] - ch[iSep])} per 100.</>)}</li>
-          <li>{C(2, <><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</>)}</li>
-          <li>{C(3, <><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</>)}</li>
-          <li>{C(4, <><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</>)}</li>
-          <li>{C(5, <><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])}; Stuck on Initializing held at {num(R.movers[5][2])}.</>)}</li>
-          <li>{C(6, <><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on Evolution boxes.</>)}</li>
-        </ul>,
-        notes: "Six points, one per click." },
-      { layout: "section", num: "01", title: "TV as a whole", sub: "Calls, tickets, dispatches and churn, September to October" },
-      { layout: "default", title: "TV measures, September to October", clicks: 1,
+      { layout: "default", dense: true, title: "September to October at a glance", sub: "Dashboard KPIs, rates per 100 subscribers. Change against September: red is an increase, green a decrease", clicks: 2,
         body: (step, C) => <>
-          <table>
-            <thead><tr><th style={{ textAlign: "left" }}>Measure</th><th>Sep</th><th>Oct</th><th>Change</th><th>vs Oct 2025</th></tr></thead>
-            <tbody>{kpiRows.map(([n, ser, f, kind]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{f(ser[iSep])}</td><td className="n">{f(ser[iOct])}</td><td className="n">{mp(kind, ser, iOct, iSep)}</td><td className="n">{mp(kind, ser, iOct, iYoY)}</td></tr>)}</tbody>
-          </table>
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Calls rose faster than tickets and the answer rate slipped. The dispatch rise is partly a source difference: the platform source has dispatches {sp(pct(platRepOct, platRepSep), 1)}. Churn improved.</p>)}
+          {C(1, <div className="dk-stats tight">
+            {mstat(num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
+            {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
+            {mstat(num(rv[iOct]), "Repairs / dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
+            {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
+            {mstat(fmtRate(ch[iOct]), "Churn rate per 100", `Sep ${fmtRate(ch[iSep])}`, sd(ch[iOct] - ch[iSep]), ch[iOct] - ch[iSep])}
+            {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
+          </div>)}
+          {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
+            <li><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, dispatches {sp(pct(rv[iOct], rv[iSep]), 1)} (partly a source difference); churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
+            <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
+            <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</li>
+            <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</li>
+            <li><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])}; Stuck on Initializing held at {num(R.movers[5][2])}.</li>
+            <li><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on Evolution boxes.</li>
+          </ul>)}
         </>,
-        notes: "Calls are not split by platform in the source." },
-      { layout: "section", num: "02", title: "Mediaroom or OPUS", sub: "Which platform is driving the month" },
-      { layout: "default", title: "Platform split", clicks: 1,
+        notes: "Click 1: the six KPI cards together. Click 2: the six findings together. Calls are not split by platform in the source." },
+      { layout: "default", title: "Platform split: ticket rate and dispatch rate", sub: "Per 100 subscribers on each platform, October 2025 to October 2026", clicks: 1,
         body: (step, C) => <>
-          <table>
-            <thead><tr><th style={{ textAlign: "left" }}>Measure</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
-            <tbody>
-              <tr><td style={{ textAlign: "left" }}>Tickets</td><td className="n">{num(legacy.tickets[iSep])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sn(legacy.tickets[iOct] - legacy.tickets[iSep])}</td><td className="n">{num(opus.tickets[iSep])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sn(opus.tickets[iOct] - opus.tickets[iSep])}</td></tr>
-              <tr><td style={{ textAlign: "left" }}>Ticket rate per 100</td><td className="n">{fmtRate(legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(legacy.ticketRate[iOct])}</td><td className="n">{sd(legacy.ticketRate[iOct] - legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iOct])}</td><td className="n">{sd(opus.ticketRate[iOct] - opus.ticketRate[iSep])}</td></tr>
-              <tr><td style={{ textAlign: "left" }}>Subscriber base</td><td className="n">{num(legacy.base[iSep])}</td><td className="n">{num(legacy.base[iOct])}</td><td className="n">{sn(legacy.base[iOct] - legacy.base[iSep])}</td><td className="n">{num(opus.base[iSep])}</td><td className="n">{num(opus.base[iOct])}</td><td className="n">{sn(opus.base[iOct] - opus.base[iSep])}</td></tr>
-              <tr><td style={{ textAlign: "left" }}>Dispatches</td><td className="n">{num(legacy.repairs[iSep])}</td><td className="n">{num(legacy.repairs[iOct])}</td><td className="n">{sn(legacy.repairs[iOct] - legacy.repairs[iSep])}</td><td className="n">{num(opus.repairs[iSep])}</td><td className="n">{num(opus.repairs[iOct])}</td><td className="n">{sn(opus.repairs[iOct] - opus.repairs[iSep])}</td></tr>
-              <tr><td style={{ textAlign: "left" }}>Tickets vs Oct 2025</td><td className="n">{num(legacy.tickets[iYoY])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 1)}</td><td className="n">{num(opus.tickets[iYoY])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 1)}</td></tr>
-            </tbody>
-          </table>
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Mediaroom is the upside: {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets on a base that lost {num(legacy.base[iSep] - legacy.base[iOct])}. OPUS is the downside: {sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets on a base that grew {num(opus.base[iOct] - opus.base[iSep])}. Year over year OPUS is behind the improvement; Legacy's rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</p>)}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
+            <div><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.ticketRate }, { name: "OPUS", color: AMBER, vals: opus.ticketRate }], (v) => fmtRate(v))}</div>
+            <div><h3 className="dk-ch">Dispatch rate per 100 subs (platform source, from January 2026)</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.repairRate }, { name: "OPUS", color: AMBER, vals: opus.repairRate }], (v) => fmtRate(v), MONTHS.indexOf("Jan 2026"))}</div>
+          </div>
+          {platLegend}
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Mediaroom is the upside: {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets on a base that lost {num(legacy.base[iSep] - legacy.base[iOct])}. OPUS is the downside: {sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets on a base that grew {num(opus.base[iOct] - opus.base[iSep])}. Year over year OPUS is behind the improvement; Legacy's ticket rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</p>)}
         </>,
         notes: `Mediaroom and OPUS tickets total ${num(platTotOct)} against ${num(platTotSep)}; the TV total of ${num(tk[iOct])} also includes Pik TV (${num(pikOct)}), a minor line left out of the analysis.` },
-      { layout: "section", num: "03", title: "Video quality", sub: "Looker ticket categories, September to October" },
-      { layout: "two-cols", title: "By category and largest movers", clicks: 1,
+      { layout: "two-cols", title: "Video quality: categories and largest movers", sub: "Tickets, September to October (Looker categories). Movers: red is an increase, green a decrease", clicks: 1,
         body: (step, C) => <>
-          <div>{dmove("Category", R.categories)}</div>
-          {C(1, <div>{dmove("Ticket type", R.movers)}</div>)}
+          <div><h3 className="dk-ch">By category</h3>{dpair(R.categories)}{pairLegend}</div>
+          {C(1, <div><h3 className="dk-ch">Largest movers, Oct vs Sep</h3>{ddelta(R.movers)}</div>)}
         </>,
         notes: "Left: the six categories. Right (one click): the nine largest movers." },
       { layout: "default", title: "Stop/Stuttering/Freezing tickets per day", sub: `Note exports: ${num(stSep)} in September, ${num(stOct)} in October (${sn(stOct - stSep)})`, clicks: 1,
@@ -7521,37 +7546,30 @@ export default function ReliabilityScorecards() {
           {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
         </>,
         notes: "About 100 of the roughly 430 extra stuttering tickets are the outage." },
-      { layout: "section", num: "04", title: "STB No Boot", sub: "The Mediaroom start-up family" },
-      { layout: "default", title: "STB No Boot", sub: `Looker: ${num(R.categories[3][1])} to ${num(R.categories[3][2])} (${sp(pct(R.categories[3][2], R.categories[3][1]), 1)}); sub-categories from the notes export`, clicks: 1,
+      { layout: "default", title: "STB No Boot", sub: `Looker: ${num(R.categories[3][1])} to ${num(R.categories[3][2])} (${sp(pct(R.categories[3][2], R.categories[3][1]), 1)}); tickets by sub-category`, clicks: 1,
         body: (step, C) => <>
-          <table>
-            <thead><tr><th style={{ textAlign: "left" }}>Sub-category</th><th>Sep</th><th>Oct (to 30th)</th><th>Change</th><th>%</th></tr></thead>
-            <tbody>{nbRows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td></tr>)}</tbody>
-          </table>
+          {dpair(nbRows)}{pairLegend}
           {C(1, <p className="dk-cap" style={{ margin: 0 }}>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased. The root-cause work is in the archived TV Review.</p>)}
         </>,
-        notes: "Sub-categories come from the ticket exports; October runs to 30 October." },
-      { layout: "section", num: "05", title: "What the notes say", sub: "Root causes and fixes cited, video quality and Missing Channels" },
+        notes: "Sub-categories come from the ticket exports." },
       { layout: "default", title: "Root causes cited: video quality", sub: `Share of the ${num(R.video.rca[1])} October tickets with a root-cause line (${num(R.video.n[1])} tickets); a ticket can cite more than one`, clicks: 1,
         body: (step, C) => <>
-          {dshare("Root cause cited", R.causes)}
+          {dpair(R.causes, (v) => v + "%")}{pairLegend}
           {C(1, <p className="dk-cap" style={{ margin: 0 }}>Packet loss and discontinuities lead and are quoted more than in September. Long uptime is not the story: gateway uptime is quoted in only {R.uptime.cited[1]} tickets (median {R.uptime.median[1]} days).</p>)}
         </>,
         notes: "Underrun, discontinuity and multicast mentions roughly doubled to tripled; that may be agents pasting more xVu output." },
       { layout: "default", title: "Fixes applied: video quality", sub: `Share of the ${num(R.video.fixN[1])} October tickets with a resolution line; fixes are often combined`, clicks: 1,
         body: (step, C) => <>
-          {dshare("Fix in the notes", R.fixes)}
+          {dpair(R.fixes, (v) => v + "%")}{pairLegend}
           {C(1, <p className="dk-cap" style={{ margin: 0 }}>A box swap and a sequential reboot are each about 30%. The reboot fix is used less than in September while dispatch and escalation are used more, which suggests more cases were not cleared remotely.</p>)}
         </>,
         notes: "Remote Wi-Fi fixes are steady near 18%." },
       { layout: "two-cols", title: "Missing Channels", sub: `${num(R.missing.n[1])} October tickets (${num(R.missing.n[0])} in September); Unsubscribed-type tickets ${num(R.missing.unsubscribed[0])} to ${num(R.missing.unsubscribed[1])}`, clicks: 1,
         body: (step, C) => <>
-          <div>{dshare("Root cause cited", R.missing.causes)}</div>
-          {C(1, <div>{dshare("Fix in the notes", R.missing.fixes)}</div>)}
+          <div><h3 className="dk-ch">Root cause cited</h3>{dpair(R.missing.causes, (v) => v + "%")}{pairLegend}</div>
+          {C(1, <div><h3 className="dk-ch">Fix in the notes</h3>{dpair(R.missing.fixes, (v) => v + "%")}</div>)}
         </>,
-        notes: "A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation." },
-      { layout: "end", title: "Sources and method", sub: `Looker ticket categories (Churn Measurement 2026 workbook) · TV platform data · September and October TV ticket exports with agent notes and resolution text (${num(R.files)} October tickets to 30 October, against ${num(totOct)} in Looker for the month). Aggregates only; shares come from keyword matching on free text and are indicative.`,
-        notes: "The full write-up is the TV › Oct Review page on the dashboard." }
+        notes: "A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation." }
     ];
 
     return (
