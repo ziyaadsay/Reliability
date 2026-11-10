@@ -531,7 +531,10 @@ const INITIATIVES = [
 // products; "All" wears the heading purple.
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-// Self-serve customer workflows (Sweepr) — HSIA West Scorecard workbook, rows 49-55.
+// Self-serve customer workflows (Sweepr) — Self Assure metrics MCP (https://self-assure-metrics-mcp.telus.gizmos.run/mcp,
+// get_metric per key: resolved_sessions_ivr_web, resolution_rate_web_only, cx_easy_to_follow, cx_comment_sentiment,
+// churn_rate_sweepr_involved, deacts_saved). It replaces the HSIA West Scorecard rows as the source. The CCAI IVR rate
+// is not in the MCP (IVR flows were turned off on 9 Apr 2026), so its Jan to Apr actuals and the 14% target are kept.
 // Arrays align with MONTHS (Jan 2025 – Oct 2026). a = actuals; t = 2026 monthly targets.
 // Re-read in full each month because the source restates earlier 2026 months (the Oct 2026 pull
 // restated Sweepr involved churn and deacts saved for Jan–Aug 2026).
@@ -2478,7 +2481,7 @@ function initiativesByTheme(product, themes, issue) {
 // ---------------------------------------------------------------------------
 const DECK_W = 1120, DECK_H = 630;
 const DECK_LIGHT = { bg: "#FFFFFF", band: "#4B286D", bandText: "#C9A9E8", green: "#66CC02", panel: "#F6F2FA", border: "#E7E3EC", text: "#2C2E30", muted: "#676E73", faint: "#9A93A6", heading: "#4B286D", good: "#2B8000", bad: "#B3261E" };
-const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · TCS PLT Charter scorecard (Sweepr) · ticket, repair and churn rates are per 100 subscribers";
+const DECK_SOURCE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self Assure metrics (Sweepr) · ticket, repair and churn rates are per 100 subscribers";
 
 function sparkPoints(series, w, h) {
   const idx = series.map((v, i) => [i, v]).filter(([, v]) => v != null);
@@ -3973,7 +3976,7 @@ export default function ReliabilityScorecards() {
           </span>
         </a>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Self-serve customer workflows are powered by the Sweepr platform. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
+          Self-serve customer workflows are powered by the Sweepr platform. Source: Self Assure metrics (current deterministic workflows), latest actual month September 2026. Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
         </p>
 
         <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T} collapsible>
@@ -8068,7 +8071,7 @@ export default function ReliabilityScorecards() {
             {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
           </button>
           <Disclosure label="Sources" T={T}><div style={{ fontSize: 10.5, color: T.textFaint, lineHeight: 1.5 }}>
-            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self-serve: TCS PLT Charter scorecard (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes (Jul – Sep 2026, Sep vs Aug); Optik TV and HSIA survey verbatims (Jun – Aug 2026, Aug vs Jul, not yet rolled forward) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
+            Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self-serve: Self Assure metrics (Sweepr) · SH+: SH+ reliability KPIs workbook · HSIA and TV notes analysis: agent/technician ticket notes (Jul – Sep 2026, Sep vs Aug); Optik TV and HSIA survey verbatims (Jun – Aug 2026, Aug vs Jul, not yet rolled forward) · Jan 2025 – {MONTHS[MONTHS.length - 1]}
           </div></Disclosure>
         </div>
       </aside>

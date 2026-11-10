@@ -464,7 +464,7 @@ function executivePage(a, b) {
   S.push(textSec("source", "Deck source line", [DECK_SOURCE_LINE]));
   return S;
 }
-const DECK_SOURCE_LINE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · TCS PLT Charter scorecard (Sweepr) · ticket, repair and churn rates are per 100 subscribers";
+const DECK_SOURCE_LINE = "Source: Churn Measurement 2026 workbook (KPIs, Looker ticket categories, HSIA ticket recategorization, initiatives) · Self Assure metrics (Sweepr) · ticket, repair and churn rates are per 100 subscribers";
 function selfServeCards(upTo) {
   const res = sweeprFigure("resolved", upTo), web = sweeprFigure("webAppRate", upTo), easy = sweeprFigure("cxEasy", upTo), chn = sweeprFigure("churn", upTo), dea = sweeprFigure("deacts", upTo);
   const c = (label, f, unit) => ({ label, value: f.latest, unit, month: f.month, mom: f.mom, yoy: f.yoy, target: f.target, vsTarget: f.vsTarget });

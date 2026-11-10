@@ -57,3 +57,10 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Actuals tabs). Pik TV (`TV_PIK`) is a minor line: it is in the volumes and rates and shown on By Platform for
   tickets only, but it is excluded from the Looker ticket categories, the TV analysis sections and the Oct Review.
   The archived TV Review keeps its own snapshot of the earlier KPI series (`TV_REVIEW_FROZEN`).
+- Self-serve (Sweepr, `SWEEPR` in `site/App.jsx`, the Self-serve page and `get_self_serve`) is updated from the Self Assure
+  metrics MCP (https://self-assure-metrics-mcp.telus.gizmos.run/mcp; plain curl works through the Gizmos network secret:
+  `initialize`, then `tools/call` `get_metric`). Map `resolved_sessions_ivr_web` to `resolved`, `resolution_rate_web_only`
+  to `webAppRate`, `cx_easy_to_follow` to `cxEasy`, `cx_comment_sentiment` to `cxSent`, `churn_rate_sweepr_involved` to
+  `churn` and `deacts_saved` to `deacts`. Re-read every month (the source restates earlier months). It no longer comes from
+  the HSIA West TCS PLT Charter workbook; the B2B rows still do. The CCAI IVR rate is not in the MCP and is left as is.
+

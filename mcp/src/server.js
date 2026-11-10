@@ -31,7 +31,7 @@ const SOURCES = {
   initiatives: "HSIA: Product Technical | Churn & VOC Projects Impact sheet (Sept 2026 Executive Summary tab; carries an Impact rating). TV and SHS: Churn Measurement 2026 workbook, Initiatives tab.",
   tvPlatforms: "Tickets: Looker split by product. Base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (all regions except BTV and SPLUS). Repairs: 2026 Redwood Scorecard, Repair Tracking Detail (2026 onward). Swaps: Tableau Swapped Orders Combined View, Repair Swap Orders Volumes.",
   b2b: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Reliability B2B rows. Lower is better.",
-  selfServe: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Sweepr rows (targets set for 2026 only).",
+  selfServe: "Self Assure metrics MCP (Sweepr, current deterministic workflows): resolved sessions, Web/App resolution rate, CX scores, Sweepr-involved churn (scorecard method) and deacts saved; the CCAI IVR rate is the earlier scorecard series (IVR flows off since 9 Apr 2026). Targets are set for 2026 only.",
   shPlus: "SH+ reliability KPIs workbook (base, calls and ticket volume from Jan 2025; rates from Jul 2025).",
   frictionFree: "Friction Free Product Systems Program Update deck (Google Slides), August 2026 edition: burndown, benefits, billing tickets, CR delivery and finance."
 };
