@@ -47,3 +47,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   archived and pinned to Q3 2026 via `HSIA_REVIEW_LATEST`; it ignores `LATEST`. The TV Review
   (`tvbrief`, Stuck on Initializing) is archived too, pinned via `TV_REVIEW_LATEST`; TV › Oct Review
   (`tvoctreview`, `OCT_REVIEW`) is the current TV review.
+- HSIA › PFE (PureFibre East, `hsiapfe`, `HsiaPfePage`, `PFE` in `site/App.jsx`) is a separate series from
+  HSIA West + TQ ILEC: calls from the TS Calls Offered by Product workbook ("PFE - HSIA" field), and
+  base, tickets, repairs and churn from the PFE column of each month on the Churn Measurement 2026
+  workbook's "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
+  volume over the PFE base per 100.

@@ -760,6 +760,23 @@ const CALLS_SPLIT = {
 };
 
 // ---------------------------------------------------------------------------
+// PFE (PureFibre East) HSIA customers — the HSIA > PFE subsection. Arrays align with MONTHS
+// (Jan 2025 – Oct 2026). Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered
+// tab, "PFE - HSIA" field. Base, tickets, repairs and churn: Churn Measurement 2026 workbook,
+// Reliability/Deact KPIs tab, PFE column of each month. Rates are volume over the PFE base per
+// 100 subscribers. PFE churn (go/national) is first reported for Oct 2025.
+// ---------------------------------------------------------------------------
+const PFE = {
+  callsOffered: [240,321,497,609,1200,994,1084,1671,1726,2317,2745,4200,3255,2682,3376,3344,3921,4462,5040,4028,2988,2581],
+  ticketVolume: [325,312,445,552,929,842,930,1184,1320,1584,1575,2498,2085,1644,1960,2357,2629,3023,3373,2771,2106,1771],
+  ticketRate: [8.45,6.64,7.58,7.80,10.57,7.74,6.96,7.55,7.06,7.28,6.37,8.67,6.52,4.75,5.17,5.67,5.84,6.20,6.43,5.15,3.88,3.24],
+  repairVolume: [66,57,67,59,65,80,88,119,141,210,196,291,371,294,388,385,516,586,648,472,478,426],
+  repairRate: [1.72,1.21,1.14,0.83,0.74,0.74,0.66,0.76,0.75,0.96,0.79,1.01,1.16,0.85,1.02,0.93,1.15,1.20,1.24,0.88,0.88,0.78],
+  churnRate: [null,null,null,null,null,null,null,null,null,5.26,3.23,2.94,2.29,1.34,1.94,2.36,2.14,2.38,2.26,2.49,2.78,3.48],
+  subBase: [3844,4700,5871,7073,8785,10881,13359,15691,18702,21764,24707,28805,31982,34636,37878,41545,45040,48790,52423,53843,54226,54593]
+};
+
+// ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
 // Arrays align with MONTHS (Jan 2025 – Oct 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
@@ -965,8 +982,8 @@ const OCT_REVIEW = {
   diag: [["Underruns", 23, 63], ["Discontinuities", 11, 34], ["Multicast", 18, 45]]
 };
 
-const LIGHT_COLOR = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5", FFPS: "#A3268A" };
-const DARK_COLOR  = { HSIA: "#7C53A5", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2", FFPS: "#D77BC4" };
+const LIGHT_COLOR = { HSIA: "#7C53A5", PFE: "#B0447C", TV: "#2B8000", SHS: "#2a78d6", "SH+": "#00838F", FFH: "#eb6834", All: "#4B286D", SWEEPR: "#eb6834", LEGACY: "#2B8000", OPUS: "#eb6834", MIXED: "#7C53A5", FFPS: "#A3268A" };
+const DARK_COLOR  = { HSIA: "#7C53A5", PFE: "#E577A8", TV: "#2B8000", SHS: "#3987e5", "SH+": "#26A5B3", FFH: "#d95926", All: "#C9A9E8", SWEEPR: "#d95926", LEGACY: "#2B8000", OPUS: "#d95926", MIXED: "#9B7BC2", FFPS: "#D77BC4" };
 const PRODUCTS = ["HSIA", "TV", "SHS"];
 const SCOPES = ["All", "HSIA", "TV", "SHS", "SH+"];
 
@@ -2363,11 +2380,11 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiapfe", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   shplustickets: "Notes Analysis",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiapfe: "PFE (PureFibre East)", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "TV Review (Sep 2026)", tvoctreview: "Oct Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -2693,7 +2710,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiapfe", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2776,6 +2793,7 @@ export default function ReliabilityScorecards() {
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiapfe", label: "PFE (PureFibre East)", icon: "hsia", color: colors.PFE, child: true, parent: "HSIA" },
     { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaarchdeck", label: "Supporting deck", icon: "slides", color: colors.HSIA, child: true, grand: true, parent: "hsiaarch" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
@@ -3677,6 +3695,90 @@ export default function ReliabilityScorecards() {
   }
 
   // ------------------------------ TV platform breakout ------------------------------
+  // ------------------------------ HSIA › PFE (PureFibre East) ------------------------------
+  // Same card row and sections as the product pages: calls, tickets, repairs, churn and base for
+  // the PFE customers inside HSIA. No date filter: the full series and the latest month.
+  function HsiaPfePage() {
+    const LAST = MONTHS.length - 1, col = colors.PFE;
+    const one = (label, data) => [{ key: "PFE", label, data }];
+    const d = (x, suffix) => (x ? <DeltaText key={suffix} d={x} T={T} suffix={suffix} /> : null);
+    const card = (icon, label, data, fmt, dec, goodDown, mode) => {
+      const f = rowFigures(data, dec, goodDown, mode, LAST);
+      return <StatCard key={label} T={T} color={col} icon={icon} label={label} value={fmt(f.latest)} sub={f.latestMonth} deltas={[d(f.mom, "MoM"), d(f.yoy, "YoY")].filter(Boolean)} />;
+    };
+    let secNo = 0;
+    const sec = (title, icon, children) => {
+      secNo += 1;
+      return (
+        <Section key={`pfe-${title}`} num={String(secNo).padStart(2, "0")} eyebrow="HSIA · PFE" title={title} icon={icon} T={T} collapsible defaultOpen={secNo <= 1}>
+          {children}
+        </Section>
+      );
+    };
+    const rate2 = (v) => fmtRate(v, 2);
+    const simple = (id, title, label, data, yFmt, note, tableFmt) => (
+      <ChartCard title={title} T={T} tableOpen={!!openTables[id]} onToggleTable={() => toggleTable(id)} note={note}>
+        <LineChart labels={MONTHS} seriesDefs={one(label, data)} yFmt={yFmt} colors={colors} T={T} />
+        {openTables[id] && <DataTable labels={MONTHS} seriesDefs={one(label, data)} fmt={tableFmt || yFmt} T={T} />}
+      </ChartCard>
+    );
+    const combo = (id, title, volLabel, vol, rateLabel, rate, note) => (
+      <ChartCard title={title} T={T} tableOpen={!!openTables[id]} onToggleTable={() => toggleTable(id)} note={note}>
+        <ComboChart labels={MONTHS} T={T}
+          bar={{ label: volLabel, data: vol, color: col, fmt: fmtNumK }}
+          line={{ label: rateLabel, data: rate, color: col, fmt: rate2 }} />
+        <Legend items={[{ label: `${volLabel} (bars, left axis)`, color: col, bar: true }, { label: `${rateLabel} (line, right axis)`, color: col }]} T={T} />
+        {openTables[id] && <DataTable labels={MONTHS} seriesDefs={[
+          { key: "PFE", label: volLabel, data: vol, fmt: fmtNum },
+          { key: "PFE", label: rateLabel, data: rate, fmt: rate2 }
+        ]} fmt={fmtNum} T={T} />}
+      </ChartCard>
+    );
+    return (
+      <>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 2px 8px" }}>
+            <span style={{ color: col, display: "inline-flex" }}><Icon name="hsia" size={15} /></span>
+            <span style={{ fontWeight: 800, color: T.heading, fontSize: 14 }}>PFE (PureFibre East)</span>
+            <span style={{ fontSize: 11.5, color: T.textFaint }}>· HSIA customers on the PureFibre East network</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
+            {card("calls", "Calls offered (PFE)", PFE.callsOffered, fmtBig, 0, true, false)}
+            {card("tickets", "Ticket volume", PFE.ticketVolume, fmtBig, 0, true, false)}
+            {card("tickets", "Ticket rate per 100 subs", PFE.ticketRate, fmtRate, 2, true, "rate")}
+            {card("repairs", "Repair volume", PFE.repairVolume, fmtBig, 0, true, false)}
+            {card("repairs", "Repair rate per 100 subs", PFE.repairRate, fmtRate, 2, true, "rate")}
+            {card("churn", "Churn rate per 100 subs", PFE.churnRate, fmtRate, 2, true, "rate")}
+            {card("base", "Subscriber base", PFE.subBase, fmtBig, 0, false, false)}
+          </div>
+        </div>
+        <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
+          PFE is the PureFibre East (Vulcan) customer group reported separately from HSIA West and TQ ILEC. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab, PFE - HSIA field. Subscribers, tickets, repairs and churn: Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE columns. Ticket and repair rates are volume over the PFE subscriber base, per 100 subscribers. PFE churn (go/national) is reported from Oct 2025.
+        </p>
+
+        {sec("Calls offered", "calls",
+          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtNumK, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtNum)
+        )}
+
+        {sec("Tickets", "tickets",
+          combo("pfe-tr", "Tickets — volume (bars) and rate (line, per 100 subs)", "Ticket volume", PFE.ticketVolume, "Ticket rate", PFE.ticketRate, "PFE tickets over the PFE subscriber base. Volume on the left axis, rate on the right.")
+        )}
+
+        {sec("Repairs / Dispatches", "repairs",
+          combo("pfe-rr", "Repairs / dispatches — volume (bars) and rate (line, per 100 subs)", "Repair volume", PFE.repairVolume, "Repair rate", PFE.repairRate, "PFE repairs over the PFE subscriber base. Volume on the left axis, rate on the right.")
+        )}
+
+        {sec("Churn", "churn",
+          simple("pfe-ch", "Churn rate per 100 subs (go/national RGU)", "Churn rate", PFE.churnRate, rate2, "PFE churn is first reported for Oct 2025.")
+        )}
+
+        {sec("Subscriber base", "base",
+          simple("pfe-bs", "Subscriber base", "Subscriber base", PFE.subBase, fmtBig, "Month-end PFE subscribers (Reliability/Deact KPIs tab).", fmtNum)
+        )}
+      </>
+    );
+  }
+
   function TvPlatformsPage() {
     // Sub-page carries no date filter: always the full 2026 window and the latest month
     const LAST = MONTHS.length - 1;
@@ -7856,6 +7958,8 @@ export default function ReliabilityScorecards() {
       ? "HSIA customer sentiment analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
+      : page === "hsiapfe"
+      ? "HSIA · PFE (PureFibre East)"
       : page === "hsiaarch"
       ? "HSIA reliability architecture"
       : page === "hsiaarchdeck"
@@ -7975,6 +8079,8 @@ export default function ReliabilityScorecards() {
               ? "HSIA reliability ecosystem · North Star layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
+              : page === "hsiapfe"
+              ? "HSIA · PFE (PureFibre East) · calls offered, tickets, repairs, churn and subscriber base for PureFibre East customers"
               : page === "tvplatforms"
                 ? "TV platforms · Optik TV Legacy vs TV Evolution vs Mixed usage: base, tickets, repairs, swaps"
                 : page === "tvtickets"
@@ -8040,6 +8146,7 @@ export default function ReliabilityScorecards() {
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
+            : page === "hsiapfe" ? HsiaPfePage()
             : page === "hsiaarch" ? ArchitecturePage()
             : page === "hsiaarchdeck" ? ArchitectureDeckPage()
             : page === "tvplatforms" ? TvPlatformsPage()
