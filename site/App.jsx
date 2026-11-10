@@ -959,6 +959,8 @@ const OCT_REVIEW = {
     causes: [["Middleware, provisioning or subscription out of sync", 80, 79], ["TELUS TV+ app cache or data", 18, 14], ["Gateway reboot, uptime or firmware", 9, 12], ["STB hardware", 5, 5]],
     fixes: [["Education or advised the customer", 85, 84], ["Sync or refresh (Fix My Account, subscription, stream profile, guide)", 49, 46], ["Reboot", 44, 44], ["Escalated (Tier 2, Synapse provisioning)", 31, 31], ["STB swap", 8, 8]]
   },
+  // Category x platform from the notes (device models in the InSight lines), 62% of tickets identified; Oct export ends 30 Oct.
+  platformNotes: [["Video Issues", 2645, 2843, 2400, 2436], ["STB No Boot", 4251, 3787, 490, 477], ["Recording Issues", 3211, 3202, 167, 203], ["Channel Issues", 862, 809, 1945, 2135], ["Digital Box", 158, 124, 3298, 3230]],
   uptime: { cited: [54, 53], d30: [37, 32], d90: [20, 16], median: [54, 36] },
   diag: [["Underruns", 23, 63], ["Discontinuities", 11, 34], ["Multicast", 18, 45]]
 };
@@ -1776,6 +1778,9 @@ function buildAskContext(view, month) {
   if (typeof OCT_REVIEW !== "undefined") {
     const R = OCT_REVIEW, o = R.outage;
     out.push("\n== TV Oct Review: what drove the rise in TV video tickets in October (notes to " + R.asOf + ") ==");
+    { const lg = TV_PLATFORMS.find((x) => x.id === "legacy"), op = TV_PLATFORMS.find((x) => x.id === "opus"), a = MONTHS.indexOf("Sep 2026"), b = MONTHS.indexOf("Oct 2026");
+      out.push(`- Mediaroom (Optik TV Legacy) tickets ${lg.tickets[a]} to ${lg.tickets[b]}, rate ${lg.ticketRate[a]} to ${lg.ticketRate[b]} per 100, base ${lg.base[a]} to ${lg.base[b]}; OPUS (TV Evolution) tickets ${op.tickets[a]} to ${op.tickets[b]}, rate ${op.ticketRate[a]} to ${op.ticketRate[b]} per 100, base ${op.base[a]} to ${op.base[b]}. Mediaroom is the October upside, OPUS the downside.`);
+      out.push(`- TV KPIs Sep to Oct: calls offered ${CALLS_SPLIT.TV.offered[a]} to ${CALLS_SPLIT.TV.offered[b]}, answered ${CALLS_SPLIT.TV.answered[a]} to ${CALLS_SPLIT.TV.answered[b]}, tickets ${DATA.ticketVolume.TV[a]} to ${DATA.ticketVolume.TV[b]}, dispatches ${DATA.repairVolume.TV[a]} to ${DATA.repairVolume.TV[b]} (platform source: ${lg.repairs[a] + op.repairs[a]} to ${lg.repairs[b] + op.repairs[b]}), churn ${DATA.churnRate.TV[a]} to ${DATA.churnRate.TV[b]} per 100.`); }
     out.push(`- TV tickets ${R.looker} in Oct vs ${R.lookerSep} in Sep; the step-up came in Sep. Video Issues ${R.categories[0][1]} to ${R.categories[0][2]}, Channel Issues ${R.categories[1][1]} to ${R.categories[1][2]}.`);
     R.movers.forEach(([n, a, b]) => out.push(`- mover ${n}: ${a} to ${b}`));
     out.push(`- Calgary Optik TV area outage on ${o.day} Oct: stuttering tickets ${o.peak} that day and ${o.next} next vs about ${o.normal} normally; ${o.citing} and ${o.citingNext} tickets name the outage.`);
@@ -7247,6 +7252,25 @@ export default function ReliabilityScorecards() {
     const stSep = sum(R.stutter.sep), stOct = sum(R.stutter.oct);
     const O = R.outage, excess = (O.peak - O.normal) + (O.next - O.normal);
     const catRise = R.categories.map(([n, a, b]) => [n, a, b, b - a]);
+    // ---- whole-TV measures (dashboard KPI tab, TS calls workbook) ----
+    const callsOff = CALLS_SPLIT.TV.offered, callsAns = CALLS_SPLIT.TV.answered;
+    const base = DATA.subBase.TV, tk = DATA.ticketVolume.TV, tr = DATA.ticketRate.TV, rv = DATA.repairVolume.TV, rr = DATA.repairRate.TV, ch = DATA.churnRate.TV;
+    const ansRate = (i) => (callsAns[i] / callsOff[i]) * 100, callsPer100 = (i) => (callsOff[i] / base[i]) * 100;
+    const sd = (x, d = 2) => (x == null ? "n/a" : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d));
+    const iYoY = iOct - 12;
+    const kpiRows = [
+      ["Calls offered", callsOff, num, "n", true], ["Calls answered", callsAns, num, "n", false], ["Answer rate", callsAns.map((v, i) => (callsOff[i] ? (v / callsOff[i]) * 100 : null)), (v) => v.toFixed(1) + "%", "r", false],
+      ["Calls offered per 100 subs", callsOff.map((v, i) => (v / base[i]) * 100), (v) => v.toFixed(2), "r", true],
+      ["Tickets", tk, num, "n", true], ["Ticket rate per 100 subs", tr, (v) => fmtRate(v), "r", true],
+      ["Repairs / dispatches", rv, num, "n", true], ["Repair rate per 100 subs", rr, (v) => fmtRate(v), "r", true],
+      ["Churn rate per 100 subs", ch, (v) => fmtRate(v), "r", true], ["Subscriber base", base, num, "n", false]
+    ];
+    const mp = (kind, ser, i, j) => (kind === "n" ? sp(pct(ser[i], ser[j]), 1) : sd(ser[i] - ser[j]));
+    const dRepSep = rv[iSep], dRepOct = rv[iOct], platRepSep = legacy.repairs[iSep] + opus.repairs[iSep], platRepOct = legacy.repairs[iOct] + opus.repairs[iOct];
+    const platTotSep = legacy.tickets[iSep] + opus.tickets[iSep], platTotOct = legacy.tickets[iOct] + opus.tickets[iOct];
+    const Dl = TV_REVIEW.daily, dsum = (k, f) => sum(Dl[k][f]);
+    const nbRows = TV_REVIEW.stbNoBoot.map((x) => [x.name, x.v[1], x.v[2]]);
+    const nbTot = TV_REVIEW.stbNoBootTotal;
     const flag = (v, goodDown = true, thr = 3) => {
       if (v == null) return null;
       const tone = Math.abs(v) < thr ? "flat" : (v < 0) === goodDown ? "ok" : "warn";
@@ -7299,38 +7323,63 @@ export default function ReliabilityScorecards() {
     );
     const vid = R.categories[0], mv = R.movers;
     const slides = [
-      { layout: "cover", title: "October TV video tickets", sub: `TV October review · what drove the rise in video quality and missing-channel tickets, and what the agent and technician notes say (notes to ${R.asOf})`,
+      { layout: "cover", title: "TV in October", sub: `TV October review · calls, tickets, dispatches and churn for TV as a whole, whether Mediaroom or OPUS is driving it, and focus sections on video quality and STB No Boot (notes to ${R.asOf})`,
         notes: `Looker to Oct 2026 (full month); Sep and Oct note exports, ${num(R.files)} October tickets to 30 Oct. Aggregates only.` },
-      { layout: "statement", title: `October TV tickets were flat on September (${sp(pct(totOct, totSep), 0)}), but video quality tickets rose ${sp(pct(vid[2], vid[1]), 0)}. One Calgary outage explains about a fifth of it; the rest is a higher everyday level on Optik TV Legacy boxes.`,
+      { layout: "statement", title: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, with churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.`,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", title: "September to October at a glance", sub: "Looker counts; rates per 100 subscribers", clicks: 6,
+      { layout: "default", title: "September to October at a glance", sub: "Dashboard KPIs; rates per 100 subscribers", clicks: 6,
         body: (step, C) => <div className="dk-stats">
-          {C(1, dstat(num(totOct), "TV tickets · Oct", `Sep ${num(totSep)} · ${sp(pct(totOct, totSep), 1)}`))}
-          {C(2, dstat(num(vid[2]), "Video Issues · Oct", `Sep ${num(vid[1])} · ${sp(pct(vid[2], vid[1]), 1)}`))}
-          {C(3, dstat(num(mv[0][2]), "Stop/Stuttering/Freezing · Oct", `Sep ${num(mv[0][1])} · ${sp(pct(mv[0][2], mv[0][1]), 1)}`))}
-          {C(4, dstat(fmtRate(legacy.ticketRate[iOct]), "Optik TV Legacy tickets per 100 subs", `Sep ${fmtRate(legacy.ticketRate[iSep])} · ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets`))}
-          {C(5, dstat(fmtRate(opus.ticketRate[iOct]), "TV Evolution tickets per 100 subs", `Sep ${fmtRate(opus.ticketRate[iSep])} · ${sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets`))}
-          {C(6, dstat(num(mv[1][2]), "Missing Channels · Oct", `Sep ${num(mv[1][1])} · ${sp(pct(mv[1][2], mv[1][1]), 1)}`))}
+          {C(1, dstat(num(callsOff[iOct]), "Calls offered · Oct", `Sep ${num(callsOff[iSep])} · ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}`))}
+          {C(2, dstat(num(tk[iOct]), "Tickets · Oct", `Sep ${num(tk[iSep])} · ${sp(pct(tk[iOct], tk[iSep]), 1)}`))}
+          {C(3, dstat(num(rv[iOct]), "Repairs / dispatches · Oct", `Sep ${num(rv[iSep])} · ${sp(pct(rv[iOct], rv[iSep]), 1)}`))}
+          {C(4, dstat(fmtRate(tr[iOct]), "Ticket rate per 100 subs", `Sep ${fmtRate(tr[iSep])} · ${sd(tr[iOct] - tr[iSep])}`))}
+          {C(5, dstat(fmtRate(ch[iOct]), "Churn rate per 100 subs", `Sep ${fmtRate(ch[iSep])} · ${sd(ch[iOct] - ch[iSep])}`))}
+          {C(6, dstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`))}
         </div>,
         notes: "One card per click." },
       { layout: "default", title: "In short", clicks: 6,
         body: (step, C) => <ul>
-          <li>{C(1, <><strong>The total barely moved; the mix did.</strong> {num(totOct)} tickets against {num(totSep)} ({sn(totOct - totSep)}); the step-up came in September (+{num(totSep - R.lookerAug)} on August) and held. Video Issues {sn(vid[2] - vid[1])}, Channel Issues {sn(R.categories[1][2] - R.categories[1][1])}; STB No Boot {sn(R.categories[3][2] - R.categories[3][1])}.</>)}</li>
-          <li>{C(2, <><strong>Stuttering, pixelization and missing channels are the risers.</strong> {sn(mv[0][2] - mv[0][1])}, {sn(mv[2][2] - mv[2][1])} and {sn(mv[1][2] - mv[1][1])} tickets.</>)}</li>
-          <li>{C(3, <><strong>It is an Optik TV Legacy (Mediaroom) story.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100; TV Evolution {sn(opus.tickets[iOct] - opus.tickets[iSep])}.</>)}</li>
-          <li>{C(4, <><strong>One outage explains about a fifth.</strong> {O.area} area outage on {O.day} Oct: {O.peak} stuttering tickets that day against about {O.normal}, roughly {num(excess)} extra.</>)}</li>
-          <li>{C(5, <><strong>The rest is a broader lift, not a new fault.</strong> {(stOct / 30).toFixed(0)} a day against {(stSep / 30).toFixed(0)}, and the root causes match September's mix.</>)}</li>
-          <li>{C(6, <><strong>Missing Channels is a provisioning problem.</strong> About {R.missing.causes[0][2]}% of tickets with a cause cite middleware or subscription sync; the fix is a sync or Tier 2 escalation.</>)}</li>
+          <li>{C(1, <><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, dispatches {sp(pct(rv[iOct], rv[iSep]), 1)} (partly a source difference); churn {sd(ch[iOct] - ch[iSep])} per 100.</>)}</li>
+          <li>{C(2, <><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</>)}</li>
+          <li>{C(3, <><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</>)}</li>
+          <li>{C(4, <><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</>)}</li>
+          <li>{C(5, <><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])}; Stuck on Initializing held at {num(R.movers[5][2])}.</>)}</li>
+          <li>{C(6, <><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on Evolution boxes.</>)}</li>
         </ul>,
         notes: "Six points, one per click." },
-      { layout: "section", num: "01", title: "What moved", sub: "Looker ticket categories, September to October" },
+      { layout: "section", num: "01", title: "TV as a whole", sub: "Calls, tickets, dispatches and churn, September to October" },
+      { layout: "default", title: "TV measures, September to October", clicks: 1,
+        body: (step, C) => <>
+          <table>
+            <thead><tr><th style={{ textAlign: "left" }}>Measure</th><th>Sep</th><th>Oct</th><th>Change</th><th>vs Oct 2025</th></tr></thead>
+            <tbody>{kpiRows.map(([n, ser, f, kind]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{f(ser[iSep])}</td><td className="n">{f(ser[iOct])}</td><td className="n">{mp(kind, ser, iOct, iSep)}</td><td className="n">{mp(kind, ser, iOct, iYoY)}</td></tr>)}</tbody>
+          </table>
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Calls rose faster than tickets and the answer rate slipped. The dispatch rise is partly a source difference: the platform source has dispatches {sp(pct(platRepOct, platRepSep), 1)}. Churn improved.</p>)}
+        </>,
+        notes: "Calls are not split by platform in the source." },
+      { layout: "section", num: "02", title: "Mediaroom or OPUS", sub: "Which platform is driving the month" },
+      { layout: "default", title: "Platform split", clicks: 1,
+        body: (step, C) => <>
+          <table>
+            <thead><tr><th style={{ textAlign: "left" }}>Measure</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
+            <tbody>
+              <tr><td style={{ textAlign: "left" }}>Tickets</td><td className="n">{num(legacy.tickets[iSep])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sn(legacy.tickets[iOct] - legacy.tickets[iSep])}</td><td className="n">{num(opus.tickets[iSep])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sn(opus.tickets[iOct] - opus.tickets[iSep])}</td></tr>
+              <tr><td style={{ textAlign: "left" }}>Ticket rate per 100</td><td className="n">{fmtRate(legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(legacy.ticketRate[iOct])}</td><td className="n">{sd(legacy.ticketRate[iOct] - legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iOct])}</td><td className="n">{sd(opus.ticketRate[iOct] - opus.ticketRate[iSep])}</td></tr>
+              <tr><td style={{ textAlign: "left" }}>Subscriber base</td><td className="n">{num(legacy.base[iSep])}</td><td className="n">{num(legacy.base[iOct])}</td><td className="n">{sn(legacy.base[iOct] - legacy.base[iSep])}</td><td className="n">{num(opus.base[iSep])}</td><td className="n">{num(opus.base[iOct])}</td><td className="n">{sn(opus.base[iOct] - opus.base[iSep])}</td></tr>
+              <tr><td style={{ textAlign: "left" }}>Dispatches</td><td className="n">{num(legacy.repairs[iSep])}</td><td className="n">{num(legacy.repairs[iOct])}</td><td className="n">{sn(legacy.repairs[iOct] - legacy.repairs[iSep])}</td><td className="n">{num(opus.repairs[iSep])}</td><td className="n">{num(opus.repairs[iOct])}</td><td className="n">{sn(opus.repairs[iOct] - opus.repairs[iSep])}</td></tr>
+              <tr><td style={{ textAlign: "left" }}>Tickets vs Oct 2025</td><td className="n">{num(legacy.tickets[iYoY])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 1)}</td><td className="n">{num(opus.tickets[iYoY])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 1)}</td></tr>
+            </tbody>
+          </table>
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Mediaroom is the upside: {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets on a base that lost {num(legacy.base[iSep] - legacy.base[iOct])}. OPUS is the downside: {sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets on a base that grew {num(opus.base[iOct] - opus.base[iSep])}. Year over year OPUS is behind the improvement; Legacy's rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</p>)}
+        </>,
+        notes: `Platform tickets total ${num(platTotOct)} against ${num(platTotSep)}; the KPI-tab total moves ${sn(tk[iOct] - tk[iSep])}, a source difference.` },
+      { layout: "section", num: "03", title: "Video quality", sub: "Looker ticket categories, September to October" },
       { layout: "two-cols", title: "By category and largest movers", clicks: 1,
         body: (step, C) => <>
           <div>{dmove("Category", R.categories)}</div>
           {C(1, <div>{dmove("Ticket type", R.movers)}</div>)}
         </>,
         notes: "Left: the six categories. Right (one click): the nine largest movers." },
-      { layout: "section", num: "02", title: "Stuttering and freezing", sub: "Day by day, September and October" },
       { layout: "default", title: "Stop/Stuttering/Freezing tickets per day", sub: `Note exports: ${num(stSep)} in September, ${num(stOct)} in October (${sn(stOct - stSep)})`, clicks: 1,
         body: (step, C) => <>
           <div style={{ width: "100%" }}>{dailyChart()}</div>
@@ -7344,7 +7393,17 @@ export default function ReliabilityScorecards() {
           {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
         </>,
         notes: "About 100 of the roughly 430 extra stuttering tickets are the outage." },
-      { layout: "section", num: "03", title: "What the notes say", sub: "Root causes and fixes cited, video quality and Missing Channels" },
+      { layout: "section", num: "04", title: "STB No Boot", sub: "The Mediaroom start-up family" },
+      { layout: "default", title: "STB No Boot", sub: `Looker: ${num(R.categories[3][1])} to ${num(R.categories[3][2])} (${sp(pct(R.categories[3][2], R.categories[3][1]), 1)}); sub-categories from the notes export`, clicks: 1,
+        body: (step, C) => <>
+          <table>
+            <thead><tr><th style={{ textAlign: "left" }}>Sub-category</th><th>Sep</th><th>Oct (to 30th)</th><th>Change</th><th>%</th></tr></thead>
+            <tbody>{nbRows.map(([n, a, b]) => <tr key={n}><td style={{ textAlign: "left" }}>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td></tr>)}</tbody>
+          </table>
+          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased. The root-cause work is in the archived TV Review.</p>)}
+        </>,
+        notes: "Sub-categories come from the ticket exports; October runs to 30 October." },
+      { layout: "section", num: "05", title: "What the notes say", sub: "Root causes and fixes cited, video quality and Missing Channels" },
       { layout: "default", title: "Root causes cited: video quality", sub: `Share of the ${num(R.video.rca[1])} October tickets with a root-cause line (${num(R.video.n[1])} tickets); a ticket can cite more than one`, clicks: 1,
         body: (step, C) => <>
           {dshare("Root cause cited", R.causes)}
@@ -7379,51 +7438,78 @@ export default function ReliabilityScorecards() {
           </button>
         </div>
         <header className="hb-head">
-          <div className="hb-eyebrow">TV · October 2026 · What drove the rise in TV video tickets, what the agent and technician notes say</div>
-          <h1>October TV tickets were flat on September (+{pct(totOct, totSep).toFixed(0)}%), but video quality tickets rose {sp(pct(R.categories[0][2], R.categories[0][1]), 0)}. One Calgary outage explains about a fifth of it; the rest is a higher everyday level on Optik TV Legacy boxes.</h1>
-          <p className="hb-sub">Looker ticket categories for September and October, the TV platform split, and the agent and technician notes from the September and October ticket exports ({num(R.files)} October tickets, 1 to 30 October, about {Math.round((R.files / totOct) * 100)}% of the month).</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>Notes to {R.asOf}</span><span>Looker to Oct 2026 (full month)</span><span>Rates per 100 subscribers</span></div>
+          <div className="hb-eyebrow">TV · October 2026 · TV as a whole: calls, tickets, dispatches, churn, and what is driving it, Mediaroom or OPUS</div>
+          <h1>TV in October: tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.</h1>
+          <p className="hb-sub">Dashboard KPIs for September and October, the Optik TV Legacy (Mediaroom) and TV Evolution (OPUS) platform split, then two focus sections: video quality and STB No Boot, from the Looker categories and the agent and technician notes ({num(R.files)} October tickets, 1 to 30 October, about {Math.round((R.files / totOct) * 100)}% of the month).</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Notes to {R.asOf}</span><span>Rates per 100 subscribers</span></div>
         </header>
 
         <section aria-labelledby="oc-short">
           <div className="hb-answer">
             <h3 id="oc-short" style={{ color: H }}>In short</h3>
             <ol>
-              <li><strong>The total barely moved; the mix did.</strong> TV tickets were {num(totOct)} in October against {num(totSep)} in September ({sn(totOct - totSep)}). The step-up came in September (+{num(totSep - R.lookerAug)} on August) and held. Video Issues rose {sn(R.categories[0][2] - R.categories[0][1])} and Channel Issues {sn(R.categories[1][2] - R.categories[1][1])}; STB No Boot fell {num(R.categories[3][1] - R.categories[3][2])} and Digital Box {num(R.categories[4][1] - R.categories[4][2])}.</li>
-              <li><strong>Stuttering, pixelization and missing channels are the risers.</strong> Stop/Stuttering/Freezing {sn(R.movers[0][2] - R.movers[0][1])} ({sp(pct(R.movers[0][2], R.movers[0][1]), 0)}), Pixelization {sn(R.movers[2][2] - R.movers[2][1])} ({sp(pct(R.movers[2][2], R.movers[2][1]), 0)}), Missing Channels {sn(R.movers[1][2] - R.movers[1][1])} ({sp(pct(R.movers[1][2], R.movers[1][1]), 0)}).</li>
-              <li><strong>It is an Optik TV Legacy (Mediaroom) story.</strong> Legacy tickets rose {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} and its rate went from {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 subscribers; TV Evolution fell {num(opus.tickets[iSep] - opus.tickets[iOct])} to {fmtRate(opus.ticketRate[iOct])}. About half of pixelization notes name a Mediaroom box and almost none an Evolution box.</li>
-              <li><strong>One outage explains about a fifth.</strong> On {O.day} October {O.area} had an active Optik TV area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} on a normal day, roughly {num(excess)} extra tickets. {O.citing} tickets that day and {O.citingNext} the next name the outage.</li>
-              <li><strong>The rest is a broader lift, not a new fault.</strong> Stuttering ran at {(stOct / 30).toFixed(0)} tickets a day in October against {(stSep / 30).toFixed(0)} in September and stayed there once the outage days are removed. The root causes quoted in the notes are close to September's mix.</li>
-              <li><strong>Missing Channels is a provisioning problem.</strong> About {R.missing.causes[0][2]}% of the tickets with a stated cause cite middleware or subscription sync, and the fix is a sync or an escalation to Tier 2 provisioning, not a box swap. Unsubscribed-type tickets rose {sn(R.missing.unsubscribed[1] - R.missing.unsubscribed[0])}.</li>
+              <li><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {num(tk[iOct])} ({sp(pct(tk[iOct], tk[iSep]), 1)}, {sp(pct(tk[iOct], tk[iYoY]), 1)} on Oct 2025), calls offered {num(callsOff[iOct])} ({sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, {sp(pct(callsOff[iOct], callsOff[iYoY]), 1)} on Oct 2025) and dispatches {num(rv[iOct])} ({sp(pct(rv[iOct], rv[iSep]), 1)}, partly a source difference). Churn fell to {fmtRate(ch[iOct])} per 100 ({sd(ch[iOct] - ch[iSep])}) and the base shrank {num(base[iSep] - base[iOct])}.</li>
+              <li><strong>Mediaroom is the upside.</strong> Optik TV Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} ({sp(pct(legacy.tickets[iOct], legacy.tickets[iSep]), 1)}) and its rate rose from {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100, on a base that shrank {num(legacy.base[iSep] - legacy.base[iOct])}.</li>
+              <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])} ({sp(pct(opus.tickets[iOct], opus.tickets[iSep]), 1)}) and its rate fell to {fmtRate(opus.ticketRate[iOct])} per 100 while its base grew {num(opus.base[iOct] - opus.base[iSep])}. Against October 2025 it is the platform behind the improvement ({sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} tickets against {sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 0)} for Legacy).</li>
+              <li><strong>Video quality is what moved Mediaroom.</strong> Video Issues {sn(R.categories[0][2] - R.categories[0][1])}; stuttering {sn(R.movers[0][2] - R.movers[0][1])} and pixelization {sn(R.movers[2][2] - R.movers[2][1])}, mostly on Mediaroom boxes. One {O.area} outage on {O.day} Oct explains about a fifth; the rest is a higher everyday level.</li>
+              <li><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])} ({sp(pct(R.categories[3][2], R.categories[3][1]), 1)}). Stuck on Initializing held at its September level, {num(R.movers[5][2])} against {num(R.movers[5][1])}, still above last year.</li>
+              <li><strong>Channels moved the other way.</strong> Missing Channels {sn(R.movers[1][2] - R.movers[1][1])}, a provisioning problem that sits mostly on Evolution boxes, not a box fault.</li>
             </ol>
           </div>
         </section>
 
         <section aria-labelledby="oc-kpis">
-          <h2 id="oc-kpis">What moved, September to October</h2>
+          <h2 id="oc-kpis">TV as a whole: calls, tickets, dispatches, churn</h2>
           <div className="hb-stats">
-            {stat(num(totOct), "TV tickets · Oct", `Sep ${num(totSep)} · ${sp(pct(totOct, totSep), 1)}`)}
-            {stat(num(R.categories[0][2]), "Video Issues · Oct", `Sep ${num(R.categories[0][1])} · ${sp(pct(R.categories[0][2], R.categories[0][1]), 1)}`)}
-            {stat(num(R.movers[0][2]), "Stop/Stuttering/Freezing · Oct", `Sep ${num(R.movers[0][1])} · ${sp(pct(R.movers[0][2], R.movers[0][1]), 1)}`)}
-            {stat(fmtRate(legacy.ticketRate[iOct]), "Optik TV Legacy tickets per 100 subs · Oct", `Sep ${fmtRate(legacy.ticketRate[iSep])} · ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets`)}
-            {stat(fmtRate(opus.ticketRate[iOct]), "TV Evolution tickets per 100 subs · Oct", `Sep ${fmtRate(opus.ticketRate[iSep])} · ${sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets`)}
-            {stat(num(R.movers[1][2]), "Missing Channels · Oct", `Sep ${num(R.movers[1][1])} · ${sp(pct(R.movers[1][2], R.movers[1][1]), 1)}`)}
+            {stat(num(callsOff[iOct]), "Calls offered · Oct", `Sep ${num(callsOff[iSep])} · ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}`)}
+            {stat(num(tk[iOct]), "Tickets · Oct", `Sep ${num(tk[iSep])} · ${sp(pct(tk[iOct], tk[iSep]), 1)}`)}
+            {stat(num(rv[iOct]), "Repairs / dispatches · Oct", `Sep ${num(rv[iSep])} · ${sp(pct(rv[iOct], rv[iSep]), 1)}`)}
+            {stat(fmtRate(tr[iOct]), "Ticket rate per 100 subs · Oct", `Sep ${fmtRate(tr[iSep])} · ${sd(tr[iOct] - tr[iSep])} per 100`)}
+            {stat(fmtRate(ch[iOct]), "Churn rate per 100 subs · Oct", `Sep ${fmtRate(ch[iSep])} · ${sd(ch[iOct] - ch[iSep])} per 100`)}
+            {stat(ansRate(iOct).toFixed(1) + "%", "Calls answered share · Oct", `Sep ${ansRate(iSep).toFixed(1)}% · ${num(callsAns[iOct])} answered`)}
           </div>
-          <h3 style={{ color: H, marginTop: 18 }}>By ticket category (Looker)</h3>
-          <div className="hb-tw"><table>
-            <thead><tr><th>Category</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th><th></th></tr></thead>
-            <tbody>{catRise.map(([n, a, b, d]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(d)}</td><td className="n">{sp(pct(b, a), 1)}</td><td>{flag(pct(b, a))}</td></tr>)}</tbody>
+          <div className="hb-tw" style={{ marginTop: 14 }}><table>
+            <thead><tr><th>Measure</th><th>Sep</th><th>Oct</th><th>Change</th><th>Oct 2025</th><th>vs Oct 2025</th><th></th></tr></thead>
+            <tbody>{kpiRows.map(([n, ser, f, kind, goodDown]) => <tr key={n}><td>{n}</td><td className="n">{f(ser[iSep])}</td><td className="n">{f(ser[iOct])}</td><td className="n">{mp(kind, ser, iOct, iSep)}</td><td className="n">{f(ser[iYoY])}</td><td className="n">{mp(kind, ser, iOct, iYoY)}</td><td>{flag(pct(ser[iOct], ser[iSep]), goodDown)}</td></tr>)}</tbody>
           </table></div>
-          <h3 style={{ color: H, marginTop: 18 }}>Largest movers (Category 1 › 2)</h3>
+          <ul className="hb-prose">
+            <li><strong>Calls rose faster than tickets.</strong> Calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)} against tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, so calls per 100 subscribers went from {callsPer100(iSep).toFixed(2)} to {callsPer100(iOct).toFixed(2)}. The answer rate slipped from {ansRate(iSep).toFixed(1)}% to {ansRate(iOct).toFixed(1)}%. Year over year offered calls are down {Math.abs(pct(callsOff[iOct], callsOff[iYoY])).toFixed(0)}% but answered calls are up {pct(callsAns[iOct], callsAns[iYoY]).toFixed(0)}%, so agents handled more of a smaller queue. Calls are not split by platform in the source.</li>
+            <li><strong>Dispatches: read the {sn(rv[iOct] - rv[iSep])} with care.</strong> The KPI tab shows {num(rv[iSep])} in September and {num(rv[iOct])} in October, but the platform source gives {num(platRepSep)} and {num(platRepOct)} (Legacy {num(legacy.repairs[iSep])} to {num(legacy.repairs[iOct])}, OPUS {num(opus.repairs[iSep])} to {num(opus.repairs[iOct])}), which is {sp(pct(platRepOct, platRepSep), 1)}. October matches the platform total, September does not, so part of the apparent rise is a source difference. The KPI-tab repair rate went from {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} per 100, level with a year ago ({fmtRate(rr[iYoY])}).</li>
+            <li><strong>Churn improved.</strong> {fmtRate(ch[iOct])} per 100, {sd(ch[iOct] - ch[iSep])} on September and {sd(ch[iOct] - ch[iYoY])} on October 2025, even though tickets and calls rose.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="oc-plat">
+          <h2 id="oc-plat">What is driving it: Mediaroom or OPUS</h2>
+          <p className="hb-prose">Optik TV Legacy runs on Mediaroom boxes; TV Evolution runs on OPUS. Platform tickets total {num(platTotOct)} in October against {num(platTotSep)} in September ({sn(platTotOct - platTotSep)}): Mediaroom {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, OPUS {sn(opus.tickets[iOct] - opus.tickets[iSep])}. (The KPI tab total moves {sn(tk[iOct] - tk[iSep])}; the gap is the same source difference noted above.)</p>
           <div className="hb-tw"><table>
-            <thead><tr><th>Ticket type</th><th>Sep</th><th>Oct</th><th>Change</th><th>%</th><th></th></tr></thead>
-            <tbody>{R.movers.map(([n, a, b]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td><td>{flag(pct(b, a))}</td></tr>)}</tbody>
+            <thead><tr><th>Measure</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
+            <tbody>
+              <tr><td>Tickets</td><td className="n">{num(legacy.tickets[iSep])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sn(legacy.tickets[iOct] - legacy.tickets[iSep])}</td><td className="n">{num(opus.tickets[iSep])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sn(opus.tickets[iOct] - opus.tickets[iSep])}</td></tr>
+              <tr><td>Ticket rate per 100 subs</td><td className="n">{fmtRate(legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(legacy.ticketRate[iOct])}</td><td className="n">{sd(legacy.ticketRate[iOct] - legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iOct])}</td><td className="n">{sd(opus.ticketRate[iOct] - opus.ticketRate[iSep])}</td></tr>
+              <tr><td>Subscriber base</td><td className="n">{num(legacy.base[iSep])}</td><td className="n">{num(legacy.base[iOct])}</td><td className="n">{sn(legacy.base[iOct] - legacy.base[iSep])}</td><td className="n">{num(opus.base[iSep])}</td><td className="n">{num(opus.base[iOct])}</td><td className="n">{sn(opus.base[iOct] - opus.base[iSep])}</td></tr>
+              <tr><td>Repairs / dispatches</td><td className="n">{num(legacy.repairs[iSep])}</td><td className="n">{num(legacy.repairs[iOct])}</td><td className="n">{sn(legacy.repairs[iOct] - legacy.repairs[iSep])}</td><td className="n">{num(opus.repairs[iSep])}</td><td className="n">{num(opus.repairs[iOct])}</td><td className="n">{sn(opus.repairs[iOct] - opus.repairs[iSep])}</td></tr>
+              <tr><td>Repair rate per 100 subs</td><td className="n">{fmtRate(legacy.repairRate[iSep])}</td><td className="n">{fmtRate(legacy.repairRate[iOct])}</td><td className="n">{sd(legacy.repairRate[iOct] - legacy.repairRate[iSep], 3)}</td><td className="n">{fmtRate(opus.repairRate[iSep])}</td><td className="n">{fmtRate(opus.repairRate[iOct])}</td><td className="n">{sd(opus.repairRate[iOct] - opus.repairRate[iSep], 3)}</td></tr>
+              <tr><td>Tickets vs Oct 2025</td><td className="n">{num(legacy.tickets[iYoY])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 1)}</td><td className="n">{num(opus.tickets[iYoY])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 1)}</td></tr>
+              <tr><td>Ticket rate vs Oct 2025</td><td className="n">{fmtRate(legacy.ticketRate[iYoY])}</td><td className="n">{fmtRate(legacy.ticketRate[iOct])}</td><td className="n">{sd(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY])}</td><td className="n">{fmtRate(opus.ticketRate[iYoY])}</td><td className="n">{fmtRate(opus.ticketRate[iOct])}</td><td className="n">{sd(opus.ticketRate[iOct] - opus.ticketRate[iYoY])}</td></tr>
+            </tbody>
           </table></div>
-          <p className="hb-prose" style={{ fontSize: 13.5 }}>Looker counts. Rates are per 100 subscribers. Red is worse, green is better.</p>
+          <ul className="hb-prose">
+            <li><strong>Mediaroom is the month's upside.</strong> It gained {num(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets while losing {num(legacy.base[iSep] - legacy.base[iOct])} subscribers, so the rate worsened by {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iSep]).toFixed(2)} per 100. September's step-up was shared (Legacy {sn(legacy.tickets[iSep] - legacy.tickets[iSep - 1])}, OPUS {sn(opus.tickets[iSep] - opus.tickets[iSep - 1])} on August); in October only Mediaroom kept rising.</li>
+            <li><strong>OPUS is the month's downside.</strong> Tickets fell {num(opus.tickets[iSep] - opus.tickets[iOct])} on a base that grew {num(opus.base[iOct] - opus.base[iSep])}, so its rate fell by {Math.abs(opus.ticketRate[iOct] - opus.ticketRate[iSep]).toFixed(2)} per 100, to {fmtRate(opus.ticketRate[iOct])}, against {fmtRate(opus.ticketRate[iYoY])} a year ago.</li>
+            <li><strong>Year over year the two platforms point opposite ways on rate.</strong> OPUS has cut tickets {Math.abs(pct(opus.tickets[iOct], opus.tickets[iYoY])).toFixed(0)}% and its rate by {Math.abs(opus.ticketRate[iOct] - opus.ticketRate[iYoY]).toFixed(2)}. Legacy tickets are only {Math.abs(pct(legacy.tickets[iOct], legacy.tickets[iYoY])).toFixed(0)}% lower and, because its base is {Math.abs(pct(legacy.base[iOct], legacy.base[iYoY])).toFixed(0)}% smaller, its rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</li>
+            <li><strong>Mixed-usage households</strong> (on both Mediaroom and TTV+) fell from {num(TV_MIXED.base[iSep])} to {num(TV_MIXED.base[iOct])} as customers finished moving over; they sit in both platform counts.</li>
+          </ul>
+          <h3 style={{ color: H, marginTop: 18 }}>Which platform each category sits on (from the notes)</h3>
+          <div className="hb-tw"><table>
+            <thead><tr><th>Category</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
+            <tbody>{R.platformNotes.map(([n, a, b, c, d]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{num(c)}</td><td className="n">{num(d)}</td><td className="n">{sn(d - c)}</td></tr>)}</tbody>
+          </table></div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Platform comes from device models in the notes, so only about 62% of tickets are identified, and the October export ends on the 30th (about 3% short), which lowers every October figure a little. Treat this as direction, not totals: the platform table above is the authority for totals. It shows video quality as the Mediaroom upside (Video Issues is the one category that rises on Mediaroom boxes), STB No Boot easing on Mediaroom, Digital Box easing on OPUS, and Channel Issues rising on OPUS (missing channels).</p>
         </section>
 
         <section aria-labelledby="oc-daily">
-          <h2 id="oc-daily">Stuttering and freezing, day by day</h2>
+          <h2 id="oc-daily">Focus: video quality, stuttering and freezing day by day</h2>
           <div className="hb-tw" style={{ padding: 12 }}>{dailyChart()}</div>
           <p className="hb-prose" style={{ marginTop: 10 }}><span style={{ color: col, fontWeight: 700 }}>October</span> against <span style={{ color: MUTED, fontWeight: 700 }}>September</span>, by day of month (note exports: {num(stSep)} in September, {num(stOct)} in October, {sn(stOct - stSep)}). The one clear spike is {O.day} October. Outside it, October sits above September on most days, which is the broader lift.</p>
           <div className="hb-two">
@@ -7435,7 +7521,7 @@ export default function ReliabilityScorecards() {
         </section>
 
         <section aria-labelledby="oc-causes">
-          <h2 id="oc-causes">Root causes in the notes: video quality (stuttering and pixelization)</h2>
+          <h2 id="oc-causes">Video quality: root causes in the notes (stuttering and pixelization)</h2>
           <p className="hb-prose">{num(R.video.n[1])} October tickets ({num(R.video.n[0])} in September). Only about {Math.round((R.video.rca[1] / R.video.n[1]) * 100)}% ({num(R.video.rca[1])}) carry an explicit root-cause line, so the shares below are the share of those, and a ticket can cite more than one cause.</p>
           {shareTable("Root cause cited", R.causes)}
           <ul className="hb-prose">
@@ -7447,7 +7533,7 @@ export default function ReliabilityScorecards() {
         </section>
 
         <section aria-labelledby="oc-fixes">
-          <h2 id="oc-fixes">Fixes applied: video quality</h2>
+          <h2 id="oc-fixes">Video quality: fixes applied</h2>
           <p className="hb-prose">Share of the {num(R.video.fixN[1])} October tickets whose notes include a resolution line ({num(R.video.fixN[0])} in September). Several fixes are often combined.</p>
           {shareTable("Fix in the notes", R.fixes)}
           <ul className="hb-prose">
@@ -7456,8 +7542,26 @@ export default function ReliabilityScorecards() {
           </ul>
         </section>
 
+        <section aria-labelledby="oc-nb">
+          <h2 id="oc-nb">Focus: STB No Boot</h2>
+          <p className="hb-prose">STB No Boot is the Mediaroom start-up family (Stuck on Initializing, Reboot Loop, Quick Client Initialization Error and others). It fell from {num(R.categories[3][1])} to {num(R.categories[3][2])} tickets in Looker ({sn(R.categories[3][2] - R.categories[3][1])}, {sp(pct(R.categories[3][2], R.categories[3][1]), 1)}), the largest decrease among the named categories. It is down against September but its biggest member is still above last year.</p>
+          <div className="hb-tw"><table>
+            <thead><tr><th>STB No Boot sub-category (notes export)</th><th>Sep</th><th>Oct (to 30th)</th><th>Change</th><th>%</th><th></th></tr></thead>
+            <tbody>{nbRows.map(([n, a, b]) => <tr key={n}><td>{n}</td><td className="n">{num(a)}</td><td className="n">{num(b)}</td><td className="n">{sn(b - a)}</td><td className="n">{sp(pct(b, a), 1)}</td><td>{flag(pct(b, a))}</td></tr>)}
+              <tr><td><strong>STB No Boot total</strong></td><td className="n">{num(nbTot[1])}</td><td className="n">{num(nbTot[2])}</td><td className="n">{sn(nbTot[2] - nbTot[1])}</td><td className="n">{sp(pct(nbTot[2], nbTot[1]), 1)}</td><td>{flag(pct(nbTot[2], nbTot[1]))}</td></tr></tbody>
+          </table></div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Sub-categories come from the ticket exports, so October runs to 30 October and is about 3% lighter than a full month; Looker, which has the full month, gives Stuck on Initializing {num(R.movers[5][1])} to {num(R.movers[5][2])} ({sp(pct(R.movers[5][2], R.movers[5][1]), 1)}) and Reboot Loop {num(R.movers[7][1])} to {num(R.movers[7][2])} ({sp(pct(R.movers[7][2], R.movers[7][1]), 1)}).</p>
+          <ul className="hb-prose">
+            <li><strong>Stuck on Initializing held its September level.</strong> About {(dsum("oct", "stuck") / 30).toFixed(0)} tickets a day in October against {(dsum("sep", "stuck") / 30).toFixed(0)} in September ({sp(pct(dsum("oct", "stuck") / 30, dsum("sep", "stuck") / 30), 1)}), so the September step-up has not reversed. Looker has it {sp(pct(R.movers[5][2], 4190), 0)} on October 2025 ({num(4190)} to {num(R.movers[5][2])}).</li>
+            <li><strong>The rise is still the whole-home form.</strong> All STBs Affected ran at {(dsum("oct", "all") / 30).toFixed(0)} a day in October against {(dsum("sep", "all") / 30).toFixed(0)} in September; One STB Affected {(dsum("oct", "one") / 30).toFixed(0)} against {(dsum("sep", "one") / 30).toFixed(0)}. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway rather than the box.</li>
+            <li><strong>The rest of the family is easing.</strong> Reboot Loop {sp(pct(R.movers[7][2], R.movers[7][1]), 0)}, Quick Client Initialization Error {sp(pct(nbRows[2][2], nbRows[2][1]), 0)}, Stuck on PVR is Starting {sp(pct(nbRows[3][2], nbRows[3][1]), 0)}; only Red X rose ({sn(nbRows[6][2] - nbRows[6][1])}).</li>
+            <li><strong>It sits on Mediaroom.</strong> The notes place about nine in ten identifiable STB No Boot tickets on Mediaroom boxes, so this category is a Mediaroom improvement that partly offset the video quality rise.</li>
+          </ul>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>The root-cause work, the CloudCheck side-load hypothesis and the fixes in flight for Stuck on Initializing are in the archived <button onClick={() => setPage("tvbrief")} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: col, textDecoration: "underline", cursor: "pointer" }}>TV Review (Stuck on Initializing)</button>; they have not been refreshed for October.</p>
+        </section>
+
         <section aria-labelledby="oc-missing">
-          <h2 id="oc-missing">Missing Channels</h2>
+          <h2 id="oc-missing">Focus: channel issues, Missing Channels</h2>
           <p className="hb-prose">{num(R.missing.n[1])} October tickets ({num(R.missing.n[0])} in September); {num(R.missing.rca[1])} with an explicit root-cause line. Unsubscribed-type tickets rose from {num(R.missing.unsubscribed[0])} to {num(R.missing.unsubscribed[1])}.</p>
           {shareTable("Root cause cited", R.missing.causes)}
           {shareTable("Fix in the notes (share of all tickets)", R.missing.fixes)}
@@ -7765,7 +7869,7 @@ export default function ReliabilityScorecards() {
             : page === "tvcross"
               ? "TV cross analysis"
               : page === "tvoctreview"
-                ? "October TV video tickets: what drove the rise, what the notes say, root causes and fixes"
+                ? "TV in October: calls, tickets, dispatches and churn, Mediaroom or OPUS, video quality and STB No Boot"
               : page === "tvbrief"
                 ? "STB Stuck on Initializing: trend against baseline, root causes and what is being done"
               : `${page} reliability scorecard`;
@@ -7880,7 +7984,7 @@ export default function ReliabilityScorecards() {
                     : page === "tvcross"
                       ? "TV cross analysis · Aug vs Jul 2026 · ticket trends × agent/technician notes × customer verbatims"
                       : page === "tvoctreview"
-                      ? `TV October review · Looker to Oct 2026, agent and technician notes to ${OCT_REVIEW.asOf} · what drove the rise in video quality and missing-channel tickets, root causes and fixes`
+                      ? `TV October review · dashboard KPIs to Oct 2026, agent and technician notes to ${OCT_REVIEW.asOf} · TV as a whole, Mediaroom vs OPUS, focus on video quality and STB No Boot`
                       : page === "tvbrief"
                       ? `TV review · Aug – Oct 2026 (agent exports to ${TV_REVIEW.asOf}) · TV performance, STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight`
                       : page === "SH+" || (page === "home" && scope === "SH+")
