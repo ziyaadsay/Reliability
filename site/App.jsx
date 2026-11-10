@@ -106,7 +106,31 @@ const HEALTH_COMMENTARY = {
       note: "Up ~5% MoM in October; Can't Connect (+292) and Disconnects (+190) were the largest risers" }
   ],
   SHS: [],
-  "SH+": []
+  // SH+ themes: from the SH+ Assure ticket and KPI summaries for October 2026. SH+ has no initiative register yet,
+  // so the themes carry no inits. Rates are per 100 subscribers.
+  "SH+": [
+    "@SH+ call tickets rose 19.3% in October to 1,267 (2.00 per 100 subscribers, +0.26 MoM, -0.27 YoY) as the base grew 3.8% to 63,196. Calls offered rose 19.4% to 2,005 (3.17 per 100) and calls answered to 1,874 (2.97 per 100); dispatches fell 22.1% to 53 (0.084 per 100), a 12-month low and the only KPI to improve. September was the 12-month low for tickets and calls, so October is a rebound toward the 6-month average rather than a new trend.",
+    "@Assure tickets (Agent + Technician) were 1,210, up 10.9% MoM and 53.4% YoY but 6.5% below the 6-month average of 1,294. Warranty swaps were 120 (9.9% of tickets) against 114 in September, the lowest swap rate since March; half of the swaps (61) are pairing and setup failures.",
+    { t: "Self-install setup and pairing", share: "395 tickets across Outdoor, Doorbell and Indoor self-install support · 33% of all Assure tickets",
+      causes: [
+        "Bluetooth pairing failures: doorbells not discoverable even after a factory reset, and outdoor cameras that stopped working and had to be deleted and re-added",
+        "Cameras already mounted with no onboarding guidance, and setup in the SH+ app failing",
+        "Pair-failure items rose on both drivers: Outdoor self-install 87 (69 in September) and Doorbell self-install 52 (30)"
+      ],
+      note: "TELUS Outdoor › Self-install support 212 (-6 MoM, +63% YoY) is the largest issue in every month; Doorbell › Self-install support 138 (+10 MoM, +66% YoY)" },
+    { t: "Misrouted education calls", share: "Education › General 95 tickets (+52 MoM, +121%) · second-largest issue",
+      causes: [
+        "About half of Education-coded tickets (50 of 111) are about internet, Wi-Fi or TV rather than SH+, so they look like calls reaching the SH+ queue in error",
+        "Education › General was first used as a code in July 2026 and more than doubled from 43 in September"
+      ],
+      note: "The largest MoM riser in October; Education › Wi-Fi Settings also rose to 18 (10 in September)" },
+    { t: "Login and access", share: "Login / Access › User Credentials 54 tickets (+31 MoM, +135%)",
+      causes: [
+        "Customer profile not found or mismatched in CASA, leaving customers with no access to the SH+ or My TELUS app (28 login / password tickets)",
+        "TELUS Connect app migration calls rose to 26 in the smaller issue groups (12 in September), with devices missing after the move"
+      ],
+      note: "Back to its 6-month average (53) after a low September (23)" }
+  ]
 };
 const CHURN_THRU = "Oct 2026";
 
@@ -114,36 +138,36 @@ const DATA = {
   callsOffered: {
     FFH: [159465,142526,142004,143125,143125,135582,142865,155431,181009,181144,158985,164939,149164,126282,150662,141512,142884,151340,155785,158179,151541,153567],
     SHS: [76023,62397,67525,66790,66790,63800,70137,65906,67075,64833,60210,62122,59042,55345,57385,59213,62891,61439,67285,68978,56737,59085],
-    "SH+": [1509,1337,1892,1619,1523,1096,1317,1282,1185,1163,1123,1359,1355,1699,1954,1937,1808,2320,2258,1990,1679,null]
+    "SH+": [1509,1337,1892,1619,1523,1096,1317,1282,1185,1163,1123,1359,1355,1699,1954,1937,1808,2320,2258,1990,1679,2005]
   },
   callsAnswered: {
     FFH: [138284,120120,133061,131694,131694,126038,134277,135704,126494,123753,130237,126593,125046,117143,132142,125406,127932,135057,133053,129856,131589,131951],
     SHS: [75001,62147,67317,66382,66382,63516,69793,65288,65179,61634,57013,59662,56606,53561,55780,52123,52505,56943,60621,59636,52997,55277],
-    "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569,null]
+    "SH+": [1482,1323,1873,1606,1505,1080,1302,1261,1136,1094,1057,1300,1304,1651,1911,1728,1557,2192,2127,1781,1569,1874]
   },
   ticketRate: {
     HSIA: [1.99,1.93,2.22,2.27,2.29,2.26,2.43,2.43,2.30,2.36,2.42,2.38,2.43,2.13,2.22,2.42,2.50,2.61,2.59,2.70,2.63,2.56],
     TV:   [3.15,3.13,3.43,3.47,3.45,3.03,3.05,2.94,2.86,3.46,3.44,3.22,3.27,2.89,3.26,3.03,2.78,2.84,2.77,2.82,3.24,3.28],
     SHS:  [3.95,3.94,4.82,5.07,4.97,4.76,5.45,5.41,5.28,5.24,4.74,4.86,4.68,4.11,4.30,3.89,3.78,4.12,4.29,4.08,4.01,3.94],
-    "SH+": [null,null,null,null,null,null,3.10,2.82,2.42,2.39,2.27,2.62,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74,null]
+    "SH+": [null,null,null,null,null,null,2.86,2.63,2.28,2.27,2.05,2.30,2.69,3.31,3.31,2.79,2.33,3.13,2.75,2.11,1.74,2.00]
   },
   ticketVolume: {
     HSIA: [40808,39535,45548,46629,47108,46515,50055,50097,47763,48826,50104,49406,50190,43999,46071,50134,51913,54249,53800,56018,54658,53384],
     TV:   [37956,37648,41170,41505,41320,36213,36392,34982,33980,41109,40866,38217,38747,34206,38519,35701,32654,33338,32369,32860,37591,37944],
     SHS:  [35181,35133,43173,45752,45088,43315,49570,49072,47932,47740,43331,44469,42929,37762,39505,35754,34831,38003,39651,37724,37152,36504],
-    "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062,null]
+    "SH+": [803,708,1005,862,784,574,702,709,646,672,690,846,934,1183,1343,1205,1073,1542,1485,1212,1062,1267]
   },
   repairRate: {
     HSIA: [0.59,0.55,0.59,0.59,0.66,0.67,0.75,0.78,0.78,0.86,0.78,0.79,0.76,0.70,0.80,0.82,0.86,0.76,0.83,0.78,0.82,0.81],
     TV:   [0.18,0.15,0.19,0.17,0.15,0.13,0.13,0.13,0.13,0.16,0.15,0.14,0.16,0.15,0.17,0.17,0.16,0.12,0.13,0.12,0.14,0.16],
     SHS:  [0.52,0.45,0.48,0.48,0.50,0.46,0.52,0.48,0.50,0.56,0.51,0.52,0.56,0.61,0.52,0.53,0.54,0.41,0.41,0.39,0.42,0.43],
-    "SH+": [null,null,null,null,null,null,0.053,0.080,0.094,0.153,0.158,0.158,0.150,0.132,0.202,0.234,0.194,0.138,0.161,0.092,0.110,null]
+    "SH+": [null,null,null,null,null,null,0.041,0.070,0.074,0.125,0.122,0.125,0.156,0.132,0.202,0.236,0.198,0.138,0.163,0.094,0.112,0.084]
   },
   repairVolume: {
     HSIA: [12155,11246,12103,12149,13550,13826,15529,16073,16207,17901,16242,16317,15966,14238,16357,17074,17856,15745,17149,16156,17096,16892],
     TV:   [2196,1787,2297,2036,1813,1578,1601,1567,1577,1901,1794,1688,1883,1728,1912,1989,1938,1409,1567,1390,1672,1810],
     SHS:  [4622,4046,4329,4309,4548,4225,4755,4326,4524,5115,4691,4749,5055,4615,4751,4894,4967,3736,3781,3653,3884,3937],
-    "SH+": [null,null,null,null,null,null,12,20,25,43,48,51,52,47,82,101,89,68,87,53,67,null]
+    "SH+": [null,null,null,null,null,null,10,19,21,37,41,46,54,47,82,102,91,68,88,54,68,53]
   },
   churnRate: {
     HSIA: [null,0.88,0.89,1.13,1.16,1.13,1.27,1.20,1.16,1.23,1.07,0.97,0.98,0.81,0.98,1.10,1.08,1.05,1.12,1.07,1.05,1.01],
@@ -155,7 +179,7 @@ const DATA = {
     HSIA: [2046644,2047269,2052340,2052450,2053936,2058921,2059746,2065127,2073529,2073225,2073375,2074903,2067593,2069648,2073167,2071920,2072971,2075052,2074591,2077010,2080642,2082008],
     TV:   [1205452,1201529,1199443,1196987,1196062,1194035,1191503,1189366,1187756,1188117,1188298,1186983,1184435,1182482,1180294,1178353,1175469,1172778,1169649,1165379,1161960,1158517],
     SHS:  [890445,891993,896592,901871,906328,909317,909257,907488,908288,911221,913204,915714,917354,917870,919034,919511,921166,922159,924471,925508,926318,926347],
-    "SH+": [6860,8257,10250,14069,18065,19982,22662,25129,26721,28074,30333,32272,34667,35736,40608,43215,45994,49289,54000,57531,60876,null]
+    "SH+": [9600,10405,12336,15964,19878,21813,24524,27000,28302,29593,33619,36816,34667,35736,40608,43215,45994,49289,54000,57531,60876,63196]
   },
   // "consolidated national results" rows of the KPI tab (2026 YTD vs 2025). HSIA is the
   // West wired line (the KPI tab's HSIA base is HSIA West + TQ ILEC HS from the
@@ -192,7 +216,8 @@ const ISSUE_META = {
   Speed:        { label: "Slow speeds, buffering & lag" },
   WiFi:         { label: "WiFi coverage gaps & dead zones" },
   Support:      { label: "Support & service quality friction" },
-  "SHS Hardware": { label: "SHS panels, sensors & devices (outside 5-issue framework)" }
+  "SHS Hardware": { label: "SHS panels, sensors & devices (outside 5-issue framework)" },
+  "SH+ Tickets": { label: "SH+ Assure tickets (outside 5-issue framework)" }
 };
 const ISSUE_ORDER = ["Connectivity", "TV", "Speed", "WiFi", "Support", "SHS Hardware"];
 
@@ -273,6 +298,36 @@ const LOOKER = {
       { issue: "Outdoor Camera › Education", grp: "SHS Hardware", a26: 491, a25: 572, prev: 731, delta: -240 },
       { issue: "Mobile App Self-Serve › Troubleshoot", grp: "Support", a26: 1189, a25: 2377, prev: 1412, delta: -223 }
     ]
+  },
+  "SH+": {
+    // SH+ Assure tickets (Agent + Technician, de-duplicated on Trouble Ticket ID) from the SH+ Assure Ticket_Month CSVs,
+    // Sep 2025 - Oct 2026 (earlier months are not reported). Totals differ from the KPI scorecard's Call Tickets.
+    // Issues are Trouble Code 2 › Trouble Code 3; categories are Trouble Code 2. a26 = Oct 2026, a25 = Oct 2025, prev = Sep 2026.
+    monthlyTotal: [null,null,null,null,null,null,null,null,732,789,782,958,1023,1139,1387,1234,1091,1529,1499,1321,1091,1210],
+    topCat: { name: "TELUS Outdoor", series: [null,null,null,null,null,null,null,null,347,332,302,349,384,383,574,438,450,638,734,521,453,439] },
+    catSource: "assure",
+    topIssues: [
+      { issue: "TELUS Outdoor › Self-install support", grp: "SH+ Tickets", a26: 212, a25: 130, prev: 218 },
+      { issue: "TELUS Doorbell › Self-install support", grp: "SH+ Tickets", a26: 138, a25: 83, prev: 128 },
+      { issue: "Education › General", grp: "SH+ Tickets", a26: 95, a25: 0, prev: 43 },
+      { issue: "TELUS Outdoor › Camera Not Recording", grp: "SH+ Tickets", a26: 66, a25: 43, prev: 81 },
+      { issue: "Login / Access › User Credentials", grp: "SH+ Tickets", a26: 54, a25: 32, prev: 23 },
+      { issue: "TELUS Doorbell › Camera Not Recording", grp: "SH+ Tickets", a26: 50, a25: 40, prev: 72 },
+      { issue: "TELUS Indoor › Self-install support", grp: "SH+ Tickets", a26: 45, a25: 26, prev: 50 },
+      { issue: "TELUS Outdoor › Product Education", grp: "SH+ Tickets", a26: 43, a25: 55, prev: 53 }
+    ],
+    rising: [
+      { issue: "Education › General", grp: "SH+ Tickets", a26: 95, a25: 0, prev: 43, delta: 52 },
+      { issue: "Login / Access › User Credentials", grp: "SH+ Tickets", a26: 54, a25: 32, prev: 23, delta: 31 },
+      { issue: "TELUS Doorbell › Self-install support", grp: "SH+ Tickets", a26: 138, a25: 83, prev: 128, delta: 10 }
+    ],
+    falling: [
+      { issue: "TELUS Doorbell › Camera Not Recording", grp: "SH+ Tickets", a26: 50, a25: 40, prev: 72, delta: -22 },
+      { issue: "TELUS Outdoor › Camera Not Recording", grp: "SH+ Tickets", a26: 66, a25: 43, prev: 81, delta: -15 },
+      { issue: "TELUS Outdoor › Product Education", grp: "SH+ Tickets", a26: 43, a25: 55, prev: 53, delta: -10 }
+    ],
+    cats: [{"name":"TELUS Outdoor","series":[null,null,null,null,null,null,null,null,347,332,302,349,384,383,574,438,450,638,734,521,453,439]},{"name":"TELUS Doorbell","series":[null,null,null,null,null,null,null,null,256,254,247,301,337,313,388,437,351,565,437,409,335,326]},{"name":"Education","series":[null,null,null,null,null,null,null,null,0,0,0,0,0,0,0,0,0,0,9,54,53,113]},{"name":"Login / Access","series":[null,null,null,null,null,null,null,null,0,79,94,119,102,220,169,146,124,127,102,121,61,107]},{"name":"TELUS Indoor","series":[null,null,null,null,null,null,null,null,67,68,91,106,104,91,148,139,119,166,160,135,106,105]},{"name":"Other categories","series":[null,null,null,null,null,null,null,null,62,56,48,83,96,132,108,74,47,33,57,81,83,120]}],
+    risers: {"Jan 2026":{"issue":"TELUS Indoor › Self-install support","pct":34.2,"from":38,"to":51},"Feb 2026":{"issue":"Login / Access › App Error","pct":232,"from":25,"to":83},"Mar 2026":{"issue":"TELUS Indoor › Self-install support","pct":81.6,"from":49,"to":89},"Apr 2026":{"issue":"TELUS Doorbell › Chime issues","pct":52.4,"from":21,"to":32},"May 2026":{"issue":"TELUS Outdoor › Camera Not Recording","pct":36.4,"from":44,"to":60},"Jun 2026":{"issue":"TELUS Indoor › Self-install support","pct":128.6,"from":42,"to":96},"Jul 2026":{"issue":"TELUS Outdoor › Existing defect","pct":61.9,"from":21,"to":34},"Aug 2026":{"issue":"Login / Access › Account Provisioning","pct":83.3,"from":24,"to":44},"Sep 2026":{"issue":"TELUS Doorbell › Product Education","pct":15.2,"from":33,"to":38},"Oct 2026":{"issue":"Login / Access › User Credentials","pct":134.8,"from":23,"to":54}}
   }
 };
 // HSIA: hsia_ticket_recategorization pain points (Connection Instability & Disconnects → Connectivity,
@@ -761,6 +816,12 @@ const TVA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[326
 // HSIA agent/technician ticket-notes analysis, Aug – Oct 2026 (October export to 30 Oct;
 // generated by
 // analysis/hsia/analyze_hsia_notes.py; aggregates only, no customer data)
+// SH+ notes analysis (Assure tickets, Aug - Oct 2026): aggregates from the monthly SH+ Assure Ticket CSVs, de-duplicated on Trouble Ticket ID.
+// Agent categories are Trouble Code 2 > 3; closures are Resolution Code 2 / 3 (swap = Resolution Code 3 'Warranty Swap'); themes and devices are keyword matches on the first worklog entry of the agent notes (aggregates only, no notes are stored).
+const SHPA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[1321,1091,1210],"technician":[70,77,69],"swaps":[177,114,120],"commentCoverage":[1316,1083,1203],"c1":[{"name":"Camera","v":[1065,894,870]},{"name":"SmartHome+ App","v":[190,135,248]},{"name":"Automation Hub","v":[13,20,29]},{"name":"Main Panel","v":[13,12,16]},{"name":"Thermostat","v":[11,4,14]},{"name":"Smoke/CO Sensor","v":[6,0,12]},{"name":"Doorlock","v":[11,10,8]},{"name":"Door/Window Sensor","v":[2,8,4]}],"agentCat":[{"name":"TELUS Outdoor › Self-install support","v":[193,218,212]},{"name":"TELUS Doorbell › Self-install support","v":[161,128,138]},{"name":"Education › General","v":[52,43,95]},{"name":"TELUS Outdoor › Camera Not Recording","v":[106,81,66]},{"name":"Login / Access › User Credentials","v":[61,23,54]},{"name":"TELUS Doorbell › Camera Not Recording","v":[80,72,50]},{"name":"TELUS Indoor › Self-install support","v":[57,50,45]},{"name":"TELUS Outdoor › Product Education","v":[66,53,43]},{"name":"TELUS Doorbell › Product Education","v":[33,38,32]},{"name":"Login / Access › Account Provisioning","v":[44,20,29]},{"name":"Login / Access › App Error","v":[16,18,24]},{"name":"TELUS Doorbell › Wi-Fi - Other Issue","v":[23,17,24]}],"rising":[{"name":"Education › General","delta":52,"pct":120.9,"v":[52,43,95]},{"name":"Login / Access › User Credentials","delta":31,"pct":134.8,"v":[61,23,54]},{"name":"TELUS Doorbell › Self-install support","delta":10,"pct":7.8,"v":[161,128,138]}],"falling":[{"name":"TELUS Doorbell › Camera Not Recording","delta":-22,"pct":-30.6,"v":[80,72,50]},{"name":"TELUS Outdoor › Camera Not Recording","delta":-15,"pct":-18.5,"v":[106,81,66]},{"name":"TELUS Outdoor › Product Education","delta":-10,"pct":-18.9,"v":[66,53,43]},{"name":"TELUS Doorbell › Product Education","delta":-6,"pct":-15.8,"v":[33,38,32]},{"name":"TELUS Outdoor › Self-install support","delta":-6,"pct":-2.8,"v":[193,218,212]}],"resolution2":[{"name":"Education","v":[676,565,652]},{"name":"Troubleshoot","v":[256,191,217]},{"name":"Defective Equipment","v":[184,122,124]},{"name":"(no code)","v":[66,90,64]},{"name":"Appointment","v":[14,19,13]},{"name":"Custom Calling Feature","v":[0,0,13]},{"name":"Equipment Failure Customer Caused","v":[2,3,13]},{"name":"Cancel Ticket","v":[7,9,12]}],"resolution3":[{"name":"Device","v":[450,373,373]},{"name":"App","v":[157,83,141]},{"name":"Warranty Swap","v":[177,114,120]},{"name":"Other Please See Notes","v":[26,78,112]},{"name":"Self-Install Support","v":[106,95,96]},{"name":"(no code)","v":[66,90,64]}],"swapIssues":[{"name":"TELUS Outdoor › Self-install support","v":[10,14,18]},{"name":"TELUS Doorbell › Self-install support","v":[16,8,14]},{"name":"TELUS Outdoor › Camera Not Recording","v":[21,11,12]},{"name":"TELUS Doorbell › Camera Not Recording","v":[19,15,10]},{"name":"TELUS Outdoor › Existing defect","v":[18,10,9]},{"name":"TELUS Indoor › Self-install support","v":[9,4,6]},{"name":"TELUS Indoor › Camera Not Recording","v":[2,4,6]},{"name":"TELUS Doorbell › Existing defect","v":[6,4,5]}],"themes":[{"name":"Offline / disconnects","v":[173,138,172]},{"name":"Login / password / access","v":[222,120,157]},{"name":"Pairing / setup failure","v":[168,119,122]},{"name":"Power / battery","v":[119,97,118]},{"name":"Pro-install / technician request","v":[121,104,104]},{"name":"Defective hardware","v":[153,85,98]},{"name":"Live view issues","v":[111,76,96]},{"name":"Not recording / missing clips","v":[103,62,95]},{"name":"TELUS Connect app migration","v":[14,16,32]},{"name":"Wi-Fi change (router / password)","v":[20,16,25]}],"devices":[{"name":"Doorbell","v":[325,264,258]},{"name":"Outdoor camera","v":[316,231,218]},{"name":"Indoor camera","v":[127,82,80]},{"name":"Hub / panel","v":[63,47,56]},{"name":"Smoke / CO detector","v":[5,2,15]},{"name":"Thermostat","v":[12,7,15]},{"name":"Door lock","v":[6,9,11]}]}};
+// SH+ symptom items per issue (Agent tickets), from the Top Issue Drivers and Symptom Items tables of the monthly SH+ Assure Ticket Summary reports.
+// v = [Aug 2026, Sep 2026, Oct 2026]: Oct and Sep come from the October report, Aug from the September report (null = item not listed that month). trend = the report's Oct vs Sep label.
+const SHP_SYMPTOMS = {"TELUS Outdoor › Self-install support":{"tickets":203,"items":[{"name":"Pair failures","desc":"Cameras that stopped working and had to be deleted and re-added, or arrived already mounted high with no onboarding guidance; setup in the SH+ app failing.","v":[75,69,87],"trend":"Rising"},{"name":"Pro-install requests","desc":"Customers sent from loyalty to book a pro install, or expecting the internet / TV technician to set up the cameras.","v":[43,45,28],"trend":"Declining"},{"name":"Offline / disconnects","desc":"Cameras showing disconnected in the tenant portal; some customers about to travel.","v":[8,15,9],"trend":"Declining"},{"name":"Motion / notifications","desc":"Mixed: plan mismatch found during installation, camera not turning on.","v":[null,0,8],"trend":"New"},{"name":"Account provisioning / billing","desc":"Cameras ordered but not in the tenant portal; cancelling an installation appointment after cancelling a subscription.","v":[8,7,7],"trend":"Static"},{"name":"Defective hardware","desc":"Replacement camera not working, or replacement equipment promised but not received.","v":[5,7,7],"trend":"Static"},{"name":"How-to questions","desc":"Removing old Wi-Fi boosters from the account; needing a longer cable.","v":[5,15,6],"trend":"Declining"},{"name":"Wi-Fi change (new router / password)","desc":"Camera offline or not installable after Wi-Fi changes; repeat callers.","v":[null,0,6],"trend":"New"},{"name":"Reset / firmware","desc":"Factory reset or firmware update needed to recover the device.","v":[2,4,4],"trend":"Static"},{"name":"Live view issues","desc":"Live feed does not load, keeps refreshing or is delayed.","v":[2,3,4],"trend":"Static"},{"name":"Login / password","desc":"Cannot sign in to the SH+ app: invalid credentials or self-serve reset failing.","v":[8,3,4],"trend":"Static"},{"name":"Power / battery","desc":"Camera has no power or light, or battery / charging concerns.","v":[null,0,4],"trend":"New"},{"name":"Smoke / security sensors","desc":"Smoke detector or security sensor alerts (beeping, low battery).","v":[1,3,3],"trend":"Static"},{"name":"Not recording / missing clips","desc":"Camera not recording events or clips missing for a specific incident.","v":[3,1,3],"trend":"Static"},{"name":"Weak Wi-Fi signal","desc":"Poor Wi-Fi at the mounting spot; camera moved or taken down to reconnect.","v":[null,1,3],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[23,27,20],"trend":"—"}]},"TELUS Doorbell › Self-install support":{"tickets":124,"items":[{"name":"Pair failures","desc":"Bluetooth pairing failures: doorbell not discoverable even after a factory reset.","v":[55,30,52],"trend":"Rising"},{"name":"Pro-install requests","desc":"Technician requests after repeated replacements (one on a 3rd unit) or a doorbell joined to the wrong (5 GHz) network.","v":[30,26,15],"trend":"Declining"},{"name":"Offline / disconnects","desc":"Doorbell not working or recording since September with no Wi-Fi changes.","v":[11,12,15],"trend":"Rising"},{"name":"Live view issues","desc":"Doorbell already mounted or needing wiring it doesn\u0027t have; no live view during setup.","v":[null,0,7],"trend":"New"},{"name":"Not recording / missing clips","desc":"Camera not recording events or clips missing for a specific incident.","v":[null,2,4],"trend":"Static"},{"name":"Defective hardware","desc":"Suspected faulty unit or replacement equipment requested / not received.","v":[8,5,3],"trend":"Static"},{"name":"How-to questions","desc":"General usage questions; no fault reported.","v":[5,4,3],"trend":"Static"},{"name":"Power / battery","desc":"Camera has no power or light, or battery / charging concerns.","v":[5,3,3],"trend":"Static"},{"name":"TELUS Connect app migration","desc":"Customer moved from the TELUS Connect app and lost access or devices in SH+.","v":[null,1,3],"trend":"Static"},{"name":"Reset / firmware","desc":"Factory reset or firmware update needed to recover the device.","v":[4,4,2],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[28,24,17],"trend":"—"}]},"Education › General":{"tickets":93,"items":[{"name":"Non-SH+ call (internet / TV)","desc":"Internet, Wi-Fi security and plan-compatibility calls reaching the SH+ queue (likely misrouted).","v":[16,16,44],"trend":"Rising"},{"name":"How-to questions","desc":"Booster issues and appointment changes for other services.","v":[8,11,14],"trend":"Rising"},{"name":"Pair failures","desc":"Reconnecting deleted devices or Wi-Fi boosters.","v":[3,2,7],"trend":"Rising"},{"name":"Pro-install requests","desc":"Customers asking for professional installation instead of self-install.","v":[3,0,7],"trend":"New"},{"name":"Offline / disconnects","desc":"Device shows offline or drops its connection after setup.","v":[3,0,4],"trend":"New"},{"name":"TELUS Connect app migration","desc":"Customer moved from the TELUS Connect app and lost access or devices in SH+.","v":[null,2,3],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[13,11,14],"trend":"—"}]},"TELUS Outdoor › Camera Not Recording":{"tickets":63,"items":[{"name":"Pair failures","desc":"Camera stopped working, or live feed works but recordings / notifications show \"failed to load\".","v":[24,17,18],"trend":"Static"},{"name":"Not recording / missing clips","desc":"Camera never recorded properly since delivery; no power or recording.","v":[11,6,7],"trend":"Static"},{"name":"Offline / disconnects","desc":"Damaged power cord; clips only 2 seconds long.","v":[9,7,6],"trend":"Static"},{"name":"Pro-install requests","desc":"Customer asks for a technician / pro install, or a booked install did not happen.","v":[5,8,3],"trend":"Declining"},{"name":"Power / battery","desc":"Camera has no power or light, or battery / charging concerns.","v":[null,2,3],"trend":"Static"},{"name":"Defective hardware","desc":"Suspected faulty unit or replacement equipment requested / not received.","v":[8,3,2],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[31,30,24],"trend":"—"}]},"Login / Access › User Credentials":{"tickets":54,"items":[{"name":"Login / password","desc":"Customer profile not found or mismatched in CASA; no access to the SH+ or My TELUS app.","v":[null,14,28],"trend":"Rising"},{"name":"Offline / disconnects","desc":"Device shows offline or drops its connection after setup.","v":[null,1,4],"trend":"Rising"},{"name":"TELUS Connect app migration","desc":"Customer moved from the TELUS Connect app and lost access or devices in SH+.","v":[null,1,3],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[null,7,19],"trend":"—"}]},"TELUS Indoor › Self-install support":{"tickets":45,"items":[{"name":"Pair failures","desc":"Indoor camera keeps searching in the app, or \"failed to verify\" during setup.","v":[31,20,19],"trend":"Static"},{"name":"Pro-install requests","desc":"Customer doesn\u0027t know the Wi-Fi password and asks for help or a technician to install.","v":[7,4,9],"trend":"Rising"},{"name":"How-to questions","desc":"General usage questions; no fault reported.","v":[null,1,4],"trend":"Rising"},{"name":"Offline / disconnects","desc":"Device shows offline or drops its connection after setup.","v":[3,3,3],"trend":"Static"},{"name":"Defective hardware","desc":"Suspected faulty unit or replacement equipment requested / not received.","v":[2,3,0],"trend":"Declining"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[11,16,10],"trend":"—"}]},"TELUS Doorbell › Camera Not Recording":{"tickets":43,"items":[{"name":"Pair failures","desc":"Doorbell stuck on \"we\u0027re almost there\"; chronic backend provisioning issues.","v":[17,19,13],"trend":"Declining"},{"name":"Offline / disconnects","desc":"Device shows offline or drops its connection after setup.","v":[10,10,4],"trend":"Declining"},{"name":"Not recording / missing clips","desc":"Camera not recording events or clips missing for a specific incident.","v":[11,7,4],"trend":"Declining"},{"name":"Power / battery","desc":"Camera has no power or light, or battery / charging concerns.","v":[2,4,4],"trend":"Static"},{"name":"Pro-install requests","desc":"Customer asks for a technician / pro install, or a booked install did not happen.","v":[4,6,3],"trend":"Declining"},{"name":"Defective hardware","desc":"Suspected faulty unit or replacement equipment requested / not received.","v":[6,4,0],"trend":"Declining"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[18,19,15],"trend":"—"}]},"TELUS Outdoor › Product Education":{"tickets":42,"items":[{"name":"Pair failures","desc":"Camera stopped working, or the wrong device was shipped (outdoor camera instead of doorbell).","v":[10,17,11],"trend":"Declining"},{"name":"Pro-install requests","desc":"Customers who didn\u0027t know their equipment was self-install.","v":[9,9,7],"trend":"Static"},{"name":"How-to questions","desc":"General usage questions; no fault reported.","v":[5,1,5],"trend":"Rising"},{"name":"Not recording / missing clips","desc":"Camera not recording events or clips missing for a specific incident.","v":[3,0,4],"trend":"New"},{"name":"Account provisioning / billing","desc":"SH+ / HomeView service not provisioned or billed correctly, blocking setup.","v":[8,4,1],"trend":"Declining"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[26,20,14],"trend":"—"}]},"TELUS Doorbell › Product Education":{"tickets":31,"items":[{"name":"Pro-install requests","desc":"Customer asks for a technician / pro install, or a booked install did not happen.","v":[7,6,5],"trend":"Static"},{"name":"Pair failures","desc":"New device cannot be added or paired in the SH+ app; setup stalls or fails.","v":[3,2,4],"trend":"Static"},{"name":"Offline / disconnects","desc":"Device shows offline or drops its connection after setup.","v":[0,3,3],"trend":"Static"},{"name":"How-to questions","desc":"General usage questions; no fault reported.","v":[3,1,3],"trend":"Static"},{"name":"Account provisioning / billing","desc":"SH+ / HomeView service not provisioned or billed correctly, blocking setup.","v":[1,4,2],"trend":"Static"},{"name":"Other / no clear symptom","desc":"Notes too brief or generic to assign a symptom.","v":[19,18,14],"trend":"—"}]}};
 const HSA = {"months":["Aug 2026","Sep 2026","Oct 2026"],"tickets":{"total":[58787,56761,53440],"c1":[{"name":"Connectivity","v":[42732,41325,38212],"pct":-7.5},{"name":"Wireless","v":[13135,12565,12532],"pct":-0.3},{"name":"Incompatible Equipment","v":[1994,2118,1989],"pct":-6.1},{"name":"Abandon","v":[848,702,643],"pct":-8.4},{"name":"NWH","v":[75,46,58],"pct":26.1}],"agentCat":[{"name":"Connectivity › No Dataflow","v":[13151,13255,12151],"pct":-8.3},{"name":"Connectivity › Slow Speeds","v":[6348,6574,6591],"pct":0.3},{"name":"Connectivity › ONT Not Ranged","v":[7117,6358,5592],"pct":-12.0},{"name":"Connectivity › Losing Sync","v":[6391,6307,5984],"pct":-5.1},{"name":"Wireless › Can't Connect","v":[5728,5162,5312],"pct":2.9},{"name":"Wireless › Disconnects","v":[4149,4253,4318],"pct":1.5},{"name":"Connectivity › No Sync","v":[3717,3170,2707],"pct":-14.6},{"name":"Wireless › Slow Speeds","v":[3258,3149,2901],"pct":-7.9},{"name":"Connectivity › Historical Data","v":[2593,2600,2456],"pct":-5.5},{"name":"Incompatible Equipment › Incompatible","v":[1994,2117,1987],"pct":-6.1},{"name":"Connectivity › No IP","v":[1920,1710,1546],"pct":-9.6},{"name":"Connectivity › Incompatible Equipment","v":[1494,1349,1183],"pct":-12.3},{"name":"Abandon › Abandon","v":[848,702,643],"pct":-8.4}],"rising":[{"name":"Wireless › Can't Connect › Some Devices Affected","v":[865,840,1020],"delta":180,"pct":21.4},{"name":"Connectivity › Slow Speeds › Some Devices Affected","v":[654,659,733],"delta":74,"pct":11.2},{"name":"Wireless › Can't Connect › Single Device Affected","v":[1338,1266,1334],"delta":68,"pct":5.4},{"name":"Wireless › Disconnects › All Devices Affected","v":[2972,2990,3025],"delta":35,"pct":1.2},{"name":"Wireless › Disconnects › Some Devices Affected","v":[870,955,973],"delta":18,"pct":1.9},{"name":"Wireless › Disconnects › Single Device Affected","v":[306,306,319],"delta":13,"pct":4.2},{"name":"Connectivity › No Dataflow › Single Device Affected","v":[725,727,733],"delta":6,"pct":0.8}],"falling":[{"name":"Connectivity › No Dataflow › All Devices Affected","v":[11925,12026,10918],"delta":-1108,"pct":-9.2},{"name":"Connectivity › ONT Not Ranged › Alarm Light","v":[3988,3688,3245],"delta":-443,"pct":-12.0},{"name":"Connectivity › No Sync › No DSL Light","v":[2595,2273,1952],"delta":-321,"pct":-14.1},{"name":"Connectivity › Losing Sync › Intermittent Connectivity","v":[6100,6065,5801],"delta":-264,"pct":-4.4},{"name":"Connectivity › ONT Not Ranged › No Power","v":[2003,1861,1646],"delta":-215,"pct":-11.6},{"name":"Wireless › Slow Speeds › All Devices Affected","v":[2135,2091,1909],"delta":-182,"pct":-8.7},{"name":"Connectivity › Incompatible Equipment › Not Required","v":[951,863,707],"delta":-156,"pct":-18.1},{"name":"Connectivity › No IP › No Internet Light","v":[1691,1543,1390],"delta":-153,"pct":-9.9}],"techR1":[{"name":"Education","v":[12410,11990,11123],"pct":-7.2},{"name":"Connectivity","v":[10663,10390,10345],"pct":-0.4},{"name":"(no closure code)","v":[7843,8061,8067],"pct":0.1},{"name":"GPON","v":[7544,7612,6896],"pct":-9.4},{"name":"HSIA","v":[7490,7030,6309],"pct":-10.3},{"name":"Customer","v":[4986,4666,4374],"pct":-6.3},{"name":"Cancel Ticket","v":[1370,1281,1186],"pct":-7.4},{"name":"Found OK","v":[1451,1138,929],"pct":-18.4},{"name":"Outside Plant","v":[1243,1190,903],"pct":-24.1},{"name":"IPTV","v":[753,771,709],"pct":-8.0},{"name":"Network Service Wire","v":[689,691,545],"pct":-21.1},{"name":"NetCracker","v":[702,460,493],"pct":7.2}],"techRising":[{"name":"Connectivity › Modem/Gateway","v":[7688,7701,7828],"delta":127,"pct":1.6},{"name":"HSIA › Boost Wi-Fi 6","v":[326,228,293],"delta":65,"pct":28.5},{"name":"Found OK › Avoidable Dispatch","v":[260,214,272],"delta":58,"pct":27.1},{"name":"NetCracker › Stuck","v":[645,411,452],"delta":41,"pct":10.0},{"name":"HSIA › Ethernet Card/Switch/Router/Hub","v":[125,182,201],"delta":19,"pct":10.4},{"name":"GPON › Provisioning","v":[404,388,389],"delta":1,"pct":0.3}],"techFalling":[{"name":"Education › HSIA","v":[11583,11174,10449],"delta":-725,"pct":-6.5},{"name":"HSIA › Modem/Gateway","v":[4410,4241,3617],"delta":-624,"pct":-14.7},{"name":"GPON › Inside Premise Equipment","v":[5130,5200,4742],"delta":-458,"pct":-8.8},{"name":"Customer › Customer Training/Education/Inquiry Only","v":[4311,4029,3754],"delta":-275,"pct":-6.8},{"name":"GPON › Outside Plant","v":[2010,2024,1765],"delta":-259,"pct":-12.8},{"name":"Found OK › Not Required","v":[965,705,452],"delta":-253,"pct":-35.9}],"divergence":{"all":[{"alignment":54.5,"nofault":39.6,"nontelus":4.0,"reattribution":45.5,"closed":50118},{"alignment":54.9,"nofault":39.0,"nontelus":4.1,"reattribution":45.1,"closed":48025},{"alignment":54.9,"nofault":38.7,"nontelus":3.6,"reattribution":45.1,"closed":44755}],"field":[{"alignment":84.9,"nofault":6.4,"nontelus":13.8,"reattribution":15.1,"visits":14452},{"alignment":83.6,"nofault":6.9,"nontelus":13.4,"reattribution":16.4,"visits":14636},{"alignment":83.9,"nofault":6.6,"nontelus":12.8,"reattribution":16.1,"visits":12543}],"perCat":[{"cat":"Connectivity › No Dataflow","n":12151,"alignment":55.7,"nofault":36.9,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Slow Speeds","n":6591,"alignment":56.6,"nofault":40.9,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Losing Sync","n":5984,"alignment":60.1,"nofault":32.2,"techTop":["Modem / gateway","Education / no fault"]},{"cat":"Connectivity › ONT Not Ranged","n":5592,"alignment":70.3,"nofault":26.4,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Wireless › Can't Connect","n":5312,"alignment":33.0,"nofault":57.8,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Disconnects","n":4318,"alignment":33.8,"nofault":55.3,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Wireless › Slow Speeds","n":2901,"alignment":33.5,"nofault":56.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › No Sync","n":2707,"alignment":66.7,"nofault":28.8,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Connectivity › Historical Data","n":2456,"alignment":81.3,"nofault":13.9,"techTop":["Access line / fibre / ONT","Education / no fault"]},{"cat":"Incompatible Equipment › Incompatible","n":1987,"alignment":73.8,"nofault":21.9,"techTop":["Access line / fibre / ONT","Modem / gateway"]},{"cat":"Connectivity › No IP","n":1546,"alignment":50.5,"nofault":45.7,"techTop":["Education / no fault","Modem / gateway"]},{"cat":"Connectivity › Incompatible Equipment","n":1183,"alignment":59.1,"nofault":36.5,"techTop":["Education / no fault","Modem / gateway"]}],"perCatField":[{"cat":"Connectivity › ONT Not Ranged","n":2769,"alignment":91.4,"nofault":4.9,"nontelus":20.8,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Dataflow","n":1671,"alignment":85.0,"nofault":6.4,"nontelus":9.7,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Losing Sync","n":1627,"alignment":79.0,"nofault":7.3,"nontelus":7.3,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Historical Data","n":1566,"alignment":92.6,"nofault":3.1,"nontelus":15.1,"techTop":"Access line / fibre / ONT"},{"cat":"Incompatible Equipment › Incompatible","n":1083,"alignment":89.3,"nofault":6.5,"nontelus":6.5,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Slow Speeds","n":1043,"alignment":85.5,"nofault":9.4,"nontelus":11.2,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No Sync","n":1010,"alignment":89.8,"nofault":5.6,"nontelus":9.0,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Disconnects","n":543,"alignment":47.9,"nofault":12.0,"nontelus":12.3,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Can't Connect","n":368,"alignment":45.8,"nofault":12.5,"nontelus":16.1,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › Incompatible Equipment","n":348,"alignment":87.6,"nofault":8.0,"nontelus":7.8,"techTop":"Access line / fibre / ONT"},{"cat":"Connectivity › No IP","n":304,"alignment":80.4,"nofault":12.6,"nontelus":17.9,"techTop":"Access line / fibre / ONT"},{"cat":"Wireless › Slow Speeds","n":254,"alignment":50.8,"nofault":8.7,"nontelus":11.4,"techTop":"Access line / fibre / ONT"}]},"closure":[{"tickets":58787,"field_visit_pct":24.7,"agent_education_closure_pct":28.8,"no_closure_code_pct":13.3},{"tickets":56761,"field_visit_pct":25.9,"agent_education_closure_pct":28.4,"no_closure_code_pct":14.2},{"tickets":53440,"field_visit_pct":23.6,"agent_education_closure_pct":28.3,"no_closure_code_pct":15.1}],"determination":[[12490,2000],[12704,1969],[10977,1608]],"fixes":[{"name":"ONT replaced / light level / fibre splice","v":[4631,4647,4115],"pct":-11.4},{"name":"Wi-Fi / Boost extender placement or replaced","v":[3887,4167,3686],"pct":-11.5},{"name":"Drop / service wire / outside plant","v":[1733,1597,1319],"pct":-17.4},{"name":"Inside wiring / jack / ethernet","v":[1352,1350,1176],"pct":-12.9},{"name":"Provisioning / profile / port fix","v":[1114,1046,998],"pct":-4.6},{"name":"Modem / gateway replaced","v":[1160,1109,901],"pct":-18.8},{"name":"Education / no fault found / working on arrival","v":[799,817,710],"pct":-13.1},{"name":"Power cycle / factory reset / firmware","v":[675,733,641],"pct":-12.6},{"name":"Power supply / power","v":[157,151,167],"pct":10.6},{"name":"Customer-owned equipment / third-party router","v":[74,64,54],"pct":-15.6}],"commentCoverage":[45489,43185,41042],"themes":[{"name":"ONT / fibre / light level","v":[15321,14339,13694],"pct":-4.5},{"name":"Slow speed / buffering","v":[11736,10884,10639],"pct":-2.3},{"name":"No internet / all devices down","v":[11426,10453,9414],"pct":-9.9},{"name":"Dispatch / technician booked","v":[9936,9720,8934],"pct":-8.1},{"name":"Boost / Wi-Fi extender","v":[9214,8564,8674],"pct":1.3},{"name":"Intermittent drops / disconnects","v":[8267,7882,7987],"pct":1.3},{"name":"Firmware / settings / factory reset","v":[7861,7194,7044],"pct":-2.1},{"name":"Work from home / streaming / gaming impact","v":[7098,7014,7288],"pct":3.9},{"name":"Outage / active network event","v":[7478,6666,6373],"pct":-4.4},{"name":"DSL / copper line","v":[6582,5932,5178],"pct":-12.7},{"name":"Red / alarm light / LOS on ONT or modem","v":[5862,5306,5067],"pct":-4.5},{"name":"Repeat / recurring issue","v":[5399,4871,4690],"pct":-3.7},{"name":"Wi-Fi: cannot connect / single device","v":[3058,2823,2897],"pct":2.6},{"name":"No power / dead equipment","v":[2837,2616,2527],"pct":-3.4},{"name":"Modem / gateway swap shipped","v":[1141,1131,1155],"pct":2.1},{"name":"Customer wants tech / refuses troubleshooting","v":[846,918,915],"pct":-0.3},{"name":"Third-party / customer-owned router","v":[399,407,435],"pct":6.9}],"devices":[{"name":"ONT (Nokia / Huawei / Calix)","v":[37555,35238,34588],"pct":-1.8},{"name":"NH20 / NAH (Network Access Hub)","v":[15519,14383,14132],"pct":-1.7},{"name":"T3200M gateway","v":[10778,10304,9430],"pct":-8.5},{"name":"Actiontec / legacy modem","v":[5395,5211,4651],"pct":-10.7},{"name":"Boost Wi-Fi 6","v":[3313,2948,2669],"pct":-9.5},{"name":"Boost Wi-Fi 7 (BV3)","v":[1551,1645,1727],"pct":5.0},{"name":"Wi-Fi Hub / WFH","v":[1852,1639,1409],"pct":-14.0},{"name":"Boost Lite (BLite)","v":[610,613,616],"pct":0.5}],"access":[{"name":"Fibre (PureFibre / ONT)","v":[42320,39955,39022],"pct":-2.3},{"name":"Copper (DSL / bonded)","v":[27785,27108,25022],"pct":-7.7}],"domainMix":[{"agent":"Gateway / dataflow","n":12066,"v":[1967,3739,635,804,15,114,4570,212]},{"agent":"Access line & ONT","n":13995,"v":[5756,2814,311,847,55,209,3779,219]},{"agent":"Speed","n":5628,"v":[666,1972,321,223,1,54,2301,86]},{"agent":"Wi-Fi","n":10514,"v":[716,2821,599,155,0,84,5960,172]},{"agent":"Equipment compatibility","n":2552,"v":[842,735,107,51,0,43,704,68]}],"closureDomains":["Access line / fibre / ONT","Modem / gateway","Wi-Fi / extenders","Provisioning / back office","Outage","Customer / non-TELUS equipment","Education / no fault","Other product"]}};
 
 // ---------------------------------------------------------------------------
@@ -2294,9 +2355,10 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
+  shplustickets: "Notes Analysis",
   hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "TV Review (Sep 2026)", tvoctreview: "Oct Review"
 };
@@ -2623,7 +2685,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2716,6 +2778,7 @@ export default function ReliabilityScorecards() {
     { id: "tvoctreview", label: "Oct Review", icon: "brief", color: colors.TV, child: true, parent: "TV" },
     { id: "SHS", label: "SHS", icon: "shs", color: colors.SHS },
     { id: "SH+", label: "SH+", icon: "shplus", color: colors["SH+"] },
+    { id: "shplustickets", label: "Notes Analysis", icon: "notes", color: colors["SH+"], child: true, parent: "SH+" },
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
     { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS },
     // Archive is always the last menu option, set off by a divider.
@@ -3171,7 +3234,7 @@ export default function ReliabilityScorecards() {
   function RecurringIssuesTable() {
     const thBase = { padding: "10px 12px", color: T.textMuted, fontWeight: 700, fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap" };
     const tdBase = { padding: "9px 12px", borderBottom: `1px solid ${T.border}`, whiteSpace: "nowrap", fontSize: 12.5 };
-    const prods = (scope === "All" ? PRODUCTS : [scope]).filter((p) => LOOKER[p]);
+    const prods = (scope === "All" ? PRODUCTS : [scope]).filter((p) => LOOKER[p] && p !== "SH+");
     const rows = OVERVIEW_ISSUES.filter((r) => prods.some((p) => r[p]));
     if (!prods.length) {
       return <p style={{ fontSize: 12.5, color: T.textFaint, margin: 0 }}>Ticket category detail is not yet available for {scope}.</p>;
@@ -3451,6 +3514,69 @@ export default function ReliabilityScorecards() {
         ))}
       </div>
     );
+    // SH+ only: symptom items per issue (monthly Assure ticket summary reports)
+    const shpTop3 = (issue) => {
+      const e = SHP_SYMPTOMS[issue];
+      return e ? e.items.filter((i) => !/^Other/.test(i.name)).slice().sort((a, b) => b.v[2] - a.v[2]).slice(0, 3) : [];
+    };
+    const shpTrendColor = (t) => (t === "Rising" || t === "New" ? T.bad : t === "Declining" ? T.good : T.textMuted);
+    const shpSymptomMovers = (() => {
+      const rows = [];
+      Object.entries(SHP_SYMPTOMS).forEach(([issue, e]) => e.items.forEach((i) => {
+        if (/^Other/.test(i.name)) return;
+        const d = i.v[2] - i.v[1];
+        if (d !== 0) rows.push({ name: `${issue.split(" › ")[0].replace("TELUS ", "")} · ${i.name}`, delta: d, pct: i.v[1] ? +((d / i.v[1]) * 100).toFixed(1) : null });
+      }));
+      return {
+        rising: rows.filter((r) => r.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 5),
+        falling: rows.filter((r) => r.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 5)
+      };
+    })();
+    const shpSymptomSection = () => (
+      <div style={{ marginTop: 22 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 6px" }}>Symptom items by issue — {LOOKER_LATEST}</div>
+        <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
+          Each Assure ticket is given one primary symptom item from its agent notes, so the items under an issue add up to that issue's agent tickets. The tables show what each item covers, the Aug, Sep and Oct counts and the month-over-month move; a rising item is red.
+        </p>
+        <MoverCards rising={shpSymptomMovers.rising} falling={shpSymptomMovers.falling}
+          risingTitle={`Rising symptom items · ${AN_MOM_FULL}`} fallingTitle={`Falling symptom items · ${AN_MOM_FULL}`} />
+        {Object.entries(SHP_SYMPTOMS).map(([issue, e]) => (
+          <Disclosure key={issue} variant="button" label={issue} count={`${e.tickets} agent tickets`} T={T} style={{ marginTop: 10 }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...thBase, textAlign: "left" }}>Symptom item</th>
+                    <th style={{ ...thBase, textAlign: "left" }}>What it covers</th>
+                    {AN_MONTHS.map((m) => <th key={m} style={{ ...thBase, textAlign: "right" }}>{m} '{AN_YR}</th>)}
+                    <th style={{ ...thBase, textAlign: "left" }}>Trend</th>
+                    <th style={{ ...thBase, textAlign: "right" }}>{AN_MOM}</th>
+                    <th style={{ ...thBase, textAlign: "left" }}>Read</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {e.items.map((i) => (
+                    <tr key={i.name}>
+                      <td style={{ ...tdBase, fontWeight: 600, color: /^Other/.test(i.name) ? T.textFaint : T.textSecondary, whiteSpace: "nowrap" }}>{i.name}</td>
+                      <td style={{ ...tdBase, color: T.textMuted, fontSize: 12, lineHeight: 1.5, minWidth: 220 }}>{i.desc}</td>
+                      {i.v.map((x, k) => <td key={k} style={{ ...tdBase, textAlign: "right", fontWeight: k === 2 ? 700 : 400, color: T.text }}>{x == null ? "—" : fmtNum(x)}</td>)}
+                      <td style={tdBase}><TrendBars v={i.v} color={colors["SH+"]} /></td>
+                      <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}><Move v={i.v} /></td>
+                      <td style={{ ...tdBase, whiteSpace: "nowrap", fontWeight: 700, fontSize: 11.5, color: shpTrendColor(i.trend) }}>{/^Other/.test(i.name) ? "" : i.trend}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Disclosure>
+        ))}
+        <Disclosure label="Sources & notes" T={T} style={{ marginTop: 14 }}>
+          <p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>
+            Source: Top Issue Drivers and Symptom Items tables of the monthly SH+ Assure Ticket Summary reports (October for Sep and Oct, September for Aug). These are Agent tickets only, so an issue's total here is lower than the Agent + Technician count in the table above (for example TELUS Outdoor › Self-install support is 203 agent tickets against 212 in total). Symptom items come from keyword rules on the agent notes and resolution text, one primary item per ticket; "Other / no clear symptom" holds notes too brief to classify. Read: Rising / Declining is a change of at least 3 tickets and 20% against the prior month, New means none the month before, and items with fewer than 3 tickets in both months fold into Other. A dash means the item was not listed that month. Only the nine largest issues of the report month carry symptom items.
+          </p>
+        </Disclosure>
+      </div>
+    );
     return (
       <>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>
@@ -3468,13 +3594,14 @@ export default function ReliabilityScorecards() {
                 <th style={{ ...thBase, textAlign: "right" }}>{LOOKER_SHORT}</th>
                 <th style={{ ...thBase, textAlign: "left", width: 110 }}></th>
                 <th style={{ ...thBase, textAlign: "right" }}>MoM / YoY</th>
-                <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>
-                <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>
+                {product === "SH+" && <th style={{ ...thBase, textAlign: "left" }}>Top 3 symptom items · {LOOKER_SHORT} (MoM)</th>}
+                {product !== "SH+" && <th style={{ ...thBase, textAlign: "left" }}>Initiative theme</th>}
+                {product !== "SH+" && <th style={{ ...thBase, textAlign: "left" }}>Initiative coverage</th>}
               </tr>
             </thead>
             <tbody>
               {shownIssues.length === 0 && (
-                <tr><td colSpan={product === "HSIA" ? 8 : 7} style={{ ...tdBase, color: T.textFaint }}>No issues match the selected filters.</td></tr>
+                <tr><td colSpan={product === "HSIA" ? 8 : product === "SH+" ? 6 : 7} style={{ ...tdBase, color: T.textFaint }}>No issues match the selected filters.</td></tr>
               )}
               {shownIssues.map((r, i) => {
                 const themes = issueThemes(product, r.issue);
@@ -3492,12 +3619,22 @@ export default function ReliabilityScorecards() {
                       <div style={{ width: `${(r.a26 / maxA26) * 100}%`, minWidth: 2, height: 9, background: colors[product], borderRadius: 3, opacity: 0.7 }} />
                     </td>
                     <td style={{ ...tdBase, textAlign: "right", whiteSpace: "nowrap" }}>{momYoy(r)}</td>
-                    <td style={{ ...tdBase, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.7 }}>
+                    {product === "SH+" && (
+                      <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 250, fontSize: 12, lineHeight: 1.6 }}>
+                        {shpTop3(r.issue).length ? shpTop3(r.issue).map((s) => (
+                          <div key={s.name} style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                            <span style={{ color: T.textSecondary }}>{s.name}</span>
+                            <span style={{ whiteSpace: "nowrap" }}><b style={{ color: T.text }}>{s.v[2]}</b> <DeltaText d={delta(s.v[2], s.v[1] ?? null, "", 0, true)} T={T} /></span>
+                          </div>
+                        )) : <span style={{ color: T.textFaint }}>No symptom breakdown</span>}
+                      </td>
+                    )}
+                    {product !== "SH+" && <td style={{ ...tdBase, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.7 }}>
                       {themes.length
                         ? themes.map((t) => <span key={t} style={{ display: "inline-block", background: T.panel, border: `1px solid ${T.border}`, color: T.textSecondary, borderRadius: 999, padding: "0 8px", marginRight: 4, fontWeight: 600, whiteSpace: "nowrap", fontSize: 11.5 }}>{t}</span>)
                         : <span style={{ color: T.textFaint }}>{r.grp === "SHS Hardware" ? "SHS hardware" : ISSUE_META[r.grp].label.split(",")[0]}</span>}
-                    </td>
-                    <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
+                    </td>}
+                    {product !== "SH+" && <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
                       {cov.length ? (
                         <span title={cov.map((c) => c.name).join("\n")} style={{ color: T.textSecondary, cursor: "help", borderBottom: `1px dotted ${T.textFaint}` }}>
                           <b style={{ color: T.heading }}>{cov.length}</b> — {cov.slice(0, 2).map((c) => c.name).join("; ")}{cov.length > 2 ? ` +${cov.length - 2} more` : ""}
@@ -3505,13 +3642,14 @@ export default function ReliabilityScorecards() {
                       ) : (
                         <span style={{ color: T.textFaint }}>— no mapped initiative</span>
                       )}
-                    </td>
+                    </td>}
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
+        {product === "SH+" && shpSymptomSection()}
         {product === "HSIA" && (
           <div style={{ marginTop: 12, padding: "10px 14px", background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10 }}>
             <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>Customer pain points · how Looker ticket types are grouped (hsia_ticket_recategorization tab)</div>
@@ -4203,7 +4341,7 @@ export default function ReliabilityScorecards() {
         )}
         {product === "SH+" && (
           <p style={{ fontSize: 12.5, color: T.textFaint, margin: "10px 2px 0", lineHeight: 1.6 }}>
-            SmartHome+ KPIs come from the SH+ reliability KPIs workbook: subscriber base, calls and ticket volume from Jan 2025, ticket and repair rates from Jul 2025. Churn, ticket categories and improvement initiatives are not yet reported for SH+.
+            SmartHome+ KPIs come from the SH+ reliability KPIs scorecard: subscriber base, calls and ticket volume from Jan 2025, ticket and repair rates from Jul 2025. Ticket categories and movers come from the monthly SH+ Assure ticket exports (Sep 2025 onward). Churn and improvement initiatives are not yet reported for SH+.
           </p>
         )}
 
@@ -4253,10 +4391,12 @@ export default function ReliabilityScorecards() {
               ]} fmt={fmtNum} T={T} />}
             </ChartCard>
             {hasLooker && (
-              <ChartCard title={L.catSource === "recategorization" ? `Ticket volume by customer pain point — largest ${L.topCat.name}` : `Looker ticket volume by category — top category ${L.topCat.name}`} T={T}
+              <ChartCard title={L.catSource === "recategorization" ? `Ticket volume by customer pain point — largest ${L.topCat.name}` : L.catSource === "assure" ? `Assure ticket volume by category — top category ${L.topCat.name}` : `Looker ticket volume by category — top category ${L.topCat.name}`} T={T}
                 tableOpen={!!openTables[product + "-tv"]} onToggleTable={() => toggleTable(product + "-tv")}
                 note={L.catSource === "recategorization"
                   ? `hsia_ticket_recategorization tab, Churn Measurement 2026 workbook. Looker ticket types rolled up to customer pain points: Connection Instability & Disconnects (can't connect, no data flow, losing sync, no IP, no sync, ONT not ranged), Slow Speeds (wireless and wired slow speeds, incompatible equipment), WiFi Coverage Gaps (wireless disconnects, wireless can't connect) and Other. ${L.topCat.name} sits at the base of each bar.`
+                  : L.catSource === "assure"
+                  ? `SH+ Assure tickets (Agent + Technician, de-duplicated on ticket ID) from the monthly Assure ticket exports, Sep 2025 onward. Bars stack the five largest Trouble Code 2 groups (by ${LOOKER_LATEST} volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar. Totals differ from the scorecard's Call Tickets.`
                   : `Looker ticket categories, Churn Measurement 2026 workbook. Bars stack the five largest Category 1 groups (by ${LOOKER_LATEST} volume) with the remainder as other categories; the top category (${L.topCat.name}) sits at the base of each bar.`}>
                 {(() => {
                   const shades = [1, 0.72, 0.52, 0.38, 0.26];
@@ -5279,6 +5419,169 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Recommendations", "initiatives", <Recs items={HSIA_RECS.filter((r) => ["P1", "P3"].includes(r.pri))} product="HSIA" />)}
+      </>
+    );
+  }
+
+  // ------------------------------ SH+ notes analysis ------------------------------
+  // Same layout as the HSIA Notes Analysis page, built from the SH+ Assure ticket exports (SHPA).
+  const SHPLUS_RECS = [
+    { pri: "P1", tag: "Rising", title: "Fix the self-install pairing path",
+      evidence: "Self-install support is the largest issue family: TELUS Outdoor 212, Doorbell 138 and Indoor 45 tickets in October (395, about a third of all Assure tickets). Pairing / setup failures are mentioned on 122 tickets, and 61 of the 120 warranty swaps are pairing or setup failures, mostly doorbells that are not discoverable over Bluetooth even after a factory reset.",
+      action: "Add a Bluetooth discoverability and Wi-Fi band check to the in-app pairing flow, give mounted-camera customers onboarding guidance, and hand repeat pairing failures to a pro-install booking instead of a second replacement unit." },
+    { pri: "P2", tag: "Rising", title: "Stop non-SH+ calls reaching the SH+ queue",
+      evidence: "Education › General more than doubled from 43 to 95 tickets and Education › Wi-Fi Settings rose from 10 to 18; about half of Education-coded tickets (50 of 111) are about internet, Wi-Fi or TV rather than SH+.",
+      action: "Review IVR and agent routing for internet and TV plan questions, and add a transfer reason code so misrouted calls are not logged as SH+ education tickets." },
+    { pri: "P2", tag: "Rising", title: "Login, CASA profile mismatches and TELUS Connect migration",
+      evidence: "Login / Access › User Credentials rose from 23 to 54 tickets (28 login / password problems, mostly a customer profile not found or mismatched in CASA); TELUS Connect mentions in agent notes doubled from 16 to 32.",
+      action: "Fix the CASA profile match for SH+ sign-in, and publish a migration checklist so customers moving from the TELUS Connect app keep their devices." },
+    { pri: "P3", tag: "Falling", title: "Sustain the camera recording gains",
+      evidence: "Camera Not Recording fell on both products (Doorbell 72 → 50, Outdoor 81 → 66) and warranty swaps held at 9.9% of tickets, the lowest rate since March.",
+      action: "Keep tracking Camera Not Recording and the swap rate monthly; a rebound in either would point back to firmware or hardware changes." }
+  ];
+
+  function ShPlusTicketAnalysisPage() {
+    const K = SHPA.tickets;
+    const sec = secFactory("shpa", "SH+ · Notes Analysis");
+    const col = colors["SH+"];
+    const catMax = Math.max(...K.agentCat.map((c) => Math.max(...c.v)));
+    const pct = (a, b) => (b ? +((a / b) * 100).toFixed(1) : 0);
+    const swapRate = K.swaps.map((s, i) => pct(s, K.total[i]));
+    const techShare = K.technician.map((s, i) => pct(s, K.total[i]));
+    const edu = (K.resolution2.find((r) => r.name === "Education") || { v: [0, 0, 0] }).v;
+    const eduShare = edu.map((s, i) => pct(s, K.total[i]));
+    const simpleTable = (rows, head, goodDownFor = () => true, shareBase) => (
+      <div style={{ overflowX: "auto", marginBottom: 16 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead><MonthHeader extra={shareBase ? [head, `Share · ${AN_M2}`] : [head]} /></thead>
+          <tbody>
+            {rows.map((c) => (
+              <tr key={c.name}>
+                <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                <td style={anTd}><TrendBars v={c.v} color={col} /></td>
+                <td style={anNum}><Move v={c.v} goodDown={goodDownFor(c.name)} /></td>
+                {shareBase && <td style={{ ...anNum, color: T.textMuted }}>{(c.v[2] / shareBase[2] * 100).toFixed(1)}%</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+    return (
+      <>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+          <StatCard T={T} color={col} icon="tickets" label="SH+ Assure tickets analysed" value={fmtBig(K.total[2])} sub={`${AN_LAST} · agent + technician`}
+            deltas={[<Move key="m" v={K.total} />]} />
+          <StatCard T={T} color={col} icon="repairs" label="Technician tickets" value={fmtPct(techShare[2], 1)} sub={`${fmtNum(K.technician[2])} tickets with a work order · ${AN_M2}`}
+            deltas={[<span key="a" style={{ color: T.textMuted }}>{AN_M0} {techShare[0]}% · {AN_M1} {techShare[1]}%</span>]} />
+          <StatCard T={T} color={col} icon="repairs" label="Warranty swaps" value={fmtPct(swapRate[2], 1)} sub={`${fmtNum(K.swaps[2])} tickets resolved by a swap · ${AN_M2}`}
+            deltas={[<Move key="m" v={swapRate} bps />]} />
+          <StatCard T={T} color={col} icon="cx" label="Education closures" value={fmtPct(eduShare[2], 1)} sub={`Resolution Code 2 = Education · share of tickets · ${AN_M2}`}
+            deltas={[<Move key="m" v={eduShare} bps goodDown={false} />]} />
+          <StatCard T={T} color={col} icon="notes" label="Tickets with agent notes" value={fmtPct(pct(K.commentCoverage[2], K.total[2]), 1)} sub={`${fmtNum(K.commentCoverage[2])} of ${fmtNum(K.total[2])} tickets · ${AN_M2}`}
+            deltas={[<span key="a" style={{ color: T.textMuted }}>{AN_M0} {pct(K.commentCoverage[0], K.total[0])}% · {AN_M1} {pct(K.commentCoverage[1], K.total[1])}%</span>]} />
+        </div>
+        <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          {fmtNum(K.total[0] + K.total[1] + K.total[2])} SH+ Assure tickets, {AN_M0} – {AN_LAST}, from the monthly Assure ticket exports (de-duplicated on ticket ID, so totals differ from the scorecard's Call Tickets); movements compare {AN_LAST} with {AN_FULL[1]}. Agent grouping = Trouble Code 1–3; closure grouping = Resolution Code 1–3, and a warranty swap is Resolution Code 3 = Warranty Swap. Technician tickets are those carrying a work order. Text themes are keyword-classified on the first entry of the agent notes and are indicative. There is no technician fault determination or customer survey for SH+, so this page has no divergence or sentiment sections.
+        </p>
+
+        {sec("Top issues by agent categorisation", "tickets",
+          <>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+              {K.c1.slice(0, 5).map((c) => (
+                <div key={c.name} style={{ flex: 1, minWidth: 150, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 14px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted }}>{c.name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: T.heading, marginTop: 2 }}>{fmtNum(c.v[2])} <span style={{ fontSize: 11.5, fontWeight: 500, color: T.textFaint }}>{(c.v[2] / K.total[2] * 100).toFixed(1)}% · {AN_M2}</span></div>
+                  <div style={{ fontSize: 12, marginTop: 2 }}><Move v={c.v} /></div>
+                </div>
+              ))}
+            </div>
+            <div style={{ overflowX: "auto", marginBottom: 16 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><MonthHeader extra={["Trouble Code 2 › 3 (agent)", `Share · ${AN_M2}`]} /></thead>
+                <tbody>
+                  {K.agentCat.map((c) => (
+                    <tr key={c.name}>
+                      <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ width: Math.max(4, Math.round((c.v[2] / catMax) * 90)), height: 8, background: col, opacity: 0.7, borderRadius: 3 }} />{c.name}
+                        </span>
+                      </td>
+                      {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                      <td style={anTd}><TrendBars v={c.v} color={col} /></td>
+                      <td style={anNum}><Move v={c.v} /></td>
+                      <td style={{ ...anNum, color: T.textMuted }}>{(c.v[2] / K.total[2] * 100).toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Sub-category movers (Trouble Code 2 › 3)</div>
+            <MoverCards rising={K.rising} falling={K.falling} />
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Movers rank issues with at least 30 tickets in Sep or Oct by absolute change (Oct vs Sep). Education › General more than doubled (43 → 95) and Login / Access › User Credentials rose from 23 to 54, while Camera Not Recording eased on both Doorbell (72 → 50) and Outdoor (81 → 66). Only three issues rose by 10 or more, so the falling list includes small moves. Education was first used as a code in July 2026, so it has no October 2025 comparison.</p></Disclosure>
+          </>
+        )}
+
+        {sec("Resolutions and warranty swaps", "repairs",
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14, marginBottom: 16 }}>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><MonthHeader extra={["Resolution Code 2 (closure)"]} /></thead>
+                  <tbody>
+                    {K.resolution2.map((c) => (
+                      <tr key={c.name}>
+                        <td style={{ ...anTd, fontWeight: 600, color: T.textSecondary }}>{c.name}</td>
+                        {c.v.map((x, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(x)}</td>)}
+                        <td style={anTd}><TrendBars v={c.v} color={col} /></td>
+                        <td style={anNum}><Move v={c.v} goodDown={c.name !== "Education"} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 8 }}>Warranty swaps</div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr><th style={anTh}>Indicator</th>{AN_MONTHS.map((m) => <th key={m} style={{ ...anTh, textAlign: "right" }}>{m}</th>)}<th style={{ ...anTh, textAlign: "right" }}>Δ</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ ...anTd, color: T.textSecondary, fontWeight: 700 }}>Tickets resolved by a swap</td>
+                      {K.swaps.map((d, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{fmtNum(d)}</td>)}
+                      <td style={anNum}><Move v={K.swaps} /></td>
+                    </tr>
+                    <tr>
+                      <td style={{ ...anTd, color: T.textSecondary, fontWeight: 500 }}>Swap rate (% of tickets)</td>
+                      {swapRate.map((d, i) => <td key={i} style={{ ...anNum, fontWeight: i === 2 ? 700 : 400 }}>{d}%</td>)}
+                      <td style={anNum}><Move v={swapRate} bps /></td>
+                    </tr>
+                    <tr><td style={{ ...anTd, color: T.textFaint, fontSize: 11.5 }}>All tickets</td>{K.total.map((d, i) => <td key={i} style={{ ...anNum, color: T.textFaint, fontSize: 11.5 }}>{fmtNum(d)}</td>)}<td style={anTd} /></tr>
+                  </tbody>
+                </table>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Swaps fell from 177 in August (13.4% of tickets, the 12-month peak) to 114 in September and 120 in October (9.9%), the lowest rate since March. A swap is a ticket with Resolution Code 3 = Warranty Swap; all swaps are agent tickets.</p></Disclosure>
+              </div>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Where swaps come from (Trouble Code 2 › 3, tickets resolved by a swap)</div>
+            {simpleTable(K.swapIssues, "Trouble Code 2 › 3 (swapped tickets)", () => true, K.swaps)}
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Resolution Code 3 (what the closure was about)</div>
+            {simpleTable(K.resolution3, "Resolution Code 3", (n) => n !== "Self-Install Support", K.total)}
+          </>
+        )}
+
+        {sec("What agents are writing", "notes",
+          <>
+            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
+              Themes are keyword-classified from the first entry of the agent's own notes (the duplicated resolution entry and links are excluded). A written agent note was found on {fmtNum(K.commentCoverage[2])} of {fmtNum(K.total[2])} {AN_LAST} tickets; counts are tickets whose notes mention the theme, and one ticket can mention several.
+            </p>
+            {simpleTable(K.themes, "Theme in agent notes")}
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.textSecondary, margin: "4px 0 8px" }}>Devices mentioned in notes</div>
+            {simpleTable(K.devices, "Device")}
+            <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>TELUS Connect app migration mentions doubled in October (16 → 32), login / password / access mentions rose from 120 to 157, and offline / disconnect mentions came back to 172 after a low September (138). Pairing / setup failures were steady at 122 against 119. Doorbell (258) and Outdoor camera (218) are the devices named most often. The classification is keyword-based, so treat counts as direction rather than precise measurement.</p></Disclosure>
+          </>
+        )}
+
+        {sec("Recommendations", "initiatives", <Recs items={SHPLUS_RECS} product="SH+" />)}
       </>
     );
   }
@@ -7438,6 +7741,8 @@ export default function ReliabilityScorecards() {
       ? "Previously completed reviews and other pages"
       : page === "hsiabrief"
       ? `Q${Math.floor((MONTHS.indexOf(HSIA_REVIEW_LATEST) % 12) / 3) + 1} ${HSIA_REVIEW_LATEST.slice(-4)} and why tickets rose and what is being done`
+    : page === "shplustickets"
+      ? "SH+ notes analysis"
     : page === "hsiatickets"
       ? "HSIA notes analysis"
       : page === "hsiasentiment"
@@ -7551,8 +7856,10 @@ export default function ReliabilityScorecards() {
               ? "Archive · completed reviews and other pages; frozen at the month they were written for"
               : page === "hsiabrief"
               ? "HSIA review (archived) · year-over-year ticket drivers (Jan – Sep 2026 vs 2025) read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight"
+              : page === "shplustickets"
+              ? `SH+ notes analysis · ${SHPA.months[2]} vs ${SHPA.months[1]} · Assure ticket notes: top issues, movers, resolutions and warranty swaps, agent note themes, recommendations`
               : page === "hsiatickets"
-              ? `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
+              ? `HSIA notes analysis ·${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`
               : page === "hsiasentiment"
               ? "CF&R TELUS Internet survey · Aug vs Jul 2026 · reliability perception, drivers, verbatim themes and sentiment"
               : page === "hsiaarchdeck"
@@ -7601,7 +7908,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "archive" && CHILD_PARENT[page] !== "hsiaarch" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "SH+" && CHILD_PARENT[page] !== "archive" && CHILD_PARENT[page] !== "hsiaarch" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
@@ -7622,6 +7929,7 @@ export default function ReliabilityScorecards() {
             : page === "execsummary" ? <ExecSummaryPage />
             : page === "archive" ? ArchivePage()
             : page === "hsiabrief" ? HsiaBriefPage()
+            : page === "shplustickets" ? ShPlusTicketAnalysisPage()
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
