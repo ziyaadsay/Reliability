@@ -98,7 +98,7 @@ const HEALTH_COMMENTARY = {
       note: "MoM drop of ~6% in tickets for October; No Dataflow is still the largest issue at 12,797 (-4.6% MoM, +36% YoY)" },
     { t: "Slow speeds", share: "24% of all HSIA tickets (13,039)",
       causes: ["Incompatible equipment / speed plans", "Customer education"],
-      inits: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention Program", "Server upgrades"],
+      inits: ["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention Program", "Gigabit Speed & Equipment Compatibility Proactive Campaign", "Server upgrades"],
       note: "Down 1% MoM but up 40% YoY" },
     { t: "Wi-Fi coverage gaps", share: "18% of all HSIA tickets (9,915)",
       causes: ["Gateway location (customer education)", "Additional boosts"],
@@ -415,7 +415,7 @@ const INITIATIVES = [
   { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "No Internet after Release Activation", status: "In flight", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
     desc: "Defect fix for locations left marked as 'warm home' after the previous customer's service ceased, where the new order failed to recreate the WSIR." },
 
-  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", status: "In flight", timeline: "Nov 2026", prime: "A. Broten", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", status: "In flight", timeline: "Nov 2026", prime: "S. Di", issues: ["Connectivity"],
     desc: "For resume orders submitted in FIFA NC, gets the associated Option 82, checks whether the suspend redirect flag is removed from the WSIR and, if it is still present, applies the fix directly to the WSIR." },
   { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", status: "Launched", timeline: "Jul 2026", prime: "F. Ahmed", impact: "L", issues: ["WiFi"],
     desc: "Scales the proactive program using RouteThis RAVA diagnostics to resolve home Wi-Fi issues before contact." },
@@ -427,6 +427,9 @@ const INITIATIVES = [
     desc: "Revamped proactive outreach program targeting severe degradation signatures." },
   { p: "HSIA", pillar: 3, theme: "Speed & equipment", name: "Gigabit Speed Compatibility ICU Intervention", status: "Launched", timeline: "Jun 2026", prime: "A. Broten / B. Weir", issues: ["Speed"],
     desc: "ICU outbound outreach upgrading customers on 3Gbps+ profiles to XGS-PON equipment." },
+
+  { p: "HSIA", pillar: 3, theme: "Speed & equipment", name: "Gigabit Speed & Equipment Compatibility Proactive Campaign", status: "In flight", timeline: "Nov 2026", prime: "A. Broten / B. Weir / J. Silva", impact: "L", issues: ["Speed"],
+    desc: "Works through the 2026 backlog of customers whose speed plans and equipment do not support 1.5 gig, 3 gig and 5 gig plans." },
   { p: "HSIA", pillar: 3, theme: "Copper strategy", name: "Proactive Intervention C2F Migration", status: "Launched", timeline: "Feb 2027", prime: "A. Tirthani", impact: "L", issues: ["Connectivity"],
     desc: "Proactive migration campaign converting chronic trouble-ticket copper lines to pure fibre." },
   { p: "HSIA", pillar: 3, theme: "Outage", name: "Pulse Cluster GUI for Outages", status: "Launched", timeline: "Feb 2026", prime: "Errol / C. Neuman", impact: "M", issues: ["Connectivity"],
@@ -6190,7 +6193,7 @@ export default function ReliabilityScorecards() {
       { g: "Network: GPON", title: "Network: degraded fibre and outages", share: gshare(groupTotals.find((x) => x.g === "Network: GPON")), why: "GPON severely degraded, outage and unknown states add about " + num(groupTotals.find((x) => x.g === "Network: GPON").v) + " tickets; ONT Not Ranged and Historical Data are the call categories most tied to them.",
         items: byName(["GPONe Fibre Degradation Proactive Campaign", "Fibre Check — Severely Degraded from the OLT", "GPONe Geographic Analysis & Infrastructure Optimization", "Service Guarantee: Internet Backup to Cellular", "Fibre Check — Bit Errors & Critical Alarms", "XGSPON Light Requirements Enhancement"]) },
       { g: "Provisioning", title: "Provisioning, orders and plan changes", share: (((groupTotals.find((x) => x.g === "Provisioning").v + groupTotals.find((x) => x.g === "Plan change").v) / Y.tickets.delta) * 100).toFixed(0), why: `Orders rose ${O.pct}% and a customer who has just had an order calls 3 to 4 times as often for 30 days; deliveries, plan changes, failing speed tests, early tenure and ONT capping add about ${num(groupTotals.find((x) => x.g === "Provisioning").v + groupTotals.find((x) => x.g === "Plan change").v)} tickets.`,
-        items: byName(["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "3 Gig Upgrade on TELUS.com", "Copper to WHSIA Technology Change in CSR", "Copper to Fibre Repair Intercept", "Cloudcheck Server Upgrades & Speed Test Improvements", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)"]) },
+        items: byName(["DIY Revamp Live ONT Check", "Gigabit Speed Compatibility ICU Intervention", "Gigabit Speed & Equipment Compatibility Proactive Campaign", "3 Gig Upgrade on TELUS.com", "Copper to WHSIA Technology Change in CSR", "Copper to Fibre Repair Intercept", "Cloudcheck Server Upgrades & Speed Test Improvements", "GPON/XGSPON Mis-tagging", "No Internet after Release Activation", "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)"]) },
       { g: "In-home telemetry", title: "In-home: gateway reboots and poor Wi-Fi", share: gshare(groupTotals.find((x) => x.g === "In-home telemetry")), why: `Lines with 3+ gateway reboots a week grew 37% and poor-Wi-Fi lines 27%, adding about ${num(groupTotals.find((x) => x.g === "In-home telemetry").v)} tickets; technicians close only ${Math.round(Math.min(...wifiAlign))}% to ${Math.round(Math.max(...wifiAlign))}% of Wi-Fi visits aligned with the agent's diagnosis.`,
         items: byName(["Wi-Fi Scaling — Proactive Campaigns", "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", "Cloudcheck Fine Tuning", "Technician WiFi Certification Tool", "Fix Auto Channel Disabled — Firmware", "HSIA Legacy Hardware Upgrades"]) }
     ];

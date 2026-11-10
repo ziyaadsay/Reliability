@@ -36,7 +36,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   and swaps) are padded with `null` until their month lands.
 - HSIA initiatives come from the "Product Technical | Churn & VOC Projects Impact" Google Sheet
   (https://docs.google.com/spreadsheets/d/1hFqUsmWcpEBSlO8GV-zvRfKpj8mp9lTo_5Trm03lUac, current
-  month's "Executive Summary" tab, gid 610989644 for Sept 2026), not the Churn Measurement 2026
+  "2026 Executive Summary." tab, gid 610989644; it was renamed from the monthly "Sept 2026 Executive
+  Summary." tab and is now a single running tab), not the Churn Measurement 2026
   workbook's Initiatives tab. TV and SHS initiatives still use the Churn Measurement workbook.
   Re-pull from it into `INITIATIVES` in `site/App.jsx`: map "Launched monitoring" to "Launched",
   and keep the Health Read and HSIA Review initiative lists in step with any new or renamed projects.
