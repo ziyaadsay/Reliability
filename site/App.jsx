@@ -772,8 +772,9 @@ const CALLS_SPLIT = {
 // ---------------------------------------------------------------------------
 // PFE (PureFibre East) HSIA customers — the HSIA > PFE subsection. Arrays align with MONTHS
 // (Jan 2025 – Oct 2026). Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered
-// tab, "PFE - HSIA" field. Base, tickets, repairs and churn: Churn Measurement 2026 workbook,
-// Reliability/Deact KPIs tab, PFE column of each month. Rates are volume over the PFE base per
+// tab, "PFE - HSIA" field. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab,
+// "HSIA PFE" block (Look 2188) Grand Total (equal to the KPI tab PFE column). Base, repairs and churn:
+// Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE column of each month. Rates are volume over the PFE base per
 // 100 subscribers. PFE churn (go/national) is first reported for Oct 2025.
 // ---------------------------------------------------------------------------
 const PFE = {
@@ -3996,7 +3997,7 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          PFE is the PureFibre East (Vulcan) customer group reported separately from HSIA West and TQ ILEC. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab, PFE - HSIA field. Subscribers, tickets, repairs and churn: Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE columns. Ticket and repair rates are volume over the PFE subscriber base, per 100 subscribers. PFE churn (go/national) is reported from Oct 2025.
+          PFE is the PureFibre East (Vulcan) customer group reported separately from HSIA West and TQ ILEC. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab, PFE - HSIA field. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA PFE block (Look 2188) Grand Total. Subscribers, repairs and churn: Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE columns. Ticket and repair rates are volume over the PFE subscriber base, per 100 subscribers. PFE churn (go/national) is reported from Oct 2025.
         </p>
 
         {sec("Calls offered", "calls",
@@ -4004,7 +4005,7 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Tickets", "tickets",
-          combo("pfe-tr", "Tickets — volume (bars) and rate (line, per 100 subs)", "Ticket volume", PFE.ticketVolume, "Ticket rate", PFE.ticketRate, "PFE tickets over the PFE subscriber base. Volume on the left axis, rate on the right.")
+          combo("pfe-tr", "Tickets — volume (bars) and rate (line, per 100 subs)", "Ticket volume", PFE.ticketVolume, "Ticket rate", PFE.ticketRate, "PFE ticket totals from the HSIA Recategorization Looker tab (HSIA PFE block, Look 2188) over the PFE subscriber base. Volume on the left axis, rate on the right.")
         )}
 
         {sec("Repairs / Dispatches", "repairs",

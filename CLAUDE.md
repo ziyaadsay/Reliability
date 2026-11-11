@@ -49,8 +49,9 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   (`tvoctreview`, `OCT_REVIEW`) is the current TV review.
 - HSIA › PFE (PureFibre East, `hsiapfe`, `HsiaPfePage`, `PFE` in `site/App.jsx`) is a separate series from
   HSIA West + TQ ILEC: calls from the TS Calls Offered by Product workbook ("PFE - HSIA" field), and
-  base, tickets, repairs and churn from the PFE column of each month on the Churn Measurement 2026
-  workbook's "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
+  tickets from the Churn Measurement 2026 workbook's "HSIA Recategorization Looker" tab, "HSIA PFE" block
+  (Look 2188) Grand Total (equal to the KPI tab PFE column), and base, repairs and churn from the PFE column of each
+  month on its "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
   volume over the PFE base per 100.
 - TV scope: the TV ticket volume and rate (KPI tab) are Optik TV (Legacy) + TV Evolution + Pik TV, and TV calls
   offered/answered are IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV (TS Calls Offered by Product,
