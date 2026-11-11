@@ -65,5 +65,7 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   the HSIA West TCS PLT Charter workbook; the B2B rows still do. The CCAI IVR rate is not in the MCP and is left as is.
 - HSIA › HSIA West (`hsiawest`, `HsiaWestPage`, `HSIA_WEST`) is HSIA West on its own, from the TS Calls
   Offered by Product workbook only: calls offered, normalized call tickets (contact-centre tickets, not
-  the Assure tickets on the KPI tab) and the HSIA West subscriber base. The KPI tab reports HSIA West
-  and TQ ILEC together, so repair and churn cards show "n/a" until the source splits them.
+  the Assure tickets on the KPI tab) and the HSIA West subscriber base. Repairs come from the "2026
+  Redwood Scorecard + Metrics" workbook, "Repair Tracking Detail" tab, HSIA West row (2026 only; the 2025
+  file has no such tab). The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
+  "n/a" until the source splits it.
