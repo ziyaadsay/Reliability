@@ -833,9 +833,10 @@ const TQ_ILEC = {
 //   to the TV subscriber base in DATA.
 // Repairs: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
 //   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV; reported for
-//   2026 onward from that workbook. 2025 backfilled from the 2025 Redwood Scorecard + Metrics workbook, MTD Budget Deltas tab,
-//   Monthly Repair Volume (Legacy = IPTV Copper + IPTV Fibre, OPUS = OPUS; IPTV West scope, no TQ ILEC TV split, so 2025 sits
-//   below the KPI-tab TV total and OPUS steps up in Jan 2026 where the 2026 definition adds PFE Vulcan - TV).
+//   2026 onward from that workbook. 2025 Jan to Sep backfilled from the 2025 Redwood Scorecard + Metrics workbook, Redwood Reboot -
+//   Repairs tab, Repair Volume - Actual / Forecast (Legacy = West - IPTV, OPUS = West - TV+). Oct to Dec 2025 are flagged NO (forecast) in
+//   that tab, so they stay null. West scope with no TQ ILEC TV split, so 2025 sits below the KPI-tab TV total and OPUS steps up in
+//   Jan 2026 where the 2026 definition adds PFE Vulcan - TV.
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
 //   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September and October pulls were not yet available from the
@@ -845,14 +846,14 @@ const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
     tickets: [28724,28040,30652,30984,31535,26336,26637,24474,22010,26284,25560,24547,26833,23176,23159,23715,20858,20917,21489,22122,24775,25441],
-    repairs: [1658,1464,1506,1414,1394,1210,1311,1278,1275,1542,1414,1370,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
+    repairs: [1684,1469,1665,1560,1508,1314,1320,1282,1276,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480,9810,10722,10734,10003,10097,10007,10731,12168,15164,15504,13886,12128,9920,9441,10894,9879,11257,9867,10678,12760,12501],
-    repairs: [112,108,101,66,55,60,69,75,89,111,92,88,307,310,329,330,336,307,309,305,390,353],
+    repairs: [105,104,113,78,80,69,73,84,102,null,null,null,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
   }
@@ -4102,7 +4103,7 @@ export default function ReliabilityScorecards() {
           );
         })()}
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is 2026 from the 2026 Redwood Scorecard and 2025 from the 2025 Redwood Scorecard (IPTV West scope, so OPUS steps up in January 2026 where the definition adds PFE Vulcan - TV, and 2025 year-over-year repair comparisons are not like for like), so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is 2026 from the 2026 Redwood Scorecard and 2025 Jan to Sep actuals from the 2025 Redwood Scorecard (Oct to Dec are forecast and blank; West scope, so OPUS steps up in January 2026 where the definition adds PFE Vulcan - TV, and 2025 year-over-year repair comparisons are not like for like), so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
 
         {sec("Subscriber base", "base",
@@ -4123,7 +4124,7 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <>
-            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Platform repair split: 2026 from the 2026 Redwood Scorecard (Mediaroom = IPTV West + TQ ILEC TV, OPUS = OPUS + PFE Vulcan - TV); 2025 from the 2025 Redwood Scorecard (IPTV Copper + Fibre, and OPUS; IPTV West scope), so OPUS steps up in January 2026 when the definition widens.")}
+            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Platform repair split: 2026 from the 2026 Redwood Scorecard (Mediaroom = IPTV West + TQ ILEC TV, OPUS = OPUS + PFE Vulcan - TV); 2025 (Jan to Sep actuals; Oct to Dec are forecast in the source and left blank) from the 2025 Redwood Scorecard, Redwood Reboot - Repairs tab (West - IPTV and West - TV+), so OPUS steps up in January 2026 when the definition widens.")}
             {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 2))}
           </>
         )}
