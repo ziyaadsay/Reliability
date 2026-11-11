@@ -42,3 +42,9 @@ Customer / non-TELUS equipment, Education / no fault, Other product.
 
 Raw exports are not committed because they contain customer details: the survey
 files carry customer name, email, phone number, address and account identifiers.
+
+- `resolution_flows.py` reads the same notes export rows (Ticket Created Date, Trouble Ticket ID, Agent
+  Notes) and writes `resolution_flows.json`, the root cause identified to fix applied counts behind the HSIA
+  Notes Analysis "Resolution Analysis" Sankey (`HSIA_RESOLUTION` in `site/App.jsx`). It uses tickets whose
+  Agent Notes carry both a "Root cause analysis" line and a "Resolution" line (about 8% of tickets) and
+  classifies each line to one HSIA theme, the one mentioned first. Pass the row JSON files on the command line.

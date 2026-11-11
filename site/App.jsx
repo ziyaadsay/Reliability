@@ -363,6 +363,9 @@ Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], 
 // Produced by analysis/tv/resolution_flows.py. links: [cause index, fix index, tickets].
 const TV_RESOLUTION = {"months":["Sep 2026","Oct 2026"],"Sep 2026":{"tickets":37303,"covered":3438,"causes":[["Provisioning / subscription / account",923],["STB hardware failure",695],["Recording / PVR",422],["Wi-Fi / wireless STB",235],["Extended uptime / cache or buffer",207],["Remote / pairing / batteries",203],["Customer set-up (TV input, power, HDMI)",141],["Cabling / coax / splitter",112],["Line / ONT / fibre",98],["Packet loss / multicast drops",71],["Bandwidth / congestion",13],["Active area outage",1],["Other",317]],"fixes":[["Replaced / shipped a new STB",852],["Resolved remotely (action not named)",673],["Reboot (ONT / modem / STB)",548],["Education / how-to",288],["Wired / moved / reconnected / Wi-Fi change",261],["Refresh / sync / provisioning fix",239],["Escalated (Tier 2 / outage team)",217],["Technician dispatch",202],["Other",158]],"links":[[1,0,517],[0,1,201],[0,2,162],[0,5,162],[0,6,133],[2,1,125],[4,2,97],[2,0,88],[0,3,78],[12,1,77],[2,2,77],[0,0,66],[4,1,61],[0,8,58],[6,4,57],[12,2,53],[12,3,50],[3,1,50],[5,1,50],[3,4,48],[1,7,48],[5,0,47],[3,2,42],[3,0,39],[12,0,38],[12,8,36],[0,7,33],[6,1,32],[2,3,31],[1,2,30],[1,1,30],[0,4,30],[7,4,30],[2,5,29],[5,3,29],[8,2,28],[6,3,27],[12,7,25],[9,2,25],[7,1,25],[1,4,25],[5,7,23],[2,6,23],[2,4,21],[3,3,20],[8,7,20],[9,0,20],[1,3,20],[5,4,19],[12,5,17],[2,8,16],[8,1,16],[3,7,16],[5,2,15],[7,0,15],[12,4,15],[4,3,14],[1,6,13],[2,7,12],[4,8,12],[7,2,11],[7,3,10],[8,6,10],[7,7,9],[5,8,9],[3,8,9],[4,0,8],[1,8,8],[8,0,7],[9,6,7],[8,4,7],[3,6,7],[6,7,7],[12,6,6],[6,2,6],[5,5,6],[7,6,6],[5,6,5],[6,0,5],[9,4,5],[9,7,5],[1,5,4],[8,5,4],[4,4,4],[3,5,4],[4,6,4],[4,5,4],[9,3,4],[6,5,3],[8,3,3],[8,8,3],[7,8,3],[6,8,3],[4,7,3],[7,5,3],[10,1,3],[9,5,2],[10,6,2],[10,3,2],[10,0,2],[10,2,2],[9,1,2],[10,5,1],[10,7,1],[6,6,1],[9,8,1],[11,1,1]]},"Oct 2026":{"tickets":36667,"covered":3215,"causes":[["Provisioning / subscription / account",895],["STB hardware failure",613],["Recording / PVR",417],["Wi-Fi / wireless STB",250],["Remote / pairing / batteries",181],["Extended uptime / cache or buffer",160],["Cabling / coax / splitter",132],["Customer set-up (TV input, power, HDMI)",122],["Line / ONT / fibre",110],["Packet loss / multicast drops",68],["Bandwidth / congestion",15],["Active area outage",12],["Other",240]],"fixes":[["Replaced / shipped a new STB",776],["Resolved remotely (action not named)",589],["Reboot (ONT / modem / STB)",485],["Wired / moved / reconnected / Wi-Fi change",297],["Education / how-to",273],["Escalated (Tier 2 / outage team)",229],["Refresh / sync / provisioning fix",208],["Technician dispatch",177],["Other",181]],"links":[[1,0,438],[0,1,181],[0,2,157],[0,5,149],[0,6,123],[2,1,96],[2,0,85],[2,2,81],[0,0,75],[0,4,72],[5,2,72],[0,8,64],[3,3,64],[12,1,56],[7,3,55],[4,1,52],[12,4,51],[4,0,48],[3,1,45],[5,1,43],[0,7,42],[2,6,40],[6,3,40],[3,0,40],[3,2,39],[1,7,39],[8,2,34],[1,2,33],[0,3,32],[12,8,32],[2,4,31],[12,2,30],[7,1,30],[1,1,27],[1,3,26],[1,4,25],[8,1,25],[6,0,24],[6,1,23],[2,3,23],[2,5,22],[9,2,21],[2,8,20],[4,4,20],[12,0,20],[12,3,19],[3,4,19],[2,7,19],[3,8,19],[4,3,17],[3,7,15],[9,0,15],[7,4,15],[6,7,15],[8,0,14],[4,8,14],[12,5,13],[4,7,12],[5,6,11],[1,5,11],[6,4,11],[9,7,10],[12,6,10],[12,7,9],[5,3,9],[8,5,9],[1,8,9],[6,2,9],[7,0,8],[5,0,8],[8,7,8],[5,4,8],[4,6,8],[9,1,7],[3,5,7],[4,5,7],[8,3,7],[5,8,6],[8,4,6],[9,4,6],[11,4,6],[8,6,5],[7,7,5],[1,6,5],[9,3,5],[7,8,5],[6,8,5],[10,2,4],[6,5,4],[10,8,4],[4,2,3],[10,4,3],[5,7,3],[11,5,3],[9,5,2],[11,1,2],[10,1,2],[8,8,2],[3,6,2],[7,6,2],[7,2,1],[6,6,1],[10,5,1],[10,0,1],[11,2,1],[9,6,1],[7,5,1],[9,8,1]]}};
 
+// HSIA Resolution Analysis: same method as TV_RESOLUTION, with HSIA themes. Produced by analysis/hsia/resolution_flows.py.
+const HSIA_RESOLUTION = {"months":["Sep 2026","Oct 2026"],"Sep 2026":{"tickets":56764,"covered":4929,"causes":[["Gateway / modem fault or uptime",1082],["Wi-Fi coverage / interference",962],["Fibre degraded / light level",811],["Provisioning / order / backend",413],["Copper / DSL line quality",297],["Cabling / inside wiring",244],["Dataflow / sync loss (cause not isolated)",232],["Outage / network repair",231],["Customer device / software",224],["Speed / plan mismatch",132],["ONT hardware limit or fault",87],["Other",214]],"fixes":[["Technician dispatch",1367],["Wi-Fi optimisation (placement, channel, booster)",803],["Reboot / reset",645],["Escalated (Tier 2 / CORE / PIWS)",630],["Network repair completed",389],["Education / advice",371],["Equipment replaced / shipped",203],["Resolved remotely (action not named)",198],["Refresh / re-provisioning",130],["Pending / unresolved",58],["Other",135]],"links":[[2,0,572],[1,1,464],[0,2,322],[0,0,187],[3,3,152],[0,4,135],[4,0,123],[1,0,122],[0,1,112],[0,3,101],[1,2,97],[4,3,97],[1,5,86],[0,6,82],[6,3,81],[7,0,73],[2,3,70],[7,5,68],[8,1,60],[2,2,59],[5,4,56],[11,0,56],[5,0,55],[5,1,54],[0,5,52],[3,0,52],[6,0,51],[3,8,48],[1,7,45],[1,3,45],[10,0,44],[2,4,39],[0,7,39],[8,5,38],[3,2,38],[9,5,37],[6,2,34],[1,6,34],[3,5,32],[11,7,32],[6,4,31],[8,2,31],[1,10,30],[3,4,29],[11,1,27],[1,4,26],[9,3,25],[7,4,25],[0,8,23],[11,5,23],[0,10,22],[3,1,20],[8,3,20],[9,1,20],[4,2,19],[5,2,19],[7,3,19],[2,1,19],[8,7,17],[11,10,17],[8,0,16],[9,0,16],[10,6,16],[11,4,15],[11,6,15],[3,10,14],[3,7,13],[7,9,13],[6,8,13],[5,6,13],[2,8,12],[2,5,12],[2,10,12],[5,5,12],[9,10,12],[11,2,12],[4,1,12],[4,8,12],[6,7,12],[8,4,11],[5,7,11],[4,4,10],[8,10,10],[10,4,10],[4,5,9],[7,7,9],[9,6,9],[11,3,9],[3,6,9],[2,7,9],[1,9,9],[8,6,9],[5,3,8],[8,9,7],[7,10,7],[0,9,7],[7,2,7],[5,10,6],[5,8,6],[3,9,6],[10,1,6],[9,7,5],[11,8,5],[4,6,5],[2,6,5],[4,10,5],[6,1,5],[8,8,5],[7,6,5],[7,1,4],[5,9,4],[9,2,4],[1,8,4],[11,9,3],[6,9,3],[10,2,3],[4,7,3],[10,3,3],[10,7,3],[9,9,2],[9,4,2],[4,9,2],[2,9,2],[6,6,1],[7,8,1],[10,8,1],[6,5,1],[10,5,1]]},"Oct 2026":{"tickets":53440,"covered":4209,"causes":[["Gateway / modem fault or uptime",912],["Wi-Fi coverage / interference",862],["Fibre degraded / light level",687],["Provisioning / order / backend",343],["Copper / DSL line quality",236],["Customer device / software",218],["Cabling / inside wiring",203],["Outage / network repair",197],["Dataflow / sync loss (cause not isolated)",161],["Speed / plan mismatch",105],["ONT hardware limit or fault",104],["Other",181]],"fixes":[["Technician dispatch",1124],["Wi-Fi optimisation (placement, channel, booster)",678],["Reboot / reset",556],["Escalated (Tier 2 / CORE / PIWS)",509],["Network repair completed",347],["Education / advice",267],["Resolved remotely (action not named)",233],["Equipment replaced / shipped",172],["Refresh / re-provisioning",121],["Pending / unresolved",69],["Other",133]],"links":[[2,0,461],[1,1,384],[0,2,267],[0,0,149],[0,4,127],[3,3,119],[0,1,117],[1,0,114],[4,0,102],[1,2,94],[2,3,83],[4,3,72],[1,5,67],[7,0,64],[8,3,64],[0,6,60],[0,3,58],[10,0,57],[0,7,56],[3,0,51],[6,1,50],[1,6,48],[6,0,45],[7,5,45],[3,8,44],[1,7,42],[2,2,41],[5,1,38],[5,2,36],[5,5,36],[3,4,33],[3,2,32],[6,4,32],[11,0,31],[8,4,31],[1,3,31],[11,6,30],[2,4,30],[1,10,29],[5,6,28],[0,5,28],[1,4,28],[0,8,27],[7,4,26],[8,2,25],[11,10,22],[9,3,21],[11,1,21],[11,5,20],[5,0,19],[10,7,19],[2,1,19],[9,5,19],[1,9,18],[8,0,17],[5,10,17],[0,10,16],[7,3,16],[6,5,15],[6,3,15],[3,6,15],[9,0,14],[5,3,14],[11,4,14],[2,10,14],[4,2,13],[7,2,13],[3,5,13],[8,8,12],[3,10,12],[9,1,12],[6,6,11],[6,7,11],[3,1,11],[6,2,11],[11,9,11],[2,6,10],[5,7,10],[4,1,10],[11,2,10],[2,5,10],[5,4,10],[4,5,9],[7,6,9],[6,10,9],[9,6,9],[2,9,9],[10,3,8],[11,8,8],[9,2,8],[11,3,8],[4,4,8],[10,1,8],[4,8,7],[3,7,7],[0,9,7],[5,8,7],[1,8,7],[4,6,7],[7,7,6],[9,4,6],[7,9,6],[10,2,6],[7,10,6],[3,9,6],[11,7,6],[2,7,6],[7,1,6],[9,10,5],[9,7,5],[4,7,4],[9,8,4],[8,6,4],[8,5,4],[2,8,4],[6,9,3],[5,9,3],[8,1,2],[10,4,2],[4,10,2],[9,9,2],[10,6,2],[4,9,2],[8,9,1],[10,9,1],[8,10,1],[10,5,1],[6,8,1]]}};
+
 const PILLARS = [
   { n: 1, name: "Instrumenting Our Products for Reliability", sub: "Telemetry, detection & signal accuracy" },
   { n: 2, name: "By Design, Build Reliability Into Products", sub: "Hardware, firmware & architecture" },
@@ -2846,7 +2849,7 @@ export default function ReliabilityScorecards() {
   const [scope, setScope] = useState("All");
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
-  const [skMonth, setSkMonth] = useState(null); // Resolution Analysis month (null = latest)
+  const [skMonth, setSkMonth] = useState({}); // Resolution Analysis month per product (unset = latest)
   const [skHover, setSkHover] = useState(null); // Resolution Analysis hovered Sankey node
   const [issueFilter, setIssueFilter] = useState({});
   const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
@@ -4943,6 +4946,30 @@ export default function ReliabilityScorecards() {
   const anNum = { ...anTd, textAlign: "right", whiteSpace: "nowrap", color: T.text };
 
   // Sub-menu pages: every section starts collapsed
+  // Resolution Analysis: root cause identified -> fix applied Sankey with a month toggle (TV and HSIA notes analysis)
+  function resolutionAnalysis(RA, key, noun, methodNote) {
+    const mo = skMonth[key] && RA[skMonth[key]] ? skMonth[key] : RA.months[RA.months.length - 1], D = RA[mo];
+    const top = [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 3);
+    return (
+      <>
+        <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+          {RA.months.map((m) => (
+            <button key={m} onClick={() => { setSkMonth({ ...skMonth, [key]: m }); setSkHover(null); }}
+              style={{ border: `1px solid ${m === mo ? "transparent" : T.borderStrong}`, background: m === mo ? T.ink : "transparent", color: m === mo ? "#fff" : T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: FONT }}>{m}</button>
+          ))}
+          <span style={{ fontSize: 12.5, color: T.textMuted, marginLeft: 6 }}>{fmtNum(D.covered)} of {fmtNum(D.tickets)} {noun} tickets ({Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution</span>
+        </div>
+        <ChartCard title="Root cause identified → fix applied" T={T} note="Left: the root cause the agent recorded. Right: the fix they applied. Ribbon width is the number of tickets; hover a node to isolate its flows.">
+          <SankeyChart data={D} T={T} hover={skHover} setHover={setSkHover} />
+        </ChartCard>
+        <p style={{ fontSize: 13, color: T.textSecondary, margin: "12px 2px 0", lineHeight: 1.6 }}>
+          Largest flows in {mo}: {top.map((k, i) => <span key={i}>{i ? "; " : ""}<strong>{D.causes[k[0]][0]}</strong> to <strong>{D.fixes[k[1]][0]}</strong> ({fmtNum(k[2])})</span>)}.
+        </p>
+        <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Tickets from the monthly {noun} agent and technician notes exports whose Agent Notes include the structured "Root cause analysis" and "Resolution" lines the Copilot summary writes into the worklog; tickets without both lines are not in the flow. Each line is keyword-classified to one theme, the one mentioned first, so a ticket appears once. "Other" holds causes or fixes that matched no theme. Shares are indicative and cover about one in {Math.round(D.tickets / D.covered)} tickets. {methodNote}</p></Disclosure>
+      </>
+    );
+  }
+
   function secFactory(prefix, eyebrow) {
     let n = 0;
     return (title, icon, children) => {
@@ -5284,30 +5311,7 @@ export default function ReliabilityScorecards() {
           </>
         )}
 
-        {sec("Resolution Analysis", "repairs",
-          (() => {
-            const RA = TV_RESOLUTION, mo = skMonth && RA[skMonth] ? skMonth : RA.months[RA.months.length - 1], D = RA[mo];
-            const top = [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 3);
-            return (
-              <>
-                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
-                  {RA.months.map((m) => (
-                    <button key={m} onClick={() => { setSkMonth(m); setSkHover(null); }}
-                      style={{ border: `1px solid ${m === mo ? "transparent" : T.borderStrong}`, background: m === mo ? T.ink : "transparent", color: m === mo ? "#fff" : T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: FONT }}>{m}</button>
-                  ))}
-                  <span style={{ fontSize: 12.5, color: T.textMuted, marginLeft: 6 }}>{fmtNum(D.covered)} of {fmtNum(D.tickets)} TV tickets ({Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution</span>
-                </div>
-                <ChartCard title="Root cause identified → fix applied" T={T} note="Left: the root cause the agent recorded. Right: the fix they applied. Ribbon width is the number of tickets; hover a node to isolate its flows.">
-                  <SankeyChart data={D} T={T} hover={skHover} setHover={setSkHover} />
-                </ChartCard>
-                <p style={{ fontSize: 13, color: T.textSecondary, margin: "12px 2px 0", lineHeight: 1.6 }}>
-                  Largest flows in {mo}: {top.map((k, i) => <span key={i}>{i ? "; " : ""}<strong>{D.causes[k[0]][0]}</strong> to <strong>{D.fixes[k[1]][0]}</strong> ({fmtNum(k[2])})</span>)}.
-                </p>
-                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Tickets from the monthly TV agent and technician notes exports whose Agent Notes include the structured "Root cause analysis" and "Resolution" lines the Copilot summary writes into the worklog; tickets without both lines are not in the flow. Each line is keyword-classified (English and French terms) to one theme, the one mentioned first, so a ticket appears once. "Other" holds causes or fixes that matched no theme. Shares are indicative and cover about one in ten tickets. Pik TV is not separated in the exports. Method: analysis/tv/resolution_flows.py.</p></Disclosure>
-              </>
-            );
-          })()
-        )}
+        {sec("Resolution Analysis", "repairs", resolutionAnalysis(TV_RESOLUTION, "TV", "TV", "Pik TV is not separated in the exports. Method: analysis/tv/resolution_flows.py."))}
 
         {sec("Recommendations", "initiatives", <Recs items={TV_RECS.filter((r) => ["P1", "P3"].includes(r.pri) || r.tag === "Emerging")} />)}
       </>
@@ -5861,6 +5865,8 @@ export default function ReliabilityScorecards() {
             </div>
           </>
         )}
+
+        {sec("Resolution Analysis", "repairs", resolutionAnalysis(HSIA_RESOLUTION, "HSIA", "HSIA", "Method: analysis/hsia/resolution_flows.py."))}
 
         {sec("Recommendations", "initiatives", <Recs items={HSIA_RECS.filter((r) => ["P1", "P3"].includes(r.pri))} product="HSIA" />)}
       </>

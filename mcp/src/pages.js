@@ -616,16 +616,17 @@ function notesPage(product) {
   S.push(tableSec("s04-devices", "04 · Equipment mentioned in notes", monthCols("Device", months), monthRows(K.devices, months)));
   if (K.platform) S.push(tableSec("s04-platform", "04 · Platform mentioned in notes", monthCols("Platform", months), monthRows(K.platform, months), "Legacy Mediaroom mentions fell back in October (VIP5662W PVR −9%, VIP5602W wireless STB −2%, Mediaroom −6%) while OPUS mentions edged up (+2%), consistent with the By Platform split where Legacy still carries two thirds of TV tickets on a shrinking base."));
   if (K.access) S.push(tableSec("s04-access", "04 · Access technology mentioned in notes", monthCols("Access", months), monthRows(K.access, months), "Fibre-related mentions (ONT, PureFibre, GPON) fell 2.3% and copper / DSL mentions fell 7.7% in October, tracking the drop in No Sync › No DSL Light tickets (−14.1%). Among Wi-Fi hardware, Boost Wi-Fi 7 (BV3) mentions kept rising (+5.0%) while Boost Wi-Fi 6 (−9.5%) and the older Wi-Fi Hub (−14.0%) both fell back; legacy Actiontec modem mentions fell 10.7%."));
-  // 05 resolution analysis (TV only): root cause identified -> fix applied
-  if (product === "TV") {
-    const mo = TV_RESOLUTION.months[TV_RESOLUTION.months.length - 1], D = TV_RESOLUTION[mo];
-    S.push(textSec("s05-resolution", "05 · Resolution Analysis", [`Root cause identified to fix applied for ${mo}: ${D.covered.toLocaleString()} of ${D.tickets.toLocaleString()} TV tickets (${Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution in the agent notes. Each line is keyword-classified to one theme (the one mentioned first), so shares are indicative.`]));
+  // 05 resolution analysis: root cause identified -> fix applied
+  {
+    const RA = product === "TV" ? TV_RESOLUTION : HSIA_RESOLUTION;
+    const mo = RA.months[RA.months.length - 1], D = RA[mo];
+    S.push(textSec("s05-resolution", "05 · Resolution Analysis", [`Root cause identified to fix applied for ${mo}: ${D.covered.toLocaleString()} of ${D.tickets.toLocaleString()} ${product} tickets (${Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution in the agent notes. Each line is keyword-classified to one theme (the one mentioned first), so shares are indicative.`]));
     S.push(tableSec("s05-flows", "05 · Largest root cause to fix flows", [col("cause", "Root cause"), col("fix", "Fix applied"), col("tickets", "Tickets")],
-      [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 15).map((k) => ({ cause: D.causes[k[0]][0], fix: D.fixes[k[1]][0], tickets: k[2] })), "The dashboard shows these flows as a Sankey diagram on TV › Notes Analysis › Resolution Analysis, with a September and October toggle."));
+      [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 15).map((k) => ({ cause: D.causes[k[0]][0], fix: D.fixes[k[1]][0], tickets: k[2] })), `The dashboard shows these flows as a Sankey diagram on ${product} › Notes Analysis › Resolution Analysis, with a September and October toggle.`));
   }
   // recommendations
   const recs = product === "HSIA" ? HSIA_RECS.filter((r) => ["P1", "P3"].includes(r.pri)) : TV_RECS.filter((r) => ["P1", "P3"].includes(r.pri) || r.tag === "Emerging");
-  S.push(listSec("s05-recommendations", product === "TV" ? "06 · Recommendations" : "05 · Recommendations", recItems(recs, product)));
+  S.push(listSec("s05-recommendations", "06 · Recommendations", recItems(recs, product)));
   return S;
 }
 

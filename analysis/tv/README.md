@@ -31,5 +31,4 @@ the TVA currently in App.jsx).
   Sankey (`TV_RESOLUTION` in `site/App.jsx`). It uses tickets whose Agent Notes carry both a
   "Root cause analysis" line and a "Resolution" line (about one in ten tickets) and classifies each
   line to one theme, the one mentioned first. Set `MONTHS` at the top for the months to show.
-  HSIA does not have an equivalent yet: it needs the HSIA notes exports run through the same script
-  with an HSIA theme list.
+  HSIA has the same script with HSIA themes in `analysis/hsia/resolution_flows.py`.
