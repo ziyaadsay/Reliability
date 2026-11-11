@@ -781,7 +781,8 @@ const CALLS_SPLIT = {
 // PFE (PureFibre East) HSIA customers — the HSIA > PFE subsection. Arrays align with MONTHS
 // (Jan 2025 – Oct 2026). Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered
 // tab, "PFE - HSIA" field. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab,
-// "HSIA PFE" block (Look 2188) Grand Total (equal to the KPI tab PFE column). Base, repairs and churn:
+// "HSIA PFE" block (Look 2188) Grand Total (equal to the KPI tab PFE column). Repairs: Looker Repairs
+// (Kam/Jason's new view) tab, HS PFE row (Look 2190, WOID complete month). Base and churn:
 // Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE column of each month. Rates are volume over the PFE base per
 // 100 subscribers. PFE churn (go/national) is first reported for Oct 2025.
 // ---------------------------------------------------------------------------
@@ -789,8 +790,8 @@ const PFE = {
   callsOffered: [240,321,497,609,1200,994,1084,1671,1726,2317,2745,4200,3255,2682,3376,3344,3921,4462,5040,4028,2988,2581],
   ticketVolume: [325,312,445,552,929,842,930,1184,1320,1584,1575,2498,2085,1644,1960,2357,2629,3023,3373,2771,2106,1771],
   ticketRate: [8.45,6.64,7.58,7.80,10.57,7.74,6.96,7.55,7.06,7.28,6.37,8.67,6.52,4.75,5.17,5.67,5.84,6.20,6.43,5.15,3.88,3.24],
-  repairVolume: [66,57,67,59,65,80,88,119,141,210,196,291,371,294,388,385,516,586,648,472,478,426],
-  repairRate: [1.72,1.21,1.14,0.83,0.74,0.74,0.66,0.76,0.75,0.96,0.79,1.01,1.16,0.85,1.02,0.93,1.15,1.20,1.24,0.88,0.88,0.78],
+  repairVolume: [67,55,66,57,61,74,85,117,140,207,199,284,365,288,376,378,436,467,535,347,393,341],
+  repairRate: [1.74,1.17,1.12,0.81,0.69,0.68,0.64,0.75,0.75,0.95,0.81,0.99,1.14,0.83,0.99,0.91,0.97,0.96,1.02,0.64,0.72,0.62],
   churnRate: [null,null,null,null,null,null,null,null,null,5.26,3.23,2.94,2.29,1.34,1.94,2.36,2.14,2.38,2.26,2.49,2.78,3.48],
   subBase: [3844,4700,5871,7073,8785,10881,13359,15691,18702,21764,24707,28805,31982,34636,37878,41545,45040,48790,52423,53843,54226,54593]
 };
@@ -822,15 +823,15 @@ const HSIA_WEST = {
 // Oct 2026). TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab
 // ("TQ ILEC - HSIA"), base from the Actuals - Call Tickets (Normalized) tab's Subscribers block.
 // Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the "HSIA TQ ILEC"
-// block Totals row (all TQ ILEC regions). Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail
-// tab, "TQ ILEC HS" row (2026 only). Churn is not split from HSIA West in the source.
+// block Totals row (all TQ ILEC regions). Repairs: Looker Repairs (Kam/Jason's new view) tab, HS QC ILEC row
+// (Look 2190, WOID complete month), Jan 2025 onward. Churn is not split from HSIA West in the source.
 // ---------------------------------------------------------------------------
 const TQ_ILEC = {
   callsOffered: [5138,4322,4141,3951,4409,4611,4910,4608,3971,4936,5424,5807,6176,4959,6341,5212,6461,6946,7441,7693,7988,8967],
   ticketVolume: [1892,2058,2164,2519,2452,2512,3097,2908,2704,3073,3061,3408,3854,3028,3537,3494,4181,4379,4695,4896,5100,5463],
   ticketRate: [1.14,1.23,1.29,1.49,1.45,1.48,1.83,1.72,1.60,1.83,1.82,2.07,2.34,1.84,2.14,2.12,2.53,2.65,2.84,2.97,3.08,3.31],
-  repairVolume: [null,null,null,null,null,null,null,null,null,null,null,null,921,840,1049,891,1066,925,1047,1074,1298,1404],
-  repairRate: [null,null,null,null,null,null,null,null,null,null,null,null,0.56,0.51,0.64,0.54,0.65,0.56,0.63,0.65,0.79,0.85],
+  repairVolume: [546,464,525,529,546,618,825,698,613,744,729,840,917,804,916,889,1046,917,1045,1072,1297,1402],
+  repairRate: [0.33,0.28,0.31,0.31,0.32,0.37,0.49,0.41,0.36,0.44,0.43,0.51,0.56,0.49,0.55,0.54,0.63,0.56,0.63,0.65,0.78,0.85],
   subBase: [166597,167272,168135,169149,168839,169207,169155,168789,168563,168059,168207,164740,164734,164888,165055,165047,165055,165044,165037,164994,165339,164856]
 };
 
@@ -3956,7 +3957,7 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          TQ ILEC high speed on its own. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (TQ ILEC - HSIA field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA TQ ILEC block Totals row (all TQ ILEC regions, from the same Looker source as the HSIA scorecard tickets); the rate is those tickets over the TQ ILEC HSIA base, per 100 subscribers. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (TQ ILEC HS row), reported for 2026 only, so there is no YoY change yet. The HSIA scorecard base is HSIA West plus TQ ILEC. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
+          TQ ILEC high speed on its own. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (TQ ILEC - HSIA field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA TQ ILEC block Totals row (all TQ ILEC regions, from the same Looker source as the HSIA scorecard tickets); the rate is those tickets over the TQ ILEC HSIA base, per 100 subscribers. Repairs: Churn Measurement 2026 workbook, Looker Repairs (Kam/Jason's new view) tab, HS QC ILEC row, by WOID complete month (Look 2190). The HSIA scorecard base is HSIA West plus TQ ILEC. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
         </p>
 
         {sec("Calls offered", "calls",
@@ -3979,7 +3980,7 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-rr"]} onToggleTable={() => toggleTable("tq-rr")}
-            note="TQ ILEC HS repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the TQ ILEC HSIA base. Reported for 2026 only. Volume on the left axis, rate on the right.">
+            note="TQ ILEC repairs (HS QC ILEC) from the Looker Repairs tab, by WOID complete month, over the TQ ILEC HSIA base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
               bar={{ label: "Repair volume", data: TQ_ILEC.repairVolume, color: col, fmt: fmtBig }}
               line={{ label: "Repair rate", data: TQ_ILEC.repairRate, color: col, fmt: rate2 }} />
@@ -4056,7 +4057,7 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          PFE is the PureFibre East (Vulcan) customer group reported separately from HSIA West and TQ ILEC. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab, PFE - HSIA field. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA PFE block (Look 2188) Grand Total. Subscribers, repairs and churn: Churn Measurement 2026 workbook, Reliability/Deact KPIs tab, PFE columns. Ticket and repair rates are volume over the PFE subscriber base, per 100 subscribers. PFE churn (go/national) is reported from Oct 2025.
+          PFE is the PureFibre East (Vulcan) customer group reported separately from HSIA West and TQ ILEC. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab, PFE - HSIA field. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA PFE block (Look 2188) Grand Total. Repairs: Churn Measurement 2026 workbook, Looker Repairs (Kam/Jason's new view) tab, HS PFE row, by WOID complete month. Subscribers and churn: Reliability/Deact KPIs tab, PFE columns. Ticket and repair rates are volume over the PFE subscriber base, per 100 subscribers. PFE churn (go/national) is reported from Oct 2025.
         </p>
 
         {sec("Calls offered", "calls",
@@ -4068,7 +4069,7 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Repairs / Dispatches", "repairs",
-          combo("pfe-rr", "Repairs / dispatches — volume (bars) and rate (line, per 100 subs)", "Repair volume", PFE.repairVolume, "Repair rate", PFE.repairRate, "PFE repairs over the PFE subscriber base. Volume on the left axis, rate on the right.")
+          combo("pfe-rr", "Repairs / dispatches — volume (bars) and rate (line, per 100 subs)", "Repair volume", PFE.repairVolume, "Repair rate", PFE.repairRate, "PFE repairs (HS PFE, Looker Repairs tab, by WOID complete month) over the PFE subscriber base. Volume on the left axis, rate on the right.")
         )}
 
         {sec("Churn", "churn",

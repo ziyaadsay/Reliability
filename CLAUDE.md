@@ -50,8 +50,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - HSIA › PFE (PureFibre East, `hsiapfe`, `HsiaPfePage`, `PFE` in `site/App.jsx`) is a separate series from
   HSIA West + TQ ILEC: calls from the TS Calls Offered by Product workbook ("PFE - HSIA" field), and
   tickets from the Churn Measurement 2026 workbook's "HSIA Recategorization Looker" tab, "HSIA PFE" block
-  (Look 2188) Grand Total (equal to the KPI tab PFE column), and base, repairs and churn from the PFE column of each
-  month on its "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
+  (Look 2188) Grand Total (equal to the KPI tab PFE column), repairs from the "Looker Repairs (Kam/Jason's new view)" tab (HS PFE row, WOID complete month), and base and
+  churn from the PFE column of each month on the "Reliability/Deact KPIs" tab. Refresh it with the monthly KPI update; PFE rates are
   volume over the PFE base per 100.
 - TV scope: the TV ticket volume and rate (KPI tab) are Optik TV (Legacy) + TV Evolution + Pik TV, and TV calls
   offered/answered are IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV (TS Calls Offered by Product,
@@ -76,5 +76,5 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
   ("TQ ILEC - HSIA") and base from the TS Calls Offered by Product workbook, tickets from the "HSIA Recategorization
   Looker" tab's "HSIA TQ ILEC" block Totals row (Churn Measurement 2026 workbook), repairs
-  from the 2026 Redwood Scorecard + Metrics "Repair Tracking Detail" tab, "TQ ILEC HS" row (2026 only).
+  from the "Looker Repairs (Kam/Jason's new view)" tab, HS QC ILEC row (Jan 2025 on).
   HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
