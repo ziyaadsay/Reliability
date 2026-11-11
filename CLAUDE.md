@@ -69,9 +69,9 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   the HSIA West TCS PLT Charter workbook; the B2B rows still do. The CCAI IVR rate is not in the MCP and is left as is.
 - HSIA › HSIA West (`hsiawest`, `HsiaWestPage`, `HSIA_WEST`) is HSIA West on its own, from the TS Calls
   Offered by Product workbook (calls offered and the HSIA West subscriber base), with tickets from the Churn
-  Measurement 2026 workbook's "HSIA Recategorization Looker" tab, "HSIA West" block (Look 2186) Grand Total. Repairs come from the "2026
-  Redwood Scorecard + Metrics" workbook, "Repair Tracking Detail" tab, HSIA West row (2026 only). 2025 is blank on purpose: the
-  "Redwood Reboot - Repairs" tab has a West - HSIA row, but Oct to Dec 2025 there are forecast, and the user asked to remove 2025. The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
+  Measurement 2026 workbook's "HSIA Recategorization Looker" tab, "HSIA West" block (Look 2186) Grand Total. Repairs (Jan 2025 on) come from the Churn Measurement 2026
+  workbook's "Looker Repairs (Kam/Jason's new view)" tab (Look 2190, repair jobs by WOID complete month): HS WEST COPPER
+  plus HS WEST FIBRE. The same tab has HS QC ILEC and HS PFE rows for later use. The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
   "n/a" until the source splits it.
 - HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
   ("TQ ILEC - HSIA") and base from the TS Calls Offered by Product workbook, tickets from the "HSIA Recategorization

@@ -801,15 +801,18 @@ const PFE = {
 // Offered tab, base from the Actuals - Call Tickets (Normalized) tab's Subscribers block (HSIA West).
 // Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the "HSIA West" block
 // (Look 2186) Grand Total, the same Looker source as the HSIA scorecard tickets; the rate is those
-// tickets over the HSIA West base per 100. Repairs: 2026 from the 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab
-// (HSIA West row), 2026 only; 2025 is left blank on purpose.
+// tickets over the HSIA West base per 100. Repairs: Churn Measurement 2026 workbook, Looker Repairs
+// (Kam/Jason's new view) tab (Look 2190), WOID complete month, HS WEST COPPER + HS WEST FIBRE (kept
+// separately as repairCopper / repairFibre; repairVolume is their sum), Jan 2025 onward.
 // Churn is not split from TQ ILEC in the source.
 // ---------------------------------------------------------------------------
 const HSIA_WEST = {
   callsOffered: [66302,58283,58346,57968,59876,60294,64870,69381,81574,73560,66439,69110,64525,53641,67816,65028,72529,75759,79247,81294,74534,75018],
   ticketVolume: [38860,37427,43308,44021,44558,43924,46884,47100,44966,45607,46921,45863,46222,40861,42362,46420,47450,49630,48824,50695,49081,47171],
-  repairVolume: [null,null,null,null,null,null,null,null,null,null,null,null,15045,13398,15308,16183,16790,14820,16102,15082,15798,15488],
-  repairRate: [null,null,null,null,null,null,null,null,null,null,null,null,0.79,0.70,0.80,0.85,0.88,0.78,0.84,0.79,0.82,0.81],
+  repairCopper: [2417,2133,2476,2612,3024,3088,3588,3513,3353,3380,2878,2489,2739,2467,2784,2910,3117,2949,3271,2990,2992,2642],
+  repairFibre: [9013,8458,8876,8782,9675,9824,10836,11485,11774,13240,12173,12434,12044,10718,12273,12860,13140,11298,12246,11584,12332,12277],
+  repairVolume: [11430,10591,11352,11394,12699,12912,14424,14998,15127,16620,15051,14923,14783,13185,15057,15770,16257,14247,15517,14574,15324,14919],
+  repairRate: [0.61,0.56,0.60,0.61,0.67,0.68,0.76,0.79,0.79,0.87,0.79,0.78,0.78,0.69,0.79,0.83,0.85,0.75,0.81,0.76,0.80,0.78],
   ticketRate: [2.07,1.99,2.30,2.34,2.36,2.32,2.48,2.48,2.36,2.39,2.46,2.40,2.43,2.15,2.22,2.43,2.49,2.60,2.56,2.65,2.56,2.46],
   subBase: [1880047,1879997,1884205,1883301,1885097,1889714,1890591,1896338,1904966,1905166,1905168,1910163,1902859,1904760,1908112,1906873,1907916,1910008,1909554,1912016,1915303,1917152]
 };
@@ -3818,7 +3821,7 @@ export default function ReliabilityScorecards() {
   // ------------------------------ TV platform breakout ------------------------------
   // ------------------------------ HSIA › HSIA West ------------------------------
   // Same card row and sections as HSIA › PFE. Repairs and churn are reported for HSIA West and
-  // TQ ILEC together on the KPI tab, so the churn card shows "n/a" until the source splits it. Repairs come from the Redwood Scorecard (2025 and 2026).
+  // TQ ILEC together on the KPI tab, so the churn card shows "n/a" until the source splits it. Repairs come from the Looker Repairs tab (HS West copper + fibre).
   function HsiaWestPage() {
     const LAST = MONTHS.length - 1, col = colors.HSIA;
     const one = (label, data) => [{ key: "HSIA", label, data }];
@@ -3863,7 +3866,7 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          HSIA West alone. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (HSIA West field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA West block (Look 2186) Grand Total, which comes from the same Looker source as the HSIA scorecard tickets; the rate is those tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row), reported for 2026 only, so there is no YoY change yet; the repair rate is HSIA West repairs over the HSIA West base, per 100 subscribers. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
+          HSIA West alone. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (HSIA West field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA West block (Look 2186) Grand Total, which comes from the same Looker source as the HSIA scorecard tickets; the rate is those tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: Churn Measurement 2026 workbook, Looker Repairs (Kam/Jason's new view) tab, repair jobs by WOID complete month for HS WEST COPPER plus HS WEST FIBRE (Look 2190); the repair rate is those repairs over the HSIA West base, per 100 subscribers. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
         </p>
 
         {sec("Calls offered", "calls",
@@ -3886,7 +3889,7 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-rr"]} onToggleTable={() => toggleTable("hw-rr")}
-            note="HSIA West repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the HSIA West base. Reported for 2026 only. Volume on the left axis, rate on the right.">
+            note="HSIA West repairs (HS West copper + HS West fibre) from the Looker Repairs tab, by WOID complete month, over the HSIA West base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
               bar={{ label: "Repair volume", data: HSIA_WEST.repairVolume, color: col, fmt: fmtBig }}
               line={{ label: "Repair rate", data: HSIA_WEST.repairRate, color: col, fmt: rate2 }} />
