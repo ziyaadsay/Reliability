@@ -789,19 +789,19 @@ const PFE = {
 // ---------------------------------------------------------------------------
 // HSIA West on its own — the HSIA > HSIA West subsection. Arrays align with MONTHS
 // (Jan 2025 – Oct 2026). TS Calls Offered by Product workbook: calls from the Actuals - Calls
-// Offered tab, call tickets from the Actuals - Call Tickets (Normalized) tab, base from that
-// tab's Subscribers block (HSIA West). Call tickets are contact-centre tickets, a different
-// basis from the Assure tickets on the KPI tab, so the rate is call tickets over the HSIA West
-// base per 100. Repairs: 2026 from the 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab
+// Offered tab, base from the Actuals - Call Tickets (Normalized) tab's Subscribers block (HSIA West).
+// Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the "HSIA West" block
+// (Look 2186) Grand Total, the same Looker source as the HSIA scorecard tickets; the rate is those
+// tickets over the HSIA West base per 100. Repairs: 2026 from the 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab
 // (HSIA West row), 2026 only; 2025 is left blank on purpose.
 // Churn is not split from TQ ILEC in the source.
 // ---------------------------------------------------------------------------
 const HSIA_WEST = {
   callsOffered: [66302,58283,58346,57968,59876,60294,64870,69381,81574,73560,66439,69110,64525,53641,67816,65028,72529,75759,79247,81294,74534,75018],
-  callTickets: [39504,33251,36812,35374,35158,35827,39486,39503,37200,33310,36194,35308,36025,31291,38887,38769,42592,43893,44614,44491,42350,42731],
+  ticketVolume: [38860,37427,43308,44021,44558,43924,46884,47100,44966,45607,46921,45863,46222,40861,42362,46420,47450,49630,48824,50695,49081,47171],
   repairVolume: [null,null,null,null,null,null,null,null,null,null,null,null,15045,13398,15308,16183,16790,14820,16102,15082,15798,15488],
   repairRate: [null,null,null,null,null,null,null,null,null,null,null,null,0.79,0.70,0.80,0.85,0.88,0.78,0.84,0.79,0.82,0.81],
-  callTicketRate: [2.10,1.77,1.95,1.88,1.87,1.90,2.09,2.08,1.95,1.75,1.90,1.85,1.89,1.64,2.04,2.03,2.23,2.30,2.34,2.33,2.21,2.23],
+  ticketRate: [2.07,1.99,2.30,2.34,2.36,2.32,2.48,2.48,2.36,2.39,2.46,2.40,2.43,2.15,2.22,2.43,2.49,2.60,2.56,2.65,2.56,2.46],
   subBase: [1880047,1879997,1884205,1883301,1885097,1889714,1890591,1896338,1904966,1905166,1905168,1910163,1902859,1904760,1908112,1906873,1907916,1910008,1909554,1912016,1915303,1917152]
 };
 
@@ -3797,8 +3797,8 @@ export default function ReliabilityScorecards() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
             {card("calls", "Calls offered (HSIA West)", HSIA_WEST.callsOffered, fmtBig, 0, true, false)}
-            {card("tickets", "Call ticket volume", HSIA_WEST.callTickets, fmtBig, 0, true, false)}
-            {card("tickets", "Call ticket rate per 100 subs", HSIA_WEST.callTicketRate, fmtRate, 2, true, "rate")}
+            {card("tickets", "Ticket volume", HSIA_WEST.ticketVolume, fmtBig, 0, true, false)}
+            {card("tickets", "Ticket rate per 100 subs", HSIA_WEST.ticketRate, fmtRate, 2, true, "rate")}
             {card("repairs", "Repair volume", HSIA_WEST.repairVolume, fmtBig, 0, true, false)}
             {card("repairs", "Repair rate per 100 subs", HSIA_WEST.repairRate, fmtRate, 2, true, "rate")}
             {na("churn", "Churn rate per 100 subs")}
@@ -3806,23 +3806,23 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          HSIA West alone, from the TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab (HSIA West field), call tickets from the Actuals - Call Tickets (Normalized) tab, subscribers from that tab's Subscribers block. Call tickets are contact-centre tickets, not the Assure tickets behind the HSIA scorecard, so they are not comparable to it; the rate is call tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row), reported for 2026 only, so there is no YoY change yet; the repair rate is HSIA West repairs over the HSIA West base, per 100 subscribers. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
+          HSIA West alone. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (HSIA West field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA West block (Look 2186) Grand Total, which comes from the same Looker source as the HSIA scorecard tickets; the rate is those tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row), reported for 2026 only, so there is no YoY change yet; the repair rate is HSIA West repairs over the HSIA West base, per 100 subscribers. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
         </p>
 
         {sec("Calls offered", "calls",
           simple("hw-calls", "Calls offered (HSIA West)", "Calls offered", HSIA_WEST.callsOffered, fmtNumK, "Contacts offered for the HSIA West field of the TS Calls Offered by Product workbook.", fmtNum)
         )}
 
-        {sec("Call tickets", "tickets",
-          <ChartCard title="Call tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-tr"]} onToggleTable={() => toggleTable("hw-tr")}
-            note="Normalized call tickets for HSIA West over the HSIA West base. Volume on the left axis, rate on the right.">
+        {sec("Tickets", "tickets",
+          <ChartCard title="Tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-tr"]} onToggleTable={() => toggleTable("hw-tr")}
+            note="HSIA West ticket totals from the HSIA Recategorization Looker tab (HSIA West block, Look 2186) over the HSIA West base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Call ticket volume", data: HSIA_WEST.callTickets, color: col, fmt: fmtNumK }}
-              line={{ label: "Call ticket rate", data: HSIA_WEST.callTicketRate, color: col, fmt: rate2 }} />
-            <Legend items={[{ label: "Call ticket volume (bars, left axis)", color: col, bar: true }, { label: "Call ticket rate (line, right axis)", color: col }]} T={T} />
+              bar={{ label: "Ticket volume", data: HSIA_WEST.ticketVolume, color: col, fmt: fmtBig }}
+              line={{ label: "Ticket rate", data: HSIA_WEST.ticketRate, color: col, fmt: rate2 }} />
+            <Legend items={[{ label: "Ticket volume (bars, left axis)", color: col, bar: true }, { label: "Ticket rate (line, right axis)", color: col }]} T={T} />
             {openTables["hw-tr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "HSIA", label: "Call ticket volume", data: HSIA_WEST.callTickets, fmt: fmtNum },
-              { key: "HSIA", label: "Call ticket rate", data: HSIA_WEST.callTicketRate, fmt: rate2 }
+              { key: "HSIA", label: "Ticket volume", data: HSIA_WEST.ticketVolume, fmt: fmtNum },
+              { key: "HSIA", label: "Ticket rate", data: HSIA_WEST.ticketRate, fmt: rate2 }
             ]} fmt={fmtNum} T={T} />}
           </ChartCard>
         )}
@@ -3831,7 +3831,7 @@ export default function ReliabilityScorecards() {
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-rr"]} onToggleTable={() => toggleTable("hw-rr")}
             note="HSIA West repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the HSIA West base. Reported for 2026 only. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Repair volume", data: HSIA_WEST.repairVolume, color: col, fmt: fmtNumK }}
+              bar={{ label: "Repair volume", data: HSIA_WEST.repairVolume, color: col, fmt: fmtBig }}
               line={{ label: "Repair rate", data: HSIA_WEST.repairRate, color: col, fmt: rate2 }} />
             <Legend items={[{ label: "Repair volume (bars, left axis)", color: col, bar: true }, { label: "Repair rate (line, right axis)", color: col }]} T={T} />
             {openTables["hw-rr"] && <DataTable labels={MONTHS} seriesDefs={[
@@ -3900,20 +3900,20 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtNumK, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtNum)
+          simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtBig, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
         )}
 
         {sec("Call tickets", "tickets",
           <ChartCard title="Call tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-tr"]} onToggleTable={() => toggleTable("tq-tr")}
             note="Normalized call tickets for TQ ILEC - HSIA over the TQ ILEC HSIA base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Call ticket volume", data: TQ_ILEC.callTickets, color: col, fmt: fmtNumK }}
+              bar={{ label: "Call ticket volume", data: TQ_ILEC.callTickets, color: col, fmt: fmtBig }}
               line={{ label: "Call ticket rate", data: TQ_ILEC.callTicketRate, color: col, fmt: rate2 }} />
             <Legend items={[{ label: "Call ticket volume (bars, left axis)", color: col, bar: true }, { label: "Call ticket rate (line, right axis)", color: col }]} T={T} />
             {openTables["tq-tr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "TQ", label: "Call ticket volume", data: TQ_ILEC.callTickets, fmt: fmtNum },
+              { key: "TQ", label: "Call ticket volume", data: TQ_ILEC.callTickets, fmt: fmtBig },
               { key: "TQ", label: "Call ticket rate", data: TQ_ILEC.callTicketRate, fmt: rate2 }
-            ]} fmt={fmtNum} T={T} />}
+            ]} fmt={fmtBig} T={T} />}
           </ChartCard>
         )}
 
@@ -3921,18 +3921,18 @@ export default function ReliabilityScorecards() {
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-rr"]} onToggleTable={() => toggleTable("tq-rr")}
             note="TQ ILEC HS repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the TQ ILEC HSIA base. Reported for 2026 only. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Repair volume", data: TQ_ILEC.repairVolume, color: col, fmt: fmtNumK }}
+              bar={{ label: "Repair volume", data: TQ_ILEC.repairVolume, color: col, fmt: fmtBig }}
               line={{ label: "Repair rate", data: TQ_ILEC.repairRate, color: col, fmt: rate2 }} />
             <Legend items={[{ label: "Repair volume (bars, left axis)", color: col, bar: true }, { label: "Repair rate (line, right axis)", color: col }]} T={T} />
             {openTables["tq-rr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "TQ", label: "Repair volume", data: TQ_ILEC.repairVolume, fmt: fmtNum },
+              { key: "TQ", label: "Repair volume", data: TQ_ILEC.repairVolume, fmt: fmtBig },
               { key: "TQ", label: "Repair rate", data: TQ_ILEC.repairRate, fmt: rate2 }
-            ]} fmt={fmtNum} T={T} />}
+            ]} fmt={fmtBig} T={T} />}
           </ChartCard>
         )}
 
         {sec("Subscriber base", "base",
-          simple("tq-bs", "Subscriber base", "Subscriber base", TQ_ILEC.subBase, fmtBig, "Month-end TQ ILEC HSIA subscribers (TS Calls Offered by Product workbook, Subscribers block).", fmtNum)
+          simple("tq-bs", "Subscriber base", "Subscriber base", TQ_ILEC.subBase, fmtBig, "Month-end TQ ILEC HSIA subscribers (TS Calls Offered by Product workbook, Subscribers block).", fmtBig)
         )}
       </>
     );
@@ -3968,13 +3968,13 @@ export default function ReliabilityScorecards() {
     const combo = (id, title, volLabel, vol, rateLabel, rate, note) => (
       <ChartCard title={title} T={T} tableOpen={!!openTables[id]} onToggleTable={() => toggleTable(id)} note={note}>
         <ComboChart labels={MONTHS} T={T}
-          bar={{ label: volLabel, data: vol, color: col, fmt: fmtNumK }}
+          bar={{ label: volLabel, data: vol, color: col, fmt: fmtBig }}
           line={{ label: rateLabel, data: rate, color: col, fmt: rate2 }} />
         <Legend items={[{ label: `${volLabel} (bars, left axis)`, color: col, bar: true }, { label: `${rateLabel} (line, right axis)`, color: col }]} T={T} />
         {openTables[id] && <DataTable labels={MONTHS} seriesDefs={[
-          { key: "PFE", label: volLabel, data: vol, fmt: fmtNum },
+          { key: "PFE", label: volLabel, data: vol, fmt: fmtBig },
           { key: "PFE", label: rateLabel, data: rate, fmt: rate2 }
-        ]} fmt={fmtNum} T={T} />}
+        ]} fmt={fmtBig} T={T} />}
       </ChartCard>
     );
     return (
@@ -4000,7 +4000,7 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtNumK, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtNum)
+          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtBig, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
         )}
 
         {sec("Tickets", "tickets",
@@ -4016,7 +4016,7 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Subscriber base", "base",
-          simple("pfe-bs", "Subscriber base", "Subscriber base", PFE.subBase, fmtBig, "Month-end PFE subscribers (Reliability/Deact KPIs tab).", fmtNum)
+          simple("pfe-bs", "Subscriber base", "Subscriber base", PFE.subBase, fmtBig, "Month-end PFE subscribers (Reliability/Deact KPIs tab).", fmtBig)
         )}
       </>
     );
@@ -8379,7 +8379,7 @@ export default function ReliabilityScorecards() {
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
               : page === "hsiawest"
-              ? "HSIA · HSIA West · calls offered, call tickets, repairs and subscriber base for HSIA West on its own; churn is not split from TQ ILEC in the source"
+              ? "HSIA · HSIA West · calls offered, tickets, repairs and subscriber base for HSIA West on its own; churn is not split from TQ ILEC in the source"
               : page === "hsiatq"
               ? "HSIA · TQ ILEC · calls offered, call tickets, repairs and subscriber base for TQ ILEC HSIA on its own; churn is not split from HSIA West in the source"
               : page === "hsiapfe"
