@@ -25,3 +25,11 @@ survey side (`analyze_survey.py` / `survey_analysis.json`) still covers
 Jun-Jul-Aug 2026 and is carried over unchanged when `survey_analysis.json` is
 absent (`gen_tva_block.py` then reads the survey block from `tva_prev.json`,
 the TVA currently in App.jsx).
+
+- `resolution_flows.py` reads the same `notes_all.json` and writes `resolution_flows.json`, the
+  root cause identified to fix applied counts behind the TV Notes Analysis "Resolution Analysis"
+  Sankey (`TV_RESOLUTION` in `site/App.jsx`). It uses tickets whose Agent Notes carry both a
+  "Root cause analysis" line and a "Resolution" line (about one in ten tickets) and classifies each
+  line to one theme, the one mentioned first. Set `MONTHS` at the top for the months to show.
+  HSIA does not have an equivalent yet: it needs the HSIA notes exports run through the same script
+  with an HSIA theme list.

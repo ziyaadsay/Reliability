@@ -358,6 +358,11 @@ Object.entries(LOOKER_EXTRA).forEach(([prod, x]) => Object.assign(LOOKER[prod], 
 // assignment follows the four-pillar framing from the reliability program's
 // cross-source synthesis. issues: recurring-issue coverage tags.
 // ---------------------------------------------------------------------------
+// TV Resolution Analysis: root cause identified -> fix applied, tickets whose Agent Notes carry both a "Root cause analysis"
+// line and a "Resolution" line (structured Copilot summaries). Each line is keyword-classified to one theme (first mentioned).
+// Produced by analysis/tv/resolution_flows.py. links: [cause index, fix index, tickets].
+const TV_RESOLUTION = {"months":["Sep 2026","Oct 2026"],"Sep 2026":{"tickets":37303,"covered":3438,"causes":[["Provisioning / subscription / account",923],["STB hardware failure",695],["Recording / PVR",422],["Wi-Fi / wireless STB",235],["Extended uptime / cache or buffer",207],["Remote / pairing / batteries",203],["Customer set-up (TV input, power, HDMI)",141],["Cabling / coax / splitter",112],["Line / ONT / fibre",98],["Packet loss / multicast drops",71],["Bandwidth / congestion",13],["Active area outage",1],["Other",317]],"fixes":[["Replaced / shipped a new STB",852],["Resolved remotely (action not named)",673],["Reboot (ONT / modem / STB)",548],["Education / how-to",288],["Wired / moved / reconnected / Wi-Fi change",261],["Refresh / sync / provisioning fix",239],["Escalated (Tier 2 / outage team)",217],["Technician dispatch",202],["Other",158]],"links":[[1,0,517],[0,1,201],[0,2,162],[0,5,162],[0,6,133],[2,1,125],[4,2,97],[2,0,88],[0,3,78],[12,1,77],[2,2,77],[0,0,66],[4,1,61],[0,8,58],[6,4,57],[12,2,53],[12,3,50],[3,1,50],[5,1,50],[3,4,48],[1,7,48],[5,0,47],[3,2,42],[3,0,39],[12,0,38],[12,8,36],[0,7,33],[6,1,32],[2,3,31],[1,2,30],[1,1,30],[0,4,30],[7,4,30],[2,5,29],[5,3,29],[8,2,28],[6,3,27],[12,7,25],[9,2,25],[7,1,25],[1,4,25],[5,7,23],[2,6,23],[2,4,21],[3,3,20],[8,7,20],[9,0,20],[1,3,20],[5,4,19],[12,5,17],[2,8,16],[8,1,16],[3,7,16],[5,2,15],[7,0,15],[12,4,15],[4,3,14],[1,6,13],[2,7,12],[4,8,12],[7,2,11],[7,3,10],[8,6,10],[7,7,9],[5,8,9],[3,8,9],[4,0,8],[1,8,8],[8,0,7],[9,6,7],[8,4,7],[3,6,7],[6,7,7],[12,6,6],[6,2,6],[5,5,6],[7,6,6],[5,6,5],[6,0,5],[9,4,5],[9,7,5],[1,5,4],[8,5,4],[4,4,4],[3,5,4],[4,6,4],[4,5,4],[9,3,4],[6,5,3],[8,3,3],[8,8,3],[7,8,3],[6,8,3],[4,7,3],[7,5,3],[10,1,3],[9,5,2],[10,6,2],[10,3,2],[10,0,2],[10,2,2],[9,1,2],[10,5,1],[10,7,1],[6,6,1],[9,8,1],[11,1,1]]},"Oct 2026":{"tickets":36667,"covered":3215,"causes":[["Provisioning / subscription / account",895],["STB hardware failure",613],["Recording / PVR",417],["Wi-Fi / wireless STB",250],["Remote / pairing / batteries",181],["Extended uptime / cache or buffer",160],["Cabling / coax / splitter",132],["Customer set-up (TV input, power, HDMI)",122],["Line / ONT / fibre",110],["Packet loss / multicast drops",68],["Bandwidth / congestion",15],["Active area outage",12],["Other",240]],"fixes":[["Replaced / shipped a new STB",776],["Resolved remotely (action not named)",589],["Reboot (ONT / modem / STB)",485],["Wired / moved / reconnected / Wi-Fi change",297],["Education / how-to",273],["Escalated (Tier 2 / outage team)",229],["Refresh / sync / provisioning fix",208],["Technician dispatch",177],["Other",181]],"links":[[1,0,438],[0,1,181],[0,2,157],[0,5,149],[0,6,123],[2,1,96],[2,0,85],[2,2,81],[0,0,75],[0,4,72],[5,2,72],[0,8,64],[3,3,64],[12,1,56],[7,3,55],[4,1,52],[12,4,51],[4,0,48],[3,1,45],[5,1,43],[0,7,42],[2,6,40],[6,3,40],[3,0,40],[3,2,39],[1,7,39],[8,2,34],[1,2,33],[0,3,32],[12,8,32],[2,4,31],[12,2,30],[7,1,30],[1,1,27],[1,3,26],[1,4,25],[8,1,25],[6,0,24],[6,1,23],[2,3,23],[2,5,22],[9,2,21],[2,8,20],[4,4,20],[12,0,20],[12,3,19],[3,4,19],[2,7,19],[3,8,19],[4,3,17],[3,7,15],[9,0,15],[7,4,15],[6,7,15],[8,0,14],[4,8,14],[12,5,13],[4,7,12],[5,6,11],[1,5,11],[6,4,11],[9,7,10],[12,6,10],[12,7,9],[5,3,9],[8,5,9],[1,8,9],[6,2,9],[7,0,8],[5,0,8],[8,7,8],[5,4,8],[4,6,8],[9,1,7],[3,5,7],[4,5,7],[8,3,7],[5,8,6],[8,4,6],[9,4,6],[11,4,6],[8,6,5],[7,7,5],[1,6,5],[9,3,5],[7,8,5],[6,8,5],[10,2,4],[6,5,4],[10,8,4],[4,2,3],[10,4,3],[5,7,3],[11,5,3],[9,5,2],[11,1,2],[10,1,2],[8,8,2],[3,6,2],[7,6,2],[7,2,1],[6,6,1],[10,5,1],[10,0,1],[11,2,1],[9,6,1],[7,5,1],[9,8,1]]}};
+
 const PILLARS = [
   { n: 1, name: "Instrumenting Our Products for Reliability", sub: "Telemetry, detection & signal accuracy" },
   { n: 2, name: "By Design, Build Reliability Into Products", sub: "Hardware, firmware & architecture" },
@@ -1221,6 +1226,52 @@ function useIsDark(mode) {
 // SVG line chart
 // ---------------------------------------------------------------------------
 const VIEW_W = 800;
+
+const SANKEY_COLORS = ["#4B286D", "#2B8000", "#B86E00", "#0F7C8A", "#B0345B", "#3B6FB6", "#7A5C00", "#6B4FA0", "#2F8F6B", "#C2572B", "#5F6B73", "#8A8F2B", "#8B959C"];
+function SankeyChart({ data, T, hover, setHover }) {
+  const W = 1040, nodeW = 14, padL = 270, padR = 270, gap = 8, top = 8, minH = 26;
+  const L = data.causes, R = data.fixes, total = L.reduce((a, c) => a + c[1], 0) || 1;
+  const base = (520 - top * 2 - gap * (Math.max(L.length, R.length) - 1)) / total;
+  const stack = (nodes) => {
+    let y = top; return nodes.map((n) => { const h = Math.max(minH, n[1] * base); const o = { y, h, scale: h / (n[1] || 1) }; y += h + gap; return o; });
+  };
+  const ly = stack(L), ry = stack(R);
+  const H = Math.max(ly[ly.length - 1].y + ly[ly.length - 1].h, ry[ry.length - 1].y + ry[ry.length - 1].h) + top;
+  const lOff = L.map(() => 0), rOff = R.map(() => 0);
+  const links = [...data.links].sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([ci, fi, v]) => ({ ci, fi, v }));
+  // order link slots on each node by the other end's order
+  const byL = {}, byR = {};
+  links.forEach((k) => { (byL[k.ci] = byL[k.ci] || []).push(k); (byR[k.fi] = byR[k.fi] || []).push(k); });
+  Object.values(byL).forEach((arr) => { arr.sort((a, b) => a.fi - b.fi); arr.forEach((k) => { k.y0 = ly[k.ci].y + lOff[k.ci]; lOff[k.ci] += k.v * ly[k.ci].scale; }); });
+  Object.values(byR).forEach((arr) => { arr.sort((a, b) => a.ci - b.ci); arr.forEach((k) => { k.y1 = ry[k.fi].y + rOff[k.fi]; rOff[k.fi] += k.v * ry[k.fi].scale; }); });
+  const x0 = padL + nodeW, x1 = W - padR - nodeW, mid = (x0 + x1) / 2;
+  const active = (k) => !hover || (hover.side === "L" ? k.ci === hover.i : k.fi === hover.i);
+  const col = (i) => SANKEY_COLORS[i % SANKEY_COLORS.length];
+  const pctOf = (v) => Math.round((v / total) * 100);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: "block", fontFamily: FONT }} role="img" aria-label="Root causes identified flowing to fixes applied">
+      {links.map((k, j) => {
+        const h = k.v * ly[k.ci].scale, h1 = k.v * ry[k.fi].scale;
+        const d = `M${x0},${k.y0} C${mid},${k.y0} ${mid},${k.y1} ${x1},${k.y1} L${x1},${k.y1 + h1} C${mid},${k.y1 + h1} ${mid},${k.y0 + h} ${x0},${k.y0 + h} Z`;
+        return <path key={j} d={d} fill={col(k.ci)} opacity={active(k) ? (hover ? 0.7 : 0.38) : 0.07} style={{ transition: "opacity .15s" }}><title>{`${L[k.ci][0]} → ${R[k.fi][0]}: ${k.v.toLocaleString()} tickets`}</title></path>;
+      })}
+      {L.map((n, i) => (
+        <g key={"l" + i} onMouseEnter={() => setHover({ side: "L", i })} onMouseLeave={() => setHover(null)} style={{ cursor: "default" }}>
+          <rect x={padL} y={ly[i].y} width={nodeW} height={ly[i].h} fill={col(i)} rx={2} />
+          <text x={padL - 8} y={ly[i].y + ly[i].h / 2 - 1} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: T.text }}>{n[0]}</text>
+          <text x={padL - 8} y={ly[i].y + ly[i].h / 2 + 12} textAnchor="end" style={{ fontSize: 11, fill: T.textMuted }}>{n[1].toLocaleString()} · {pctOf(n[1])}%</text>
+        </g>
+      ))}
+      {R.map((n, i) => (
+        <g key={"r" + i} onMouseEnter={() => setHover({ side: "R", i })} onMouseLeave={() => setHover(null)} style={{ cursor: "default" }}>
+          <rect x={W - padR - nodeW} y={ry[i].y} width={nodeW} height={ry[i].h} fill={T.heading} opacity={0.85} rx={2} />
+          <text x={W - padR + 8} y={ry[i].y + ry[i].h / 2 - 1} style={{ fontSize: 12, fontWeight: 600, fill: T.text }}>{n[0]}</text>
+          <text x={W - padR + 8} y={ry[i].y + ry[i].h / 2 + 12} style={{ fontSize: 11, fill: T.textMuted }}>{n[1].toLocaleString()} · {pctOf(n[1])}%</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
 
 function LineChart({ labels, seriesDefs, height = 240, yFmt, colors, T }) {
   const wrapRef = useRef(null);
@@ -2795,6 +2846,8 @@ export default function ReliabilityScorecards() {
   const [scope, setScope] = useState("All");
   const [themeMode, setThemeMode] = useState("system");
   const [openTables, setOpenTables] = useState({});
+  const [skMonth, setSkMonth] = useState(null); // Resolution Analysis month (null = latest)
+  const [skHover, setSkHover] = useState(null); // Resolution Analysis hovered Sankey node
   const [issueFilter, setIssueFilter] = useState({});
   const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
   const [archSlide, setArchSlide] = useState(null); // slide the Architecture page asked the Supporting deck to open on
@@ -5229,6 +5282,31 @@ export default function ReliabilityScorecards() {
               </div>
             </div>
           </>
+        )}
+
+        {sec("Resolution Analysis", "repairs",
+          (() => {
+            const RA = TV_RESOLUTION, mo = skMonth && RA[skMonth] ? skMonth : RA.months[RA.months.length - 1], D = RA[mo];
+            const top = [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 3);
+            return (
+              <>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+                  {RA.months.map((m) => (
+                    <button key={m} onClick={() => { setSkMonth(m); setSkHover(null); }}
+                      style={{ border: `1px solid ${m === mo ? "transparent" : T.borderStrong}`, background: m === mo ? T.ink : "transparent", color: m === mo ? "#fff" : T.textSecondary, borderRadius: 999, padding: "4px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: FONT }}>{m}</button>
+                  ))}
+                  <span style={{ fontSize: 12.5, color: T.textMuted, marginLeft: 6 }}>{fmtNum(D.covered)} of {fmtNum(D.tickets)} TV tickets ({Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution</span>
+                </div>
+                <ChartCard title="Root cause identified → fix applied" T={T} note="Left: the root cause the agent recorded. Right: the fix they applied. Ribbon width is the number of tickets; hover a node to isolate its flows.">
+                  <SankeyChart data={D} T={T} hover={skHover} setHover={setSkHover} />
+                </ChartCard>
+                <p style={{ fontSize: 13, color: T.textSecondary, margin: "12px 2px 0", lineHeight: 1.6 }}>
+                  Largest flows in {mo}: {top.map((k, i) => <span key={i}>{i ? "; " : ""}<strong>{D.causes[k[0]][0]}</strong> to <strong>{D.fixes[k[1]][0]}</strong> ({fmtNum(k[2])})</span>)}.
+                </p>
+                <Disclosure label="Sources & notes" T={T}><p style={{ fontSize: 12, color: T.textFaint, margin: 0, lineHeight: 1.5 }}>Tickets from the monthly TV agent and technician notes exports whose Agent Notes include the structured "Root cause analysis" and "Resolution" lines the Copilot summary writes into the worklog; tickets without both lines are not in the flow. Each line is keyword-classified (English and French terms) to one theme, the one mentioned first, so a ticket appears once. "Other" holds causes or fixes that matched no theme. Shares are indicative and cover about one in ten tickets. Pik TV is not separated in the exports. Method: analysis/tv/resolution_flows.py.</p></Disclosure>
+              </>
+            );
+          })()
         )}
 
         {sec("Recommendations", "initiatives", <Recs items={TV_RECS.filter((r) => ["P1", "P3"].includes(r.pri) || r.tag === "Emerging")} />)}
