@@ -3797,7 +3797,7 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          HSIA West alone, from the TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab (HSIA West field), call tickets from the Actuals - Call Tickets (Normalized) tab, subscribers from that tab's Subscribers block. Call tickets are contact-centre tickets, not the Assure tickets behind the HSIA scorecard, so they are not comparable to it; the rate is call tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row), reported for 2026 only, so there is no YoY change yet; the repair rate is HSIA West repairs over the HSIA West base, per 100 subscribers. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
+          HSIA West alone, from the TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab (HSIA West field), call tickets from the Actuals - Call Tickets (Normalized) tab, subscribers from that tab's Subscribers block. Call tickets are contact-centre tickets, not the Assure tickets behind the HSIA scorecard, so they are not comparable to it; the rate is call tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs: 2026 from the 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row); 2025 from that workbook's Redwood Reboot - Repairs tab (West - HSIA actual row). The repair rate is HSIA West repairs over the HSIA West base, per 100 subscribers. Oct to Dec 2025 repairs do not reconcile with the HSIA scorecard repairs (the gap to HSIA West jumps from about 1,200 to about 3,000 a month), so treat those three months with caution. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
         </p>
 
         {sec("Calls offered", "calls",
@@ -3820,7 +3820,7 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-rr"]} onToggleTable={() => toggleTable("hw-rr")}
-            note="HSIA West repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the HSIA West base. Reported for 2026 only. Volume on the left axis, rate on the right.">
+            note="HSIA West repairs from the Redwood Scorecard workbook (2026: Repair Tracking Detail; 2025: Redwood Reboot - Repairs), over the HSIA West base. Oct to Dec 2025 do not reconcile with the HSIA scorecard repairs. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
               bar={{ label: "Repair volume", data: HSIA_WEST.repairVolume, color: col, fmt: fmtNumK }}
               line={{ label: "Repair rate", data: HSIA_WEST.repairRate, color: col, fmt: rate2 }} />
