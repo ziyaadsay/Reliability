@@ -783,6 +783,21 @@ const PFE = {
 };
 
 // ---------------------------------------------------------------------------
+// HSIA West on its own — the HSIA > HSIA West subsection. Arrays align with MONTHS
+// (Jan 2025 – Oct 2026). TS Calls Offered by Product workbook: calls from the Actuals - Calls
+// Offered tab, call tickets from the Actuals - Call Tickets (Normalized) tab, base from that
+// tab's Subscribers block (HSIA West). Call tickets are contact-centre tickets, a different
+// basis from the Assure tickets on the KPI tab, so the rate is call tickets over the HSIA West
+// base per 100. Repairs and churn are not split from TQ ILEC in the source.
+// ---------------------------------------------------------------------------
+const HSIA_WEST = {
+  callsOffered: [66302,58283,58346,57968,59876,60294,64870,69381,81574,73560,66439,69110,64525,53641,67816,65028,72529,75759,79247,81294,74534,75018],
+  callTickets: [39504,33251,36812,35374,35158,35827,39486,39503,37200,33310,36194,35308,36025,31291,38887,38769,42592,43893,44614,44491,42350,42731],
+  callTicketRate: [2.10,1.77,1.95,1.88,1.87,1.90,2.09,2.08,1.95,1.75,1.90,1.85,1.89,1.64,2.04,2.03,2.23,2.30,2.34,2.33,2.21,2.23],
+  subBase: [1880047,1879997,1884205,1883301,1885097,1889714,1890591,1896338,1904966,1905166,1905168,1910163,1902859,1904760,1908112,1906873,1907916,1910008,1909554,1912016,1915303,1917152]
+};
+
+// ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
 // Arrays align with MONTHS (Jan 2025 – Oct 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
@@ -2398,11 +2413,11 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiapfe", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiatickets", "hsiasentiment", "hsiacross", "hsiawest", "hsiapfe", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   shplustickets: "Notes Analysis",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiapfe: "PFE (PureFibre East)", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
+  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiawest: "HSIA West", hsiapfe: "PFE (PureFibre East)", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "TV Review (Sep 2026)", tvoctreview: "Oct Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -2728,7 +2743,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiapfe", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiawest", "hsiapfe", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2811,6 +2826,7 @@ export default function ReliabilityScorecards() {
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiawest", label: "HSIA West", icon: "hsia", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiapfe", label: "PFE (PureFibre East)", icon: "hsia", color: colors.PFE, child: true, parent: "HSIA" },
     { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaarchdeck", label: "Supporting deck", icon: "slides", color: colors.HSIA, child: true, grand: true, parent: "hsiaarch" },
@@ -3713,6 +3729,81 @@ export default function ReliabilityScorecards() {
   }
 
   // ------------------------------ TV platform breakout ------------------------------
+  // ------------------------------ HSIA › HSIA West ------------------------------
+  // Same card row and sections as HSIA › PFE. Repairs and churn are reported for HSIA West and
+  // TQ ILEC together on the KPI tab, so those cards show "n/a" until the source splits them.
+  function HsiaWestPage() {
+    const LAST = MONTHS.length - 1, col = colors.HSIA;
+    const one = (label, data) => [{ key: "HSIA", label, data }];
+    const d = (x, suffix) => (x ? <DeltaText key={suffix} d={x} T={T} suffix={suffix} /> : null);
+    const card = (icon, label, data, fmt, dec, goodDown, mode) => {
+      const f = rowFigures(data, dec, goodDown, mode, LAST);
+      return <StatCard key={label} T={T} color={col} icon={icon} label={label} value={fmt(f.latest)} sub={f.latestMonth} deltas={[d(f.mom, "MoM"), d(f.yoy, "YoY")].filter(Boolean)} />;
+    };
+    const na = (icon, label) => <StatCard key={label} T={T} color={col} icon={icon} label={label} value="n/a" sub="not split from TQ ILEC in the source" deltas={[]} />;
+    let secNo = 0;
+    const sec = (title, icon, children) => {
+      secNo += 1;
+      return (
+        <Section key={`hw-${title}`} num={String(secNo).padStart(2, "0")} eyebrow="HSIA · HSIA West" title={title} icon={icon} T={T} collapsible defaultOpen={secNo <= 1}>
+          {children}
+        </Section>
+      );
+    };
+    const rate2 = (v) => fmtRate(v, 2);
+    const simple = (id, title, label, data, yFmt, note, tableFmt) => (
+      <ChartCard title={title} T={T} tableOpen={!!openTables[id]} onToggleTable={() => toggleTable(id)} note={note}>
+        <LineChart labels={MONTHS} seriesDefs={one(label, data)} yFmt={yFmt} colors={colors} T={T} />
+        {openTables[id] && <DataTable labels={MONTHS} seriesDefs={one(label, data)} fmt={tableFmt || yFmt} T={T} />}
+      </ChartCard>
+    );
+    return (
+      <>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 2px 8px" }}>
+            <span style={{ color: col, display: "inline-flex" }}><Icon name="hsia" size={15} /></span>
+            <span style={{ fontWeight: 800, color: T.heading, fontSize: 14 }}>HSIA West</span>
+            <span style={{ fontSize: 11.5, color: T.textFaint }}>· the HSIA West board on its own, without TQ ILEC and PFE</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
+            {card("calls", "Calls offered (HSIA West)", HSIA_WEST.callsOffered, fmtBig, 0, true, false)}
+            {card("tickets", "Call ticket volume", HSIA_WEST.callTickets, fmtBig, 0, true, false)}
+            {card("tickets", "Call ticket rate per 100 subs", HSIA_WEST.callTicketRate, fmtRate, 2, true, "rate")}
+            {na("repairs", "Repair volume")}
+            {na("repairs", "Repair rate per 100 subs")}
+            {na("churn", "Churn rate per 100 subs")}
+            {card("base", "Subscriber base", HSIA_WEST.subBase, fmtBig, 0, false, false)}
+          </div>
+        </div>
+        <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
+          HSIA West alone, from the TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab (HSIA West field), call tickets from the Actuals - Call Tickets (Normalized) tab, subscribers from that tab's Subscribers block. Call tickets are contact-centre tickets, not the Assure tickets behind the HSIA scorecard, so they are not comparable to it; the rate is call tickets over the HSIA West base, per 100 subscribers. The HSIA scorecard base is HSIA West plus TQ ILEC. Repairs and churn are reported for HSIA West and TQ ILEC together on the KPI tab, so they are not shown here.
+        </p>
+
+        {sec("Calls offered", "calls",
+          simple("hw-calls", "Calls offered (HSIA West)", "Calls offered", HSIA_WEST.callsOffered, fmtNumK, "Contacts offered for the HSIA West field of the TS Calls Offered by Product workbook.", fmtNum)
+        )}
+
+        {sec("Call tickets", "tickets",
+          <ChartCard title="Call tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["hw-tr"]} onToggleTable={() => toggleTable("hw-tr")}
+            note="Normalized call tickets for HSIA West over the HSIA West base. Volume on the left axis, rate on the right.">
+            <ComboChart labels={MONTHS} T={T}
+              bar={{ label: "Call ticket volume", data: HSIA_WEST.callTickets, color: col, fmt: fmtNumK }}
+              line={{ label: "Call ticket rate", data: HSIA_WEST.callTicketRate, color: col, fmt: rate2 }} />
+            <Legend items={[{ label: "Call ticket volume (bars, left axis)", color: col, bar: true }, { label: "Call ticket rate (line, right axis)", color: col }]} T={T} />
+            {openTables["hw-tr"] && <DataTable labels={MONTHS} seriesDefs={[
+              { key: "HSIA", label: "Call ticket volume", data: HSIA_WEST.callTickets, fmt: fmtNum },
+              { key: "HSIA", label: "Call ticket rate", data: HSIA_WEST.callTicketRate, fmt: rate2 }
+            ]} fmt={fmtNum} T={T} />}
+          </ChartCard>
+        )}
+
+        {sec("Subscriber base", "base",
+          simple("hw-bs", "Subscriber base", "Subscriber base", HSIA_WEST.subBase, fmtBig, "Month-end HSIA West subscribers (TS Calls Offered by Product workbook, Subscribers block).", fmtNum)
+        )}
+      </>
+    );
+  }
+
   // ------------------------------ HSIA › PFE (PureFibre East) ------------------------------
   // Same card row and sections as the product pages: calls, tickets, repairs, churn and base for
   // the PFE customers inside HSIA. No date filter: the full series and the latest month.
@@ -8002,6 +8093,8 @@ export default function ReliabilityScorecards() {
       ? "HSIA customer sentiment analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
+      : page === "hsiawest"
+      ? "HSIA · HSIA West"
       : page === "hsiapfe"
       ? "HSIA · PFE (PureFibre East)"
       : page === "hsiaarch"
@@ -8123,6 +8216,8 @@ export default function ReliabilityScorecards() {
               ? "HSIA reliability ecosystem · North Star layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
+              : page === "hsiawest"
+              ? "HSIA · HSIA West · calls offered, call tickets and subscriber base for HSIA West on its own; repairs and churn are not split from TQ ILEC in the source"
               : page === "hsiapfe"
               ? "HSIA · PFE (PureFibre East) · calls offered, tickets, repairs, churn and subscriber base for PureFibre East customers"
               : page === "tvplatforms"
@@ -8190,6 +8285,7 @@ export default function ReliabilityScorecards() {
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
+            : page === "hsiawest" ? HsiaWestPage()
             : page === "hsiapfe" ? HsiaPfePage()
             : page === "hsiaarch" ? ArchitecturePage()
             : page === "hsiaarchdeck" ? ArchitectureDeckPage()

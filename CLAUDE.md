@@ -63,4 +63,7 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   to `webAppRate`, `cx_easy_to_follow` to `cxEasy`, `cx_comment_sentiment` to `cxSent`, `churn_rate_sweepr_involved` to
   `churn` and `deacts_saved` to `deacts`. Re-read every month (the source restates earlier months; the Nov pull restated churn and deacts for Jan to Sep and added October, with churn and deacts October as source estimates). It no longer comes from
   the HSIA West TCS PLT Charter workbook; the B2B rows still do. The CCAI IVR rate is not in the MCP and is left as is.
-
+- HSIA › HSIA West (`hsiawest`, `HsiaWestPage`, `HSIA_WEST`) is HSIA West on its own, from the TS Calls
+  Offered by Product workbook only: calls offered, normalized call tickets (contact-centre tickets, not
+  the Assure tickets on the KPI tab) and the HSIA West subscriber base. The KPI tab reports HSIA West
+  and TQ ILEC together, so repair and churn cards show "n/a" until the source splits them.
