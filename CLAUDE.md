@@ -58,6 +58,9 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Actuals tabs). Pik TV (`TV_PIK`) is a minor line: it is in the volumes and rates and shown on By Platform for
   tickets only, but it is excluded from the Looker ticket categories, the TV analysis sections and the Oct Review.
   The archived TV Review keeps its own snapshot of the earlier KPI series (`TV_REVIEW_FROZEN`).
+  Platform repairs (`TV_PLATFORMS`): 2026 from the 2026 Redwood Scorecard, Repair Tracking Detail tab; 2025 from the 2025 Redwood
+  Scorecard + Metrics workbook, Weekly Repair Projections tab, month-end (ME) columns (Mediaroom = IPTV + QC ILEC IPTV, OPUS = OPUS).
+  The Redwood Reboot - Repairs tab has Oct to Dec 2025 as forecast, so do not use it for those months.
 - Self-serve (Sweepr, `SWEEPR` in `site/App.jsx`, the Self-serve page and `get_self_serve`) is updated from the Self Assure
   metrics MCP (https://self-assure-metrics-mcp.telus.gizmos.run/mcp; plain curl works through the Gizmos network secret:
   `initialize`, then `tools/call` `get_metric`). Map `resolved_sessions_ivr_web` to `resolved`, `resolution_rate_web_only`

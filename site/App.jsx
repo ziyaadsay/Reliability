@@ -834,10 +834,9 @@ const TQ_ILEC = {
 //   to the TV subscriber base in DATA.
 // Repairs: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
 //   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV; reported for
-//   2026 onward from that workbook. 2025 Jan to Sep backfilled from the 2025 Redwood Scorecard + Metrics workbook, Redwood Reboot -
-//   Repairs tab, Repair Volume - Actual / Forecast (Legacy = West - IPTV, OPUS = West - TV+). Oct to Dec 2025 are flagged NO (forecast) in
-//   that tab, so they stay null. West scope with no TQ ILEC TV split, so 2025 sits below the KPI-tab TV total and OPUS steps up in
-//   Jan 2026 where the 2026 definition adds PFE Vulcan - TV.
+//   2026 onward from that workbook. 2025 from the 2025 Redwood Scorecard + Metrics workbook, Weekly Repair Projections tab, month-end (ME)
+//   columns: Legacy = IPTV + QC ILEC IPTV (TQ ILEC with skeleton jobs), OPUS = OPUS. Same scope as the 2026 definition (PFE IPTV is blank in
+//   2025), and the platform total sits within about 15 of the KPI-tab TV repairs for Aug to Dec 2025.
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
 //   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September and October pulls were not yet available from the
@@ -847,14 +846,14 @@ const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
     tickets: [28724,28040,30652,30984,31535,26336,26637,24474,22010,26284,25560,24547,26833,23176,23159,23715,20858,20917,21489,22122,24775,25441],
-    repairs: [1684,1469,1665,1560,1508,1314,1320,1282,1276,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
+    repairs: [2023,1643,2137,1925,1722,1495,1521,1487,1480,1777,1685,1586,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480,9810,10722,10734,10003,10097,10007,10731,12168,15164,15504,13886,12128,9920,9441,10894,9879,11257,9867,10678,12760,12501],
-    repairs: [105,104,113,78,80,69,73,84,102,null,null,null,307,310,329,330,336,307,309,305,390,353],
+    repairs: [105,104,113,78,80,69,69,73,89,110,94,88,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
   }
@@ -4106,7 +4105,7 @@ export default function ReliabilityScorecards() {
           );
         })()}
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is 2026 from the 2026 Redwood Scorecard and 2025 Jan to Sep actuals from the 2025 Redwood Scorecard (Oct to Dec are forecast and blank; West scope, so OPUS steps up in January 2026 where the definition adds PFE Vulcan - TV, and 2025 year-over-year repair comparisons are not like for like), so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is 2026 from the 2026 Redwood Scorecard and 2025 from the 2025 Redwood Scorecard, Weekly Repair Projections tab, month-end columns (Mediaroom = IPTV + QC ILEC IPTV, OPUS = OPUS), so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
 
         {sec("Subscriber base", "base",
@@ -4127,7 +4126,7 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <>
-            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Platform repair split: 2026 from the 2026 Redwood Scorecard (Mediaroom = IPTV West + TQ ILEC TV, OPUS = OPUS + PFE Vulcan - TV); 2025 (Jan to Sep actuals; Oct to Dec are forecast in the source and left blank) from the 2025 Redwood Scorecard, Redwood Reboot - Repairs tab (West - IPTV and West - TV+), so OPUS steps up in January 2026 when the definition widens.")}
+            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Platform repair split: 2026 from the 2026 Redwood Scorecard (Mediaroom = IPTV West + TQ ILEC TV, OPUS = OPUS + PFE Vulcan - TV); 2025 from the 2025 Redwood Scorecard, Weekly Repair Projections tab, month-end columns (Mediaroom = IPTV + QC ILEC IPTV, OPUS = OPUS).")}
             {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 2))}
           </>
         )}
@@ -7693,9 +7692,9 @@ export default function ReliabilityScorecards() {
       })}</div>;
     };
     // monthly lines, October 2025 to October 2026
-    const dline = (series, fmt, startK = iYoY) => {
+    const dline = (series, fmt, startK = iYoY, opts = {}) => {
       const lineMonths = []; for (let k = startK; k <= iOct; k++) lineMonths.push(k);
-      const W = 520, Hh = 270, l = 44, r = 54, t = 14, b = 28;
+      const W = 520, Hh = opts.h || 270, l = 44, r = 54, t = opts.mark != null ? 24 : 14, b = 28;
       const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k]));
       const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 0.1, lo = mn - pad, hi = mx + pad;
       const pw = W - l - r, ph = Hh - t - b;
@@ -7705,12 +7704,14 @@ export default function ReliabilityScorecards() {
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {ticks.map((g, q) => <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: 11 }}>{fmt(g)}</text></g>)}
           {lineMonths.map((k, j) => <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text>)}
+          {opts.mark != null && <g><line x1={x(opts.mark - startK)} x2={x(opts.mark - startK)} y1={t - 6} y2={Hh - b} stroke={MUTED} strokeWidth={1.6} strokeDasharray="4 4" /><text x={x(opts.mark - startK) - 5} y={t - 10} textAnchor="end" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.markLabel}</text></g>}
           {series.map((sr) => {
             const pts = lineMonths.map((k, j) => `${j ? "L" : "M"}${x(j).toFixed(1)},${y(sr.vals[k]).toFixed(1)}`).join(" ");
             const lastJ = lineMonths.length - 1, lv = sr.vals[iOct];
             return <g key={sr.name}><path d={pts} fill="none" stroke={sr.color} strokeWidth={2.8} />
               {lineMonths.map((k, j) => <circle key={k} cx={x(j)} cy={y(sr.vals[k])} r={j === lastJ ? 4.5 : 2.2} fill={sr.color} />)}
-              <text x={x(lastJ) + 8} y={y(lv) + 4} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text></g>;
+              <text x={x(lastJ) + 8} y={y(lv) + 4} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text>
+              {opts.startLabel && <text x={x(0) + 2} y={y(sr.vals[startK]) - 8} textAnchor="start" style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[startK])}</text>}</g>;
           })}
         </svg>
       );
@@ -7723,7 +7724,6 @@ export default function ReliabilityScorecards() {
     const cVid = catD("Video Issues"), cChn = catD("Channel Issues"), cStb = catD("STB No Boot");
     const risePool = catAug.reduce((a, c) => a + (c[3] - c[1]), 0), top3 = cVid.all + cChn.all + cStb.all;
     const legAug = legacy.tickets[iOct] - legacy.tickets[iAug], opAug = opus.tickets[iOct] - opus.tickets[iAug];
-    const pairLegendYoY = <div className="dk-legend"><span><i style={{ background: MUTED, opacity: 0.55 }} />October 2025</span><span><i style={{ background: col }} />October 2026</span></div>;
     const dinit = (name) => {
       const it = INITIATIVES.find((x) => x.p === "TV" && x.name === name);
       if (!it) return null;
@@ -7757,21 +7757,27 @@ export default function ReliabilityScorecards() {
         </>,
         notes: "Click 1: the six KPI cards together. Click 2: the six findings together. Calls are not split by platform in the source." },
       { layout: "default", dense: true, title: "Ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
-        body: (step, C) => <>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
-            <div className="dk-sm"><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dpair([["Mediaroom (Optik TV Legacy)", legacy.ticketRate[iYoY], legacy.ticketRate[iOct]], ["OPUS (TV Evolution)", opus.ticketRate[iYoY], opus.ticketRate[iOct]], ["TV total (incl. Pik TV)", tr[iYoY], tr[iOct]]], (v) => fmtRate(v))}{pairLegendYoY}</div>
-            <div className="dk-sm"><h3 className="dk-ch">Dispatch rate per 100 subs</h3>{dpair([["TV total (KPI tab)", rr[iYoY], rr[iOct]]], (v) => fmtRate(v))}{pairLegendYoY}
-              <p className="dk-cap" style={{ margin: "6px 0 0" }}>The 2025 platform repair split stops at September (October to December are forecast in the source), so Mediaroom and OPUS dispatch rates are not comparable year over year. October 2026: Mediaroom {fmtRate(legacy.repairRate[iOct])}, OPUS {fmtRate(opus.repairRate[iOct])}.</p></div>
-          </div>
-          {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
-            <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
-              <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
-              <li><strong>Mediaroom drove about {Math.round((legAug / (legAug + opAug)) * 100)}% of it</strong>: Legacy tickets {sn(legAug)} against {sn(opAug)} on OPUS.</li>
-              <li>Video Issues {sn(cVid.all)}, Channel Issues {sn(cChn.all)} and STB No Boot {sn(cStb.all)} are {Math.round((top3 / risePool) * 100)}% of the {sn(risePool)} rise in the Looker categories.</li>
-              <li>September was the step-up, led by STB No Boot ({sn(cStb.sep)}) and Channel Issues ({sn(cChn.sep)}). In October STB No Boot eased ({sn(cStb.oct)}) while Video Issues ({sn(cVid.oct)}) and Channel Issues ({sn(cChn.oct)}) kept rising.</li>
-            </ul></div>)}
-        </>,
-        notes: `Looker categories exclude Pik TV. TV ticket total includes Pik TV (${num(pikOct)} in October). Dispatch rate Oct 2025 is the KPI-tab TV total.` },
+        body: (step, C) => {
+          const cmp = (label, a, b) => <span key={label} style={{ marginRight: 18, whiteSpace: "nowrap" }}>{label} {fmtRate(a)} to {fmtRate(b)} {Math.abs(b - a) < 0.005 ? chg("0.00", 0) : chg(sd(b - a), b - a)}</span>;
+          const mk = { mark: iAug, markLabel: "Rise from Aug", h: 205, startLabel: true };
+          return <>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
+              <div><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.ticketRate }, { name: "OPUS", color: AMBER, vals: opus.ticketRate }], (v) => fmtRate(v), iYoY, mk)}
+                <div className="dk-cap" style={{ marginTop: 2 }}>Oct 2025 to Oct 2026: {cmp("Mediaroom", legacy.ticketRate[iYoY], legacy.ticketRate[iOct])}{cmp("OPUS", opus.ticketRate[iYoY], opus.ticketRate[iOct])}{cmp("TV total", tr[iYoY], tr[iOct])}</div></div>
+              <div><h3 className="dk-ch">Dispatch rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.repairRate }, { name: "OPUS", color: AMBER, vals: opus.repairRate }], (v) => fmtRate(v), iYoY, mk)}
+                <div className="dk-cap" style={{ marginTop: 2 }}>Oct 2025 to Oct 2026: {cmp("Mediaroom", legacy.repairRate[iYoY], legacy.repairRate[iOct])}{cmp("OPUS", opus.repairRate[iYoY], opus.repairRate[iOct])}{cmp("TV total", rr[iYoY], rr[iOct])}</div></div>
+            </div>
+            {platLegend}
+            {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
+              <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
+                <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
+                <li><strong>Mediaroom drove about {Math.round((legAug / (legAug + opAug)) * 100)}% of it</strong>: Legacy tickets {sn(legAug)} against {sn(opAug)} on OPUS.</li>
+                <li>Video Issues {sn(cVid.all)}, Channel Issues {sn(cChn.all)} and STB No Boot {sn(cStb.all)} are {Math.round((top3 / risePool) * 100)}% of the {sn(risePool)} rise.</li>
+                <li>September was the step-up, led by STB No Boot ({sn(cStb.sep)}) and Channel Issues ({sn(cChn.sep)}). In October STB No Boot eased ({sn(cStb.oct)}) while Video Issues ({sn(cVid.oct)}) and Channel Issues ({sn(cChn.oct)}) kept rising.</li>
+              </ul></div>)}
+          </>;
+        },
+        notes: `The dotted line marks where the August to October rise starts. Ticket categories exclude Pik TV; the TV ticket total includes Pik TV (${num(pikOct)} in October). TV total dispatch rate is the KPI-tab series.` },
       { layout: "two-cols", title: "Video quality: categories and largest movers", clicks: 1,
         body: (step, C) => <>
           <div><h3 className="dk-ch">By category, tickets</h3>{dpair(R.categories)}{pairLegend}</div>
@@ -7780,11 +7786,11 @@ export default function ReliabilityScorecards() {
         notes: "Left: the six categories. Right (one click): the nine largest movers." },
       { layout: "default", dense: true, title: "Stop/Stuttering/Freezing tickets per day", clicks: 2,
         body: (step, C) => <>
-          <div style={{ maxWidth: 700, margin: "0 auto", width: "100%" }}>{dailyChart()}</div>
+          <div style={{ width: "100%" }}>{dailyChart()}</div>
           <div className="dk-legend" style={{ justifyContent: "center" }}><span><i style={{ background: col }} />October ({num(stOct)})</span><span><i style={{ background: MUTED }} />September ({num(stSep)})</span></div>
-          <div className="dk-two" style={{ flex: "none" }}>
-            {C(1, <div className="dk-note amber"><h3>The {O.day} October outage</h3>{O.area}. Agents found an active area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} normally; {O.citing} and {O.citingNext} tickets name the outage. Agents educated customers and subscribed them to the outage portal; no field visit.</div>)}
-            {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
+          <div className="dk-two" style={{ flex: "none", fontSize: 12 }}>
+            {C(1, <div className="dk-note amber" style={{ fontSize: 12 }}><h3 style={{ fontSize: 12.5 }}>The {O.day} October outage</h3>{O.area}. Agents found an active area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} normally; {O.citing} and {O.citingNext} tickets name the outage. Agents educated customers and subscribed them to the outage portal; no field visit.</div>)}
+            {C(2, <div className="dk-note" style={{ fontSize: 12 }}><h3 style={{ fontSize: 12.5 }}>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
           </div>
         </>,
         notes: "About 100 of the roughly 430 extra stuttering tickets are the outage. The orange marker is the Calgary outage day." },
@@ -7793,7 +7799,7 @@ export default function ReliabilityScorecards() {
           <div>{dpair(nbRows)}{pairLegend}</div>
           {C(1, <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div className="dk-note"><h3>Findings</h3>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased.</div>
-            <div><h3 className="dk-ch">Initiative aiming to fix it</h3><div className="dk-inits" style={{ gridTemplateColumns: "1fr" }}>{dinit("Sequential Reboot for Stuck on Initializing")}</div>
+            <div><h3 className="dk-ch">Investigating remediation</h3><div className="dk-inits" style={{ gridTemplateColumns: "1fr" }}>{dinit("Sequential Reboot for Stuck on Initializing")}</div>
               <p className="dk-cap" style={{ margin: "6px 0 0" }}>Proactive gateway reboot for Stuck on Initializing. On hold because of the Q4 firmware rollout targeting security vulnerabilities.</p></div>
             <div className="dk-note amber"><h3>Root cause work</h3><ul style={{ margin: "2px 0 0", fontSize: 13.5, gap: 5 }}>
               <li>Tech Strat is working with AXON to recreate the issue in the lab to identify the root cause.</li>
@@ -7809,7 +7815,7 @@ export default function ReliabilityScorecards() {
             <div className="dk-sm"><h3 className="dk-ch">Fixes applied (% of tickets with a resolution line)</h3>{dpair(R.fixes, (v) => v + "%")}</div>
           </div>
           {pairLegend}
-          {C(1, <div><h3 className="dk-ch">Initiatives that will tackle this</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
+          {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
         </>,
         notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
       { layout: "default", dense: true, title: "Missing Channels", clicks: 1,
@@ -7819,7 +7825,7 @@ export default function ReliabilityScorecards() {
             <div className="dk-sm"><h3 className="dk-ch">Fix in the notes</h3>{dpair(R.missing.fixes, (v) => v + "%")}</div>
           </div>
           {pairLegend}
-          {C(1, <div><h3 className="dk-ch">Initiatives that will tackle this</h3><div className="dk-inits">{dinit("Subscribed Channel Access Defect Fix")}{dinit("P001 Playback Error Monitoring")}</div></div>)}
+          {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Subscribed Channel Access Defect Fix")}{dinit("P001 Playback Error Monitoring")}</div></div>)}
         </>,
         notes: `${num(R.missing.n[1])} October tickets (${num(R.missing.n[0])} in September). A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation.` }
     ];
