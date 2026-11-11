@@ -67,8 +67,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Offered by Product workbook only: calls offered, normalized call tickets (contact-centre tickets, not
   the Assure tickets on the KPI tab) and the HSIA West subscriber base. Repairs come from the "2026
   Redwood Scorecard + Metrics" workbook, "Repair Tracking Detail" tab, HSIA West row (2026), and 2025 from the
-  same workbook's "Redwood Reboot - Repairs" tab, "West - HSIA" actual row (Jan to Sep only: Oct to Dec 2025 are flagged
-  NO in the tab's row 1, so they are forecast and left blank; the tab holds no 2026 actuals). The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
+  same workbook's "Redwood Reboot - Repairs" tab, "West - HSIA" actual row (Jan to Dec 2025 shown, as requested; Oct to
+  Dec 2025 are flagged NO in the tab's row 1, so they are forecast, and the page says so; the tab holds no 2026 actuals). The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
   "n/a" until the source splits it.
 - HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
   ("TQ ILEC - HSIA"), normalized call tickets and base from the TS Calls Offered by Product workbook, repairs
