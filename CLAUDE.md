@@ -74,6 +74,7 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   "Redwood Reboot - Repairs" tab has a West - HSIA row, but Oct to Dec 2025 there are forecast, and the user asked to remove 2025. The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
   "n/a" until the source splits it.
 - HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
-  ("TQ ILEC - HSIA"), normalized call tickets and base from the TS Calls Offered by Product workbook, repairs
+  ("TQ ILEC - HSIA") and base from the TS Calls Offered by Product workbook, tickets from the "HSIA Recategorization
+  Looker" tab's "HSIA TQ ILEC" block Totals row (Churn Measurement 2026 workbook), repairs
   from the 2026 Redwood Scorecard + Metrics "Repair Tracking Detail" tab, "TQ ILEC HS" row (2026 only).
   HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).

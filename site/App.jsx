@@ -817,14 +817,15 @@ const HSIA_WEST = {
 // ---------------------------------------------------------------------------
 // TQ ILEC (HSIA) on its own — the HSIA > TQ ILEC subsection. Arrays align with MONTHS (Jan 2025 –
 // Oct 2026). TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab
-// ("TQ ILEC - HSIA"), call tickets from the Actuals - Call Tickets (Normalized) tab, base from
-// that tab's Subscribers block. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail
+// ("TQ ILEC - HSIA"), base from the Actuals - Call Tickets (Normalized) tab's Subscribers block.
+// Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the "HSIA TQ ILEC"
+// block Totals row (all TQ ILEC regions). Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail
 // tab, "TQ ILEC HS" row (2026 only). Churn is not split from HSIA West in the source.
 // ---------------------------------------------------------------------------
 const TQ_ILEC = {
   callsOffered: [5138,4322,4141,3951,4409,4611,4910,4608,3971,4936,5424,5807,6176,4959,6341,5212,6461,6946,7441,7693,7988,8967],
-  callTickets: [2248,1960,1821,2399,2464,2561,3420,3429,2730,2980,3282,3505,3990,3461,4180,3424,4160,4178,4984,4949,5036,5618],
-  callTicketRate: [1.35,1.17,1.08,1.42,1.46,1.51,2.02,2.03,1.62,1.77,1.95,2.13,2.42,2.10,2.53,2.07,2.52,2.53,3.02,3.00,3.05,3.41],
+  ticketVolume: [1892,2058,2164,2519,2452,2512,3097,2908,2704,3073,3061,3408,3854,3028,3537,3494,4181,4379,4695,4896,5100,5463],
+  ticketRate: [1.14,1.23,1.29,1.49,1.45,1.48,1.83,1.72,1.60,1.83,1.82,2.07,2.34,1.84,2.14,2.12,2.53,2.65,2.84,2.97,3.08,3.31],
   repairVolume: [null,null,null,null,null,null,null,null,null,null,null,null,921,840,1049,891,1066,925,1047,1074,1298,1404],
   repairRate: [null,null,null,null,null,null,null,null,null,null,null,null,0.56,0.51,0.64,0.54,0.65,0.56,0.63,0.65,0.79,0.85],
   subBase: [166597,167272,168135,169149,168839,169207,169155,168789,168563,168059,168207,164740,164734,164888,165055,165047,165055,165044,165037,164994,165339,164856]
@@ -3943,8 +3944,8 @@ export default function ReliabilityScorecards() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
             {card("calls", "Calls offered (TQ ILEC)", TQ_ILEC.callsOffered, fmtBig, 0, true, false)}
-            {card("tickets", "Call ticket volume", TQ_ILEC.callTickets, fmtBig, 0, true, false)}
-            {card("tickets", "Call ticket rate per 100 subs", TQ_ILEC.callTicketRate, fmtRate, 2, true, "rate")}
+            {card("tickets", "Ticket volume", TQ_ILEC.ticketVolume, fmtBig, 0, true, false)}
+            {card("tickets", "Ticket rate per 100 subs", TQ_ILEC.ticketRate, fmtRate, 2, true, "rate")}
             {card("repairs", "Repair volume", TQ_ILEC.repairVolume, fmtBig, 0, true, false)}
             {card("repairs", "Repair rate per 100 subs", TQ_ILEC.repairRate, fmtRate, 2, true, "rate")}
             {na("churn", "Churn rate per 100 subs")}
@@ -3952,23 +3953,23 @@ export default function ReliabilityScorecards() {
           </div>
         </div>
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          TQ ILEC high speed on its own, from the TS Calls Offered by Product workbook: calls from the Actuals - Calls Offered tab (TQ ILEC - HSIA field), call tickets from the Actuals - Call Tickets (Normalized) tab, subscribers from that tab's Subscribers block. Call tickets are contact-centre tickets, not the Assure tickets behind the HSIA scorecard, so they are not comparable to it; the rate is call tickets over the TQ ILEC HSIA base, per 100 subscribers. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (TQ ILEC HS row), reported for 2026 only, so there is no YoY change yet. The HSIA scorecard base is HSIA West plus TQ ILEC. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
+          TQ ILEC high speed on its own. Calls: TS Calls Offered by Product workbook, Actuals - Calls Offered tab (TQ ILEC - HSIA field); subscribers from that workbook's Subscribers block. Tickets: Churn Measurement 2026 workbook, HSIA Recategorization Looker tab, the HSIA TQ ILEC block Totals row (all TQ ILEC regions, from the same Looker source as the HSIA scorecard tickets); the rate is those tickets over the TQ ILEC HSIA base, per 100 subscribers. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (TQ ILEC HS row), reported for 2026 only, so there is no YoY change yet. The HSIA scorecard base is HSIA West plus TQ ILEC. Churn is reported for HSIA West and TQ ILEC together on the KPI tab, so it is not shown here.
         </p>
 
         {sec("Calls offered", "calls",
           simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtBig, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
         )}
 
-        {sec("Call tickets", "tickets",
-          <ChartCard title="Call tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-tr"]} onToggleTable={() => toggleTable("tq-tr")}
-            note="Normalized call tickets for TQ ILEC - HSIA over the TQ ILEC HSIA base. Volume on the left axis, rate on the right.">
+        {sec("Tickets", "tickets",
+          <ChartCard title="Tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-tr"]} onToggleTable={() => toggleTable("tq-tr")}
+            note="TQ ILEC ticket totals from the HSIA Recategorization Looker tab (HSIA TQ ILEC block) over the TQ ILEC HSIA base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Call ticket volume", data: TQ_ILEC.callTickets, color: col, fmt: fmtBig }}
-              line={{ label: "Call ticket rate", data: TQ_ILEC.callTicketRate, color: col, fmt: rate2 }} />
-            <Legend items={[{ label: "Call ticket volume (bars, left axis)", color: col, bar: true }, { label: "Call ticket rate (line, right axis)", color: col }]} T={T} />
+              bar={{ label: "Ticket volume", data: TQ_ILEC.ticketVolume, color: col, fmt: fmtBig }}
+              line={{ label: "Ticket rate", data: TQ_ILEC.ticketRate, color: col, fmt: rate2 }} />
+            <Legend items={[{ label: "Ticket volume (bars, left axis)", color: col, bar: true }, { label: "Ticket rate (line, right axis)", color: col }]} T={T} />
             {openTables["tq-tr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "TQ", label: "Call ticket volume", data: TQ_ILEC.callTickets, fmt: fmtBig },
-              { key: "TQ", label: "Call ticket rate", data: TQ_ILEC.callTicketRate, fmt: rate2 }
+              { key: "TQ", label: "Ticket volume", data: TQ_ILEC.ticketVolume, fmt: fmtBig },
+              { key: "TQ", label: "Ticket rate", data: TQ_ILEC.ticketRate, fmt: rate2 }
             ]} fmt={fmtBig} T={T} />}
           </ChartCard>
         )}
@@ -8472,7 +8473,7 @@ export default function ReliabilityScorecards() {
               : page === "hsiawest"
               ? "HSIA · HSIA West · calls offered, tickets, repairs and subscriber base for HSIA West on its own; churn is not split from TQ ILEC in the source"
               : page === "hsiatq"
-              ? "HSIA · TQ ILEC · calls offered, call tickets, repairs and subscriber base for TQ ILEC HSIA on its own; churn is not split from HSIA West in the source"
+              ? "HSIA · TQ ILEC · calls offered, tickets, repairs and subscriber base for TQ ILEC HSIA on its own; churn is not split from HSIA West in the source"
               : page === "hsiapfe"
               ? "HSIA · PFE (PureFibre East) · calls offered, tickets, repairs, churn and subscriber base for PureFibre East customers"
               : page === "tvplatforms"
