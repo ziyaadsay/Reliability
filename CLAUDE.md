@@ -63,4 +63,13 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   to `webAppRate`, `cx_easy_to_follow` to `cxEasy`, `cx_comment_sentiment` to `cxSent`, `churn_rate_sweepr_involved` to
   `churn` and `deacts_saved` to `deacts`. Re-read every month (the source restates earlier months; the Nov pull restated churn and deacts for Jan to Sep and added October, with churn and deacts October as source estimates). It no longer comes from
   the HSIA West TCS PLT Charter workbook; the B2B rows still do. The CCAI IVR rate is not in the MCP and is left as is.
-
+- HSIA › HSIA West (`hsiawest`, `HsiaWestPage`, `HSIA_WEST`) is HSIA West on its own, from the TS Calls
+  Offered by Product workbook only: calls offered, normalized call tickets (contact-centre tickets, not
+  the Assure tickets on the KPI tab) and the HSIA West subscriber base. Repairs come from the "2026
+  Redwood Scorecard + Metrics" workbook, "Repair Tracking Detail" tab, HSIA West row (2026 only). 2025 is blank on purpose: the
+  "Redwood Reboot - Repairs" tab has a West - HSIA row, but Oct to Dec 2025 there are forecast, and the user asked to remove 2025. The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
+  "n/a" until the source splits it.
+- HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
+  ("TQ ILEC - HSIA"), normalized call tickets and base from the TS Calls Offered by Product workbook, repairs
+  from the 2026 Redwood Scorecard + Metrics "Repair Tracking Detail" tab, "TQ ILEC HS" row (2026 only).
+  HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
