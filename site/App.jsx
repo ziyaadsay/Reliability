@@ -788,14 +788,15 @@ const PFE = {
 // Offered tab, call tickets from the Actuals - Call Tickets (Normalized) tab, base from that
 // tab's Subscribers block (HSIA West). Call tickets are contact-centre tickets, a different
 // basis from the Assure tickets on the KPI tab, so the rate is call tickets over the HSIA West
-// base per 100. Repairs: 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab (HSIA West row,
-// 2026 only). Churn is not split from TQ ILEC in the source.
+// base per 100. Repairs: 2026 from the 2026 Redwood Scorecard + Metrics, Repair Tracking Detail tab
+// (HSIA West row); 2025 from that workbook's Redwood Reboot - Repairs tab, "West - HSIA" actual row.
+// Churn is not split from TQ ILEC in the source.
 // ---------------------------------------------------------------------------
 const HSIA_WEST = {
   callsOffered: [66302,58283,58346,57968,59876,60294,64870,69381,81574,73560,66439,69110,64525,53641,67816,65028,72529,75759,79247,81294,74534,75018],
   callTickets: [39504,33251,36812,35374,35158,35827,39486,39503,37200,33310,36194,35308,36025,31291,38887,38769,42592,43893,44614,44491,42350,42731],
-  repairVolume: [null,null,null,null,null,null,null,null,null,null,null,null,15045,13398,15308,16183,16790,14820,16102,15082,15798,15488],
-  repairRate: [null,null,null,null,null,null,null,null,null,null,null,null,0.79,0.70,0.80,0.85,0.88,0.78,0.84,0.79,0.82,0.81],
+  repairVolume: [11249,10432,11158,11291,12553,12786,14310,14878,14993,15025,13433,12912,15045,13398,15308,16183,16790,14820,16102,15082,15798,15488],
+  repairRate: [0.60,0.55,0.59,0.60,0.67,0.68,0.76,0.78,0.79,0.79,0.71,0.68,0.79,0.70,0.80,0.85,0.88,0.78,0.84,0.79,0.82,0.81],
   callTicketRate: [2.10,1.77,1.95,1.88,1.87,1.90,2.09,2.08,1.95,1.75,1.90,1.85,1.89,1.64,2.04,2.03,2.23,2.30,2.34,2.33,2.21,2.23],
   subBase: [1880047,1879997,1884205,1883301,1885097,1889714,1890591,1896338,1904966,1905166,1905168,1910163,1902859,1904760,1908112,1906873,1907916,1910008,1909554,1912016,1915303,1917152]
 };
@@ -3751,7 +3752,7 @@ export default function ReliabilityScorecards() {
   // ------------------------------ TV platform breakout ------------------------------
   // ------------------------------ HSIA › HSIA West ------------------------------
   // Same card row and sections as HSIA › PFE. Repairs and churn are reported for HSIA West and
-  // TQ ILEC together on the KPI tab, so the churn card shows "n/a" until the source splits it. Repairs come from the Redwood Scorecard (2026 only).
+  // TQ ILEC together on the KPI tab, so the churn card shows "n/a" until the source splits it. Repairs come from the Redwood Scorecard (2025 and 2026).
   function HsiaWestPage() {
     const LAST = MONTHS.length - 1, col = colors.HSIA;
     const one = (label, data) => [{ key: "HSIA", label, data }];
