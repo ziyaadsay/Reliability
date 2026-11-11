@@ -2084,6 +2084,8 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-cap{font-size:13px;color:${muted};line-height:1.45}
 .dk-callout{margin-top:26px;max-width:940px;font-size:21px;line-height:1.4;font-weight:600;border-left:4px solid rgba(255,255,255,.7);padding:4px 0 4px 18px;color:#fff}
 .dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:10px 12px} .dk-stats.tight .dk-stat-v{font-size:27px} .dk-stats.tight .dk-stat-l{font-size:12.5px} .dk-stats.tight .dk-stat-s{font-size:12px}
+.dk-inits{display:grid;grid-template-columns:1fr 1fr;gap:12px} .dk-init{background:${T.band};border:1px solid ${T.border};border-left:3px solid ${color};border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.4;color:${T.textSecondary}} .dk-init b{color:${ink};font-size:13px} .dk-init .dk-pill{margin-left:8px}
+.dk-sm .dk-bl{font-size:11.5px} .dk-sm .dk-brow{padding:3px 0}
 .dk-ch{margin:0 0 6px;font-size:14px;font-weight:700;color:${ink}}
 .dk-brow{display:grid;grid-template-columns:38% 1fr;gap:10px;align-items:center;padding:4px 0;border-bottom:1px solid ${T.border}}
 .dk-bl{font-size:12.5px;color:${T.textSecondary};line-height:1.25}
@@ -7714,20 +7716,35 @@ export default function ReliabilityScorecards() {
     };
     const platLegend = <div className="dk-legend"><span><i style={{ background: col }} />Mediaroom (Optik TV Legacy)</span><span><i style={{ background: AMBER }} />OPUS (TV Evolution)</span></div>;
     const vid = R.categories[0], mv = R.movers;
+    const iAug = iOct - 2;
+    const catAug = LOOKER_EXTRA.TV.cats.map((c) => [c.name, c.series[iAug], c.series[iSep], c.series[iOct]]);
+    const catD = (n) => { const c = catAug.find((x) => x[0] === n); return { sep: c[2] - c[1], oct: c[3] - c[2], all: c[3] - c[1] }; };
+    const cVid = catD("Video Issues"), cChn = catD("Channel Issues"), cStb = catD("STB No Boot");
+    const risePool = catAug.reduce((a, c) => a + (c[3] - c[1]), 0), top3 = cVid.all + cChn.all + cStb.all;
+    const legAug = legacy.tickets[iOct] - legacy.tickets[iAug], opAug = opus.tickets[iOct] - opus.tickets[iAug];
+    const pairLegendYoY = <div className="dk-legend"><span><i style={{ background: MUTED, opacity: 0.55 }} />October 2025</span><span><i style={{ background: col }} />October 2026</span></div>;
+    const dinit = (name) => {
+      const it = INITIATIVES.find((x) => x.p === "TV" && x.name === name);
+      if (!it) return null;
+      return <div key={name} className="dk-init"><b>{it.name}</b><span className="dk-pill">{it.status}</span><div>{it.timeline} · {it.prime}</div></div>;
+    };
     const slides = [
-      { layout: "cover", title: "TV in October", sub: "TV October review · calls, tickets, dispatches and churn for TV as a whole, whether Mediaroom or OPUS is driving it, and focus sections on video quality and STB No Boot",
+      { layout: "cover", title: "TV in October",
         callout: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, with churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.`,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", dense: true, title: "September to October at a glance", sub: "Dashboard KPIs, rates per 100 subscribers. Change against September: red is an increase, green a decrease", clicks: 2,
+      { layout: "default", dense: true, title: "September to October at a glance", clicks: 2,
         body: (step, C) => <>
-          {C(1, <div className="dk-stats tight">
-            {mstat(num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
-            {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
-            {mstat(num(rv[iOct]), "Repairs / dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
-            {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
-            {mstat(fmtRate(ch[iOct]), "Churn rate per 100", `Sep ${fmtRate(ch[iSep])}`, sd(ch[iOct] - ch[iSep]), ch[iOct] - ch[iSep])}
-            {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
-          </div>)}
+          {C(1, <>
+            <div className="dk-stats tight">
+              {mstat(num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
+              {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
+              {mstat(num(rv[iOct]), "Repairs / dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
+              {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
+              {mstat(fmtRate(ch[iOct]), "Churn rate per 100", `Sep ${fmtRate(ch[iSep])}`, sd(ch[iOct] - ch[iSep]), ch[iOct] - ch[iSep])}
+              {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
+            </div>
+            <p className="dk-cap" style={{ margin: "8px 0 0" }}>Change against September: red is an increase, green a decrease. Rates per 100 subscribers.</p>
+          </>)}
           {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
             <li><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, dispatches {sp(pct(rv[iOct], rv[iSep]), 1)} (partly a source difference); churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
             <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
@@ -7738,59 +7755,72 @@ export default function ReliabilityScorecards() {
           </ul>)}
         </>,
         notes: "Click 1: the six KPI cards together. Click 2: the six findings together. Calls are not split by platform in the source." },
-      { layout: "default", title: "Platform split: ticket rate and dispatch rate", sub: "Per 100 subscribers on each platform, October 2025 to October 2026", clicks: 1,
+      { layout: "default", dense: true, title: "Ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
         body: (step, C) => <>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
-            <div><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.ticketRate }, { name: "OPUS", color: AMBER, vals: opus.ticketRate }], (v) => fmtRate(v))}</div>
-            <div><h3 className="dk-ch">Dispatch rate per 100 subs (platform source, from January 2026)</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.repairRate }, { name: "OPUS", color: AMBER, vals: opus.repairRate }], (v) => fmtRate(v), MONTHS.indexOf("Jan 2026"))}</div>
+            <div className="dk-sm"><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dpair([["Mediaroom (Optik TV Legacy)", legacy.ticketRate[iYoY], legacy.ticketRate[iOct]], ["OPUS (TV Evolution)", opus.ticketRate[iYoY], opus.ticketRate[iOct]], ["TV total (incl. Pik TV)", tr[iYoY], tr[iOct]]], (v) => fmtRate(v))}{pairLegendYoY}</div>
+            <div className="dk-sm"><h3 className="dk-ch">Dispatch rate per 100 subs</h3>{dpair([["TV total (KPI tab)", rr[iYoY], rr[iOct]]], (v) => fmtRate(v))}{pairLegendYoY}
+              <p className="dk-cap" style={{ margin: "6px 0 0" }}>The 2025 platform repair split stops at September (October to December are forecast in the source), so Mediaroom and OPUS dispatch rates are not comparable year over year. October 2026: Mediaroom {fmtRate(legacy.repairRate[iOct])}, OPUS {fmtRate(opus.repairRate[iOct])}.</p></div>
           </div>
-          {platLegend}
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Mediaroom is the upside: {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} tickets on a base that lost {num(legacy.base[iSep] - legacy.base[iOct])}. OPUS is the downside: {sn(opus.tickets[iOct] - opus.tickets[iSep])} tickets on a base that grew {num(opus.base[iOct] - opus.base[iSep])}. Year over year OPUS is behind the improvement; Legacy's ticket rate is {Math.abs(legacy.ticketRate[iOct] - legacy.ticketRate[iYoY]).toFixed(2)} higher.</p>)}
+          {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
+            <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
+              <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
+              <li><strong>Mediaroom drove about {Math.round((legAug / (legAug + opAug)) * 100)}% of it</strong>: Legacy tickets {sn(legAug)} against {sn(opAug)} on OPUS.</li>
+              <li>Video Issues {sn(cVid.all)}, Channel Issues {sn(cChn.all)} and STB No Boot {sn(cStb.all)} are {Math.round((top3 / risePool) * 100)}% of the {sn(risePool)} rise in the Looker categories.</li>
+              <li>September was the step-up, led by STB No Boot ({sn(cStb.sep)}) and Channel Issues ({sn(cChn.sep)}). In October STB No Boot eased ({sn(cStb.oct)}) while Video Issues ({sn(cVid.oct)}) and Channel Issues ({sn(cChn.oct)}) kept rising.</li>
+            </ul></div>)}
         </>,
-        notes: `Mediaroom and OPUS tickets total ${num(platTotOct)} against ${num(platTotSep)}; the TV total of ${num(tk[iOct])} also includes Pik TV (${num(pikOct)}), a minor line left out of the analysis.` },
-      { layout: "two-cols", title: "Video quality: categories and largest movers", sub: "Tickets, September to October (Looker categories). Movers: red is an increase, green a decrease", clicks: 1,
+        notes: `Looker categories exclude Pik TV. TV ticket total includes Pik TV (${num(pikOct)} in October). Dispatch rate Oct 2025 is the KPI-tab TV total.` },
+      { layout: "two-cols", title: "Video quality: categories and largest movers", clicks: 1,
         body: (step, C) => <>
-          <div><h3 className="dk-ch">By category</h3>{dpair(R.categories)}{pairLegend}</div>
-          {C(1, <div><h3 className="dk-ch">Largest movers, Oct vs Sep</h3>{ddelta(R.movers)}</div>)}
+          <div><h3 className="dk-ch">By category, tickets</h3>{dpair(R.categories)}{pairLegend}</div>
+          {C(1, <div><h3 className="dk-ch">Largest movers, Oct vs Sep (red up, green down)</h3>{ddelta(R.movers)}</div>)}
         </>,
         notes: "Left: the six categories. Right (one click): the nine largest movers." },
-      { layout: "default", title: "Stop/Stuttering/Freezing tickets per day", sub: `Note exports: ${num(stSep)} in September, ${num(stOct)} in October (${sn(stOct - stSep)})`, clicks: 1,
+      { layout: "default", dense: true, title: "Stop/Stuttering/Freezing tickets per day", clicks: 2,
         body: (step, C) => <>
-          <div style={{ width: "100%" }}>{dailyChart()}</div>
-          <div className="dk-legend"><span><i style={{ background: col }} />October</span><span><i style={{ background: MUTED }} />September</span></div>
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>The one clear spike is {O.day} October. Outside it, October sits above September on most days, which is the broader lift.</p>)}
+          <div style={{ maxWidth: 700, margin: "0 auto", width: "100%" }}>{dailyChart()}</div>
+          <div className="dk-legend" style={{ justifyContent: "center" }}><span><i style={{ background: col }} />October ({num(stOct)})</span><span><i style={{ background: MUTED }} />September ({num(stSep)})</span></div>
+          <div className="dk-two" style={{ flex: "none" }}>
+            {C(1, <div className="dk-note amber"><h3>The {O.day} October outage</h3>{O.area}. Agents found an active area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} normally; {O.citing} and {O.citingNext} tickets name the outage. Agents educated customers and subscribed them to the outage portal; no field visit.</div>)}
+            {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
+          </div>
         </>,
-        notes: "Orange marker is the Calgary outage day." },
-      { layout: "two-cols", title: "Outage, and everything else", clicks: 2,
+        notes: "About 100 of the roughly 430 extra stuttering tickets are the outage. The orange marker is the Calgary outage day." },
+      { layout: "two-cols", title: "STB No Boot", clicks: 1,
         body: (step, C) => <>
-          {C(1, <div className="dk-note amber"><h3>The {O.day} October outage</h3>{O.area}. Agents found an active area outage (Stop/Stuttering/Freezing, under investigation, no restoration time). Stuttering tickets hit {O.peak} that day and {O.next} the next, against about {O.normal} normally; {O.citing} and {O.citingNext} tickets name the outage. Agents educated customers and subscribed them to the outage portal; no field visit.</div>)}
-          {C(2, <div className="dk-note"><h3>Everything else</h3>Excluding {O.day} and {O.day + 1} October, stuttering still averaged about {Math.round((stOct - O.peak - O.next) / 28)} a day against {Math.round(stSep / 30)} in September. Device models and provinces in the notes barely changed, so the lift is spread across the Legacy base.</div>)}
+          <div>{dpair(nbRows)}{pairLegend}</div>
+          {C(1, <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div className="dk-note"><h3>Findings</h3>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased.</div>
+            <div><h3 className="dk-ch">Initiative aiming to fix it</h3><div className="dk-inits" style={{ gridTemplateColumns: "1fr" }}>{dinit("Sequential Reboot for Stuck on Initializing")}</div>
+              <p className="dk-cap" style={{ margin: "6px 0 0" }}>Proactive gateway reboot for Stuck on Initializing. On hold because of the Q4 firmware rollout targeting security vulnerabilities.</p></div>
+            <div className="dk-note amber"><h3>Root cause work</h3><ul style={{ margin: "2px 0 0", fontSize: 13.5, gap: 5 }}>
+              <li>Tech Strat is working with AXON to recreate the issue in the lab to identify the root cause.</li>
+              <li>A rollback on 10% of the base is being looked at to assess whether the new version is the culprit.</li>
+            </ul></div>
+          </div>)}
         </>,
-        notes: "About 100 of the roughly 430 extra stuttering tickets are the outage." },
-      { layout: "default", title: "STB No Boot", sub: `Looker: ${num(R.categories[3][1])} to ${num(R.categories[3][2])} (${sp(pct(R.categories[3][2], R.categories[3][1]), 1)}); tickets by sub-category`, clicks: 1,
+        notes: "The reboot initiative is On Hold until January 2027 on the register." },
+      { layout: "default", dense: true, title: "Video quality: root causes cited and fixes applied", clicks: 1,
         body: (step, C) => <>
-          {dpair(nbRows)}{pairLegend}
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased. The root-cause work is in the archived TV Review.</p>)}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            <div className="dk-sm"><h3 className="dk-ch">Root causes cited (% of tickets with a root-cause line)</h3>{dpair(R.causes, (v) => v + "%")}</div>
+            <div className="dk-sm"><h3 className="dk-ch">Fixes applied (% of tickets with a resolution line)</h3>{dpair(R.fixes, (v) => v + "%")}</div>
+          </div>
+          {pairLegend}
+          {C(1, <div><h3 className="dk-ch">Initiatives that will tackle this</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
         </>,
-        notes: "Sub-categories come from the ticket exports." },
-      { layout: "default", title: "Root causes cited: video quality", sub: `Share of the ${num(R.video.rca[1])} October tickets with a root-cause line (${num(R.video.n[1])} tickets); a ticket can cite more than one`, clicks: 1,
+        notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
+      { layout: "default", dense: true, title: "Missing Channels", clicks: 1,
         body: (step, C) => <>
-          {dpair(R.causes, (v) => v + "%")}{pairLegend}
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>Packet loss and discontinuities lead and are quoted more than in September. Long uptime is not the story: gateway uptime is quoted in only {R.uptime.cited[1]} tickets (median {R.uptime.median[1]} days).</p>)}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            <div className="dk-sm"><h3 className="dk-ch">Root cause cited</h3>{dpair(R.missing.causes, (v) => v + "%")}</div>
+            <div className="dk-sm"><h3 className="dk-ch">Fix in the notes</h3>{dpair(R.missing.fixes, (v) => v + "%")}</div>
+          </div>
+          {pairLegend}
+          {C(1, <div><h3 className="dk-ch">Initiatives that will tackle this</h3><div className="dk-inits">{dinit("Subscribed Channel Access Defect Fix")}{dinit("P001 Playback Error Monitoring")}</div></div>)}
         </>,
-        notes: "Underrun, discontinuity and multicast mentions roughly doubled to tripled; that may be agents pasting more xVu output." },
-      { layout: "default", title: "Fixes applied: video quality", sub: `Share of the ${num(R.video.fixN[1])} October tickets with a resolution line; fixes are often combined`, clicks: 1,
-        body: (step, C) => <>
-          {dpair(R.fixes, (v) => v + "%")}{pairLegend}
-          {C(1, <p className="dk-cap" style={{ margin: 0 }}>A box swap and a sequential reboot are each about 30%. The reboot fix is used less than in September while dispatch and escalation are used more, which suggests more cases were not cleared remotely.</p>)}
-        </>,
-        notes: "Remote Wi-Fi fixes are steady near 18%." },
-      { layout: "two-cols", title: "Missing Channels", sub: `${num(R.missing.n[1])} October tickets (${num(R.missing.n[0])} in September); Unsubscribed-type tickets ${num(R.missing.unsubscribed[0])} to ${num(R.missing.unsubscribed[1])}`, clicks: 1,
-        body: (step, C) => <>
-          <div><h3 className="dk-ch">Root cause cited</h3>{dpair(R.missing.causes, (v) => v + "%")}{pairLegend}</div>
-          {C(1, <div><h3 className="dk-ch">Fix in the notes</h3>{dpair(R.missing.fixes, (v) => v + "%")}</div>)}
-        </>,
-        notes: "A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation." }
+        notes: `${num(R.missing.n[1])} October tickets (${num(R.missing.n[0])} in September). A subscription that exists but has not reached the box: fixed by a sync, Fix My Account, a stream-profile sync or a Tier 2 provisioning escalation.` }
     ];
 
     return (

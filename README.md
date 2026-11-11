@@ -86,7 +86,7 @@ dispatches, churn), whether Mediaroom or OPUS is driving it, and focus sections 
 and Missing Channels, from the dashboard KPIs and the Sep and Oct note exports (aggregates only), served by
 `get_page({ product: "TV", page: "octreview" })`.
 
-The Review pages (including TV › Oct Review, 10 slides) and the Executive Summary have a presentation mode (the Present
+The Review pages (including TV › Oct Review, 8 slides) and the Executive Summary have a presentation mode (the Present
 button, or `#<page>/<n>` to open on slide n, e.g. `#tvbrief/11`,
 `#hsiabrief/8`, `#execsummary/2`): a Slidev-style deck (`Deck` in
 `site/App.jsx`) using Slidev's layout names (cover, section, default, two-cols,
