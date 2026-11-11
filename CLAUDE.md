@@ -69,3 +69,7 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Redwood Scorecard + Metrics" workbook, "Repair Tracking Detail" tab, HSIA West row (2026 only; the 2025
   file has no such tab). The KPI tab reports HSIA West and TQ ILEC together, so the churn card shows
   "n/a" until the source splits it.
+- HSIA › TQ ILEC (`hsiatq`, `HsiaTqPage`, `TQ_ILEC`) mirrors the HSIA West page for TQ ILEC high speed: calls
+  ("TQ ILEC - HSIA"), normalized call tickets and base from the TS Calls Offered by Product workbook, repairs
+  from the 2026 Redwood Scorecard + Metrics "Repair Tracking Detail" tab, "TQ ILEC HS" row (2026 only).
+  HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
