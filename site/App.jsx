@@ -74,14 +74,14 @@ const HEALTH_COMMENTARY = {
       ],
       next: [
         "The InSight TV Hardware Check fix launched in October to improve diagnosis; it does not reduce the ticket volume itself",
-        "Sequential reboot proactive campaign (target Nov 2026) is the only item aimed at the mechanism; the pilot cohort was agreed on 22 October, so the October level is the pre-fix baseline"
+        "The proactive gateway (sequential) reboot is the only item aimed at the mechanism; it is on hold until January 2027 because of the Q4 firmware rollout targeting security vulnerabilities, so the October level is the pre-fix baseline"
       ],
       inits: ["Sequential Reboot for Stuck on Initializing", "InSight TV Hardware Check fix"],
       note: "Flat MoM, +24% YoY; the volume has held at the September step change" },
     { t: "Video quality", share: "Stop/Stuttering/Freezing 2,813 (+21.9% MoM, +506) · Pixelization 444 (+48.5% MoM, +145)",
       causes: ["Stop/Stuttering/Freezing and Pixelization drive the rise; Video Issues is up 8.5% MoM in total (8,202 tickets), while still 15% below October 2025"],
-      next: ["The Mediaroom OVQ proactive campaign restarts in October, after the Low RSSI and Low Bitrate campaign launched in August"],
-      inits: ["Mediaroom OVQ Campaign Restart", "Low RSSI + Low Bitrate Proactive Campaign"],
+      next: ["The Mediaroom OVQ proactive campaign restarted in October, after the Low RSSI and Low Bitrate campaign launched in August"],
+      inits: ["Mediaroom OVQ Campaign Restart", "Low RSSI + Low Bitrate Proactive Campaign", "IPv4 over Wi-Fi Slow Video Start Investigation"],
       note: "The single largest TV mover in October" },
     { t: "Channel errors", share: "Channel Not Working 2,355 (+4.7% MoM, +105) · Missing Channels 2,130 (+10.6% MoM, +204)",
       causes: ["A defect temporarily preventing access to subscribed channels (fix in testing)", "Channel configuration gaps still being closed in AVS and Mediaroom"],
@@ -89,7 +89,7 @@ const HEALTH_COMMENTARY = {
       note: "Channel Issues up 8.2% MoM and 13% YoY; the SD downconvert removal launched in October to ease the perception of lost channels" },
     { t: "Digital Box power & boot (TV+)", share: "Digital Box › No Boot 2,253 tickets (-6.9% MoM, -166)",
       causes: ["OPUS digital box power-supply unit failures"],
-      next: ["The PSU Replacement Campaign remains on hold because the new courier requires a signature for delivery of the replacement PSU. The team is working to resolve this and restart the campaign"],
+      next: ["The PSU Replacement Campaign is on hold after bot issues and is set to resume on 16 November"],
       inits: ["PSU Replacement Campaign", "Revamped OPUS Migration Process", "Equipment Order Fallout Audit"],
       note: "Eased from September and 62% below October 2025" }
   ],
@@ -459,9 +459,9 @@ const INITIATIVES = [
     desc: "Automates shipping telemetry to proactively identify new trends in shipment failures." },
   // notFor / pinFor: per-issue overrides of the theme-based initiative coverage in the ticket issues table
   { p: "TV", pillar: 2, theme: "Hardware", name: "PSU Replacement Campaign", status: "On Hold", timeline: "Sep 2025", prime: "D. Culp", issues: ["TV"], notFor: ["STB No Boot › Stuck on Initializing"],
-    desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets. On hold since August: the new courier requires a signature on delivery of the replacement PSU." },
-  { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "In flight", timeline: "Nov 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
-    desc: "Sequential reboot procedure for Optik TV (Legacy) set-top boxes stuck on Initializing." },
+    desc: "Ships replacement power-supply units for the OPUS digital box, a major driver of TV hardware tickets. On hold after bot issues; set to resume on 16 Nov." },
+  { p: "TV", pillar: 2, theme: "Hardware", name: "Sequential Reboot for Stuck on Initializing", status: "On Hold", timeline: "Jan 2027", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"], notFor: ["Digital Box › No Boot"],
+    desc: "Proactive gateway reboot to remedy Stuck on Initializing issues (sequential reboot procedure for Optik TV Legacy set-top boxes). On hold because of the Q4 firmware rollout targeting security vulnerabilities; now targeted for Jan 2027." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "InSight TV Hardware Check fix", status: "Launched", timeline: "Oct 2026", prime: "Z. Sayhebolay", issues: ["TV"], pinFor: ["STB No Boot › Stuck on Initializing"],
     desc: "Fixes the InSight TV Hardware Check diagnostic used on set-top box and gateway faults." },
   { p: "TV", pillar: 2, theme: "Hardware", name: "Shipment Notification Redesign", status: "Launched", timeline: "Feb 2026", prime: "K. Liu", issues: ["TV", "Support"],
@@ -484,10 +484,14 @@ const INITIATIVES = [
     desc: "Enhances recording-deletion behaviour." },
   { p: "TV", pillar: 3, theme: "Video Quality", name: "Low RSSI + Low Bitrate Proactive Campaign", status: "Launched", timeline: "Aug 2026", prime: "G. Sawa", issues: ["TV", "WiFi"],
     desc: "Proactive campaign targeting set-top boxes with low RSSI and low bitrate before customers notice video quality issues." },
-  { p: "TV", pillar: 3, theme: "Video Quality", name: "Mediaroom OVQ Campaign Restart", status: "In flight", timeline: "Oct 2026", prime: "G. Sawa", issues: ["TV"],
+  { p: "TV", pillar: 3, theme: "Video Quality", name: "Mediaroom OVQ Campaign Restart", status: "Launched", timeline: "Oct 2026", prime: "G. Sawa", issues: ["TV"],
     desc: "Restarts the Mediaroom (Optik TV Legacy) video-quality proactive campaign." },
-  { p: "TV", pillar: 3, theme: "Onboarding", name: "AI STB Onboarding Videos", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV", "Support"],
-    desc: "Six new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
+  { p: "TV", pillar: 3, theme: "Onboarding", name: "AI STB Onboarding Videos", status: "In flight", timeline: "Nov 2026", prime: "C. Carter", issues: ["TV", "Support"],
+    desc: "Five new AI-generated STB onboarding videos in a new Home-page swimlane helping customers with remote and UX usage." },
+  { p: "TV", pillar: 3, theme: "Onboarding", name: "BYOD Support Content Update", status: "Launched", timeline: "Oct 2026", prime: "A. Kozyniak", issues: ["TV", "Support"],
+    desc: "Updated all BYOD support content, including a Smart TV installation video, on telus.com/watchoptik." },
+  { p: "TV", pillar: 1, theme: "Video Quality", name: "IPv4 over Wi-Fi Slow Video Start Investigation", status: "In flight", timeline: "Dec 2026", prime: "C. Carter", issues: ["TV", "WiFi"],
+    desc: "Ongoing investigation into slower video start times for IPv4 customers on Wi-Fi." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Channel Config Gap Closing", status: "In flight", timeline: "Sep 2026", prime: "C. Carter", issues: ["TV"],
     desc: "Closes channel configuration gaps: 18 channel updates in AVS and 172 in Mediaroom before Sep 30." },
   { p: "TV", pillar: 2, theme: "Channel Issues", name: "Mediaroom SD Downconvert Removal", status: "Launched", timeline: "Oct 2026", prime: "N. Desrosiers", issues: ["TV"],
@@ -794,7 +798,9 @@ const PFE = {
 //   to the TV subscriber base in DATA.
 // Repairs: 2026 Redwood Scorecard workbook, Repair Tracking Detail tab —
 //   Legacy = IPTV West + TQ ILEC TV; OPUS = OPUS + PFE Vulcan - TV; reported for
-//   2026 onward only (2025 = null).
+//   2026 onward from that workbook. 2025 backfilled from the 2025 Redwood Scorecard + Metrics workbook, MTD Budget Deltas tab,
+//   Monthly Repair Volume (Legacy = IPTV Copper + IPTV Fibre, OPUS = OPUS; IPTV West scope, no TQ ILEC TV split, so 2025 sits
+//   below the KPI-tab TV total and OPUS steps up in Jan 2026 where the 2026 definition adds PFE Vulcan - TV).
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
 //   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September and October pulls were not yet available from the
@@ -804,14 +810,14 @@ const TV_PLATFORMS = [
   {
     id: "legacy", name: "Optik TV Legacy", sub: "Mediaroom",
     tickets: [28724,28040,30652,30984,31535,26336,26637,24474,22010,26284,25560,24547,26833,23176,23159,23715,20858,20917,21489,22122,24775,25441],
-    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
+    repairs: [1658,1464,1506,1414,1394,1210,1311,1278,1275,1542,1414,1370,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480,9810,10722,10734,10003,10097,10007,10731,12168,15164,15504,13886,12128,9920,9441,10894,9879,11257,9867,10678,12760,12501],
-    repairs: [null,null,null,null,null,null,null,null,null,null,null,null,307,310,329,330,336,307,309,305,390,353],
+    repairs: [112,108,101,66,55,60,69,75,89,111,92,88,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
     swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
   }
@@ -3798,10 +3804,8 @@ export default function ReliabilityScorecards() {
   }
 
   function TvPlatformsPage() {
-    // Sub-page carries no date filter: always the full 2026 window and the latest month
-    const LAST = MONTHS.length - 1;
-    const rangeMonths = MONTHS.slice(12);
-    const sliceR = (arr) => arr.slice(12);
+    // Follows the From / To date filter: cards show the last month of the window, charts the window
+    const LAST = toIdx;
     const platKey = (p) => (p.id === "legacy" ? "LEGACY" : "OPUS");
     const platSeries = (field) => TV_PLATFORMS.map((p) => ({ key: platKey(p), label: p.name, data: sliceR(p[field] || []) }));
     const platLegend = <Legend items={TV_PLATFORMS.map((p) => ({ label: p.name, color: colors[platKey(p)] }))} T={T} />;
@@ -3882,7 +3886,7 @@ export default function ReliabilityScorecards() {
           );
         })()}
         <p style={{ fontSize: 12, color: T.textFaint, margin: "0 2px 0", lineHeight: 1.6 }}>
-          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is reported for 2026 onward and is West-scope, so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
+          Tickets: Looker Ticket Categories split by product (Optik TV (Legacy), TV Evolution and Pik TV). The TV ticket volume and rate include Pik TV, a minor product line shown here for volume only; its subscribers are not in the rate base and it is left out of the analysis sections. Subscriber base: TV Customer Base Breakdown workbook, Customer Base - Provisioned tab (month-end provisioned subscribers, all regions except BTV and SPLUS) — Legacy = MediaRoom only, TV Evolution = TTV+ only, Mixed usage = customers on both platforms; the three sum to the TV subscriber base on the TV page. Repairs: 2026 Redwood Scorecard, Repair Tracking Detail — Legacy = IPTV West + TQ ILEC TV; TV Evolution = OPUS + PFE Vulcan - TV; the repair split is 2026 from the 2026 Redwood Scorecard and 2025 from the 2025 Redwood Scorecard (IPTV West scope, so OPUS steps up in January 2026 where the definition adds PFE Vulcan - TV, and 2025 year-over-year repair comparisons are not like for like), so platform repair rates can differ from the rolled-up TV repair rate. Swap volumes are repair swap orders from the Tableau Swapped Orders Combined View dashboard, all technologies (Total TV = Legacy; Total OPUS = TV Evolution), Jan – Aug 2026; the September swap pull was not yet available when this update was made.
         </p>
 
         {sec("Subscriber base", "base",
@@ -3903,13 +3907,13 @@ export default function ReliabilityScorecards() {
 
         {sec("Repairs / Dispatches", "repairs",
           <>
-            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Repair split reported for 2026 onward.")}
+            {platChart("tvp-rp", "Repair volume by platform", "repairs", fmtNum, "Platform repair split: 2026 from the 2026 Redwood Scorecard (Mediaroom = IPTV West + TQ ILEC TV, OPUS = OPUS + PFE Vulcan - TV); 2025 from the 2025 Redwood Scorecard (IPTV Copper + Fibre, and OPUS; IPTV West scope), so OPUS steps up in January 2026 when the definition widens.")}
             {platChart("tvp-rr", "Repair rate by platform (per 100 platform subs)", "repairRate", (v) => fmtRate(v, 2), undefined, (v) => fmtRate(v, 2))}
           </>
         )}
 
         {sec("Repair swaps", "repairs",
-          platChart("tvp-sw", "Repair swap volume by platform", "swaps2026", fmtNum, "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026; September is not yet pulled.")
+          platChart("tvp-sw", "Repair swap volume by platform", "swaps2026", fmtNum, "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026 only; September and October are not yet pulled.")
         )}
 
         {sec("Mixed usage", "base",
@@ -8165,7 +8169,7 @@ export default function ReliabilityScorecards() {
                 })}
               </div>
             )}
-            {!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "SH+" && CHILD_PARENT[page] !== "archive" && CHILD_PARENT[page] !== "hsiaarch" && page !== "archive" && page !== "ffps" && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {(page === "tvplatforms" || (!PRODUCTS.includes(CHILD_PARENT[page]) && CHILD_PARENT[page] !== "SH+" && CHILD_PARENT[page] !== "archive" && CHILD_PARENT[page] !== "hsiaarch" && page !== "archive" && page !== "ffps")) && <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>From</span>
               <select value={fromIdx} onChange={(e) => { const v = +e.target.value; setFromIdx(v); if (v > toIdx) setToIdx(v); }} style={selectStyle}>
                 {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
