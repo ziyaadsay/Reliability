@@ -3898,20 +3898,20 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtNumK, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtNum)
+          simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtBig, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
         )}
 
         {sec("Call tickets", "tickets",
           <ChartCard title="Call tickets — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-tr"]} onToggleTable={() => toggleTable("tq-tr")}
             note="Normalized call tickets for TQ ILEC - HSIA over the TQ ILEC HSIA base. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Call ticket volume", data: TQ_ILEC.callTickets, color: col, fmt: fmtNumK }}
+              bar={{ label: "Call ticket volume", data: TQ_ILEC.callTickets, color: col, fmt: fmtBig }}
               line={{ label: "Call ticket rate", data: TQ_ILEC.callTicketRate, color: col, fmt: rate2 }} />
             <Legend items={[{ label: "Call ticket volume (bars, left axis)", color: col, bar: true }, { label: "Call ticket rate (line, right axis)", color: col }]} T={T} />
             {openTables["tq-tr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "TQ", label: "Call ticket volume", data: TQ_ILEC.callTickets, fmt: fmtNum },
+              { key: "TQ", label: "Call ticket volume", data: TQ_ILEC.callTickets, fmt: fmtBig },
               { key: "TQ", label: "Call ticket rate", data: TQ_ILEC.callTicketRate, fmt: rate2 }
-            ]} fmt={fmtNum} T={T} />}
+            ]} fmt={fmtBig} T={T} />}
           </ChartCard>
         )}
 
@@ -3919,18 +3919,18 @@ export default function ReliabilityScorecards() {
           <ChartCard title="Repairs / dispatches — volume (bars) and rate (line, per 100 subs)" T={T} tableOpen={!!openTables["tq-rr"]} onToggleTable={() => toggleTable("tq-rr")}
             note="TQ ILEC HS repairs from the 2026 Redwood Scorecard + Metrics (Repair Tracking Detail), over the TQ ILEC HSIA base. Reported for 2026 only. Volume on the left axis, rate on the right.">
             <ComboChart labels={MONTHS} T={T}
-              bar={{ label: "Repair volume", data: TQ_ILEC.repairVolume, color: col, fmt: fmtNumK }}
+              bar={{ label: "Repair volume", data: TQ_ILEC.repairVolume, color: col, fmt: fmtBig }}
               line={{ label: "Repair rate", data: TQ_ILEC.repairRate, color: col, fmt: rate2 }} />
             <Legend items={[{ label: "Repair volume (bars, left axis)", color: col, bar: true }, { label: "Repair rate (line, right axis)", color: col }]} T={T} />
             {openTables["tq-rr"] && <DataTable labels={MONTHS} seriesDefs={[
-              { key: "TQ", label: "Repair volume", data: TQ_ILEC.repairVolume, fmt: fmtNum },
+              { key: "TQ", label: "Repair volume", data: TQ_ILEC.repairVolume, fmt: fmtBig },
               { key: "TQ", label: "Repair rate", data: TQ_ILEC.repairRate, fmt: rate2 }
-            ]} fmt={fmtNum} T={T} />}
+            ]} fmt={fmtBig} T={T} />}
           </ChartCard>
         )}
 
         {sec("Subscriber base", "base",
-          simple("tq-bs", "Subscriber base", "Subscriber base", TQ_ILEC.subBase, fmtBig, "Month-end TQ ILEC HSIA subscribers (TS Calls Offered by Product workbook, Subscribers block).", fmtNum)
+          simple("tq-bs", "Subscriber base", "Subscriber base", TQ_ILEC.subBase, fmtBig, "Month-end TQ ILEC HSIA subscribers (TS Calls Offered by Product workbook, Subscribers block).", fmtBig)
         )}
       </>
     );
@@ -3966,13 +3966,13 @@ export default function ReliabilityScorecards() {
     const combo = (id, title, volLabel, vol, rateLabel, rate, note) => (
       <ChartCard title={title} T={T} tableOpen={!!openTables[id]} onToggleTable={() => toggleTable(id)} note={note}>
         <ComboChart labels={MONTHS} T={T}
-          bar={{ label: volLabel, data: vol, color: col, fmt: fmtNumK }}
+          bar={{ label: volLabel, data: vol, color: col, fmt: fmtBig }}
           line={{ label: rateLabel, data: rate, color: col, fmt: rate2 }} />
         <Legend items={[{ label: `${volLabel} (bars, left axis)`, color: col, bar: true }, { label: `${rateLabel} (line, right axis)`, color: col }]} T={T} />
         {openTables[id] && <DataTable labels={MONTHS} seriesDefs={[
-          { key: "PFE", label: volLabel, data: vol, fmt: fmtNum },
+          { key: "PFE", label: volLabel, data: vol, fmt: fmtBig },
           { key: "PFE", label: rateLabel, data: rate, fmt: rate2 }
-        ]} fmt={fmtNum} T={T} />}
+        ]} fmt={fmtBig} T={T} />}
       </ChartCard>
     );
     return (
@@ -3998,7 +3998,7 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtNumK, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtNum)
+          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtBig, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
         )}
 
         {sec("Tickets", "tickets",
@@ -4014,7 +4014,7 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Subscriber base", "base",
-          simple("pfe-bs", "Subscriber base", "Subscriber base", PFE.subBase, fmtBig, "Month-end PFE subscribers (Reliability/Deact KPIs tab).", fmtNum)
+          simple("pfe-bs", "Subscriber base", "Subscriber base", PFE.subBase, fmtBig, "Month-end PFE subscribers (Reliability/Deact KPIs tab).", fmtBig)
         )}
       </>
     );
