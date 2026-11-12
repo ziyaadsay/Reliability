@@ -837,6 +837,22 @@ const TQ_ILEC = {
 };
 
 // ---------------------------------------------------------------------------
+// HSIA October Review — slow speeds by month (Jan 2025 – Oct 2026). Churn Measurement 2026
+// workbook, HSIA Recategorization Looker tab, the "Slow Speeds" customer pain point (wired and
+// wireless slow speeds plus incompatible equipment) in the HSIA All, HSIA West, HSIA TQ ILEC and
+// HSIA PFE blocks. The three groups do not add up exactly to HSIA All. Calls and repairs have no
+// slow-speed split in the workbook.
+// ---------------------------------------------------------------------------
+const HSIA_OCT_REVIEW = {
+  slow: {
+    all: [6236,5906,7008,7533,7497,7585,8099,8567,8497,9067,9720,10506,11908,10397,10784,11481,12045,12721,12214,12616,12833,12673],
+    west: [5810,5530,6640,7092,7098,7200,7617,8131,8061,8488,9112,9706,11149,9712,10094,10758,11228,11895,11248,11454,11621,11245],
+    tq: [417,371,362,431,388,374,468,428,426,562,592,779,747,664,674,682,753,779,899,1055,1073,1237],
+    pfe: [63,51,72,105,180,162,191,156,213,222,217,421,318,252,305,425,470,581,598,479,356,368]
+  }
+};
+
+// ---------------------------------------------------------------------------
 // TV platform breakout — Optik TV Legacy (Mediaroom) vs TV Evolution (OPUS).
 // Arrays align with MONTHS (Jan 2025 – Oct 2026).
 // Tickets: Looker Ticket Categories tab, split by Product
@@ -2502,11 +2518,11 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiaoctreview", "hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   shplustickets: "Notes Analysis",
-  hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiawest: "HSIA West", hsiatq: "TQ ILEC", hsiapfe: "PFE (PureFibre East)", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
+  hsiaoctreview: "Oct Review", hsiatickets: "Notes Analysis", hsiasentiment: "Customer Sentiment Analysis", hsiacross: "Cross Analysis", hsiawest: "HSIA West", hsiatq: "TQ ILEC", hsiapfe: "PFE (PureFibre East)", hsiaarch: "Architecture", hsiaarchdeck: "Supporting deck", hsiabrief: "HSIA Review",
   tvplatforms: "By Platform", tvtickets: "Notes Analysis", tvsentiment: "Customer Sentiment Analysis", tvcross: "Cross Analysis", tvbrief: "TV Review (Sep 2026)", tvoctreview: "Oct Review"
 };
 const CHILD_PARENT = Object.fromEntries(Object.entries(CHILD_PAGES).flatMap(([parent, ids]) => ids.map((id) => [id, parent])));
@@ -2832,7 +2848,7 @@ function printDeck(deck) {
 export default function ReliabilityScorecards() {
   // Pages are addressable by URL hash (#HSIA, #hsiabrief, #execsummary ...), so links
   // from the MCP server's list_pages open the right page.
-  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiawest", "hsiatq", "hsiapfe", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
+  const PAGE_IDS = ["home", "execsummary", "HSIA", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaoctreview", "hsiawest", "hsiatq", "hsiapfe", "hsiaarch", "hsiaarchdeck", "TV", "tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview", "SHS", "SH+", "shplustickets", "selfserve", "ffps", "archive", "hsiabrief", "tvbrief"];
   // A page hash may carry a slide number (#tvbrief/3) to open that page's presentation
   // mode (Deck) on a given slide.
   const parseHash = () => {
@@ -2914,6 +2930,7 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
+    { id: "hsiaoctreview", label: "Oct Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiawest", label: "HSIA West", icon: "hsia", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiatq", label: "TQ ILEC", icon: "hsia", color: colors.TQ, child: true, parent: "HSIA" },
     { id: "hsiapfe", label: "PFE (PureFibre East)", icon: "hsia", color: colors.PFE, child: true, parent: "HSIA" },
@@ -7683,6 +7700,213 @@ export default function ReliabilityScorecards() {
   // ------------------------------ executive summary deck ------------------------------
   // "Sep – Oct 2026" style ranges (SHS workbook rows) count for every month they span.
   const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // ------------------------------ HSIA October review ------------------------------
+  // Same shape as the TV October Review: a headline, an "In short", then numbered sections. HSIA as a
+  // whole (calls, tickets, repairs, deacts), HSIA West, TQ ILEC and PFE separately, then slow speeds.
+  // Deacts are estimated as churn rate x subscriber base (no deact volume series exists on the KPI tab).
+  function HsiaOctReviewPage() {
+    const col = colors.HSIA, S = HSIA_OCT_REVIEW;
+    const H = T.heading, MUTED = T.textMuted, RULE = T.border;
+    const AMBER = isDark ? "#F0A55B" : "#B86E00";
+    const css = briefCss(col, AMBER);
+    const num = (v) => (v == null ? "—" : Math.round(v).toLocaleString());
+    const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
+    const sp = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) + "%");
+    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
+    const iOct = MONTHS.indexOf("Oct 2026"), iSep = iOct - 1, iYoY = iOct - 12;
+    const base = DATA.subBase.HSIA, churn = DATA.churnRate.HSIA;
+    const est = (rate, b) => rate.map((c, i) => (c == null || b[i] == null ? null : Math.round((c * b[i]) / 100)));
+    const overall = [
+      { key: "calls", label: "Calls offered", vals: CALLS_SPLIT.HSIA.offered },
+      { key: "tickets", label: "Tickets", vals: DATA.ticketVolume.HSIA },
+      { key: "repairs", label: "Repairs / dispatches", vals: DATA.repairVolume.HSIA },
+      { key: "deacts", label: "Deacts (churn rate × base)", vals: est(churn, base) }
+    ];
+    const groups = [
+      { name: "HSIA West", color: colors.HSIA, calls: HSIA_WEST.callsOffered, tickets: HSIA_WEST.ticketVolume, repairs: HSIA_WEST.repairVolume, deacts: null, slow: S.slow.west },
+      { name: "TQ ILEC", color: colors.TQ, calls: TQ_ILEC.callsOffered, tickets: TQ_ILEC.ticketVolume, repairs: TQ_ILEC.repairVolume, deacts: null, slow: S.slow.tq },
+      { name: "PFE", color: colors.PFE, calls: PFE.callsOffered, tickets: PFE.ticketVolume, repairs: PFE.repairVolume, deacts: est(PFE.churnRate, PFE.subBase), slow: S.slow.pfe }
+    ];
+    const metricKeys = [["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"], ["deacts", "Deacts (est.)"]];
+    const svgText = { fontFamily: FONT, fontSize: 11.5, fill: MUTED };
+    // one chart for every trend: a list of series, optionally indexed to a base month (= 100)
+    const plot = (series, o = {}) => {
+      const start = o.start || 0, W = o.w || 520, Hh = o.h || 210, l = 42, r = 58, t = 14, b = 26;
+      const ks = []; for (let k = start; k <= iOct; k++) ks.push(k);
+      const prep = series.map((sr) => ({ ...sr, v: ks.map((k) => {
+        const x = sr.vals[k]; if (x == null) return null;
+        if (o.index != null) { const bs = sr.vals[o.index]; return bs ? (x / bs) * 100 : null; }
+        return x;
+      }) }));
+      const all = prep.flatMap((sr) => sr.v).filter((x) => x != null);
+      if (!all.length) return <div className="hb-prose">No data</div>;
+      const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.15 || 1, lo = mn - pad, hi = mx + pad;
+      const pw = W - l - r, ph = Hh - t - b, f = o.fmt || fmtBig;
+      const x = (j) => l + (j * pw) / (ks.length - 1), y = (v) => t + ph - ((v - lo) / (hi - lo)) * ph;
+      return (
+        <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
+          {[0, 1, 2].map((q) => { const g = lo + ((hi - lo) * q) / 2; return <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={svgText}>{f(g)}</text></g>; })}
+          {ks.map((k, j) => (j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text> : null))}
+          {o.index != null && lo < 100 && hi > 100 && <line x1={l} x2={W - r} y1={y(100)} y2={y(100)} stroke={MUTED} strokeDasharray="4 4" />}
+          {prep.map((sr) => {
+            let d = "", pen = false;
+            sr.v.forEach((v, j) => { if (v == null) { pen = false; return; } d += `${pen ? "L" : "M"}${x(j).toFixed(1)},${y(v).toFixed(1)}`; pen = true; });
+            const lj = sr.v.map((v) => v != null).lastIndexOf(true);
+            return (
+              <g key={sr.name}>
+                <path d={d} fill="none" stroke={sr.color} strokeWidth={2.4} />
+                {lj >= 0 && <><circle cx={x(lj)} cy={y(sr.v[lj])} r={4} fill={sr.color} /><text x={x(lj) + 8} y={y(sr.v[lj]) + 4} style={{ ...svgText, fontWeight: 700, fill: sr.color }}>{f(sr.v[lj])}</text></>}
+              </g>
+            );
+          })}
+        </svg>
+      );
+    };
+    const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.name}><i className="hb-sw" style={{ background: it.color }} />{it.name}</span>)}</div>;
+    const stat = (v, label, sub) => (
+      <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
+    );
+    const mom = (a) => pct(a[iOct], a[iSep]), yoy = (a) => pct(a[iOct], a[iYoY]);
+    const row = (name, a) => (
+      <tr key={name}><td>{name}</td><td className="n">{num(a[iSep])}</td><td className="n">{num(a[iOct])}</td><td className="n">{sp(mom(a))}</td><td className="n">{num(a[iYoY])}</td><td className="n">{sp(yoy(a))}</td></tr>
+    );
+    const head = (first) => <thead><tr><th>{first}</th><th>Sep</th><th>Oct</th><th>MoM</th><th>Oct 2025</th><th>YoY</th></tr></thead>;
+    // ---- slow speeds ----
+    const slowAll = S.slow.all, tot = DATA.ticketVolume.HSIA;
+    const share = (k) => (slowAll[k] / tot[k]) * 100;
+    const slowYoY = slowAll[iOct] - slowAll[iYoY], totYoY = tot[iOct] - tot[iYoY], growthShare = totYoY > 0 ? (slowYoY / totYoY) * 100 : null;
+    const slowJan = slowAll[iOct] - slowAll[0], totJan = tot[iOct] - tot[0];
+    const slowInit = INITIATIVES.filter((it) => it.p === "HSIA" && it.issues && it.issues.includes("Speed"));
+    const fastest = groups.map((g) => ({ name: g.name, g: pct(g.slow[iOct], g.slow[iYoY]) })).sort((a, b) => b.g - a.g)[0];
+    const bigTickets = [...groups].sort((a, b) => Math.abs(b.tickets[iOct] - b.tickets[iYoY]) - Math.abs(a.tickets[iOct] - a.tickets[iYoY]))[0];
+    const O = overall.reduce((m, x) => ({ ...m, [x.key]: x.vals }), {});
+    return (
+      <div className="hb">
+        <style>{css}</style>
+        <header className="hb-head">
+          <div className="hb-eyebrow">HSIA · October 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds</div>
+          <h1>HSIA in October: tickets {sp(mom(O.tickets))} and calls offered {sp(mom(O.calls))} on September, repairs {sp(mom(O.repairs))}. Slow speeds are {share(iOct).toFixed(0)}% of tickets and {growthShare == null ? "most" : growthShare.toFixed(0) + "%"} of the year-over-year rise.</h1>
+          <p className="hb-sub">Calls offered, tickets, repairs and deacts for HSIA overall, then for HSIA West, TQ ILEC and PFE on their own, then a view of slow speeds as a root cause. Slow speeds are shown for tickets; the workbook has no slow-speed split for calls or repairs yet.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Rates per 100 subscribers</span><span>Deacts estimated as churn rate × base</span></div>
+        </header>
+
+        <section aria-labelledby="ho-short">
+          <div className="hb-answer">
+            <h3 id="ho-short" style={{ color: H }}>In short</h3>
+            <ol>
+              <li><strong>October eased on volume.</strong> Calls offered {num(O.calls[iOct])} ({sp(mom(O.calls))} MoM, {sp(yoy(O.calls))} YoY), tickets {num(O.tickets[iOct])} ({sp(mom(O.tickets))}, {sp(yoy(O.tickets))}), repairs {num(O.repairs[iOct])} ({sp(mom(O.repairs))}, {sp(yoy(O.repairs))}) and estimated deacts {num(O.deacts[iOct])} ({sp(mom(O.deacts))}, {sp(yoy(O.deacts))}).</li>
+              <li><strong>HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.</strong> West has {num(groups[0].tickets[iOct])} tickets, {sp(yoy(groups[0].tickets))} YoY; TQ ILEC {sp(yoy(groups[1].tickets))} and PFE {sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is {bigTickets.name}.</li>
+              <li><strong>Slow speeds are the root cause that keeps growing.</strong> {num(slowAll[iOct])} slow-speed tickets in October, {sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and {sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were {share(0).toFixed(0)}% of tickets in January 2025 and are {share(iOct).toFixed(0)}% now.</li>
+              <li><strong>Slow speeds explain most of the ticket growth.</strong> Of the {sn(totYoY)} rise in tickets on October 2025, slow speeds are {sn(slowYoY)}{growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are {sn(slowJan)} of {sn(totJan)}. {fastest.name} has grown fastest ({sp(fastest.g, 0)} YoY).</li>
+              <li><strong>Calls and repairs for slow speeds are not split yet.</strong> The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section aria-labelledby="ho-all">
+          <h2 id="ho-all">HSIA as a whole: calls, tickets, repairs and deacts</h2>
+          <div className="hb-stats">
+            {overall.map((m) => stat(num(m.vals[iOct]), `${m.label} · Oct`, `Sep ${num(m.vals[iSep])} · ${sp(mom(m.vals))} MoM · ${sp(yoy(m.vals))} YoY`))}
+          </div>
+          <div className="hb-tw"><table>
+            {head("Measure")}
+            <tbody>{overall.map((m) => row(m.label, m.vals))}</tbody>
+          </table></div>
+          <div className="hb-two">
+            {overall.map((m) => (
+              <figure key={m.key}>
+                <div className="hb-figtitle">{m.label}, Jan 2025 to Oct 2026</div>
+                <div className="hb-chart">{plot([{ name: m.label, color: col, vals: m.vals }])}</div>
+              </figure>
+            ))}
+          </div>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Calls offered are HSIA West + TQ ILEC - HSIA (TS Calls Offered by Product). Tickets, repairs and churn are the KPI-tab HSIA series. Deacts are the churn rate (go/national) times the subscriber base; for the three months the KPI tab reports a deact volume (Jan to Mar 2026) the estimate is within about 1% of it. Churn starts in February 2025, so deacts do.</p>
+        </section>
+
+        <section aria-labelledby="ho-groups">
+          <h2 id="ho-groups">HSIA West, TQ ILEC and PFE separately</h2>
+          <p className="hb-prose">The three groups, each against its own history. Each line is on its own scale, so read the shape and the change columns, not the heights. TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot.</p>
+          <div className="hb-tw"><table>
+            {head("Group · measure")}
+            <tbody>{groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k]) : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split from HSIA West + TQ ILEC in the source</td></tr>)))}</tbody>
+          </table></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
+            {groups.flatMap((g) => metricKeys.filter(([k]) => g[k]).map(([k, lbl]) => (
+              <figure key={g.name + k}>
+                <div className="hb-figtitle"><span style={{ color: g.color }}>{g.name}</span> · {lbl}</div>
+                <div className="hb-chart">{plot([{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360 })}</div>
+              </figure>
+            )))}
+          </div>
+          <h3 style={{ color: H, marginTop: 8 }}>Growth since October 2025 (October 2025 = 100)</h3>
+          <div className="hb-two">
+            {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => (
+              <figure key={k}>
+                <div className="hb-figtitle">{lbl}</div>
+                <div className="hb-chart">{plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g[k] })), { start: iYoY, index: iYoY, fmt: (v) => Math.round(v), h: 200 })}</div>
+                {legend(groups)}
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="ho-slow">
+          <h2 id="ho-slow">Slow speeds: the root cause that keeps growing</h2>
+          <div className="hb-stats">
+            {stat(num(slowAll[iOct]), "Slow-speed tickets · Oct", `Sep ${num(slowAll[iSep])} · ${sp(pct(slowAll[iOct], slowAll[iSep]))} MoM`)}
+            {stat(sp(pct(slowAll[iOct], slowAll[iYoY]), 0), "vs Oct 2025", `${num(slowAll[iYoY])} to ${num(slowAll[iOct])}`)}
+            {stat(sp(pct(slowAll[iOct], slowAll[0]), 0), "vs Jan 2025", `${num(slowAll[0])} to ${num(slowAll[iOct])}`)}
+            {stat(`${share(iOct).toFixed(1)}%`, "Share of HSIA tickets · Oct", `${share(iYoY).toFixed(1)}% in Oct 2025 · ${share(0).toFixed(1)}% in Jan 2025`)}
+            {stat(growthShare == null ? "n/a" : `${growthShare.toFixed(0)}%`, "of the YoY ticket rise", `${sn(slowYoY)} of ${sn(totYoY)} tickets`)}
+          </div>
+          <div className="hb-two">
+            <figure>
+              <div className="hb-figtitle">Slow-speed tickets, HSIA, Jan 2025 to Oct 2026</div>
+              <div className="hb-chart">{plot([{ name: "Slow speeds", color: col, vals: slowAll }])}</div>
+            </figure>
+            <figure>
+              <div className="hb-figtitle">Slow speeds as a share of HSIA tickets (%)</div>
+              <div className="hb-chart">{plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { fmt: (v) => v.toFixed(1) })}</div>
+            </figure>
+          </div>
+          <div className="hb-two">
+            <figure>
+              <div className="hb-figtitle">Growth by group (Jan 2025 = 100)</div>
+              <div className="hb-chart">{plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 220 })}</div>
+              {legend(groups)}
+            </figure>
+            <figure>
+              <div className="hb-figtitle">Slow-speed tickets by group</div>
+              <div className="hb-tw"><table>
+                <thead><tr><th>Group</th><th>Jan 2025</th><th>Oct 2025</th><th>Oct 2026</th><th>YoY</th><th>Share of its tickets</th></tr></thead>
+                <tbody>{groups.map((g) => <tr key={g.name}><td>{g.name}</td><td className="n">{num(g.slow[0])}</td><td className="n">{num(g.slow[iYoY])}</td><td className="n">{num(g.slow[iOct])}</td><td className="n">{sp(pct(g.slow[iOct], g.slow[iYoY]), 0)}</td><td className="n">{((g.slow[iYoY] / g.tickets[iYoY]) * 100).toFixed(0)}% → {((g.slow[iOct] / g.tickets[iOct]) * 100).toFixed(0)}%</td></tr>)}</tbody>
+              </table></div>
+            </figure>
+          </div>
+          <div className="hb-note">
+            <h3>Calls and repairs for slow speeds: source needed</h3>
+            <p>The workbook reports slow speeds by month for tickets only. Calls are split Connectivity and Wireless (no slow-speed reason) and repairs have no reason split, so the slow-speed growth for calls and repairs cannot be shown yet. Send a Looker look or tab that carries calls and repairs by reason and these two views are added alongside the tickets view.</p>
+          </div>
+          <h3 style={{ color: H, marginTop: 8 }}>Initiatives aimed at speed</h3>
+          <div className="hb-tw"><table>
+            <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
+            <tbody>{slowInit.map((it) => <tr key={it.name}><td>{it.name}</td><td style={{ textAlign: "right" }}><StatusChip status={it.status} T={T} /></td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
+          </table></div>
+        </section>
+
+        <section aria-labelledby="ho-method">
+          <h2 id="ho-method">Sources and method</h2>
+          <ul className="hb-plain">
+            <li>HSIA overall: calls offered from the TS Calls Offered by Product workbook (HSIA West + TQ ILEC - HSIA); tickets, repairs and churn from the Reliability/Deact KPIs tab of the Churn Measurement 2026 workbook.</li>
+            <li>HSIA West, TQ ILEC and PFE: the same series as their pages under HSIA (calls and base from the TS Calls workbook; tickets from the HSIA Recategorization Looker blocks; repairs from the Looker Repairs tab; PFE churn from the KPI tab).</li>
+            <li>Slow speeds: the "Slow Speeds" customer pain point (wired and wireless slow speeds plus incompatible equipment) on the HSIA Recategorization Looker tab, for HSIA All, HSIA West, HSIA TQ ILEC and HSIA PFE. The three groups do not add up exactly to HSIA All.</li>
+            <li>Deacts: churn rate (go/national) × subscriber base, rounded; HSIA West and TQ ILEC are not split in the source, so deacts are shown for HSIA overall and PFE.</li>
+          </ul>
+        </section>
+      </div>
+    );
+  }
+
   function TvOctReviewPage() {
     const col = colors.TV, R = OCT_REVIEW;
     const H = T.heading, MUTED = T.textMuted, RULE = T.border;
@@ -8349,6 +8573,8 @@ export default function ReliabilityScorecards() {
       ? "HSIA customer sentiment analysis"
       : page === "hsiacross"
       ? "HSIA cross analysis"
+      : page === "hsiaoctreview"
+      ? "HSIA in October: calls, tickets, repairs and deacts, HSIA West, TQ ILEC and PFE, and slow speeds"
       : page === "hsiawest"
       ? "HSIA · HSIA West"
       : page === "hsiatq"
@@ -8474,6 +8700,8 @@ export default function ReliabilityScorecards() {
               ? "HSIA reliability ecosystem · North Star layered architecture of the tools that connect telemetry, orchestration and the customer, agent and technician channels"
               : page === "hsiacross"
               ? "HSIA cross analysis · Aug vs Jul 2026 · ticket trends × Looker volumes × agent/technician notes"
+              : page === "hsiaoctreview"
+              ? "HSIA October review · KPIs to Oct 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds in tickets"
               : page === "hsiawest"
               ? "HSIA · HSIA West · calls offered, tickets, repairs and subscriber base for HSIA West on its own; churn is not split from TQ ILEC in the source"
               : page === "hsiatq"
@@ -8545,6 +8773,7 @@ export default function ReliabilityScorecards() {
             : page === "hsiatickets" ? HsiaTicketAnalysisPage()
             : page === "hsiasentiment" ? HsiaSentimentPage()
             : page === "hsiacross" ? HsiaCrossPage()
+            : page === "hsiaoctreview" ? HsiaOctReviewPage()
             : page === "hsiawest" ? HsiaWestPage()
             : page === "hsiatq" ? HsiaTqPage()
             : page === "hsiapfe" ? HsiaPfePage()
