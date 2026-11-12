@@ -7757,10 +7757,10 @@ export default function ReliabilityScorecards() {
     const H = T.heading, MUTED = T.textMuted, RULE = T.border;
     const AMBER = isDark ? "#F0A55B" : "#B86E00";
     const css = briefCss(col, AMBER);
-    const num = (v) => (v == null ? "—" : Math.round(v).toLocaleString());
+    const num = (v) => fmtBig(v); // large-number notation: 53.4K, 2.08M; counts under 10,000 keep their separators
     const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
     const sp = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) + "%");
-    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString());
+    const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + fmtBig(Math.abs(v)));
     const iOct = MONTHS.indexOf("Oct 2026"), iSep = iOct - 1, iYoY = iOct - 12;
     const base = DATA.subBase.HSIA, churn = DATA.churnRate.HSIA;
     const est = (rate, b) => rate.map((c, i) => (c == null || b[i] == null ? null : Math.round((c * b[i]) / 100)));
