@@ -7879,7 +7879,7 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "HSIA in October",
-        callout: `Calls offered ${sp(mom(O.calls))}, tickets ${sp(mom(O.tickets))} and repairs ${sp(mom(O.repairs))} on September. Slow speeds are ${share(iOct).toFixed(0)}% of tickets${growthShare == null ? "" : ` and ${growthShare.toFixed(0)}% of the year-over-year rise`}.`,
+        callout: `Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`,
         notes: "The one-line answer: volume eased in October, and slow speeds are the root cause that keeps growing." },
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
