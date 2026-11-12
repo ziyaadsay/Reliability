@@ -7763,20 +7763,18 @@ export default function ReliabilityScorecards() {
     const sn = (v) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + fmtBig(Math.abs(v)));
     const iOct = MONTHS.indexOf("Oct 2026"), iSep = iOct - 1, iYoY = iOct - 12;
     const base = DATA.subBase.HSIA, churn = DATA.churnRate.HSIA;
-    const est = (rate, b) => rate.map((c, i) => (c == null || b[i] == null ? null : Math.round((c * b[i]) / 100)));
     const overall = [
       { key: "calls", label: "Calls offered", vals: CALLS_SPLIT.HSIA.offered },
       { key: "tickets", label: "Tickets", vals: DATA.ticketVolume.HSIA },
       { key: "repairs", label: "Repairs / dispatches", vals: DATA.repairVolume.HSIA },
-      { key: "deacts", label: "Deacts (churn rate × base)", vals: est(churn, base) },
       { key: "deactRate", label: "Deact rate per 100 subs (go/national churn %)", vals: churn, rate: true }
     ];
     const groups = [
-      { name: "HSIA West", color: colors.HSIA, calls: HSIA_WEST.callsOffered, tickets: HSIA_WEST.ticketVolume, repairs: HSIA_WEST.repairVolume, deacts: null, deactRate: null, slow: S.slow.west },
-      { name: "TQ ILEC", color: colors.TQ, calls: TQ_ILEC.callsOffered, tickets: TQ_ILEC.ticketVolume, repairs: TQ_ILEC.repairVolume, deacts: null, deactRate: null, slow: S.slow.tq },
-      { name: "PFE", color: colors.PFE, calls: PFE.callsOffered, tickets: PFE.ticketVolume, repairs: PFE.repairVolume, deacts: est(PFE.churnRate, PFE.subBase), deactRate: PFE.churnRate, slow: S.slow.pfe }
+      { name: "HSIA West", color: colors.HSIA, calls: HSIA_WEST.callsOffered, tickets: HSIA_WEST.ticketVolume, repairs: HSIA_WEST.repairVolume, deactRate: null, slow: S.slow.west },
+      { name: "TQ ILEC", color: colors.TQ, calls: TQ_ILEC.callsOffered, tickets: TQ_ILEC.ticketVolume, repairs: TQ_ILEC.repairVolume, deactRate: null, slow: S.slow.tq },
+      { name: "PFE", color: colors.PFE, calls: PFE.callsOffered, tickets: PFE.ticketVolume, repairs: PFE.repairVolume, deactRate: PFE.churnRate, slow: S.slow.pfe }
     ];
-    const metricKeys = [["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"], ["deacts", "Deacts (est.)"], ["deactRate", "Deact rate per 100 subs (churn %)"]];
+    const metricKeys = [["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"], ["deactRate", "Deact rate per 100 subs (churn %)"]];
     const svgText = { fontFamily: FONT, fontSize: 11.5, fill: MUTED };
     // one chart for every trend: a list of series, optionally indexed to a base month (= 100)
     const plot = (series, o = {}) => {
@@ -7857,7 +7855,7 @@ export default function ReliabilityScorecards() {
     // In short: the text below is the published version; the editor on the page lets a viewer change it
     // (saved in the viewer's browser, with a reset back to this text).
     const shortItems = [
-      ["Calls offered rose while tickets and repairs eased.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}), repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}) and estimated deacts ${num(O.deacts[iOct])} (${sp(mom(O.deacts))}, ${sp(yoy(O.deacts))}). The deact rate (go/national churn) is ${rateF(churn[iOct])} per 100, ${dRate(churn[iOct], churn[iSep])} on September and ${dRate(churn[iOct], churn[iYoY])} on October 2025.`],
+      ["Calls offered rose while tickets and repairs eased.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}) and repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}). The deact rate (go/national churn) is ${rateF(churn[iOct])} per 100, ${dRate(churn[iOct], churn[iSep])} on September and ${dRate(churn[iOct], churn[iYoY])} on October 2025.`],
       ["HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.", `West has ${num(groups[0].tickets[iOct])} tickets, ${sp(yoy(groups[0].tickets))} YoY; TQ ILEC ${sp(yoy(groups[1].tickets))} and PFE ${sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is ${bigTickets.name}.`],
       ["Slow speeds are the root cause that keeps growing.", `${num(slowAll[iOct])} slow-speed tickets in October, ${sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and ${sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were ${share(0).toFixed(0)}% of tickets in January 2025 and are ${share(iOct).toFixed(0)}% now.`],
       ["Slow speeds explain most of the ticket growth.", `Of the ${sn(totYoY)} rise in tickets on October 2025, slow speeds are ${sn(slowYoY)}${growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are ${sn(slowJan)} of ${sn(totJan)}. ${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY).`],
@@ -7880,8 +7878,8 @@ export default function ReliabilityScorecards() {
     const groupSlide = (g) => {
       const ms = metricKeys.filter(([k]) => g[k]);
       return {
-        layout: "default", dense: true, title: `${g.name}: calls, tickets, repairs${g.deacts ? " and deacts" : ""}`,
-        sub: g.deacts ? "2025 and 2026 by month" : "2025 and 2026 by month. Deacts are not split from HSIA West + TQ ILEC in the source.",
+        layout: "default", dense: true, title: `${g.name}: calls, tickets, repairs${g.deactRate ? " and deact rate" : ""}`,
+        sub: g.deactRate ? "2025 and 2026 by month" : "2025 and 2026 by month. The deact rate is not split from HSIA West + TQ ILEC in the source.",
         body: <>
           <div style={{ display: "grid", gridTemplateColumns: ms.length >= 5 ? "1fr 1fr 1fr" : ms.length === 4 ? "1fr 1fr" : `repeat(${ms.length},1fr)`, gap: 18 }}>
             {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${k === "deactRate" ? rateF(g[k][iOct]) : num(g[k][iOct])} (${k === "deactRate" ? dRate(g[k][iOct], g[k][iYoY]) : sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length >= 4 ? 150 : 210, w: ms.length >= 5 ? 400 : ms.length === 4 ? 520 : 380, years: true, c25: C25, fmt: k === "deactRate" ? rateF : undefined }), g.color))}
@@ -7900,15 +7898,15 @@ export default function ReliabilityScorecards() {
           <div className="dk-stats">{overall.map((m) => mstat(m))}</div>
           {dkTable("Measure", overall.map((m) => row(m.label, m.vals, m.rate)))}
         </>,
-        notes: "Deact rate is the go/national Churn % from the KPI tab. Deacts are that rate times the subscriber base; the KPI tab has no monthly deact volume series." },
-      { layout: "default", dense: true, title: "HSIA overall: calls, tickets, repairs and deacts", sub: "2025 and 2026 by month",
+        notes: "Deact rate is the go/national Churn % from the KPI tab, per 100 subscribers." },
+      { layout: "default", dense: true, title: "HSIA overall: calls, tickets, repairs and deact rate", sub: "2025 and 2026 by month",
         body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
           {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 150, w: 400, years: true, c25: C25, fmt: m.rate ? rateF : undefined })))}
           <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
         </div>,
-        notes: "Calls offered, tickets, repairs and estimated deacts for HSIA West + TQ ILEC, by month." },
+        notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, by month." },
       { layout: "default", dense: true, title: "HSIA West, TQ ILEC and PFE: October against last year",
-        body: dkTable("Group · measure", groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k], k === "deactRate") : k === "deactRate" ? null : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split in the source</td></tr>)))),
+        body: dkTable("Group · measure", groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k], k === "deactRate") : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split in the source</td></tr>)))),
         notes: "TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot." },
       groupSlide(groups[0]), groupSlide(groups[1]), groupSlide(groups[2]),
       { layout: "default", dense: true, title: "Growth since October 2025", sub: "Calls, tickets and repairs by group, October 2025 = 100",
@@ -7961,7 +7959,7 @@ export default function ReliabilityScorecards() {
         </table>,
         notes: "From the HSIA initiatives register." },
       { layout: "end", title: "Sources and method",
-        sub: "Calls: TS Calls Offered by Product (HSIA West + TQ ILEC). Tickets, repairs, churn: Churn Measurement 2026 KPI tab, and the HSIA Recategorization Looker and Looker Repairs tabs for the three groups. Deacts are churn rate × subscriber base. Slow speeds are the Recategorization Looker Slow Speeds pain point." }
+        sub: "Calls: TS Calls Offered by Product (HSIA West + TQ ILEC). Tickets, repairs, churn: Churn Measurement 2026 KPI tab, and the HSIA Recategorization Looker and Looker Repairs tabs for the three groups. Deact rate is the go/national Churn % from the KPI tab. Slow speeds are the Recategorization Looker Slow Speeds pain point." }
     ];
     return (
       <>
@@ -7991,8 +7989,8 @@ export default function ReliabilityScorecards() {
         <header className="hb-head">
           <div className="hb-eyebrow">HSIA · October 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds</div>
           <h1>HSIA In October: Calls offered are {callsDir} {k1(Math.abs(callsDelta))} in volume and {sp(mom(O.calls))}, Primarily driven by {callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are {share(iOct).toFixed(0)}% of ticket volume</h1>
-          <p className="hb-sub">Calls offered, tickets, repairs and deacts for HSIA overall, then for HSIA West, TQ ILEC and PFE on their own, then a view of slow speeds as a root cause. Slow speeds are shown for tickets; the workbook has no slow-speed split for calls or repairs yet.</p>
-          <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Rates per 100 subscribers</span><span>Deacts estimated as churn rate × base</span></div>
+          <p className="hb-sub">Calls offered, tickets, repairs and the deact rate for HSIA overall, then for HSIA West, TQ ILEC and PFE on their own, then a view of slow speeds as a root cause. Slow speeds are shown for tickets; the workbook has no slow-speed split for calls or repairs yet.</p>
+          <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Rates per 100 subscribers</span></div>
         </header>
 
         <section aria-labelledby="ho-short">
@@ -8003,7 +8001,7 @@ export default function ReliabilityScorecards() {
         </section>
 
         <section aria-labelledby="ho-all">
-          <h2 id="ho-all">HSIA as a whole: calls, tickets, repairs and deacts</h2>
+          <h2 id="ho-all">HSIA as a whole: calls, tickets, repairs and deact rate</h2>
           <div className="hb-stats">
             {overall.map((m) => stat(fv(m, m.vals[iOct]), `${m.label} · Oct`, `Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`))}
           </div>
@@ -8020,7 +8018,7 @@ export default function ReliabilityScorecards() {
               </figure>
             ))}
           </div>
-          <p className="hb-prose" style={{ fontSize: 13.5 }}>Calls offered are HSIA West + TQ ILEC - HSIA (TS Calls Offered by Product). Tickets, repairs and churn are the KPI-tab HSIA series. Deacts are the churn rate (go/national) times the subscriber base; for the three months the KPI tab reports a deact volume (Jan to Mar 2026) the estimate is within about 1% of it. Churn starts in February 2025, so deacts do. The deact rate is the go/national Churn % from the Reliability/Deact KPIs tab, per 100 subscribers; its changes are absolute differences (for example −0.04), not percentages.</p>
+          <p className="hb-prose" style={{ fontSize: 13.5 }}>Calls offered are HSIA West + TQ ILEC - HSIA (TS Calls Offered by Product). Tickets, repairs and churn are the KPI-tab HSIA series. Churn starts in February 2025, so the deact rate does. The deact rate is the go/national Churn % from the Reliability/Deact KPIs tab, per 100 subscribers; its changes are absolute differences (for example −0.04), not percentages.</p>
         </section>
 
         <section aria-labelledby="ho-groups">
@@ -8028,7 +8026,7 @@ export default function ReliabilityScorecards() {
           <p className="hb-prose">The three groups, each against its own history. Each line is on its own scale, so read the shape and the change columns, not the heights. TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot.</p>
           <div className="hb-tw"><table>
             {head("Group · measure")}
-            <tbody>{groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k], k === "deactRate") : k === "deactRate" ? null : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split from HSIA West + TQ ILEC in the source</td></tr>)))}</tbody>
+            <tbody>{groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k], k === "deactRate") : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split from HSIA West + TQ ILEC in the source</td></tr>)))}</tbody>
           </table></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
             {groups.flatMap((g) => metricKeys.filter(([k]) => g[k]).map(([k, lbl]) => (
@@ -8102,7 +8100,6 @@ export default function ReliabilityScorecards() {
             <li>HSIA West, TQ ILEC and PFE: the same series as their pages under HSIA (calls and base from the TS Calls workbook; tickets from the HSIA Recategorization Looker blocks; repairs from the Looker Repairs tab; PFE churn from the KPI tab).</li>
             <li>Slow speeds: the "Slow Speeds" customer pain point (wired and wireless slow speeds plus incompatible equipment) on the HSIA Recategorization Looker tab, for HSIA All, HSIA West, HSIA TQ ILEC and HSIA PFE. The three groups do not add up exactly to HSIA All.</li>
             <li>Deact rate: the HSIA and PFE go/national Churn % from the Reliability/Deact KPIs tab of the Churn Measurement 2026 workbook, per 100 subscribers; PFE is reported from Oct 2025, and HSIA West and TQ ILEC are not split in the source.</li>
-            <li>Deacts: churn rate (go/national) × subscriber base, rounded; HSIA West and TQ ILEC are not split in the source, so deacts are shown for HSIA overall and PFE.</li>
           </ul>
         </section>
       </div>

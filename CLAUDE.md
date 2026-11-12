@@ -81,8 +81,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   from the "Looker Repairs (Kam/Jason's new view)" tab, HS QC ILEC row (Jan 2025 on).
   HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
 - HSIA › Oct Review (`hsiaoctreview`, `HsiaOctReviewPage`, `HSIA_OCT_REVIEW`) mirrors the TV Oct Review, with the same Present
-  slide mode (13 slides), and sits below Cross Analysis: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and deacts, plus slow speeds.
-  Deacts are churn rate x subscriber base (the KPI tab has no deact volume series). Slow-speed tickets come from the
+  slide mode (13 slides), and sits below Cross Analysis: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and the deact rate, plus slow speeds.
+  The deact rate is the go/national Churn % (the page does not estimate deact volumes). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
 - The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary): the
@@ -92,4 +92,4 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   (state `zoomChart` in the main component, closed by Esc, a click outside or the Close button) that redraws the same series large,
   with every month labelled and every point valued.
 - The HSIA Oct Review shows the deact rate (HSIA and PFE go/national Churn %, Reliability/Deact KPIs tab, per 100 subs; changes
-  are absolute differences) next to the estimated deact volume. HSIA West and TQ ILEC have no deact rate (not split in the source).
+  are absolute differences) (there is no estimated deact volume). HSIA West and TQ ILEC have no deact rate (not split in the source).
