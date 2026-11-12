@@ -774,7 +774,15 @@ const CALLS_SPLIT = {
   },
   TV: {
     offered:  [72229,64023,61102,58800,61175,54717,54251,56911,65677,75367,66999,66748,62455,49888,58263,53985,50736,51794,52789,55015,60401,62892],
-    answered: [63891,55459,56813,54565,54968,49626,50001,48670,46679,53910,56603,53993,54230,47012,52582,49073,46226,46977,46603,46792,53337,55255]
+    answered: [63891,55459,56813,54565,54968,49626,50001,48670,46679,53910,56603,53993,54230,47012,52582,49073,46226,46977,46603,46792,53337,55255],
+    // Offered by component (Actuals - Calls Offered tab): Mediaroom = IPTV West + TQ ILEC - IPTV, OPUS = TV+ (OPUS) + PFE - IPTV, plus PIK
+    parts: {
+      iptvWest: [43377, 38105, 36261, 35205, 38285, 32433, 32723, 32382, 34847, 38636, 32607, 33650, 33098, 26605, 31919, 28793, 26000, 26467, 29039, 29197, 31006, 32737],
+      tqIptv: [9713, 8774, 8156, 7321, 7114, 6366, 5830, 6123, 6028, 7373, 7535, 7323, 8430, 7009, 7869, 6708, 6920, 5573, 5536, 6117, 7048, 7794],
+      opus: [17888, 16418, 15759, 15113, 14689, 15027, 14786, 17166, 23513, 27535, 25020, 23941, 19174, 14803, 16865, 16831, 16007, 17784, 16536, 17672, 20269, 20471],
+      pfeIptv: [7, 5, 5, 10, 22, 41, 32, 72, 71, 106, 139, 132, 90, 117, 126, 166, 201, 236, 208, 142, 158, 69],
+      pik: [1244, 721, 921, 1151, 1065, 850, 880, 1168, 1218, 1717, 1698, 1702, 1663, 1354, 1484, 1487, 1608, 1734, 1470, 1887, 1920, 1821]
+    }
   }
 };
 
@@ -8110,6 +8118,13 @@ export default function ReliabilityScorecards() {
       ["Repairs / dispatches", rv, num, "n", true], ["Repair rate per 100 subs", rr, (v) => fmtRate(v), "r", true],
       ["Churn rate per 100 subs", ch, (v) => fmtRate(v), "r", true], ["Subscriber base", base, num, "n", false]
     ];
+    // headline: calls offered in volume and rate, what drove them, then the ticket and dispatch rate
+    const CP = CALLS_SPLIT.TV.parts, mrCalls = (k) => CP.iptvWest[k] + CP.tqIptv[k];
+    const callsVol = callsOff[iOct] - callsOff[iSep], callsRateNow = DATA.callsRate.TV[iOct], callsRatePrev = DATA.callsRate.TV[iSep];
+    const mrShare = Math.round(((mrCalls(iOct) - mrCalls(iSep)) / (callsVol || 1)) * 100);
+    const callsHeadline = `Calls offered are up by ${num(callsVol)} (${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}) in volume and ${Math.abs(callsRateNow - callsRatePrev).toFixed(2)} per 100 subs (${callsRatePrev.toFixed(2)} to ${callsRateNow.toFixed(2)}) in rate, driven primarily by Mediaroom (${sn(mrCalls(iOct) - mrCalls(iSep))} calls, ${mrShare}% of the increase).`;
+    const rateHeadline = `Ticket rate ${tr[iOct] > tr[iSep] ? "rose" : "fell"} ${Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to ${fmtRate(tr[iOct])} per 100 and dispatch rate ${rr[iOct] > rr[iSep] ? "rose" : "fell"} ${Math.abs(rr[iOct] - rr[iSep]).toFixed(2)} to ${fmtRate(rr[iOct])} per 100.`;
+    const headline = `${callsHeadline} ${rateHeadline}`;
     const mp = (kind, ser, i, j) => (kind === "n" ? sp(pct(ser[i], ser[j]), 1) : sd(ser[i] - ser[j]));
     const dRepSep = rv[iSep], dRepOct = rv[iOct], platRepSep = legacy.repairs[iSep] + opus.repairs[iSep], platRepOct = legacy.repairs[iOct] + opus.repairs[iOct];
     const platTotSep = legacy.tickets[iSep] + opus.tickets[iSep], platTotOct = legacy.tickets[iOct] + opus.tickets[iOct];
@@ -8218,7 +8233,7 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "TV in October",
-        callout: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}. Mediaroom drove the increase and the rise is primarily video issues.`,
+        callout: headline,
         notes: "The one-line answer to what is driving the rise." },
       { layout: "default", dense: true, title: "October at a glance", clicks: 2,
         body: (step, C) => <>
@@ -8329,7 +8344,7 @@ export default function ReliabilityScorecards() {
         </div>
         <header className="hb-head">
           <div className="hb-eyebrow">TV · October 2026 · TV as a whole: calls, tickets, dispatches, churn, and what is driving it, Mediaroom or OPUS</div>
-          <h1>TV in October: tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.</h1>
+          <h1>{headline}</h1>
           <p className="hb-sub">Dashboard KPIs for September and October, the Optik TV Legacy (Mediaroom) and TV Evolution (OPUS) platform split, then two focus sections: video quality and STB No Boot, from the Looker categories and the agent and technician notes ({num(R.files)} October tickets, 1 to 30 October, about {Math.round((R.files / totOct) * 100)}% of the month).</p>
           <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Notes to {R.asOf}</span><span>Rates per 100 subscribers</span></div>
         </header>
