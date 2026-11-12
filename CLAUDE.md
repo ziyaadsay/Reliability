@@ -88,3 +88,6 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary): the
   text generated in `shortItems` is the published version; a viewer's edits are saved in their own browser (localStorage,
   key "HSIA Oct Review: In short" / "Oct 2026") and can be reset to the published text. Edits are not shared between viewers.
+- The trend charts on the HSIA Oct Review page (not the slides) are click to enlarge: `zplot` wraps `plot` and opens a modal
+  (state `zoomChart` in the main component, closed by Esc, a click outside or the Close button) that redraws the same series large,
+  with every month labelled and every point valued.

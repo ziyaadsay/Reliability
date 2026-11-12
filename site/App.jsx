@@ -2869,6 +2869,14 @@ export default function ReliabilityScorecards() {
   const hashPage = () => parseHash().id;
   const [page, setPage] = useState(hashPage);
   const [deckSlide, setDeckSlide] = useState(() => parseHash().slide); // 1-based slide while presenting, else null
+  const [zoomChart, setZoomChart] = useState(null); // chart enlarged from a review page: { title, series, opts }
+  useEffect(() => { setZoomChart(null); }, [page]);
+  useEffect(() => {
+    if (!zoomChart) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") setZoomChart(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [zoomChart]);
   useEffect(() => {
     const want = page === "home" ? "" : `#${encodeURIComponent(page)}${deckSlide != null ? `/${deckSlide}` : ""}`;
     if (window.location.hash !== want && !(want === "" && window.location.hash === "")) window.history.replaceState(null, "", want || window.location.pathname + window.location.search);
@@ -7777,8 +7785,8 @@ export default function ReliabilityScorecards() {
       const x = (j) => l + (j * pw) / (ks.length - 1), y = (v) => t + ph - ((v - lo) / (hi - lo)) * ph;
       return (
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
-          {[0, 1, 2].map((q) => { const g = lo + ((hi - lo) * q) / 2; return <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={svgText}>{f(g)}</text></g>; })}
-          {ks.map((k, j) => (j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text> : null))}
+          {Array.from({ length: (o.big ? 4 : 2) + 1 }, (_, q) => q).map((q) => { const g = lo + ((hi - lo) * q) / (o.big ? 4 : 2); return <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={svgText}>{f(g)}</text></g>; })}
+          {ks.map((k, j) => (o.big || j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: o.big ? 11 : 10.5 }}>{o.big ? `${MONTHS[k].slice(0, 3)} ${MONTHS[k].slice(-2)}` : MONTHS[k].slice(0, 3)}</text> : null))}
           {o.index != null && lo < 100 && hi > 100 && <line x1={l} x2={W - r} y1={y(100)} y2={y(100)} stroke={MUTED} strokeDasharray="4 4" />}
           {prep.map((sr) => {
             let d = "", pen = false;
@@ -7786,12 +7794,23 @@ export default function ReliabilityScorecards() {
             const lj = sr.v.map((v) => v != null).lastIndexOf(true);
             return (
               <g key={sr.name}>
-                <path d={d} fill="none" stroke={sr.color} strokeWidth={2.4} />
+                <path d={d} fill="none" stroke={sr.color} strokeWidth={o.big ? 3 : 2.4} />
+                {o.big && sr.v.map((v, j) => (v == null ? null : <g key={j}><circle cx={x(j)} cy={y(v)} r={3.2} fill={sr.color} />{series.length === 1 && j !== lj && <text x={x(j)} y={y(v) - 9} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fill: sr.color }}>{f(v)}</text>}</g>))}
                 {lj >= 0 && <><circle cx={x(lj)} cy={y(sr.v[lj])} r={4} fill={sr.color} /><text x={x(lj) + 8} y={y(sr.v[lj]) + 4} style={{ ...svgText, fontWeight: 700, fill: sr.color }}>{f(sr.v[lj])}</text></>}
               </g>
             );
           })}
         </svg>
+      );
+    };
+    const zplot = (title, series, opts) => {
+      const open = () => setZoomChart({ title, series, opts: opts || {} });
+      return (
+        <div role="button" tabIndex={0} title="Click to enlarge" aria-label={`Enlarge chart: ${title}`} onClick={open}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } }} style={{ cursor: "zoom-in", position: "relative" }}>
+          {plot(series, opts)}
+          <span style={{ position: "absolute", top: 0, right: 0, fontSize: 11, color: MUTED, background: T.band, borderRadius: 999, padding: "1px 9px", pointerEvents: "none" }}>⤢ Enlarge</span>
+        </div>
       );
     };
     const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.name}><i className="hb-sw" style={{ background: it.color }} />{it.name}</span>)}</div>;
@@ -7920,6 +7939,20 @@ export default function ReliabilityScorecards() {
     return (
       <>
         {deckSlide != null && <Deck slides={slides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={col} isDark={isDark} title="HSIA October review" />}
+        {zoomChart && zoomChart.series && (
+          <div role="dialog" aria-modal="true" aria-label={zoomChart.title} onClick={() => setZoomChart(null)}
+            style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(10,8,14,.72)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ background: T.surface, color: T.text, borderRadius: 12, padding: "18px 22px 14px", width: "min(1200px, 100%)", maxHeight: "92vh", overflow: "auto", boxShadow: "0 30px 80px rgba(0,0,0,.5)", fontFamily: FONT }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <div style={{ fontWeight: 700, fontSize: 17, color: T.heading, marginRight: "auto" }}>{zoomChart.title}</div>
+                <button type="button" onClick={() => setZoomChart(null)} style={{ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, borderRadius: 8, padding: "5px 14px", cursor: "pointer", border: `1px solid ${T.borderStrong}`, background: "transparent", color: T.textSecondary }}>Close ✕</button>
+              </div>
+              {plot(zoomChart.series, { ...zoomChart.opts, w: 1100, h: 480, big: true })}
+              {zoomChart.series.length > 1 && legend(zoomChart.series)}
+              <div style={{ fontSize: 12, color: MUTED, marginTop: 8 }}>Click outside the chart or press Esc to close</div>
+            </div>
+          </div>
+        )}
       <div className="hb">
         <style>{css}</style>
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -26 }}>
@@ -7955,7 +7988,7 @@ export default function ReliabilityScorecards() {
             {overall.map((m) => (
               <figure key={m.key}>
                 <div className="hb-figtitle">{m.label}, Jan 2025 to Oct 2026</div>
-                <div className="hb-chart">{plot([{ name: m.label, color: col, vals: m.vals }])}</div>
+                <div className="hb-chart">{zplot(`${m.label}, Jan 2025 to Oct 2026`, [{ name: m.label, color: col, vals: m.vals }])}</div>
               </figure>
             ))}
           </div>
@@ -7973,7 +8006,7 @@ export default function ReliabilityScorecards() {
             {groups.flatMap((g) => metricKeys.filter(([k]) => g[k]).map(([k, lbl]) => (
               <figure key={g.name + k}>
                 <div className="hb-figtitle"><span style={{ color: g.color }}>{g.name}</span> · {lbl}</div>
-                <div className="hb-chart">{plot([{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360 })}</div>
+                <div className="hb-chart">{zplot(`${g.name} · ${lbl}`, [{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360 })}</div>
               </figure>
             )))}
           </div>
@@ -7982,7 +8015,7 @@ export default function ReliabilityScorecards() {
             {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => (
               <figure key={k}>
                 <div className="hb-figtitle">{lbl}</div>
-                <div className="hb-chart">{plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g[k] })), { start: iYoY, index: iYoY, fmt: (v) => Math.round(v), h: 200 })}</div>
+                <div className="hb-chart">{zplot(`${lbl}: growth since October 2025 (October 2025 = 100)`, groups.map((g) => ({ name: g.name, color: g.color, vals: g[k] })), { start: iYoY, index: iYoY, fmt: (v) => Math.round(v), h: 200 })}</div>
                 {legend(groups)}
               </figure>
             ))}
@@ -8001,17 +8034,17 @@ export default function ReliabilityScorecards() {
           <div className="hb-two">
             <figure>
               <div className="hb-figtitle">Slow-speed tickets, HSIA, Jan 2025 to Oct 2026</div>
-              <div className="hb-chart">{plot([{ name: "Slow speeds", color: col, vals: slowAll }])}</div>
+              <div className="hb-chart">{zplot("Slow-speed tickets, HSIA, Jan 2025 to Oct 2026", [{ name: "Slow speeds", color: col, vals: slowAll }])}</div>
             </figure>
             <figure>
               <div className="hb-figtitle">Slow speeds as a share of HSIA tickets (%)</div>
-              <div className="hb-chart">{plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { fmt: (v) => v.toFixed(1) })}</div>
+              <div className="hb-chart">{zplot("Slow speeds as a share of HSIA tickets (%)", [{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { fmt: (v) => v.toFixed(1) })}</div>
             </figure>
           </div>
           <div className="hb-two">
             <figure>
               <div className="hb-figtitle">Growth by group (Jan 2025 = 100)</div>
-              <div className="hb-chart">{plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 220 })}</div>
+              <div className="hb-chart">{zplot("Slow-speed tickets by group, growth since January 2025 (Jan 2025 = 100)", groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 220 })}</div>
               {legend(groups)}
             </figure>
             <figure>
