@@ -7839,10 +7839,14 @@ export default function ReliabilityScorecards() {
     const fastest = groups.map((g) => ({ name: g.name, g: pct(g.slow[iOct], g.slow[iYoY]) })).sort((a, b) => b.g - a.g)[0];
     const bigTickets = [...groups].sort((a, b) => Math.abs(b.tickets[iOct] - b.tickets[iYoY]) - Math.abs(a.tickets[iOct] - a.tickets[iYoY]))[0];
     const O = overall.reduce((m, x) => ({ ...m, [x.key]: x.vals }), {});
+    // headline: the calls offered change in volume (1.5K style) and %, and the group that moved it most
+    const k1 = (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}K` : `${Math.round(v)}`);
+    const callsDelta = O.calls[iOct] - O.calls[iSep], callsDir = callsDelta >= 0 ? "up" : "down";
+    const callsDriver = [...groups].sort((x, y) => Math.abs(y.calls[iOct] - y.calls[iSep]) - Math.abs(x.calls[iOct] - x.calls[iSep]))[0].name;
     // In short: the text below is the published version; the editor on the page lets a viewer change it
     // (saved in the viewer's browser, with a reset back to this text).
     const shortItems = [
-      ["October eased on volume.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}), repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}) and estimated deacts ${num(O.deacts[iOct])} (${sp(mom(O.deacts))}, ${sp(yoy(O.deacts))}).`],
+      ["Calls offered rose while tickets and repairs eased.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}), repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}) and estimated deacts ${num(O.deacts[iOct])} (${sp(mom(O.deacts))}, ${sp(yoy(O.deacts))}).`],
       ["HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.", `West has ${num(groups[0].tickets[iOct])} tickets, ${sp(yoy(groups[0].tickets))} YoY; TQ ILEC ${sp(yoy(groups[1].tickets))} and PFE ${sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is ${bigTickets.name}.`],
       ["Slow speeds are the root cause that keeps growing.", `${num(slowAll[iOct])} slow-speed tickets in October, ${sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and ${sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were ${share(0).toFixed(0)}% of tickets in January 2025 and are ${share(iOct).toFixed(0)}% now.`],
       ["Slow speeds explain most of the ticket growth.", `Of the ${sn(totYoY)} rise in tickets on October 2025, slow speeds are ${sn(slowYoY)}${growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are ${sn(slowJan)} of ${sn(totJan)}. ${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY).`],
@@ -7971,7 +7975,7 @@ export default function ReliabilityScorecards() {
         </div>
         <header className="hb-head">
           <div className="hb-eyebrow">HSIA · October 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds</div>
-          <h1>HSIA in October: calls offered {sp(mom(O.calls))}, tickets {sp(mom(O.tickets))} and repairs {sp(mom(O.repairs))} on September. Slow speeds are {share(iOct).toFixed(0)}% of tickets and {growthShare == null ? "most" : growthShare.toFixed(0) + "%"} of the year-over-year rise.</h1>
+          <h1>HSIA In October: Calls offered are {callsDir} {k1(Math.abs(callsDelta))} in volume and {sp(mom(O.calls))}, Primarily driven by {callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are {share(iOct).toFixed(0)}% of ticket volume</h1>
           <p className="hb-sub">Calls offered, tickets, repairs and deacts for HSIA overall, then for HSIA West, TQ ILEC and PFE on their own, then a view of slow speeds as a root cause. Slow speeds are shown for tickets; the workbook has no slow-speed split for calls or repairs yet.</p>
           <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Rates per 100 subscribers</span><span>Deacts estimated as churn rate × base</span></div>
         </header>
