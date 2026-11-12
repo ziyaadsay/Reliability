@@ -7848,7 +7848,7 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "HSIA in October",
-        callout: `Tickets ${sp(mom(O.tickets))} and calls offered ${sp(mom(O.calls))} on September. Slow speeds are ${share(iOct).toFixed(0)}% of tickets${growthShare == null ? "" : ` and ${growthShare.toFixed(0)}% of the year-over-year rise`}.`,
+        callout: `Calls offered ${sp(mom(O.calls))}, tickets ${sp(mom(O.tickets))} and repairs ${sp(mom(O.repairs))} on September. Slow speeds are ${share(iOct).toFixed(0)}% of tickets${growthShare == null ? "" : ` and ${growthShare.toFixed(0)}% of the year-over-year rise`}.`,
         notes: "The one-line answer: volume eased in October, and slow speeds are the root cause that keeps growing." },
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
@@ -7930,7 +7930,7 @@ export default function ReliabilityScorecards() {
         </div>
         <header className="hb-head">
           <div className="hb-eyebrow">HSIA · October 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds</div>
-          <h1>HSIA in October: tickets {sp(mom(O.tickets))} and calls offered {sp(mom(O.calls))} on September, repairs {sp(mom(O.repairs))}. Slow speeds are {share(iOct).toFixed(0)}% of tickets and {growthShare == null ? "most" : growthShare.toFixed(0) + "%"} of the year-over-year rise.</h1>
+          <h1>HSIA in October: calls offered {sp(mom(O.calls))}, tickets {sp(mom(O.tickets))} and repairs {sp(mom(O.repairs))} on September. Slow speeds are {share(iOct).toFixed(0)}% of tickets and {growthShare == null ? "most" : growthShare.toFixed(0) + "%"} of the year-over-year rise.</h1>
           <p className="hb-sub">Calls offered, tickets, repairs and deacts for HSIA overall, then for HSIA West, TQ ILEC and PFE on their own, then a view of slow speeds as a root cause. Slow speeds are shown for tickets; the workbook has no slow-speed split for calls or repairs yet.</p>
           <div className="hb-meta"><span>Reliability Strategy</span><span>KPIs to Oct 2026</span><span>Rates per 100 subscribers</span><span>Deacts estimated as churn rate × base</span></div>
         </header>
