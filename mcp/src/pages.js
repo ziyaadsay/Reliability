@@ -520,13 +520,13 @@ function selfServePage(a, b) {
 // ---- Friction Free Program (mirrors FfpsPage; no month range) ----
 function ffpsPage() {
   const F = FFPS, B = F.benefits, FIN = F.finance, S = [];
-  const crsEnd = F.burndown.crs.points[2], crsStart = F.burndown.crs.points[0], tkEnd = F.burndown.tickets.points[2];
+  const crsEnd = F.burndown.crs.points[F.burndown.crs.points.length - 1], crsStart = F.burndown.crs.points[0], tkEnd = F.burndown.tickets.points[F.burndown.tickets.points.length - 1];
   const last = F.delivered[F.delivered.length - 1];
   const totalBenefit = B.totals.reduce((x, t) => x + t.v, 0);
   S.push(sec("cards", "Program KPI cards", "cards", [
-    cardStatic("Open CRs", crsEnd.v, "count", F.asOf, `${crsEnd.label} · ${crsStart.v} at start of year · ${sNum(crsEnd.net)} vs end of Q2 · ${sNum(F.burndown.crs.ytd.net)} YTD`),
-    cardStatic("Open tickets", tkEnd.v, "count", F.asOf, `${tkEnd.label} · billing + non-billing · ${sNum(tkEnd.net)} vs end of Q2 · ${sNum(F.burndown.tickets.ytd.net)} YTD`),
-    cardStatic("Recurring benefit", B.recurring, "$M", F.asOf, `End of Q3 · against $4M spent · $${(totalBenefit / 1e6).toFixed(2)}M across CRs, non-billing and billing`),
+    cardStatic("Open CRs", crsEnd.v, "count", F.asOf, `${crsEnd.label} · ${crsStart.v} at start of year · ${sNum(crsEnd.net)} vs end of Sep · ${sNum(F.burndown.crs.ytd.net)} YTD`),
+    cardStatic("Open tickets", tkEnd.v, "count", F.asOf, `${tkEnd.label} · billing + non-billing · ${sNum(tkEnd.net)} vs end of Sep · ${sNum(F.burndown.tickets.ytd.net)} YTD`),
+    cardStatic("Recurring benefit", B.recurring, "$M", F.asOf, `End of Q4 · against $5.6M spend · $${(totalBenefit / 1e6).toFixed(2)}M across CRs, non-billing and billing`),
     cardStatic("CR run-rate benefit", last.rate, "$K per month", last.m, `${F.delivered.reduce((x, m) => x + m.crs.length, 0)} CRs delivered since Feb · $${(last.cum / 1000).toFixed(2)}M cumulative`),
     cardStatic(`${FIN.month} spend`, FIN.monthSpend, "$M", FIN.month, `vs forecast $${FIN.monthForecast.toFixed(2)}M · YTD $${FIN.spendToDate.ytd.toFixed(1)}M · $${FIN.remaining.toFixed(1)}M remaining (${FIN.remainingPct}% of budget)`)
   ]));
@@ -545,7 +545,7 @@ function ffpsPage() {
   S.push(tableSec("s04-pipeline", "04 · CR delivery timeline (Sep – Dec 2026)", [...crCols, col("expectedRate", "Expected monthly benefit", "$K per month")], F.pipeline.flatMap((mo) => mo.crs.map((c) => ({ month: mo.m, id: c.id, name: c.name || null, statement: c.t, tag: c.tag || null, expectedRate: mo.rate }))), F.pipelineNote));
   S.push(sec("s05-finance-cards", "05 · Finance", "cards", [
     cardStatic(`${FIN.month} spend`, FIN.monthSpend, "$M", FIN.month, `vs forecast $${FIN.monthForecast.toFixed(2)}M`),
-    cardStatic("Spend to date", FIN.spendToDate.ytd, "$M", FIN.month, `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M`),
+    cardStatic("Spend to date", FIN.spendToDate.ytd, "$M", FIN.month, `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M · Q4 $${FIN.spendToDate.q4.toFixed(2)}M`),
     cardStatic("H2 forecast Q3", FIN.h2Forecast.q3, "$M", null), cardStatic("H2 forecast Q4", FIN.h2Forecast.q4, "$M", null),
     cardStatic("Remaining budget", FIN.remaining, "$M", FIN.month, `${FIN.remainingPct}% of total`),
     cardStatic("H1 spend", FIN.h1.spend, "$M"), cardStatic("H1 benefits", FIN.h1.benefits, "$M"), cardStatic("H2 spend (forecast)", FIN.h2.spend, "$M"), cardStatic("H2 benefits", FIN.h2.benefits, "$M")

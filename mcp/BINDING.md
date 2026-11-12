@@ -322,7 +322,7 @@ c.commentary.themes[0].rootCauses;
 
 - `section` (optional): one of the FFPS sections above; omit for the whole update.
 
-Returns the Friction Free Product Systems program update (August 2026 edition): `{ schemaVersion, asOf, period, burndown, benefits, billingTickets, finance, delivered, pipeline, pipelineNote, source }`, or `{ schemaVersion, asOf, period, section, data, note?, source }` when a section is requested.
+Returns the Friction Free Product Systems program update (October 2026 edition): `{ schemaVersion, asOf, period, burndown, benefits, billingTickets, finance, delivered, pipeline, pipelineNote, source }`, or `{ schemaVersion, asOf, period, section, data, note?, source }` when a section is requested.
 
 ```js
 const f = await env.RELIABILITY.get_friction_free_program({ section: "burndown" });

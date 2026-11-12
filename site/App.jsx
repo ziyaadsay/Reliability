@@ -598,55 +598,56 @@ const SWEEPR = {
 
 // ---------------------------------------------------------------------------
 // Friction Free Product Systems (FFPS) program — transcribed from the "Friction Free
-// Product Systems Program Update - September 2026" deck (Google Slides). Dollar values are
+// Product Systems Program Update - October 2026" deck (Google Slides). Dollar values are
 // in dollars unless the field name says K or M; CR benefit run-rates are $K per month.
-// The September deck has no "CRs delivered" slide, so `delivered` is still the August edition.
+// The September and October decks have no "CRs delivered" slide, so `delivered` is still the August edition.
+// The October deck's CR delivery timeline is unchanged (4, 2, 3, 3 CRs, same monthly run-rates), so `pipeline` is as before.
 // ---------------------------------------------------------------------------
 const FFPS = {
-  asOf: "Sep 2026", period: "Jan – Sep 2026 (YTD)",
-  source: "Friction Free Product Systems Program Update - September 2026 (Google Slides deck)",
+  asOf: "Oct 2026", period: "Jan – Oct 2026 (YTD)",
+  source: "Friction Free Product Systems Program Update - October 2026 (Google Slides deck)",
   burndown: {
     crs: { label: "Change Requests (CRs)", sub: "Open CR volume across the year",
-      points: [{ label: "Start of year (Jan)", v: 20 }, { label: "End of Q2 (Jun)", v: 47, net: 27, opened: 37, closed: 10 }, { label: "End of Q3 (Sep)", v: 41, net: -6, opened: 5, closed: 11 }],
-      ytd: { net: 21, opened: 42, closed: 21, through: "September" } },
+      points: [{ label: "Start of year (Jan)", v: 20 }, { label: "End of Q2 (Jun)", v: 47, net: 27, opened: 37, closed: 10 }, { label: "End of Q3 (Sep)", v: 43, net: -4, opened: 5, closed: 9 }, { label: "End of Oct", v: 41, net: -2, opened: 1, closed: 3 }],
+      ytd: { net: 21, opened: 43, closed: 22, through: "October" } },
     tickets: { label: "Tickets: billing + non-billing (combined)", sub: "Total open ticket volume across the year",
-      points: [{ label: "Start of year (Jan)", v: 292 }, { label: "End of Q2 (Jun)", v: 407, net: 115 }, { label: "End of Sep", v: 402, net: -5 }],
-      ytd: { net: 110, opened: 1196, openedTickets: 928, openedProactive: 268, closed: 427, cancelled: 373, through: "August" },
+      points: [{ label: "Start of year (Jan)", v: 292 }, { label: "End of Q2 (Jun)", v: 407, net: 115 }, { label: "End of Sep", v: 402, net: -5 }, { label: "End of Oct", v: 359, net: -43 }],
+      ytd: { net: 67, opened: 1267, openedTickets: 999, openedProactive: 268, closed: 484, cancelled: 412, through: "October" },
       note: "Billing tracking began in June." }
   },
   benefits: {
-    headline: "Change request, non-billing and billing defect fix benefits are all compounding through Q3: $3.7M recurring benefit at end of Q3 against $4M spent.", recurring: 3.7,
+    headline: "Change request, non-billing and billing defect fix benefits are all compounding through Q4: $6.7M recurring benefit against $5.6M spend.", recurring: 6.7,
     sub: "Cumulative benefit tracking by quarter, sourced from monthly reporting data",
-    crs: { title: "CRs: benefit by quarter", labels: ["Q1", "Q2", "Q3"],
-      churn: [18541, 336664, 1375541], calls: [0, 77499, 272226], sbc: [0, 0, 234163],
-      notes: ["Q1: Churn $18,541 (100%), 240 customers saved", "Q2: Churn $336,664 (81%), 4,142 customers saved · Calls $77,499 (19%), 7,000 calls", "Q3: Churn $1,375,541 (73%) · Calls $272,226 (15%), 25,000 calls · SBC $234,163 (12%)"] },
-    nonBilling: { title: "Non-billing defects: benefit by quarter", labels: ["Q2", "Q3"], total: [75244, 529560],
-      notes: ["Q2 (Apr–Jun): $75,244 cumulative (72% calls, 5,000 / 28% TRs, 108)", "Q3 (Jul–Sep): $529,560 cumulative (65% calls, 25,000 / 35% TRs, 810)"] },
-    billing: { title: "Billing defects: cumulative EBITDA benefit, Jun–Sep", labels: ["Jun", "Jul", "Aug", "Sep"], ebitda: [330000, 520000, 1000000, 1490000],
-      drivers: [{ m: "June", calls: 3800, contra: 268000 }, { m: "July", calls: 9700, contra: 400000 }, { m: "August", calls: 19500, contra: 728000 }, { m: "September", calls: 30760, contra: 1061000 }],
+    crs: { title: "CRs: benefit by quarter", labels: ["Q1", "Q2", "Q3", "Q4"],
+      churn: [18541, 336664, 1375541, 2429934], calls: [0, 77499, 272226, 545172], sbc: [0, 0, 234163, 913351],
+      notes: ["Q1: Churn $18,541 (100%), 240 customers saved", "Q2: Churn $336,664 (81%), 4,142 customers saved · Calls $77,499 (19%), 7,000 calls", "Q3: Churn $1,375,541 (73%) · Calls $272,226 (15%), 25,000 calls · SBC $234,163 (12%)", "Q4: Churn $2,429,934 (62%) · Calls $545,172 (14%), 45,000 calls · SBC $913,351 (23%)"] },
+    nonBilling: { title: "Non-billing defects: benefit by quarter", labels: ["Q2", "Q3", "Q4"], total: [75244, 529560, 1104931],
+      notes: ["Q2 (Apr–Jun): $75,244 cumulative (72% calls, 5,000 / 28% TRs, 108)", "Q3 (Jul–Sep): $529,560 cumulative (65% calls, 25,000 / 35% TRs, 788)", "Q4 (Oct–Dec): $1,104,931 cumulative (70% calls, 27,000 / 30% TRs, 810)"] },
+    billing: { title: "Billing defects: cumulative EBITDA benefit, Jun–Oct", labels: ["Jun", "Jul", "Aug", "Sep", "Oct"], ebitda: [330000, 520000, 1000000, 1490000, 1740000],
+      drivers: [{ m: "June", calls: 3800, contra: 268000 }, { m: "July", calls: 9700, contra: 400000 }, { m: "August", calls: 19500, contra: 728000 }, { m: "September", calls: 30760, contra: 1061000 }, { m: "October", calls: 36660, contra: 1193000 }],
       note: "Calls = call/ticket volume (count). Contra = $ value, not part of the EBITDA total." },
-    totals: [{ v: 1881930, label: "CRs benefit (Q3 cumulative)" }, { v: 529560, label: "Non-billing benefit (Q3 cumulative)" }, { v: 1490000, label: "Billing EBITDA benefit (September)" }]
+    totals: [{ v: 3888457, label: "CRs benefit (Q4 cumulative)" }, { v: 1104931, label: "Non-billing benefit (Q4 cumulative)" }, { v: 1740000, label: "Billing EBITDA benefit (October cumulative)" }]
   },
-  billingTickets: { period: "June to September", start: { m: "June", v: 107 }, end: { m: "September", v: 229 }, delta: 122, closed: 176, cancelled: 105 },
+  billingTickets: { period: "June to October", start: { m: "June", v: 107 }, end: { m: "October", v: 239 }, delta: 132, closed: 261, cancelled: 153 },
   finance: { // $M unless noted
-    month: "September", monthSpend: 0.37, monthForecast: 0.76, spendToDate: { q1: 0.372, q2: 1.82, q3: 2.1, ytd: 4.3 },
-    h2Forecast: { q3: 2.1, q4: 1.3 }, remaining: 1.3, remainingPct: 22,
-    h1: { spend: 2.19, benefits: 0.46 }, h2: { spend: 3.5, benefits: 3.4 },
+    month: "October", monthSpend: 0.75, monthForecast: 0.7, spendToDate: { q1: 0.372, q2: 1.82, q3: 2.1, q4: 0.75, ytd: 5.1 },
+    h2Forecast: { q3: 2.1, q4: 1.25 }, remaining: 0.53, remainingPct: 9,
+    h1: { spend: 2.19, benefits: 0.46 }, h2: { spend: 3.5, benefits: 2.0 },
     projects: [ // $K: month spend, spend to date, allocation, remaining
-      { name: "HSIA/wHSIA/Home Phone", m: 214, toDate: 1600, alloc: 2240, remaining: 440 },
-      { name: "FIFA Defects Squad", m: 111, toDate: 1700, alloc: 2600, remaining: 1040 },
-      { name: "BO Optimization", m: 3.5, toDate: 550, alloc: 556, remaining: 0 },
-      { name: "Systems Health - Green", m: 30, toDate: 65, alloc: 129, remaining: 34 },
-      { name: "TV", m: 13, toDate: 61, alloc: 80, remaining: 6 }
+      { name: "HSIA/wHSIA/Home Phone", m: 372, toDate: 2200, alloc: 2300, remaining: 120 },
+      { name: "FIFA Defects Squad", m: 335, toDate: 2100, alloc: 2500, remaining: 400 },
+      { name: "BO Optimization", m: 0, toDate: 550, alloc: 550, remaining: 0 },
+      { name: "Systems Health - Green", m: 20, toDate: 115, alloc: 129, remaining: 14 },
+      { name: "TV", m: 22, toDate: 95, alloc: 95, remaining: 0 }
     ],
-    projectTotal: { name: "Total", m: 371.5, toDate: 4000, alloc: 5600, remaining: 1520 },
+    projectTotal: { name: "Total", m: 750, toDate: 5100, alloc: 5600, remaining: 530 },
     quarterly: [ // $K [spend, receipts]; Q1 to Q3 actual, Q4 forecast; null = TBD
-      { name: "HSIA/wHSIA/Home Phone / TV", q1: [176, 63], q2: [840, 396], q3: [860, 1500], q4: [445, 1900] },
-      { name: "FIFA Defects Squad", q1: [0, 0], q2: [790, null], q3: [1000, null], q4: [800, null] },
+      { name: "HSIA/wHSIA/Home Phone / TV", q1: [176, 63], q2: [840, 396], q3: [860, 1500], q4: [568, 500] },
+      { name: "FIFA Defects Squad", q1: [0, 0], q2: [790, null], q3: [1000, null], q4: [772, null] },
       { name: "BO Optimization", q1: [196, null], q2: [148, null], q3: [210, null], q4: [0, null] },
       { name: "Systems Health - Green", q1: [0, 0], q2: [44, null], q3: [51, null], q4: [34, null] }
     ],
-    quarterlyTotal: { name: "Total", q1: [372, 63], q2: [1820, 396], q3: [2120, 1500], q4: [1300, 1900] }
+    quarterlyTotal: { name: "Total", q1: [372, 63], q2: [1820, 396], q3: [2120, 1500], q4: [1370, 500] }
   },
   delivered: [ // CRs delivered Feb–Aug 2026; add = run-rate added that month, rate = monthly run-rate, cum = cumulative benefit ($K)
     { m: "February", add: null, rate: 18.5, cum: 18.5, crs: [{ id: "ITSS-8027", t: "Customer is left waiting for a DIY assist appointment.", tag: "8% churn" }, { id: "ITSS-7828", t: "Customer address not correct due to no MDU unit numbers.", tag: "Churn" }] },
@@ -4460,8 +4461,8 @@ export default function ReliabilityScorecards() {
       </div>
     );
     const lastDelivered = F.delivered[F.delivered.length - 1];
-    const crsEnd = F.burndown.crs.points[2], crsMid = F.burndown.crs.points[1], crsStart = F.burndown.crs.points[0];
-    const tkEnd = F.burndown.tickets.points[2], tkMid = F.burndown.tickets.points[1], tkStart = F.burndown.tickets.points[0];
+    const crsEnd = F.burndown.crs.points[F.burndown.crs.points.length - 1], crsStart = F.burndown.crs.points[0];
+    const tkEnd = F.burndown.tickets.points[F.burndown.tickets.points.length - 1], tkStart = F.burndown.tickets.points[0];
     const dl = (v, label, goodDown = true) => <span style={{ color: v === 0 ? T.textMuted : (v < 0) === goodDown ? T.good : T.bad, fontWeight: 600 }}>{signed(v)} {label}</span>;
     const totalBenefit = B.totals.reduce((a, t) => a + t.v, 0);
 
@@ -4469,10 +4470,10 @@ export default function ReliabilityScorecards() {
       <>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
           <StatCard T={T} color={col} icon="issues" label="Open CRs" value={crsEnd.v} sub={`${crsEnd.label} · ${crsStart.v} at start of year`}
-            deltas={[dl(crsEnd.net, "vs end of Q2"), dl(F.burndown.crs.ytd.net, "YTD")]} />
+            deltas={[dl(crsEnd.net, "vs end of Sep"), dl(F.burndown.crs.ytd.net, "YTD")]} />
           <StatCard T={T} color={col} icon="tickets" label="Open tickets" value={tkEnd.v} sub={`${tkEnd.label} · billing + non-billing`}
-            deltas={[dl(tkEnd.net, "vs end of Q2"), dl(F.burndown.tickets.ytd.net, "YTD")]} />
-          <StatCard T={T} color={col} icon="saved" label="Recurring benefit" value={`$${B.recurring.toFixed(1)}M`} sub="End of Q3 · against $4M spent"
+            deltas={[dl(tkEnd.net, "vs end of Sep"), dl(F.burndown.tickets.ytd.net, "YTD")]} />
+          <StatCard T={T} color={col} icon="saved" label="Recurring benefit" value={`$${B.recurring.toFixed(1)}M`} sub="End of Q4 · against $5.6M spend"
             deltas={[<span key="b" style={{ color: T.textSecondary }}>{moneyM(totalBenefit)} across CRs, non-billing and billing</span>]} />
           <StatCard T={T} color={col} icon="program" label="CR run-rate benefit" value={`$${lastDelivered.rate}K/mo`} sub={`${lastDelivered.m} · ${F.delivered.reduce((a, m) => a + m.crs.length, 0)} CRs delivered since Feb`}
             deltas={[<span key="c" style={{ color: T.textSecondary }}>{`$${(lastDelivered.cum / 1000).toFixed(2)}M cumulative`}</span>]} />
@@ -4576,7 +4577,7 @@ export default function ReliabilityScorecards() {
         <Section key="ffps-05" num="05" eyebrow="Friction Free Program" title="Finance" icon="churn" T={T} collapsible defaultOpen={false}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 12 }}>
             {tile(`$${FIN.monthSpend.toFixed(2)}M`, `${FIN.month} spend`, `vs forecast $${FIN.monthForecast.toFixed(2)}M`)}
-            {tile(`$${FIN.spendToDate.ytd.toFixed(1)}M`, "Spend to date", `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M`)}
+            {tile(`$${FIN.spendToDate.ytd.toFixed(1)}M`, "Spend to date", `Q1 $${Math.round(FIN.spendToDate.q1 * 1000)}K · Q2 $${FIN.spendToDate.q2.toFixed(2)}M · Q3 $${FIN.spendToDate.q3.toFixed(2)}M · Q4 $${FIN.spendToDate.q4.toFixed(2)}M`)}
             {tile(`$${FIN.h2Forecast.q3.toFixed(1)}M · $${FIN.h2Forecast.q4.toFixed(1)}M`, "H2 forecast", "Q3 · Q4")}
             {tile(`$${FIN.remaining.toFixed(1)}M`, "Remaining budget", `${FIN.remainingPct}% of total`)}
             {tile(`$${FIN.h1.spend.toFixed(2)}M / $${FIN.h1.benefits.toFixed(2)}M`, "H1 spend / benefits")}

@@ -33,7 +33,7 @@ const SOURCES = {
   b2b: "HSIA West TCS PLT Charter and Toolkit workbook, HSIA West Scorecard tab, Reliability B2B rows. Lower is better.",
   selfServe: "Self Assure metrics MCP (Sweepr, current deterministic workflows): resolved sessions, Web/App resolution rate, CX scores, Sweepr-involved churn (scorecard method) and deacts saved; the CCAI IVR rate is the earlier scorecard series (IVR flows off since 9 Apr 2026). Targets are set for 2026 only. Latest month is October 2026; October churn and deacts saved are source estimates (churn is on the 15 Oct snapshot, pending sign-off).",
   shPlus: "SH+ reliability KPIs workbook (base, calls and ticket volume from Jan 2025; rates from Jul 2025).",
-  frictionFree: "Friction Free Product Systems Program Update deck (Google Slides), August 2026 edition: burndown, benefits, billing tickets, CR delivery and finance."
+  frictionFree: "Friction Free Product Systems Program Update deck (Google Slides), October 2026 edition: burndown, benefits, billing tickets, CR delivery and finance."
 };
 
 // ---- helpers ----
