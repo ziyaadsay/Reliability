@@ -7780,8 +7780,12 @@ export default function ReliabilityScorecards() {
     // one chart for every trend: a list of series, optionally indexed to a base month (= 100)
     const plot = (series, o = {}) => {
       const start = o.start || 0, W = o.w || 520, Hh = o.h || 210, l = 42, r = 58, t = 14, b = 26;
-      const ks = []; for (let k = start; k <= iOct; k++) ks.push(k);
-      const prep = series.map((sr) => ({ ...sr, v: ks.map((k) => {
+      const ks = []; for (let k = o.years ? 0 : start; k <= (o.years ? 11 : iOct); k++) ks.push(k);
+      const M3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const prep = o.years ? [
+        { name: "2025", color: o.c25, v: ks.map((k) => series[0].vals[k]) },
+        { name: "2026", color: series[0].color, v: ks.map((k) => series[0].vals[12 + k]) }
+      ] : series.map((sr) => ({ ...sr, v: ks.map((k) => {
         const x = sr.vals[k]; if (x == null) return null;
         if (o.index != null) { const bs = sr.vals[o.index]; return bs ? (x / bs) * 100 : null; }
         return x;
@@ -7794,7 +7798,7 @@ export default function ReliabilityScorecards() {
       return (
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {Array.from({ length: (o.big ? 4 : 2) + 1 }, (_, q) => q).map((q) => { const g = lo + ((hi - lo) * q) / (o.big ? 4 : 2); return <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={svgText}>{f(g)}</text></g>; })}
-          {ks.map((k, j) => (o.big || j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: o.big ? 11 : 10.5 }}>{o.big ? `${MONTHS[k].slice(0, 3)} ${MONTHS[k].slice(-2)}` : MONTHS[k].slice(0, 3)}</text> : null))}
+          {ks.map((k, j) => (o.big || o.years || j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: o.big ? 11 : 10.5 }}>{o.years ? M3[k] : o.big ? `${MONTHS[k].slice(0, 3)} ${MONTHS[k].slice(-2)}` : MONTHS[k].slice(0, 3)}</text> : null))}
           {o.index != null && lo < 100 && hi > 100 && <line x1={l} x2={W - r} y1={y(100)} y2={y(100)} stroke={MUTED} strokeDasharray="4 4" />}
           {prep.map((sr) => {
             let d = "", pen = false;
@@ -7803,7 +7807,7 @@ export default function ReliabilityScorecards() {
             return (
               <g key={sr.name}>
                 <path d={d} fill="none" stroke={sr.color} strokeWidth={o.big ? 3 : 2.4} />
-                {o.big && sr.v.map((v, j) => (v == null ? null : <g key={j}><circle cx={x(j)} cy={y(v)} r={3.2} fill={sr.color} />{series.length === 1 && j !== lj && <text x={x(j)} y={y(v) - 9} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fill: sr.color }}>{f(v)}</text>}</g>))}
+                {o.big && sr.v.map((v, j) => (v == null ? null : <g key={j}><circle cx={x(j)} cy={y(v)} r={3.2} fill={sr.color} />{(series.length === 1 || o.years) && j !== lj && <text x={x(j)} y={y(v) + (o.years && sr.name === "2025" ? 17 : -9)} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fill: sr.color }}>{f(v)}</text>}</g>))}
                 {lj >= 0 && <><circle cx={x(lj)} cy={y(sr.v[lj])} r={4} fill={sr.color} /><text x={x(lj) + 8} y={y(sr.v[lj]) + 4} style={{ ...svgText, fontWeight: 700, fill: sr.color }}>{f(sr.v[lj])}</text></>}
               </g>
             );
@@ -7821,6 +7825,7 @@ export default function ReliabilityScorecards() {
         </div>
       );
     };
+    const C25 = isDark ? "#8FB4E8" : "#2A78D6", YEARS = [{ name: "2025", color: C25 }, { name: "2026", color: col }];
     const legend = (items) => <div className="hb-legend">{items.map((it) => <span key={it.name}><i className="hb-sw" style={{ background: it.color }} />{it.name}</span>)}</div>;
     const stat = (v, label, sub) => (
       <div className="hb-stat"><div className="hb-stat-v">{v}</div><div className="hb-stat-l">{label}</div>{sub && <div className="hb-stat-s">{sub}</div>}</div>
@@ -7887,9 +7892,10 @@ export default function ReliabilityScorecards() {
           {dkTable("Measure", overall.map((m) => row(m.label, m.vals)))}
         </>,
         notes: "Deacts are the churn rate times the subscriber base; the KPI tab has no monthly deact volume series." },
-      { layout: "default", dense: true, title: "HSIA overall: the four trends", sub: "Jan 2025 to Oct 2026",
+      { layout: "default", dense: true, title: "HSIA overall: the four trends", sub: "2025 and 2026 by month",
         body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 150, w: 520 })))}
+          {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 150, w: 520, years: true, c25: C25 })))}
+          <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
         </div>,
         notes: "Calls offered, tickets, repairs and estimated deacts for HSIA West + TQ ILEC, by month." },
       { layout: "default", dense: true, title: "HSIA West, TQ ILEC and PFE: October against last year",
@@ -7960,7 +7966,7 @@ export default function ReliabilityScorecards() {
                 <button type="button" onClick={() => setZoomChart(null)} style={{ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, borderRadius: 8, padding: "5px 14px", cursor: "pointer", border: `1px solid ${T.borderStrong}`, background: "transparent", color: T.textSecondary }}>Close ✕</button>
               </div>
               {plot(zoomChart.series, { ...zoomChart.opts, w: 1100, h: 480, big: true })}
-              {zoomChart.series.length > 1 && legend(zoomChart.series)}
+              {(zoomChart.series.length > 1 || zoomChart.opts.years) && legend(zoomChart.opts.years ? [{ name: "2025", color: zoomChart.opts.c25 }, { name: "2026", color: zoomChart.series[0].color }] : zoomChart.series)}
               <div style={{ fontSize: 12, color: MUTED, marginTop: 8 }}>Click outside the chart or press Esc to close</div>
             </div>
           </div>
@@ -7999,8 +8005,9 @@ export default function ReliabilityScorecards() {
           <div className="hb-two">
             {overall.map((m) => (
               <figure key={m.key}>
-                <div className="hb-figtitle">{m.label}, Jan 2025 to Oct 2026</div>
-                <div className="hb-chart">{zplot(`${m.label}, Jan 2025 to Oct 2026`, [{ name: m.label, color: col, vals: m.vals }])}</div>
+                <div className="hb-figtitle">{m.label}: 2025 against 2026, by month</div>
+                <div className="hb-chart">{zplot(`${m.label}: 2025 against 2026, by month`, [{ name: m.label, color: col, vals: m.vals }], { years: true, c25: C25 })}</div>
+                {legend(YEARS)}
               </figure>
             ))}
           </div>
