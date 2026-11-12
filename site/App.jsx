@@ -7949,12 +7949,9 @@ export default function ReliabilityScorecards() {
         notes: "Indexing to October 2025 puts the three groups on one scale." },
       { layout: "default", dense: true, title: "Slow speeds: the root cause that keeps growing", sub: "Slow-speed tickets, HSIA",
         body: <>
-          <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(5,1fr)" }}>
+          <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
             {dstat(num(slowAll[iOct]), "Slow-speed tickets · Oct", `${sp(pct(slowAll[iOct], slowAll[iSep]))} MoM`)}
-            {dstat(sp(pct(slowAll[iOct], slowAll[iYoY]), 0), "vs Oct 2025", `${num(slowAll[iYoY])} to ${num(slowAll[iOct])}`)}
-            {dstat(sp(pct(slowAll[iOct], slowAll[0]), 0), "vs Jan 2025", `${num(slowAll[0])} to ${num(slowAll[iOct])}`)}
             {dstat(`${share(iOct).toFixed(1)}%`, "Share of tickets", `${share(0).toFixed(1)}% in Jan 2025`)}
-            {dstat(growthShare == null ? "n/a" : `${growthShare.toFixed(0)}%`, "of the YoY rise", `${sn(slowYoY)} of ${sn(totYoY)}`)}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 170, w: 520, marks: slowMarks }))}
@@ -8085,10 +8082,7 @@ export default function ReliabilityScorecards() {
           <h2 id="ho-slow">Slow speeds: the root cause that keeps growing</h2>
           <div className="hb-stats">
             {stat(num(slowAll[iOct]), "Slow-speed tickets · Oct", `Sep ${num(slowAll[iSep])} · ${sp(pct(slowAll[iOct], slowAll[iSep]))} MoM`)}
-            {stat(sp(pct(slowAll[iOct], slowAll[iYoY]), 0), "vs Oct 2025", `${num(slowAll[iYoY])} to ${num(slowAll[iOct])}`)}
-            {stat(sp(pct(slowAll[iOct], slowAll[0]), 0), "vs Jan 2025", `${num(slowAll[0])} to ${num(slowAll[iOct])}`)}
             {stat(`${share(iOct).toFixed(1)}%`, "Share of HSIA tickets · Oct", `${share(iYoY).toFixed(1)}% in Oct 2025 · ${share(0).toFixed(1)}% in Jan 2025`)}
-            {stat(growthShare == null ? "n/a" : `${growthShare.toFixed(0)}%`, "of the YoY ticket rise", `${sn(slowYoY)} of ${sn(totYoY)} tickets`)}
           </div>
           <div className="hb-two">
             <figure>
