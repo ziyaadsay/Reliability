@@ -8156,9 +8156,9 @@ export default function ReliabilityScorecards() {
     // headline: calls offered in volume and rate, what drove them, then the ticket and dispatch rate
     const CP = CALLS_SPLIT.TV.parts, mrCalls = (k) => CP.iptvWest[k] + CP.tqIptv[k];
     const callsVol = callsOff[iOct] - callsOff[iSep], callsRateNow = DATA.callsRate.TV[iOct], callsRatePrev = DATA.callsRate.TV[iSep];
-    const mrShare = Math.round(((mrCalls(iOct) - mrCalls(iSep)) / (callsVol || 1)) * 100);
-    const callsHeadline = `Calls offered are up by ${num(callsVol)} (${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}) in volume and ${Math.abs(callsRateNow - callsRatePrev).toFixed(2)} per 100 subs (${callsRatePrev.toFixed(2)} to ${callsRateNow.toFixed(2)}) in rate, driven primarily by Mediaroom (${sn(mrCalls(iOct) - mrCalls(iSep))} calls, ${mrShare}% of the increase).`;
-    const rateHeadline = `Ticket rate ${tr[iOct] > tr[iSep] ? "rose" : "fell"} ${Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to ${fmtRate(tr[iOct])} per 100 and dispatch rate ${rr[iOct] > rr[iSep] ? "rose" : "fell"} ${Math.abs(rr[iOct] - rr[iSep]).toFixed(2)} to ${fmtRate(rr[iOct])} per 100.`;
+    const mrTk = legacy.tickets[iOct], mrTkD = legacy.tickets[iOct] - legacy.tickets[iSep];
+    const callsHeadline = `Calls offered are up by ${num(callsVol)} (${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}) in volume and ${Math.abs(callsRateNow - callsRatePrev).toFixed(2)} per 100 subs (${callsRatePrev.toFixed(2)} to ${callsRateNow.toFixed(2)}) in rate, driven primarily by Mediaroom.`;
+    const rateHeadline = `Ticket rate ${tr[iOct] > tr[iSep] ? "rose" : "fell"} ${Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to ${fmtRate(tr[iOct])} per 100 and dispatch rate ${rr[iOct] > rr[iSep] ? "rose" : "fell"} ${Math.abs(rr[iOct] - rr[iSep]).toFixed(2)} to ${fmtRate(rr[iOct])} per 100, with Mediaroom ticket volume at ${num(mrTk)}, ${mrTkD >= 0 ? "up" : "down"} ${num(Math.abs(mrTkD))} (${sp(pct(mrTk, legacy.tickets[iSep]), 1)}).`;
     const headline = `${callsHeadline} ${rateHeadline}`;
     const mp = (kind, ser, i, j) => (kind === "n" ? sp(pct(ser[i], ser[j]), 1) : sd(ser[i] - ser[j]));
     const dRepSep = rv[iSep], dRepOct = rv[iOct], platRepSep = legacy.repairs[iSep] + opus.repairs[iSep], platRepOct = legacy.repairs[iOct] + opus.repairs[iOct];
