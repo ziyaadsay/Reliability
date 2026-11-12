@@ -7875,10 +7875,13 @@ export default function ReliabilityScorecards() {
       const ms = metricKeys.filter(([k]) => g[k]);
       return {
         layout: "default", dense: true, title: `${g.name}: calls, tickets, repairs${g.deacts ? " and deacts" : ""}`,
-        sub: g.deacts ? undefined : "Deacts are not split from HSIA West + TQ ILEC in the source.",
-        body: <div style={{ display: "grid", gridTemplateColumns: ms.length === 4 ? "1fr 1fr" : `repeat(${ms.length},1fr)`, gap: 18 }}>
-          {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${num(g[k][iOct])} (${sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length === 4 ? 150 : 210, w: ms.length === 4 ? 520 : 380 }), g.color))}
-        </div>,
+        sub: g.deacts ? "2025 and 2026 by month" : "2025 and 2026 by month. Deacts are not split from HSIA West + TQ ILEC in the source.",
+        body: <>
+          <div style={{ display: "grid", gridTemplateColumns: ms.length === 4 ? "1fr 1fr" : `repeat(${ms.length},1fr)`, gap: 18 }}>
+            {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${num(g[k][iOct])} (${sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length === 4 ? 150 : 210, w: ms.length === 4 ? 520 : 380, years: true, c25: C25 }), g.color))}
+          </div>
+          <div className="dk-legend"><span><i style={{ background: C25 }} />2025</span><span><i style={{ background: g.color }} />2026</span></div>
+        </>,
         notes: `${g.name}: October against September and October 2025 for each measure.`
       };
     };
@@ -8025,10 +8028,11 @@ export default function ReliabilityScorecards() {
             {groups.flatMap((g) => metricKeys.filter(([k]) => g[k]).map(([k, lbl]) => (
               <figure key={g.name + k}>
                 <div className="hb-figtitle"><span style={{ color: g.color }}>{g.name}</span> · {lbl}</div>
-                <div className="hb-chart">{zplot(`${g.name} · ${lbl}`, [{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360 })}</div>
+                <div className="hb-chart">{zplot(`${g.name} · ${lbl}: 2025 against 2026, by month`, [{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360, years: true, c25: C25 })}</div>
               </figure>
             )))}
           </div>
+          {legend([{ name: "2025", color: C25 }, ...groups.map((g) => ({ name: `2026 ${g.name}`, color: g.color }))])}
           <h3 style={{ color: H, marginTop: 8 }}>Growth since October 2025 (October 2025 = 100)</h3>
           <div className="hb-two">
             {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => (
