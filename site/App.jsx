@@ -8029,10 +8029,10 @@ export default function ReliabilityScorecards() {
               <figure key={g.name + k}>
                 <div className="hb-figtitle"><span style={{ color: g.color }}>{g.name}</span> · {lbl}</div>
                 <div className="hb-chart">{zplot(`${g.name} · ${lbl}: 2025 against 2026, by month`, [{ name: g.name, color: g.color, vals: g[k] }], { h: 170, w: 360, years: true, c25: C25 })}</div>
+                {legend([{ name: "2025", color: C25 }, { name: "2026", color: g.color }])}
               </figure>
             )))}
           </div>
-          {legend([{ name: "2025", color: C25 }, ...groups.map((g) => ({ name: `2026 ${g.name}`, color: g.color }))])}
           <h3 style={{ color: H, marginTop: 8 }}>Growth since October 2025 (October 2025 = 100)</h3>
           <div className="hb-two">
             {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => (
