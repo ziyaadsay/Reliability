@@ -762,7 +762,7 @@ const HSIA_YOY = {
 // Arrays align with MONTHS (Jan 2025 – Oct 2026); the whole series is re-read each month
 // because the source restates earlier months.
 // HSIA = HSIA West + TQ ILEC - HSIA (wHSIA and PFE - HSIA are excluded).
-// TV = IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV, rolled up (no platform split).
+// TV = IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV, rolled up; the IPTV West and TV+ (OPUS) components are in TV.parts and feed the By Platform calls.
 // These series also drive the overview scorecard's call rows and the derived
 // All-products calls; the KPI workbook's FFH rollup is retained in DATA only
 // for reference and is no longer displayed.
@@ -781,6 +781,7 @@ const CALLS_SPLIT = {
       tqIptv: [9713, 8774, 8156, 7321, 7114, 6366, 5830, 6123, 6028, 7373, 7535, 7323, 8430, 7009, 7869, 6708, 6920, 5573, 5536, 6117, 7048, 7794],
       opus: [17888, 16418, 15759, 15113, 14689, 15027, 14786, 17166, 23513, 27535, 25020, 23941, 19174, 14803, 16865, 16831, 16007, 17784, 16536, 17672, 20269, 20471],
       pfeIptv: [7, 5, 5, 10, 22, 41, 32, 72, 71, 106, 139, 132, 90, 117, 126, 166, 201, 236, 208, 142, 158, 69],
+      subs: { iptvWest: [778159, 769931, 761910, 755151, 748185, 742432, 732165, 723609, 718093, 711537, 704056, 694717, 686971, 681360, 675478, 670043, 663345, 658202, 643496, 633923, 620523, 602509], opus: [252876, 259270, 267096, 272706, 279827, 284743, 293636, 301386, 306540, 313647, 321802, 329973, 335688, 339814, 343994, 347536, 351037, 353497, 365045, 370894, 381660, 396852] },
       pik: [1244, 721, 921, 1151, 1065, 850, 880, 1168, 1218, 1717, 1698, 1702, 1663, 1354, 1484, 1487, 1608, 1734, 1470, 1887, 1920, 1821]
     }
   }
@@ -904,6 +905,12 @@ const TV_MIXED = { id: "mixed", name: "Mixed usage", sub: "MR + TTV+", base: [70
 // denominator and it is left out of every analysis section.
 const TV_PIK = { name: "Pik TV", tickets: [530,409,574,807,706,635,620,764,746,1092,1063,1041,1106,913,869,1006,1043,1160,963,1226,1286,1228] };
 // Per-platform rates derived where both volume and base are reported
+// Calls offered by platform (TS Calls Offered by Product workbook): Legacy = IPTV West, TV Evolution = TV+ (OPUS), rate over each field's subscribers in that workbook.
+TV_PLATFORMS.forEach((p) => {
+  const CPp = CALLS_SPLIT.TV.parts, off = p.id === "legacy" ? CPp.iptvWest : CPp.opus, sb = p.id === "legacy" ? CPp.subs.iptvWest : CPp.subs.opus;
+  p.callsOffered = off; p.callsBase = sb;
+  p.callsRate = off.map((v, i) => (v != null && sb[i] ? Math.round((v / sb[i]) * 10000) / 100 : null));
+});
 TV_PLATFORMS.forEach((p) => {
   p.ticketRate = p.tickets.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(2) : null));
   p.repairRate = p.repairs.map((v, i) => (v != null && p.base[i] != null ? +((v / p.base[i]) * 100).toFixed(3) : null));
@@ -4170,6 +4177,7 @@ export default function ReliabilityScorecards() {
         {TV_PLATFORMS.map((p) => {
           const col = colors[platKey(p)];
           const bs = rowFigures(p.base, 0, false, false, LAST);
+          const cr = rowFigures(p.callsRate, 2, true, "rate", LAST), co = rowFigures(p.callsOffered, 0, true, false, LAST);
           const tk = rowFigures(p.tickets, 0, true, false, LAST);
           const tr = rowFigures(p.ticketRate, 2, true, "rate", LAST);
           const rp = rowFigures(p.repairs, 0, true, false, LAST);
@@ -4185,6 +4193,8 @@ export default function ReliabilityScorecards() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
                 <StatCard T={T} color={col} icon="base" label="Subscriber base" value={fmtBig(bs.latest)} sub={bs.latestMonth} deltas={[d(bs.mom, "MoM"), d(bs.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="calls" label="Calls offered rate per 100 subs" value={fmtRate(cr.latest, 2)} sub={cr.latestMonth} deltas={[d(cr.mom, "MoM"), d(cr.yoy, "YoY")].filter(Boolean)} />
+                <StatCard T={T} color={col} icon="calls" label="Calls offered" value={fmtBig(co.latest)} sub={co.latestMonth} deltas={[d(co.mom, "MoM"), d(co.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket volume" value={fmtBig(tk.latest)} sub={tk.latestMonth} deltas={[d(tk.mom, "MoM"), d(tk.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="tickets" label="Ticket rate per 100 subs" value={fmtRate(tr.latest, 2)} sub={tr.latestMonth} deltas={[d(tr.mom, "MoM"), d(tr.yoy, "YoY")].filter(Boolean)} />
                 <StatCard T={T} color={col} icon="repairs" label="Repair volume" value={fmtBig(rp.latest)} sub={rp.latestMonth} deltas={[d(rp.mom, "MoM"), d(rp.yoy, "YoY")].filter(Boolean)} />
@@ -4235,6 +4245,13 @@ export default function ReliabilityScorecards() {
             <Legend items={[...TV_PLATFORMS.map((p) => ({ label: p.name, color: colors[platKey(p)] })), { label: TV_MIXED.name, color: colors.MIXED }]} T={T} />
             {openTables["tvp-bs"] && <DataTable labels={rangeMonths} seriesDefs={[...platSeries("base"), { key: "MIXED", label: TV_MIXED.name, data: sliceR(TV_MIXED.base) }]} fmt={fmtNum} T={T} />}
           </ChartCard>
+        )}
+
+        {sec("Calls offered", "calls",
+          <>
+            {platChart("tvp-cr", "Calls offered rate by platform (per 100 platform subs)", "callsRate", (v) => fmtRate(v, 2), "Calls offered over the platform's subscribers in the TS Calls Offered by Product workbook. Legacy = IPTV West, TV Evolution = TV+ (OPUS). TQ ILEC IPTV, PIK and PFE IPTV are in the TV total but in neither platform.")}
+            {platChart("tvp-co", "Calls offered by platform", "callsOffered", fmtNum, "Contacts offered for the IPTV West and TV+ (OPUS) fields of the TS Calls Offered by Product workbook (Actuals - Calls Offered tab).")}
+          </>
         )}
 
         {sec("Tickets", "tickets",
@@ -8162,10 +8179,10 @@ export default function ReliabilityScorecards() {
     const ctxCalls = `Calls offered rate fell to a ${crT[crLowK].toFixed(2)} low in ${mon(crLowK)}, held ${Math.min(...crMid).toFixed(1)} to ${Math.max(...crMid).toFixed(1)} through ${mon(iAug0)}, then stepped up to ${crT[iSep].toFixed(2)} in ${mon(iSep)} and ${crT[iOct].toFixed(2)} in ${mon(iOct)}${crHigh ? ", the highest of 2026" : ""}.`;
     const ctxMr = `Mediaroom tickets of ${num(mrT[iOct])} are ${mrSince != null ? `the highest since ${mon(mrSince)} (${num(mrT[mrSince])}) and ` : ""}${sp(pct(mrT[iOct], mrAvg), 1)} against the 2026 average of ${num(mrAvg)}; the ${sn(mrT[iOct] - mrT[iSep])} follows ${sn(mrT[iSep] - mrT[iAug0])} in ${mon(iSep)}, off a ${num(mrT[mrLowK])} low in ${mon(mrLowK)}.`;
     // headline: calls offered in volume and rate, what drove them, then the ticket and dispatch rate
-    const CP = CALLS_SPLIT.TV.parts, mrCalls = (k) => CP.iptvWest[k] + CP.tqIptv[k];
+    const mrCO = legacy.callsOffered, mrCR = legacy.callsRate, mrCoD = mrCO[iOct] - mrCO[iSep];
     const callsVol = callsOff[iOct] - callsOff[iSep], callsRateNow = DATA.callsRate.TV[iOct], callsRatePrev = DATA.callsRate.TV[iSep];
     const mrTk = legacy.tickets[iOct], mrTkD = legacy.tickets[iOct] - legacy.tickets[iSep];
-    const callsHeadline = `Calls offered are up by ${num(callsVol)} (${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}) in volume and ${Math.abs(callsRateNow - callsRatePrev).toFixed(2)} per 100 subs (${callsRatePrev.toFixed(2)} to ${callsRateNow.toFixed(2)}) in rate, driven primarily by Mediaroom.`;
+    const callsHeadline = `Calls offered are up by ${num(callsVol)} (${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}) in volume and ${Math.abs(callsRateNow - callsRatePrev).toFixed(2)} per 100 subs (${callsRatePrev.toFixed(2)} to ${callsRateNow.toFixed(2)}) in rate, driven primarily by Mediaroom, where calls offered rose ${num(mrCoD)} (${sp(pct(mrCO[iOct], mrCO[iSep]), 1)}) to ${num(mrCO[iOct])}, ${mrCR[iSep].toFixed(2)} to ${mrCR[iOct].toFixed(2)} per 100 subs.`;
     const rateHeadline = `Ticket rate ${tr[iOct] > tr[iSep] ? "rose" : "fell"} ${Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to ${fmtRate(tr[iOct])} per 100 and dispatch rate ${rr[iOct] > rr[iSep] ? "rose" : "fell"} ${Math.abs(rr[iOct] - rr[iSep]).toFixed(2)} to ${fmtRate(rr[iOct])} per 100, with Mediaroom ticket volume at ${num(mrTk)}, ${mrTkD >= 0 ? "up" : "down"} ${num(Math.abs(mrTkD))} (${sp(pct(mrTk, legacy.tickets[iSep]), 1)}).`;
     const headline = `${callsHeadline} ${rateHeadline}`;
     const mp = (kind, ser, i, j) => (kind === "n" ? sp(pct(ser[i], ser[j]), 1) : sd(ser[i] - ser[j]));
@@ -8241,8 +8258,8 @@ export default function ReliabilityScorecards() {
     // monthly lines, October 2025 to October 2026
     const dline = (series, fmt, startK = iYoY, opts = {}) => {
       const lineMonths = []; for (let k = startK; k <= iOct; k++) lineMonths.push(k);
-      const W = 520, Hh = opts.h || 270, l = 44, r = 54, t = opts.mark != null ? 24 : 14, b = 28;
-      const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k]));
+      const W = opts.w || 520, Hh = opts.h || 270, l = 44, r = opts.hline ? 100 : 54, t = opts.mark != null ? 24 : 14, b = 28;
+      const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k])).concat(opts.hline ? [opts.hline.value] : []);
       const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 0.1, lo = mn - pad, hi = mx + pad;
       const pw = W - l - r, ph = Hh - t - b;
       const x = (j) => l + (j * pw) / (lineMonths.length - 1), y = (v) => t + ph - ((v - lo) / (hi - lo)) * ph;
@@ -8251,13 +8268,17 @@ export default function ReliabilityScorecards() {
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {ticks.map((g, q) => <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: 11 }}>{fmt(g)}</text></g>)}
           {lineMonths.map((k, j) => <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text>)}
+          {opts.hline && <g><line x1={l} x2={W - r} y1={y(opts.hline.value)} y2={y(opts.hline.value)} stroke={MUTED} strokeWidth={1.4} strokeDasharray="2 4" /><text x={W - r + 8} y={y(opts.hline.value) + 4} textAnchor="start" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.hline.label}</text></g>}
           {opts.mark != null && <g><line x1={x(opts.mark - startK)} x2={x(opts.mark - startK)} y1={t - 6} y2={Hh - b} stroke={MUTED} strokeWidth={1.6} strokeDasharray="4 4" /><text x={x(opts.mark - startK) - 5} y={t - 10} textAnchor="end" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.markLabel}</text></g>}
           {series.map((sr) => {
             const pts = lineMonths.map((k, j) => `${j ? "L" : "M"}${x(j).toFixed(1)},${y(sr.vals[k]).toFixed(1)}`).join(" ");
             const lastJ = lineMonths.length - 1, lv = sr.vals[iOct];
+            const othersY = series.filter((o) => o !== sr).map((o) => y(o.vals[iOct]));
+            const myY = y(lv), close = othersY.some((oy) => Math.abs(oy - myY) < 15), nudge = close ? (othersY.every((oy) => oy >= myY) ? -6 : 8) : 0;
             return <g key={sr.name}><path d={pts} fill="none" stroke={sr.color} strokeWidth={2.8} />
               {lineMonths.map((k, j) => <circle key={k} cx={x(j)} cy={y(sr.vals[k])} r={j === lastJ ? 4.5 : 2.2} fill={sr.color} />)}
-              <text x={x(lastJ) + 8} y={y(lv) + 4} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text>
+              <text x={x(lastJ) + 8} y={y(lv) + 4 + nudge} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text>
+              {opts.allLabels && lineMonths.slice(0, -1).map((k, j) => <text key={"al" + k} x={x(j)} y={y(sr.vals[k]) + (j > 0 && sr.vals[k] < sr.vals[lineMonths[j - 1]] && sr.vals[k] < sr.vals[lineMonths[j + 1]] ? 17 : -8)} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[k])}</text>)}
               {opts.startLabel && <text x={x(0) + 2} y={y(sr.vals[startK]) - 8} textAnchor="start" style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[startK])}</text>}</g>;
           })}
         </svg>
@@ -8280,6 +8301,22 @@ export default function ReliabilityScorecards() {
       { layout: "cover", title: "TV in October",
         callout: headline,
         notes: "The one-line answer to what is driving the rise." },
+      { layout: "default", dense: true, title: "October in the context of the year",
+        body: () => {
+          const ytdAvg = (arr) => seg(arr, iJan, iOct).reduce((a, b) => a + b, 0) / (iOct - iJan + 1);
+          const cMk = { mark: iAug0, markLabel: "Rise from Aug", h: 235, allLabels: true };
+          return <>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
+              <div><h3 className="dk-ch">TV calls offered rate per 100 subs, 2026</h3>{dline([{ name: "Calls offered rate", color: col, vals: DATA.callsRate.TV }], (v) => v.toFixed(2), iJan, { ...cMk, hline: { value: ytdAvg(DATA.callsRate.TV), label: `2026 avg ${ytdAvg(DATA.callsRate.TV).toFixed(2)}` } })}</div>
+              <div><h3 className="dk-ch">Mediaroom (Optik TV Legacy) tickets, 2026</h3>{dline([{ name: "Mediaroom tickets", color: col, vals: legacy.tickets }], (v) => num(v), iJan, { ...cMk, hline: { value: ytdAvg(legacy.tickets), label: `2026 avg ${num(ytdAvg(legacy.tickets))}` } })}</div>
+            </div>
+            <div className="dk-two" style={{ flex: "none", fontSize: 13 }}>
+              <div className="dk-note"><h3>Calls offered rate</h3>{ctxCalls}</div>
+              <div className="dk-note"><h3>Mediaroom tickets</h3>{ctxMr}</div>
+            </div>
+          </>;
+        },
+        notes: "The dotted horizontal line is the 2026 average for the series. The dashed vertical line marks where the rise starts, in August." },
       { layout: "default", dense: true, title: "October at a glance", clicks: 2,
         body: (step, C) => <>
           {C(1, <>
@@ -8292,9 +8329,8 @@ export default function ReliabilityScorecards() {
               {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
             </div>
           </>)}
-          {C(2, <ul style={{ fontSize: 15.5, gap: 10 }}>
+          {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
             <li><strong>Demand rose a little, cost to serve rose more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} per 100 ({sd(tr[iOct] - tr[iSep])}) and dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}); calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}; churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
-            <li><strong>In context of the year.</strong> {ctxCalls} {ctxMr}</li>
             <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
             <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</li>
             <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</li>
@@ -8302,20 +8338,22 @@ export default function ReliabilityScorecards() {
             <li><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on OPUS boxes.</li>
           </ul>)}
         </>,
-        notes: "Click 1: the six KPI cards together. Click 2: the six findings together. Calls are not split by platform in the source." },
-      { layout: "default", dense: true, title: "Ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
+        notes: "Click 1: the six KPI cards together. Click 2: the six findings together." },
+      { layout: "default", dense: true, title: "Calls, ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
         body: (step, C) => {
-          const cmp = (label, a, b) => <span key={label} style={{ marginRight: 18, whiteSpace: "nowrap" }}>{label} {fmtRate(a)} to {fmtRate(b)} {Math.abs(b - a) < 0.005 ? chg("0.00", 0) : chg(sd(b - a), b - a)}</span>;
-          const mk = { mark: iAug, markLabel: "Rise from Aug", h: 205, startLabel: true };
+          const cmp = (label, a, b) => <div key={label}>{label} {fmtRate(a)} to {fmtRate(b)} {Math.abs(b - a) < 0.005 ? chg("0.00", 0) : chg(sd(b - a), b - a)}</div>;
+          const mk = { mark: iAug, markLabel: "Rise from Aug", h: 205, w: 400, startLabel: true };
+          const chart = (title, key, tot) => <div>
+            <h3 className="dk-ch">{title}</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY, mk)}
+            <div className="dk-cap" style={{ marginTop: 2, fontSize: 11.5 }}>Oct 2025 to Oct 2026{cmp("Mediaroom", legacy[key][iYoY], legacy[key][iOct])}{cmp("OPUS", opus[key][iYoY], opus[key][iOct])}{cmp("TV total", tot[iYoY], tot[iOct])}</div></div>;
           return <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
-              <div><h3 className="dk-ch">Ticket rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.ticketRate }, { name: "OPUS", color: AMBER, vals: opus.ticketRate }], (v) => fmtRate(v), iYoY, mk)}
-                <div className="dk-cap" style={{ marginTop: 2 }}>Oct 2025 to Oct 2026: {cmp("Mediaroom", legacy.ticketRate[iYoY], legacy.ticketRate[iOct])}{cmp("OPUS", opus.ticketRate[iYoY], opus.ticketRate[iOct])}{cmp("TV total", tr[iYoY], tr[iOct])}</div></div>
-              <div><h3 className="dk-ch">Dispatch rate per 100 subs</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy.repairRate }, { name: "OPUS", color: AMBER, vals: opus.repairRate }], (v) => fmtRate(v), iYoY, mk)}
-                <div className="dk-cap" style={{ marginTop: 2 }}>Oct 2025 to Oct 2026: {cmp("Mediaroom", legacy.repairRate[iYoY], legacy.repairRate[iOct])}{cmp("OPUS", opus.repairRate[iYoY], opus.repairRate[iOct])}{cmp("TV total", rr[iYoY], rr[iOct])}</div></div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+              {chart("Calls offered rate per 100 subs", "callsRate", DATA.callsRate.TV)}
+              {chart("Ticket rate per 100 subs", "ticketRate", tr)}
+              {chart("Dispatch rate per 100 subs", "repairRate", rr)}
             </div>
             {platLegend}
-            <p className="dk-cap" style={{ margin: 0 }}>Calls offered are not split by platform in the TS Calls source, so ticket rate by platform is the indicator of which platform is driving the increase.</p>
+            <p className="dk-cap" style={{ margin: 0 }}>Calls offered by platform: Mediaroom is IPTV West and OPUS is TV+ (OPUS) in the TS Calls Offered by Product workbook; TQ ILEC IPTV, PIK and PFE IPTV are in the TV total but in neither platform.</p>
             {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
               <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
                 <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
@@ -8442,6 +8480,8 @@ export default function ReliabilityScorecards() {
             <thead><tr><th>Measure</th><th>Mediaroom Sep</th><th>Oct</th><th>Change</th><th>OPUS Sep</th><th>Oct</th><th>Change</th></tr></thead>
             <tbody>
               <tr><td>Tickets</td><td className="n">{num(legacy.tickets[iSep])}</td><td className="n">{num(legacy.tickets[iOct])}</td><td className="n">{sn(legacy.tickets[iOct] - legacy.tickets[iSep])}</td><td className="n">{num(opus.tickets[iSep])}</td><td className="n">{num(opus.tickets[iOct])}</td><td className="n">{sn(opus.tickets[iOct] - opus.tickets[iSep])}</td></tr>
+              <tr><td>Calls offered</td><td className="n">{num(legacy.callsOffered[iSep])}</td><td className="n">{num(legacy.callsOffered[iOct])}</td><td className="n">{sn(legacy.callsOffered[iOct] - legacy.callsOffered[iSep])}</td><td className="n">{num(opus.callsOffered[iSep])}</td><td className="n">{num(opus.callsOffered[iOct])}</td><td className="n">{sn(opus.callsOffered[iOct] - opus.callsOffered[iSep])}</td></tr>
+              <tr><td>Calls offered rate per 100 subs</td><td className="n">{fmtRate(legacy.callsRate[iSep])}</td><td className="n">{fmtRate(legacy.callsRate[iOct])}</td><td className="n">{sd(legacy.callsRate[iOct] - legacy.callsRate[iSep])}</td><td className="n">{fmtRate(opus.callsRate[iSep])}</td><td className="n">{fmtRate(opus.callsRate[iOct])}</td><td className="n">{sd(opus.callsRate[iOct] - opus.callsRate[iSep])}</td></tr>
               <tr><td>Ticket rate per 100 subs</td><td className="n">{fmtRate(legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(legacy.ticketRate[iOct])}</td><td className="n">{sd(legacy.ticketRate[iOct] - legacy.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iSep])}</td><td className="n">{fmtRate(opus.ticketRate[iOct])}</td><td className="n">{sd(opus.ticketRate[iOct] - opus.ticketRate[iSep])}</td></tr>
               <tr><td>Subscriber base</td><td className="n">{num(legacy.base[iSep])}</td><td className="n">{num(legacy.base[iOct])}</td><td className="n">{sn(legacy.base[iOct] - legacy.base[iSep])}</td><td className="n">{num(opus.base[iSep])}</td><td className="n">{num(opus.base[iOct])}</td><td className="n">{sn(opus.base[iOct] - opus.base[iSep])}</td></tr>
               <tr><td>Repairs / dispatches</td><td className="n">{num(legacy.repairs[iSep])}</td><td className="n">{num(legacy.repairs[iOct])}</td><td className="n">{sn(legacy.repairs[iOct] - legacy.repairs[iSep])}</td><td className="n">{num(opus.repairs[iSep])}</td><td className="n">{num(opus.repairs[iOct])}</td><td className="n">{sn(opus.repairs[iOct] - opus.repairs[iSep])}</td></tr>

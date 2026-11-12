@@ -163,7 +163,7 @@ function callTool(name, args = {}) {
       const cut = (arr) => (arr || []).slice(a, b + 1);
       return text({
         months: MONTHS.slice(a, b + 1),
-        platforms: TV_PLATFORMS.map((p) => ({ id: p.id, name: p.name, platform: p.sub, tickets: cut(p.tickets), ticketRate: cut(p.ticketRate), repairs: cut(p.repairs), repairRate: cut(p.repairRate), subscriberBase: cut(p.base), repairSwaps2026: cut(p.swaps2026) })),
+        platforms: TV_PLATFORMS.map((p) => ({ id: p.id, name: p.name, platform: p.sub, callsOffered: cut(p.callsOffered), callsRate: cut(p.callsRate), tickets: cut(p.tickets), ticketRate: cut(p.ticketRate), repairs: cut(p.repairs), repairRate: cut(p.repairRate), subscriberBase: cut(p.base), repairSwaps2026: cut(p.swaps2026) })),
         mixedUsage: { name: TV_MIXED.name, definition: "Customers provisioned on both Mediaroom and TTV+", subscriberBase: cut(TV_MIXED.base) },
         pikTV: { name: TV_PIK.name, definition: "Minor product line: tickets only", tickets: cut(TV_PIK.tickets) },
         notes: ["Rates are % of the platform's provisioned base. Repairs and swaps are reported for 2026 only; repairs are West-scope.", "The TV ticket volume and rate in the KPI tools include Pik TV (Optik TV (Legacy) + TV Evolution + Pik TV). Pik TV subscribers are not in the rate base and Pik TV is left out of the ticket-category analysis.", SOURCES.tvPlatforms]
