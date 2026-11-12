@@ -2528,7 +2528,7 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiaoctreview", "hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaoctreview", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   shplustickets: "Notes Analysis",
@@ -2940,13 +2940,13 @@ export default function ReliabilityScorecards() {
     { id: "home", label: "Overview", icon: "overview", color: T.heading },
     { id: "execsummary", label: "Executive Summary", icon: "slides", color: T.heading, child: true, parent: "home" },
     { id: "HSIA", label: "HSIA", icon: "hsia", color: colors.HSIA },
-    { id: "hsiaoctreview", label: "Oct Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiawest", label: "HSIA West", icon: "hsia", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiatq", label: "TQ ILEC", icon: "hsia", color: colors.TQ, child: true, parent: "HSIA" },
     { id: "hsiapfe", label: "PFE (PureFibre East)", icon: "hsia", color: colors.PFE, child: true, parent: "HSIA" },
     { id: "hsiatickets", label: "Notes Analysis", icon: "notes", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
+    { id: "hsiaoctreview", label: "Oct Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaarchdeck", label: "Supporting deck", icon: "slides", color: colors.HSIA, child: true, grand: true, parent: "hsiaarch" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
@@ -7812,9 +7812,112 @@ export default function ReliabilityScorecards() {
     const fastest = groups.map((g) => ({ name: g.name, g: pct(g.slow[iOct], g.slow[iYoY]) })).sort((a, b) => b.g - a.g)[0];
     const bigTickets = [...groups].sort((a, b) => Math.abs(b.tickets[iOct] - b.tickets[iYoY]) - Math.abs(a.tickets[iOct] - a.tickets[iYoY]))[0];
     const O = overall.reduce((m, x) => ({ ...m, [x.key]: x.vals }), {});
+    // ---- presentation mode (Deck) ----
+    const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
+    const mstat = (m) => dstat(num(m.vals[iOct]), `${m.label} · Oct`, `Sep ${num(m.vals[iSep])} · ${sp(mom(m.vals))} MoM · ${sp(yoy(m.vals))} YoY`);
+    const cell = (v, extra) => <td className="n" style={extra}>{v}</td>;
+    const dkTable = (first, rows) => (
+      <table>
+        <thead><tr><th>{first}</th><th>Sep</th><th>Oct</th><th>MoM</th><th>Oct 2025</th><th>YoY</th></tr></thead>
+        <tbody>{rows}</tbody>
+      </table>
+    );
+    const chartCell = (title, node, color) => (
+      <div><div className="dk-ch">{color ? <span style={{ color }}>{title}</span> : title}</div>{node}</div>
+    );
+    const groupSlide = (g) => {
+      const ms = metricKeys.filter(([k]) => g[k]);
+      return {
+        layout: "default", dense: true, title: `${g.name}: calls, tickets, repairs${g.deacts ? " and deacts" : ""}`,
+        sub: g.deacts ? undefined : "Deacts are not split from HSIA West + TQ ILEC in the source.",
+        body: <div style={{ display: "grid", gridTemplateColumns: ms.length === 4 ? "1fr 1fr" : `repeat(${ms.length},1fr)`, gap: 18 }}>
+          {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${num(g[k][iOct])} (${sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length === 4 ? 150 : 210, w: ms.length === 4 ? 520 : 380 }), g.color))}
+        </div>,
+        notes: `${g.name}: October against September and October 2025 for each measure.`
+      };
+    };
+    const slides = [
+      { layout: "cover", title: "HSIA in October",
+        callout: `Tickets ${sp(mom(O.tickets))} and calls offered ${sp(mom(O.calls))} on September. Slow speeds are ${share(iOct).toFixed(0)}% of tickets${growthShare == null ? "" : ` and ${growthShare.toFixed(0)}% of the year-over-year rise`}.`,
+        notes: "The one-line answer: volume eased in October, and slow speeds are the root cause that keeps growing." },
+      { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
+        body: <>
+          <div className="dk-stats">{overall.map((m) => mstat(m))}</div>
+          {dkTable("Measure", overall.map((m) => row(m.label, m.vals)))}
+        </>,
+        notes: "Deacts are the churn rate times the subscriber base; the KPI tab has no monthly deact volume series." },
+      { layout: "default", dense: true, title: "HSIA overall: the four trends", sub: "Jan 2025 to Oct 2026",
+        body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 150, w: 520 })))}
+        </div>,
+        notes: "Calls offered, tickets, repairs and estimated deacts for HSIA West + TQ ILEC, by month." },
+      { layout: "default", dense: true, title: "HSIA West, TQ ILEC and PFE: October against last year",
+        body: dkTable("Group · measure", groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k]) : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split in the source</td></tr>)))),
+        notes: "TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot." },
+      groupSlide(groups[0]), groupSlide(groups[1]), groupSlide(groups[2]),
+      { layout: "default", dense: true, title: "Growth since October 2025", sub: "Calls, tickets and repairs by group, October 2025 = 100",
+        body: <>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+            {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => chartCell(lbl, plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g[k] })), { start: iYoY, index: iYoY, fmt: (v) => Math.round(v), h: 220, w: 420 })))}
+          </div>
+          <div className="dk-legend">{groups.map((g) => <span key={g.name}><i style={{ background: g.color }} />{g.name}</span>)}</div>
+        </>,
+        notes: "Indexing to October 2025 puts the three groups on one scale." },
+      { layout: "default", dense: true, title: "Slow speeds: the root cause that keeps growing", sub: "Slow-speed tickets, HSIA",
+        body: <>
+          <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(5,1fr)" }}>
+            {dstat(num(slowAll[iOct]), "Slow-speed tickets · Oct", `${sp(pct(slowAll[iOct], slowAll[iSep]))} MoM`)}
+            {dstat(sp(pct(slowAll[iOct], slowAll[iYoY]), 0), "vs Oct 2025", `${num(slowAll[iYoY])} to ${num(slowAll[iOct])}`)}
+            {dstat(sp(pct(slowAll[iOct], slowAll[0]), 0), "vs Jan 2025", `${num(slowAll[0])} to ${num(slowAll[iOct])}`)}
+            {dstat(`${share(iOct).toFixed(1)}%`, "Share of tickets", `${share(0).toFixed(1)}% in Jan 2025`)}
+            {dstat(growthShare == null ? "n/a" : `${growthShare.toFixed(0)}%`, "of the YoY rise", `${sn(slowYoY)} of ${sn(totYoY)}`)}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 170, w: 520 }))}
+            {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 170, w: 520, fmt: (v) => v.toFixed(1) }))}
+          </div>
+        </>,
+        notes: "Slow speeds are the wired and wireless slow-speed tickets plus incompatible equipment, from the HSIA Recategorization Looker tab." },
+      { layout: "default", dense: true, title: "Slow speeds by group", sub: "Growth since January 2025 and October against last year",
+        body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+          <div>{chartCell("Jan 2025 = 100", plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 230, w: 520 }))}
+            <div className="dk-legend">{groups.map((g) => <span key={g.name}><i style={{ background: g.color }} />{g.name}</span>)}</div></div>
+          <table>
+            <thead><tr><th>Group</th><th>Oct 2025</th><th>Oct 2026</th><th>YoY</th><th>Share of its tickets</th></tr></thead>
+            <tbody>{groups.map((g) => <tr key={g.name}><td>{g.name}</td>{cell(num(g.slow[iYoY]))}{cell(num(g.slow[iOct]))}{cell(sp(pct(g.slow[iOct], g.slow[iYoY]), 0))}{cell(`${((g.slow[iYoY] / g.tickets[iYoY]) * 100).toFixed(0)}% → ${((g.slow[iOct] / g.tickets[iOct]) * 100).toFixed(0)}%`)}</tr>)}</tbody>
+          </table>
+        </div>,
+        notes: `${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY). The three groups do not add up exactly to HSIA All.` },
+      { layout: "default", dense: true, title: "Slow speeds for calls and repairs: source needed",
+        body: <>
+          <div className="dk-note amber"><h3>Not in the workbook yet</h3>The workbook reports slow speeds by month for tickets only. Calls are split Connectivity and Wireless, and repairs have no reason split, so the slow-speed growth for calls and repairs cannot be shown. A Looker look or tab with calls and repairs by reason adds those two views.</div>
+          <div className="dk-stats" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
+            {dstat(num(slowAll[iOct]), "Tickets", "available, by month")}
+            {dstat("—", "Calls", "source needed")}
+            {dstat("—", "Repairs", "source needed")}
+          </div>
+        </>,
+        notes: "Ask for a calls-by-reason and repairs-by-reason look." },
+      { layout: "default", dense: true, title: "Initiatives aimed at speed",
+        body: <table>
+          <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
+          <tbody>{slowInit.map((it) => <tr key={it.name}><td>{it.name}</td><td className="n">{it.status}</td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
+        </table>,
+        notes: "From the HSIA initiatives register." },
+      { layout: "end", title: "Sources and method",
+        sub: "Calls: TS Calls Offered by Product (HSIA West + TQ ILEC). Tickets, repairs, churn: Churn Measurement 2026 KPI tab, and the HSIA Recategorization Looker and Looker Repairs tabs for the three groups. Deacts are churn rate × subscriber base. Slow speeds are the Recategorization Looker Slow Speeds pain point." }
+    ];
     return (
+      <>
+        {deckSlide != null && <Deck slides={slides} index={deckSlide - 1} onIndex={(k) => setDeckSlide(k + 1)} onExit={() => setDeckSlide(null)} T={T} color={col} isDark={isDark} title="HSIA October review" />}
       <div className="hb">
         <style>{css}</style>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -26 }}>
+          <button onClick={() => setDeckSlide(1)} title="Open this review as slides (arrow keys to navigate, Esc to exit)"
+            style={{ background: col, color: "#fff", border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: FONT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 4px 14px rgba(0,0,0,.14)" }}>
+            <span style={{ fontSize: 10 }}>▶</span> Present · {slides.length} slides
+          </button>
+        </div>
         <header className="hb-head">
           <div className="hb-eyebrow">HSIA · October 2026 · HSIA as a whole, HSIA West, TQ ILEC and PFE separately, and the growth of slow speeds</div>
           <h1>HSIA in October: tickets {sp(mom(O.tickets))} and calls offered {sp(mom(O.calls))} on September, repairs {sp(mom(O.repairs))}. Slow speeds are {share(iOct).toFixed(0)}% of tickets and {growthShare == null ? "most" : growthShare.toFixed(0) + "%"} of the year-over-year rise.</h1>
@@ -7936,6 +8039,7 @@ export default function ReliabilityScorecards() {
           </ul>
         </section>
       </div>
+      </>
     );
   }
 

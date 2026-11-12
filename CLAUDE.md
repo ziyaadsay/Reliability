@@ -80,8 +80,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Looker" tab's "HSIA TQ ILEC" block Totals row (Churn Measurement 2026 workbook), repairs
   from the "Looker Repairs (Kam/Jason's new view)" tab, HS QC ILEC row (Jan 2025 on).
   HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
-- HSIA › Oct Review (`hsiaoctreview`, `HsiaOctReviewPage`, `HSIA_OCT_REVIEW`) mirrors the TV Oct Review without the slide
-  mode: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and deacts, plus slow speeds.
+- HSIA › Oct Review (`hsiaoctreview`, `HsiaOctReviewPage`, `HSIA_OCT_REVIEW`) mirrors the TV Oct Review, with the same Present
+  slide mode (13 slides), and sits below Cross Analysis: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and deacts, plus slow speeds.
   Deacts are churn rate x subscriber base (the KPI tab has no deact volume series). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
