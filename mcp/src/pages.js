@@ -166,11 +166,12 @@ const upDown = (x, up = "rose", down = "fell", flat = "held") => (x == null ? fl
 const sBps = (b) => (b == null ? "n/a" : (b > 0 ? "+" : "") + b + " per 100");
 function healthMetricDefs(sc, i) {
   return [
+    { key: "callsRate", eyebrow: "Calls", name: "Calls offered rate per 100 subs", data: DATA.callsRate[sc], fmt: (x) => fmtRate(x, 2), rate: true, goodDown: true, unit: "per 100 subscribers" },
+    { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSeries(sc), fmt: fmtBig, goodDown: true, unit: "count" },
     { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: (x) => fmtRate(x, 2), rate: true, goodDown: true, unit: "per 100 subscribers" },
     { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, goodDown: true, unit: "count" },
     { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: (x) => fmtRate(x, 2), rate: true, goodDown: true, unit: "per 100 subscribers" },
     { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtBig, goodDown: true, unit: "count" },
-    { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSeries(sc), fmt: fmtBig, goodDown: true, unit: "count" },
     { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, goodDown: false, unit: "count" },
     { key: "b2bVoC", eyebrow: "B2B VoC", name: "B2B reliability score", data: DATA.b2bVoC[sc], fmt: (x) => (x == null ? "—" : x.toFixed(1)), goodDown: true, pts: true, unit: "% (lower is better)" }
   ].filter((m) => m.data && m.data[i] != null);
@@ -290,6 +291,7 @@ function healthSections(sc, i, a, b, prefix = "health") {
 // ---- KPI cards (mirrors scopeTiles) ----
 function kpiCards(sc, upTo) {
   if (sc === "SH+") return [
+    cardFromSeries("Calls offered rate per 100 subs", DATA.callsRate["SH+"], { unit: "per 100 subscribers", isRate: true, upTo }),
     cardFromSeries("Calls offered (SH+)", DATA.callsOffered["SH+"], { unit: "count", upTo }),
     cardFromSeries("Ticket volume", DATA.ticketVolume["SH+"], { unit: "count", upTo }),
     cardFromSeries("Ticket rate per 100 subs", DATA.ticketRate["SH+"], { unit: "per 100 subscribers", isRate: true, upTo }),
@@ -298,6 +300,7 @@ function kpiCards(sc, upTo) {
     cardFromSeries("Subscriber base", DATA.subBase["SH+"], { unit: "count", goodWhenDown: false, upTo })
   ];
   return [
+    cardFromSeries("Calls offered rate per 100 subs", DATA.callsRate[sc], { unit: "per 100 subscribers", isRate: true, upTo }),
     cardFromSeries(sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`, callsSeries(sc), { unit: "count", upTo }),
     cardFromSeries(sc === "All" ? "Ticket volume (all products)" : "Ticket volume", DATA.ticketVolume[sc], { unit: "count", upTo }),
     cardFromSeries("Ticket rate per 100 subs", DATA.ticketRate[sc], { unit: "per 100 subscribers", isRate: true, upTo }),
@@ -379,7 +382,9 @@ function overviewPage(product, a, b) {
   // 02 Calls
   const split = CALLS_SPLIT[product];
   const callsNote = product === "SHS" ? "SHS contacts, offered vs. answered." : product === "SH+" ? "SH+ contacts offered vs answered (SH+ reliability KPIs workbook)." : product === "HSIA" ? "HSIA contacts offered vs answered — TS Calls Offered by Product workbook (Actuals tabs), summing every field containing HSIA." : "TV contacts offered vs answered, rolled up across platforms — TS Calls Offered by Product workbook (Actuals tabs): IPTV West + TV+ (OPUS) + PIK + PFE - IPTV + TQ ILEC - IPTV.";
-  S.push(seriesSec(`s${num()}-calls`, `${String(n).padStart(2, "0")} · Calls · Contacts (${product}) — offered (bars) and answered (line)`, a, b, [{ key: "offered", label: "Offered", values: split ? split.offered : DATA.callsOffered[product] }, { key: "answered", label: "Answered", values: split ? split.answered : DATA.callsAnswered[product] }], callsNote));
+  const cln = num();
+  S.push(seriesSec(`s${cln}-calls-rate`, `${cln} · Calls · Calls offered rate per 100 subs`, a, b, [{ key: "callsRate", label: "Calls offered per 100 subs", unit: "per 100 subscribers", values: DATA.callsRate[product] }], "Calls offered over the subscriber base, per 100 subscribers."));
+  S.push(seriesSec(`s${cln}-calls`, `${cln} · Calls · Contacts (${product}) — offered (bars) and answered (line)`, a, b, [{ key: "offered", label: "Offered", values: split ? split.offered : DATA.callsOffered[product] }, { key: "answered", label: "Answered", values: split ? split.answered : DATA.callsAnswered[product] }], callsNote));
   // 03 Tickets
   const tn = num();
   S.push(seriesSec(`s${tn}-tickets`, `${tn} · Tickets — volume (bars) and rate (line, per 100 subs)`, a, b, [{ key: "ticketVolume", label: "Ticket volume", values: DATA.ticketVolume[product] }, { key: "ticketRate", label: "Ticket rate", unit: "per 100 subscribers", values: DATA.ticketRate[product] }], product === "SH+" ? "SH+ ticket volume from Jan 2025 and ticket rate from Jul 2025 (SH+ reliability KPIs workbook)." : "Ticket volume on the left axis, ticket rate on the right axis (Reliability Deact KPIs tab)."));

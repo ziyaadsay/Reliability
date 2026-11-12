@@ -1245,7 +1245,16 @@ function useIsDark(mode) {
   DATA.repairRate.All = repRateAll;
   DATA.repairVolume.All = repVolAll;
   DATA.churnRate.All = churnAll;
+  // Calls offered rate per 100 subscribers: calls offered over the subscriber base, for every scope that has both.
+  DATA.callsRate = {};
+  [["HSIA", CALLS_SPLIT.HSIA.offered], ["TV", CALLS_SPLIT.TV.offered], ["SHS", DATA.callsOffered.SHS], ["SH+", DATA.callsOffered["SH+"]], ["All", DATA.callsOffered.All]].forEach(([k, off]) => {
+    DATA.callsRate[k] = off.map((v, i) => (v != null && DATA.subBase[k] && DATA.subBase[k][i] ? Math.round((v / DATA.subBase[k][i]) * 10000) / 100 : null));
+  });
 })();
+
+// Calls offered rate per 100 subscribers for the sub-pages that carry their own calls and base (set in deriveAll for the main scopes).
+const callsRateOf = (o) => o.callsOffered.map((v, i) => (v != null && o.subBase[i] ? Math.round((v / o.subBase[i]) * 10000) / 100 : null));
+const HSIA_WEST_CALLS_RATE = callsRateOf(HSIA_WEST), TQ_CALLS_RATE = callsRateOf(TQ_ILEC), PFE_CALLS_RATE = callsRateOf(PFE);
 
 // ---------------------------------------------------------------------------
 // SVG line chart
@@ -1884,6 +1893,7 @@ function buildAskContext(view, month) {
     for (const [label, key] of metricRows) { const sr = DATA[key] && series(DATA[key][sc]); if (sr) out.push(`${label}: ${sr}`); }
     const callsKey = sc === "HSIA" ? null : sc;
     if (callsKey && DATA.callsOffered[callsKey]) out.push(`Calls offered: ${series(DATA.callsOffered[callsKey])}`);
+    if (DATA.callsRate[sc]) out.push(`Calls offered rate per 100 subs: ${series(DATA.callsRate[sc])}`);
     if (DATA.annualChurn && DATA.annualChurn[sc]) out.push(`Annual churn per 100 subs: 2026 YTD ${num(DATA.annualChurn[sc].y2026)}, 2025 ${num(DATA.annualChurn[sc].y2025)}`);
   }
   out.push("\nCalls offered for the combined fixed-home base (FFH = HSIA plus TV): " + series(DATA.callsOffered.FFH));
@@ -2970,6 +2980,7 @@ export default function ReliabilityScorecards() {
   function scopeTiles(sc) {
     if (sc === "SH+") {
       return [
+        { icon: "calls", label: "Calls offered rate per 100 subs", data: DATA.callsRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
         { icon: "calls", label: "Calls offered (SH+)", data: DATA.callsOffered["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "tickets", label: "Ticket volume", data: DATA.ticketVolume["SH+"], fmt: fmtBig, dec: 0, color: colors["SH+"], goodDown: true },
         { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate["SH+"], fmt: fmtRate, dec: 2, color: colors["SH+"], goodDown: true },
@@ -2982,6 +2993,7 @@ export default function ReliabilityScorecards() {
     const callsData = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[callsKey];
     const callsLabel = sc === "All" ? "Calls offered (all products)" : `Calls offered (${sc})`;
     return [
+      { icon: "calls", label: "Calls offered rate per 100 subs", data: DATA.callsRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
       { icon: "calls", label: callsLabel, data: callsData, fmt: fmtBig, dec: 0, color: CALLS_SPLIT[sc] ? colors[sc] : colors[callsKey], goodDown: true },
       { icon: "tickets", label: sc === "All" ? "Ticket volume (all products)" : "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, dec: 0, color: colors[sc], goodDown: true },
       { icon: "tickets", label: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: fmtRate, dec: 2, color: colors[sc], goodDown: true },
@@ -3270,11 +3282,12 @@ export default function ReliabilityScorecards() {
     // ----- metric switcher (hero statement + chart) -----
     const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
     const metricDefs = [
+      { key: "callsRate", eyebrow: "Calls", name: "Calls offered rate per 100 subs", data: DATA.callsRate[sc], fmt: (x) => fmtRate(x, 2), rate: true, goodDown: true },
+      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtBig, goodDown: true },
       { key: "ticketRate", eyebrow: "Tickets", name: "Ticket rate per 100 subs", data: DATA.ticketRate[sc], fmt: (x) => fmtRate(x, trDec), rate: true, goodDown: true },
       { key: "ticketVolume", eyebrow: "Tickets", name: "Ticket volume", data: DATA.ticketVolume[sc], fmt: fmtBig, goodDown: true },
       { key: "repairRate", eyebrow: "Repairs", name: "Repair / dispatch rate per 100 subs", data: DATA.repairRate[sc], fmt: (x) => fmtRate(x, rrDec), rate: true, goodDown: true },
       { key: "repairVolume", eyebrow: "Repairs", name: "Dispatches", data: DATA.repairVolume[sc], fmt: fmtBig, goodDown: true },
-      { key: "callsOffered", eyebrow: "Calls", name: "Calls offered", data: callsSrc, fmt: fmtBig, goodDown: true },
       { key: "subBase", eyebrow: "Base", name: "Subscriber base", data: DATA.subBase[sc], fmt: fmtBig, goodDown: false },
       { key: "b2bVoC", eyebrow: "B2B VoC", name: "B2B reliability score", data: DATA.b2bVoC[sc], fmt: (x) => (x == null ? "—" : x.toFixed(1)), goodDown: true, pts: true }
     ].filter((m) => m.data && m.data[f.i] != null);
@@ -3875,6 +3888,7 @@ export default function ReliabilityScorecards() {
             <span style={{ fontSize: 11.5, color: T.textFaint }}>· the HSIA West board on its own, without TQ ILEC and PFE</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
+            {card("calls", "Calls offered rate per 100 subs", HSIA_WEST_CALLS_RATE, fmtRate, 2, true, "rate")}
             {card("calls", "Calls offered (HSIA West)", HSIA_WEST.callsOffered, fmtBig, 0, true, false)}
             {card("tickets", "Ticket volume", HSIA_WEST.ticketVolume, fmtBig, 0, true, false)}
             {card("tickets", "Ticket rate per 100 subs", HSIA_WEST.ticketRate, fmtRate, 2, true, "rate")}
@@ -3889,7 +3903,10 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("hw-calls", "Calls offered (HSIA West)", "Calls offered", HSIA_WEST.callsOffered, fmtNumK, "Contacts offered for the HSIA West field of the TS Calls Offered by Product workbook.", fmtNum)
+          <>
+            {simple("hw-callsrate", "Calls offered rate per 100 subs (HSIA West)", "Calls offered per 100 subs", HSIA_WEST_CALLS_RATE, rate2, "Calls offered over the HSIA West subscriber base, per 100 subscribers.")}
+            simple("hw-calls", "Calls offered (HSIA West)", "Calls offered", HSIA_WEST.callsOffered, fmtNumK, "Contacts offered for the HSIA West field of the TS Calls Offered by Product workbook.", fmtNum)
+          </>
         )}
 
         {sec("Tickets", "tickets",
@@ -3965,6 +3982,7 @@ export default function ReliabilityScorecards() {
             <span style={{ fontSize: 11.5, color: T.textFaint }}>· TQ ILEC high speed on its own, without HSIA West and PFE</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
+            {card("calls", "Calls offered rate per 100 subs", TQ_CALLS_RATE, fmtRate, 2, true, "rate")}
             {card("calls", "Calls offered (TQ ILEC)", TQ_ILEC.callsOffered, fmtBig, 0, true, false)}
             {card("tickets", "Ticket volume", TQ_ILEC.ticketVolume, fmtBig, 0, true, false)}
             {card("tickets", "Ticket rate per 100 subs", TQ_ILEC.ticketRate, fmtRate, 2, true, "rate")}
@@ -3979,7 +3997,10 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtBig, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
+          <>
+            {simple("tq-callsrate", "Calls offered rate per 100 subs (TQ ILEC)", "Calls offered per 100 subs", TQ_CALLS_RATE, rate2, "Calls offered over the TQ ILEC subscriber base, per 100 subscribers.")}
+            simple("tq-calls", "Calls offered (TQ ILEC)", "Calls offered", TQ_ILEC.callsOffered, fmtBig, "Contacts offered for the TQ ILEC - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
+          </>
         )}
 
         {sec("Tickets", "tickets",
@@ -4065,6 +4086,7 @@ export default function ReliabilityScorecards() {
             <span style={{ fontSize: 11.5, color: T.textFaint }}>· HSIA customers on the PureFibre East network</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 }}>
+            {card("calls", "Calls offered rate per 100 subs", PFE_CALLS_RATE, fmtRate, 2, true, "rate")}
             {card("calls", "Calls offered (PFE)", PFE.callsOffered, fmtBig, 0, true, false)}
             {card("tickets", "Ticket volume", PFE.ticketVolume, fmtBig, 0, true, false)}
             {card("tickets", "Ticket rate per 100 subs", PFE.ticketRate, fmtRate, 2, true, "rate")}
@@ -4079,7 +4101,10 @@ export default function ReliabilityScorecards() {
         </p>
 
         {sec("Calls offered", "calls",
-          simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtBig, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
+          <>
+            {simple("pfe-callsrate", "Calls offered rate per 100 subs (PFE)", "Calls offered per 100 subs", PFE_CALLS_RATE, rate2, "Calls offered over the PFE subscriber base, per 100 subscribers.")}
+            simple("pfe-calls", "Calls offered (PFE - HSIA)", "Calls offered", PFE.callsOffered, fmtBig, "Contacts offered for the PFE - HSIA field of the TS Calls Offered by Product workbook.", fmtBig)
+          </>
         )}
 
         {sec("Tickets", "tickets",
@@ -4793,6 +4818,12 @@ export default function ReliabilityScorecards() {
         {sec(`Health Read — ${latestLabel}`, "overview", MonthlyNarrative({ sc: product }))}
 
         {hasCalls && sec("Calls", "calls",
+          <>
+          <ChartCard title="Calls offered rate per 100 subs" T={T}
+            tableOpen={!!openTables[product + "-callsrate"]} onToggleTable={() => toggleTable(product + "-callsrate")} note="Calls offered over the subscriber base, per 100 subscribers.">
+            <LineChart labels={rangeMonths} seriesDefs={[{ key: product, label: "Calls offered per 100 subs", data: sliceR(DATA.callsRate[product]) }]} yFmt={(v) => fmtRate(v, 2)} colors={colors} T={T} />
+            {openTables[product + "-callsrate"] && <DataTable labels={rangeMonths} seriesDefs={[{ key: product, label: "Calls offered per 100 subs", data: sliceR(DATA.callsRate[product]) }]} fmt={(v) => fmtRate(v, 2)} T={T} />}
+          </ChartCard>
           <ChartCard title={`${callsTitle} — offered (bars) and answered (line)`} T={T}
             tableOpen={!!openTables[product + "-calls"]} onToggleTable={() => toggleTable(product + "-calls")} note={callsNote}>
             <ComboChart labels={rangeMonths} T={T} sharedAxis
@@ -4807,6 +4838,7 @@ export default function ReliabilityScorecards() {
               { key: product, label: "Answered", data: sliceR(callsAnswered) }
             ]} fmt={fmtNum} T={T} />}
           </ChartCard>
+          </>
         )}
 
         {sec("Tickets", "tickets",

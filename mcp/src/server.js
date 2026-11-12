@@ -14,6 +14,7 @@ const SERVER_INFO = { name: "relstrat-mcp", version: "2.0.0" };
 const DASHBOARD_URL = "https://relstrat.telus.gizmos.run/";
 const KPI_PRODUCTS = ["All", "HSIA", "TV", "SHS", "SH+"];
 const METRICS = {
+  callsRate: { label: "Calls offered rate", unit: "per 100 subscribers", goodWhenDown: true, per100: true },
   callsOffered: { label: "Calls offered", unit: "count", goodWhenDown: true },
   callsAnswered: { label: "Calls answered", unit: "count", goodWhenDown: true },
   ticketVolume: { label: "Ticket volume", unit: "count", goodWhenDown: true },
@@ -54,6 +55,7 @@ function figures(series, meta, upTo) {
   return { latest: series[li], month: MONTHS[li], mom: li >= 1 ? change(series[li], series[li - 1], meta) : null, yoy: li >= 12 ? change(series[li], series[li - 12], meta) : null };
 }
 function seriesFor(product, metric) {
+  if (metric === "callsRate") return DATA.callsRate[product] || null;
   if (metric === "callsOffered" || metric === "callsAnswered") {
     const split = CALLS_SPLIT[product];
     if (split) return metric === "callsOffered" ? split.offered : split.answered;

@@ -28,6 +28,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - Ticket, repair and churn rates are reported per 100 subscribers, not as percentages. Changes in
   those rates are absolute differences in that unit (e.g. 0.05), not basis points. Use `fmtRate` and
   `deltaRate` in `site/App.jsx`. Survey and notes-analysis shares stay as percentages with bps moves.
+- Calls offered rate per 100 subs is calls offered over the subscriber base (`DATA.callsRate`, derived in `deriveAll` for All, HSIA, TV, SHS and SH+; the HSIA West,
+  TQ ILEC and PFE pages compute it from their own calls and base). It leads the Health Read metric list, followed by Calls offered, and is on every product tile row.
 - The Looker ticket categories (`LOOKER`, `LOOKER_EXTRA`, `OVERVIEW_ISSUES`) can be refreshed a month
   ahead of the KPI tabs. Their series align with `LOOKER_MONTHS` (currently the same as `MONTHS`) and
   their issue tables use the `LOOKER_*` labels; `MONTHS` / `LATEST` and every KPI series stay at the
