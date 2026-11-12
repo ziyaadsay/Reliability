@@ -7821,9 +7821,9 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "TV in October",
-        callout: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, with churn down. Mediaroom drove the upside, OPUS offset part of it, and the Mediaroom rise is video quality.`,
+        callout: `Tickets ${sp(pct(tk[iOct], tk[iSep]), 1)} and calls offered ${sp(pct(callsOff[iOct], callsOff[iSep]), 1)}. Mediaroom drove the increase and the rise is primarily video issues.`,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", dense: true, title: "September to October at a glance", clicks: 2,
+      { layout: "default", dense: true, title: "October at a glance", clicks: 2,
         body: (step, C) => <>
           {C(1, <>
             <div className="dk-stats tight">
@@ -7834,15 +7834,14 @@ export default function ReliabilityScorecards() {
               {mstat(fmtRate(ch[iOct]), "Churn rate per 100", `Sep ${fmtRate(ch[iSep])}`, sd(ch[iOct] - ch[iSep]), ch[iOct] - ch[iSep])}
               {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
             </div>
-            <p className="dk-cap" style={{ margin: "8px 0 0" }}>Change against September: red is an increase, green a decrease. Rates per 100 subscribers.</p>
           </>)}
           {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
-            <li><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {sp(pct(tk[iOct], tk[iSep]), 1)}, calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, dispatches {sp(pct(rv[iOct], rv[iSep]), 1)} (partly a source difference); churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
+            <li><strong>Demand rose a little, cost to serve rose more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} per 100 ({sd(tr[iOct] - tr[iSep])}) and dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}); calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}; churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
             <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
             <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</li>
             <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</li>
             <li><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])}; Stuck on Initializing held at {num(R.movers[5][2])}.</li>
-            <li><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on Evolution boxes.</li>
+            <li><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on OPUS boxes.</li>
           </ul>)}
         </>,
         notes: "Click 1: the six KPI cards together. Click 2: the six findings together. Calls are not split by platform in the source." },
@@ -7868,7 +7867,7 @@ export default function ReliabilityScorecards() {
           </>;
         },
         notes: `The dotted line marks where the August to October rise starts. Ticket categories exclude Pik TV; the TV ticket total includes Pik TV (${num(pikOct)} in October). TV total dispatch rate is the KPI-tab series.` },
-      { layout: "two-cols", title: "Video quality: categories and largest movers", clicks: 1,
+      { layout: "two-cols", title: "October Tickets", clicks: 1,
         body: (step, C) => <>
           <div><h3 className="dk-ch">By category, tickets</h3>{dpair(R.categories)}{pairLegend}</div>
           {C(1, <div><h3 className="dk-ch">Largest movers, Oct vs Sep (red up, green down)</h3>{ddelta(R.movers)}</div>)}
@@ -7884,6 +7883,16 @@ export default function ReliabilityScorecards() {
           </div>
         </>,
         notes: "About 100 of the roughly 430 extra stuttering tickets are the outage. The orange marker is the Calgary outage day." },
+      { layout: "default", dense: true, title: "Video quality: root causes cited and fixes applied", clicks: 1,
+        body: (step, C) => <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+            <div className="dk-sm"><h3 className="dk-ch">Root causes cited (% of tickets with a root-cause line)</h3>{dpair(R.causes, (v) => v + "%")}</div>
+            <div className="dk-sm"><h3 className="dk-ch">Fixes applied (% of tickets with a resolution line)</h3>{dpair(R.fixes, (v) => v + "%")}</div>
+          </div>
+          {pairLegend}
+          {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
+        </>,
+        notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
       { layout: "two-cols", title: "STB No Boot", clicks: 1,
         body: (step, C) => <>
           <div>{dpair(nbRows)}{pairLegend}</div>
@@ -7898,16 +7907,6 @@ export default function ReliabilityScorecards() {
           </div>)}
         </>,
         notes: "The reboot initiative is On Hold until January 2027 on the register." },
-      { layout: "default", dense: true, title: "Video quality: root causes cited and fixes applied", clicks: 1,
-        body: (step, C) => <>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-            <div className="dk-sm"><h3 className="dk-ch">Root causes cited (% of tickets with a root-cause line)</h3>{dpair(R.causes, (v) => v + "%")}</div>
-            <div className="dk-sm"><h3 className="dk-ch">Fixes applied (% of tickets with a resolution line)</h3>{dpair(R.fixes, (v) => v + "%")}</div>
-          </div>
-          {pairLegend}
-          {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
-        </>,
-        notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
       { layout: "default", dense: true, title: "Missing Channels", clicks: 1,
         body: (step, C) => <>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
