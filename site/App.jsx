@@ -8153,6 +8153,14 @@ export default function ReliabilityScorecards() {
       ["Repairs / dispatches", rv, num, "n", true], ["Repair rate per 100 subs", rr, (v) => fmtRate(v), "r", true],
       ["Churn rate per 100 subs", ch, (v) => fmtRate(v), "r", true], ["Subscriber base", base, num, "n", false]
     ];
+    // context of the year (Tyler and Faraz, 12 Nov review): where October sits against the rest of 2026
+    const iAug0 = MONTHS.indexOf("Aug 2026"), iJan = MONTHS.indexOf("Jan 2026"), mon = (k) => MONTHS[k].slice(0, 3), seg = (arr, a, b) => arr.slice(a, b + 1);
+    const crT = DATA.callsRate.TV, crYtd = seg(crT, iJan, iOct), crLowK = iJan + crYtd.indexOf(Math.min(...seg(crT, iJan, iAug0)));
+    const crMid = seg(crT, crLowK + 1, iAug0), crHigh = crYtd[crYtd.length - 1] >= Math.max(...crYtd);
+    const mrT = legacy.tickets, mrYtd = seg(mrT, iJan, iOct), mrAvg = mrYtd.reduce((a, b) => a + b, 0) / mrYtd.length, mrLowK = iJan + mrYtd.indexOf(Math.min(...mrYtd));
+    let mrSince = null; for (let k = iOct - 1; k >= iJan; k--) if (mrT[k] >= mrT[iOct]) { mrSince = k; break; }
+    const ctxCalls = `Calls offered rate fell to a ${crT[crLowK].toFixed(2)} low in ${mon(crLowK)}, held ${Math.min(...crMid).toFixed(1)} to ${Math.max(...crMid).toFixed(1)} through ${mon(iAug0)}, then stepped up to ${crT[iSep].toFixed(2)} in ${mon(iSep)} and ${crT[iOct].toFixed(2)} in ${mon(iOct)}${crHigh ? ", the highest of 2026" : ""}.`;
+    const ctxMr = `Mediaroom tickets of ${num(mrT[iOct])} are ${mrSince != null ? `the highest since ${mon(mrSince)} (${num(mrT[mrSince])}) and ` : ""}${sp(pct(mrT[iOct], mrAvg), 1)} against the 2026 average of ${num(mrAvg)}; the ${sn(mrT[iOct] - mrT[iSep])} follows ${sn(mrT[iSep] - mrT[iAug0])} in ${mon(iSep)}, off a ${num(mrT[mrLowK])} low in ${mon(mrLowK)}.`;
     // headline: calls offered in volume and rate, what drove them, then the ticket and dispatch rate
     const CP = CALLS_SPLIT.TV.parts, mrCalls = (k) => CP.iptvWest[k] + CP.tqIptv[k];
     const callsVol = callsOff[iOct] - callsOff[iSep], callsRateNow = DATA.callsRate.TV[iOct], callsRatePrev = DATA.callsRate.TV[iSep];
@@ -8185,7 +8193,7 @@ export default function ReliabilityScorecards() {
     // ---- daily chart: stuttering tickets per day, Sep vs Oct ----
     const svgText = { fontFamily: FONT, fontSize: 12, fill: MUTED };
     const dailyChart = () => {
-      const W = 800, Hh = 250, left = 44, right = 16, top = 16, bottom = 28, n = 30, max = 180;
+      const W = 800, Hh = 276, left = 58, right = 16, top = 16, bottom = 46, n = 30, max = 180;
       const pw = W - left - right, ph = Hh - top - bottom;
       const x = (i) => left + (i * pw) / (n - 1), y = (v) => top + ph - (v / max) * ph;
       const path = (arr) => arr.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
@@ -8193,7 +8201,9 @@ export default function ReliabilityScorecards() {
       return (
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block", minWidth: 520 }} role="img" aria-label="Stop/Stuttering/Freezing tickets per day, September and October 2026">
           {[0, 50, 100, 150].map((g) => <g key={g}><line x1={left} x2={W - right} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={left - 8} y={y(g) + 4} textAnchor="end" style={svgText}>{g}</text></g>)}
-          {[1, 5, 10, 15, 20, 25, 30].map((d) => <text key={d} x={x(d - 1)} y={Hh - 8} textAnchor="middle" style={svgText}>{d}</text>)}
+          {[1, 5, 10, 15, 20, 25, 30].map((d) => <text key={d} x={x(d - 1)} y={Hh - 26} textAnchor="middle" style={svgText}>{d}</text>)}
+          <text x={left + pw / 2} y={Hh - 6} textAnchor="middle" style={{ ...svgText, fontWeight: 600 }}>Day of month</text>
+          <text transform={`rotate(-90 13 ${top + ph / 2})`} x={13} y={top + ph / 2} textAnchor="middle" style={{ ...svgText, fontWeight: 600 }}>Stop/Stuttering/Freezing tickets per day</text>
           <path d={path(R.stutter.sep)} fill="none" stroke={MUTED} strokeWidth={2} opacity={0.8} />
           <path d={path(R.stutter.oct)} fill="none" stroke={col} strokeWidth={2.8} />
           <circle cx={x(oi)} cy={y(O.peak)} r={4.5} fill={AMBER} />
@@ -8282,8 +8292,9 @@ export default function ReliabilityScorecards() {
               {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
             </div>
           </>)}
-          {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
+          {C(2, <ul style={{ fontSize: 15.5, gap: 10 }}>
             <li><strong>Demand rose a little, cost to serve rose more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} per 100 ({sd(tr[iOct] - tr[iSep])}) and dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}); calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}; churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
+            <li><strong>In context of the year.</strong> {ctxCalls} {ctxMr}</li>
             <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
             <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</li>
             <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</li>
@@ -8304,6 +8315,7 @@ export default function ReliabilityScorecards() {
                 <div className="dk-cap" style={{ marginTop: 2 }}>Oct 2025 to Oct 2026: {cmp("Mediaroom", legacy.repairRate[iYoY], legacy.repairRate[iOct])}{cmp("OPUS", opus.repairRate[iYoY], opus.repairRate[iOct])}{cmp("TV total", rr[iYoY], rr[iOct])}</div></div>
             </div>
             {platLegend}
+            <p className="dk-cap" style={{ margin: 0 }}>Calls offered are not split by platform in the TS Calls source, so ticket rate by platform is the indicator of which platform is driving the increase.</p>
             {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
               <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
                 <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
@@ -8340,14 +8352,17 @@ export default function ReliabilityScorecards() {
           {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
         </>,
         notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
-      { layout: "two-cols", title: "STB No Boot", clicks: 1,
+      { layout: "two-cols", dense: true, title: "STB No Boot", clicks: 1,
         body: (step, C) => <>
           <div>{dpair(nbRows)}{pairLegend}</div>
           {C(1, <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div className="dk-note"><h3>Findings</h3>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased.</div>
             <div><h3 className="dk-ch">Investigating remediation</h3><div className="dk-inits" style={{ gridTemplateColumns: "1fr" }}>{dinit("Sequential Reboot for Stuck on Initializing")}</div>
-              <p className="dk-cap" style={{ margin: "6px 0 0" }}>Proactive gateway reboot for Stuck on Initializing. On hold because of the Q4 firmware rollout targeting security vulnerabilities.</p></div>
-            <div className="dk-note amber"><h3>Root cause work</h3><ul style={{ margin: "2px 0 0", fontSize: 13.5, gap: 5 }}>
+              <div className="dk-note" style={{ marginTop: 8, fontSize: 12.5 }}><h3 style={{ fontSize: 12.5 }}>Proactive reboot, two streams</h3><ul style={{ margin: "2px 0 0", gap: 4 }}>
+                <li>The Q4 security firmware rollout reboots every gateway, so it is a first read on whether Stuck on Initializing improves (not a clean test, other firmware changes land with it).</li>
+                <li>A longer-term, potentially recurring proactive reboot campaign from 2027, to check devices do not fall back.</li>
+              </ul></div></div>
+            <div className="dk-note amber" style={{ fontSize: 12.5 }}><h3>Root cause work</h3><ul style={{ margin: "2px 0 0", fontSize: 12.5, gap: 4 }}>
               <li>Tech Strat is working with AXON to recreate the issue in the lab to identify the root cause.</li>
               <li>A rollback on 10% of the base is being looked at to assess whether the new version is the culprit.</li>
             </ul></div>
@@ -8389,6 +8404,7 @@ export default function ReliabilityScorecards() {
             <h3 id="oc-short" style={{ color: H }}>In short</h3>
             <ol>
               <li><strong>Demand rose a little, cost to serve rose more.</strong> Tickets {num(tk[iOct])} ({sp(pct(tk[iOct], tk[iSep]), 1)}, {sp(pct(tk[iOct], tk[iYoY]), 1)} on Oct 2025), calls offered {num(callsOff[iOct])} ({sp(pct(callsOff[iOct], callsOff[iSep]), 1)}, {sp(pct(callsOff[iOct], callsOff[iYoY]), 1)} on Oct 2025) and dispatches {num(rv[iOct])} ({sp(pct(rv[iOct], rv[iSep]), 1)}, partly a source difference). Churn fell to {fmtRate(ch[iOct])} per 100 ({sd(ch[iOct] - ch[iSep])}) and the base shrank {num(base[iSep] - base[iOct])}.</li>
+              <li><strong>In context of the year.</strong> {ctxCalls} {ctxMr}</li>
               <li><strong>Mediaroom is the upside.</strong> Optik TV Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])} ({sp(pct(legacy.tickets[iOct], legacy.tickets[iSep]), 1)}) and its rate rose from {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100, on a base that shrank {num(legacy.base[iSep] - legacy.base[iOct])}.</li>
               <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])} ({sp(pct(opus.tickets[iOct], opus.tickets[iSep]), 1)}) and its rate fell to {fmtRate(opus.ticketRate[iOct])} per 100 while its base grew {num(opus.base[iOct] - opus.base[iSep])}. Against October 2025 it is the platform behind the improvement ({sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} tickets against {sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 0)} for Legacy).</li>
               <li><strong>Video quality is what moved Mediaroom.</strong> Video Issues {sn(R.categories[0][2] - R.categories[0][1])}; stuttering {sn(R.movers[0][2] - R.movers[0][1])} and pixelization {sn(R.movers[2][2] - R.movers[2][1])}, mostly on Mediaroom boxes. One {O.area} outage on {O.day} Oct explains about a fifth; the rest is a higher everyday level.</li>
@@ -8496,6 +8512,10 @@ export default function ReliabilityScorecards() {
             <li><strong>The rise is still the whole-home form.</strong> All STBs Affected ran at {(dsum("oct", "all") / 30).toFixed(0)} a day in October against {(dsum("sep", "all") / 30).toFixed(0)} in September; One STB Affected {(dsum("oct", "one") / 30).toFixed(0)} against {(dsum("sep", "one") / 30).toFixed(0)}. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway rather than the box.</li>
             <li><strong>The rest of the family is easing.</strong> Reboot Loop {sp(pct(R.movers[7][2], R.movers[7][1]), 0)}, Quick Client Initialization Error {sp(pct(nbRows[2][2], nbRows[2][1]), 0)}, Stuck on PVR is Starting {sp(pct(nbRows[3][2], nbRows[3][1]), 0)}; only Red X rose ({sn(nbRows[6][2] - nbRows[6][1])}).</li>
             <li><strong>It sits on Mediaroom.</strong> The notes place about nine in ten identifiable STB No Boot tickets on Mediaroom boxes, so this category is a Mediaroom improvement that partly offset the video quality rise.</li>
+          </ul>
+          <ul className="hb-prose">
+            <li><strong>Investigating remediation.</strong> The Sequential Reboot for Stuck on Initializing (proactive gateway reboot) is On Hold until Jan 2027 because of the Q4 firmware rollout targeting security vulnerabilities. Tech Strat is working with AXON to recreate the issue in the lab to identify the root cause, and a rollback on 10% of the base is being looked at to assess whether the new version is the culprit.</li>
+            <li><strong>Proactive reboot runs in two streams.</strong> First, the Q4 security firmware rollout reboots every gateway, so it gives an early read on whether Stuck on Initializing improves (not a clean test, because other firmware changes land with it). Second, a longer-term, potentially recurring proactive reboot campaign from 2027 will check that devices do not fall back.</li>
           </ul>
           <p className="hb-prose" style={{ fontSize: 13.5 }}>The root-cause work, the CloudCheck side-load hypothesis and the fixes in flight for Stuck on Initializing are in the archived <button onClick={() => setPage("tvbrief")} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: col, textDecoration: "underline", cursor: "pointer" }}>TV Review (Stuck on Initializing)</button>; they have not been refreshed for October.</p>
         </section>
