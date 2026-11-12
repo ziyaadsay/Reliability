@@ -7798,6 +7798,16 @@ export default function ReliabilityScorecards() {
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {Array.from({ length: (o.big ? 4 : 2) + 1 }, (_, q) => q).map((q) => { const g = lo + ((hi - lo) * q) / (o.big ? 4 : 2); return <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={svgText}>{f(g)}</text></g>; })}
           {ks.map((k, j) => (o.big || o.years || j % 3 === 0 || j === ks.length - 1 ? <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: o.big ? 11 : 10.5 }}>{o.years ? M3[k] : o.big ? `${MONTHS[k].slice(0, 3)} ${MONTHS[k].slice(-2)}` : MONTHS[k].slice(0, 3)}</text> : null))}
+          {(o.marks || []).map((mk) => {
+            const j = ks.indexOf(mk.k); if (j < 0) return null;
+            const left = j > ks.length / 3;
+            return (
+              <g key={mk.k}>
+                <line x1={x(j)} x2={x(j)} y1={t - 4} y2={Hh - b} stroke={AMBER} strokeWidth={1.6} strokeDasharray="4 4" />
+                <text x={x(j) + (left ? -6 : 6)} y={t + 6} textAnchor={left ? "end" : "start"} style={{ ...svgText, fontSize: o.big ? 12 : 10.5, fontWeight: 700, fill: AMBER }}>{mk.label}</text>
+              </g>
+            );
+          })}
           {o.index != null && lo < 100 && hi > 100 && <line x1={l} x2={W - r} y1={y(100)} y2={y(100)} stroke={MUTED} strokeDasharray="4 4" />}
           {prep.map((sr) => {
             let d = "", pen = false;
@@ -7814,8 +7824,8 @@ export default function ReliabilityScorecards() {
         </svg>
       );
     };
-    const zplot = (title, series, opts) => {
-      const open = () => setZoomChart({ title, series, opts: opts || {} });
+    const zplot = (title, series, opts, note) => {
+      const open = () => setZoomChart({ title, series, opts: opts || {}, note });
       return (
         <div role="button" tabIndex={0} title="Click to enlarge" aria-label={`Enlarge chart: ${title}`} onClick={open}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } }} style={{ cursor: "zoom-in", position: "relative" }}>
@@ -7841,6 +7851,9 @@ export default function ReliabilityScorecards() {
     const head = (first) => <thead><tr><th>{first}</th><th>Sep</th><th>Oct</th><th>MoM</th><th>Oct 2025</th><th>YoY</th></tr></thead>;
     // ---- slow speeds ----
     const slowAll = S.slow.all, tot = DATA.ticketVolume.HSIA;
+    // Nov 2025 stage on the slow-speed ticket chart
+    const slowMarks = [{ k: MONTHS.indexOf("Nov 2025"), label: "Nov 25: process change" }];
+    const slowNote = "Process change & Ticket Code Introduced for Incompatible equipment";
     const share = (k) => (slowAll[k] / tot[k]) * 100;
     const slowYoY = slowAll[iOct] - slowAll[iYoY], totYoY = tot[iOct] - tot[iYoY], growthShare = totYoY > 0 ? (slowYoY / totYoY) * 100 : null;
     const slowJan = slowAll[iOct] - slowAll[0], totJan = tot[iOct] - tot[0];
@@ -7927,11 +7940,12 @@ export default function ReliabilityScorecards() {
             {dstat(growthShare == null ? "n/a" : `${growthShare.toFixed(0)}%`, "of the YoY rise", `${sn(slowYoY)} of ${sn(totYoY)}`)}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 170, w: 520 }))}
+            {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 170, w: 520, marks: slowMarks }))}
             {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 170, w: 520, fmt: (v) => v.toFixed(1) }))}
           </div>
+          <div className="dk-note amber"><h3>Nov 2025</h3>{slowNote}</div>
         </>,
-        notes: "Slow speeds are the wired and wireless slow-speed tickets plus incompatible equipment, from the HSIA Recategorization Looker tab." },
+        notes: `Slow speeds are the wired and wireless slow-speed tickets plus incompatible equipment, from the HSIA Recategorization Looker tab. Nov 2025: ${slowNote}.` },
       { layout: "default", dense: true, title: "Slow speeds by group", sub: "Growth since January 2025 and October against last year",
         body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
           <div>{chartCell("Jan 2025 = 100", plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 230, w: 520 }))}
@@ -7974,6 +7988,7 @@ export default function ReliabilityScorecards() {
               </div>
               {plot(zoomChart.series, { ...zoomChart.opts, w: 1100, h: 480, big: true })}
               {(zoomChart.series.length > 1 || zoomChart.opts.years) && legend(zoomChart.opts.years ? [{ name: "2025", color: zoomChart.opts.c25 }, { name: "2026", color: zoomChart.series[0].color }] : zoomChart.series)}
+              {zoomChart.note && <div style={{ fontSize: 13.5, marginTop: 8 }}>{zoomChart.note}</div>}
               <div style={{ fontSize: 12, color: MUTED, marginTop: 8 }}>Click outside the chart or press Esc to close</div>
             </div>
           </div>
@@ -8061,7 +8076,8 @@ export default function ReliabilityScorecards() {
           <div className="hb-two">
             <figure>
               <div className="hb-figtitle">Slow-speed tickets, HSIA, Jan 2025 to Oct 2026</div>
-              <div className="hb-chart">{zplot("Slow-speed tickets, HSIA, Jan 2025 to Oct 2026", [{ name: "Slow speeds", color: col, vals: slowAll }])}</div>
+              <div className="hb-chart">{zplot("Slow-speed tickets, HSIA, Jan 2025 to Oct 2026", [{ name: "Slow speeds", color: col, vals: slowAll }], { marks: slowMarks }, `Nov 2025: ${slowNote}`)}</div>
+              <figcaption><strong style={{ color: AMBER }}>Nov 2025:</strong> {slowNote}</figcaption>
             </figure>
             <figure>
               <div className="hb-figtitle">Slow speeds as a share of HSIA tickets (%)</div>

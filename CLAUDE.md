@@ -93,3 +93,5 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   with every month labelled and every point valued.
 - The HSIA Oct Review shows the deact rate (HSIA and PFE go/national Churn %, Reliability/Deact KPIs tab, per 100 subs; changes
   are absolute differences) (there is no estimated deact volume). HSIA West and TQ ILEC have no deact rate (not split in the source).
+- The slow-speed tickets chart on the HSIA Oct Review has a Nov 2025 stage: "Process change & Ticket Code Introduced for Incompatible
+  equipment" (`slowMarks` / `slowNote`; `plot` draws any `marks` as a dashed line with a label). It is on the page, the enlarged view and the slide.
