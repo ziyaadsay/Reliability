@@ -85,3 +85,6 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Deacts are churn rate x subscriber base (the KPI tab has no deact volume series). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
+- The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary): the
+  text generated in `shortItems` is the published version; a viewer's edits are saved in their own browser (localStorage,
+  key "HSIA Oct Review: In short" / "Oct 2026") and can be reset to the published text. Edits are not shared between viewers.

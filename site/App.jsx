@@ -2350,7 +2350,7 @@ function commentaryCss(T) {
 .cm-edit:empty::before{content:attr(data-ph);color:${T.textFaint};font-style:italic}
 `;
 }
-function CommentaryEditor({ T, sc, month, seedHtml }) {
+function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", docStyle }) {
   const [saved, setSaved] = useState(() => cmStore.get(sc, month));
   const [mode, setMode] = useState("view");
   const [dirty, setDirty] = useState(false);
@@ -2417,7 +2417,7 @@ function CommentaryEditor({ T, sc, month, seedHtml }) {
       {mode === "edit" ? (
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", background: T.band, border: `1px solid ${T.border}`, borderRadius: "10px 10px 0 0", padding: "8px 12px", borderBottom: "none" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: T.heading, marginRight: "auto" }}>Writing {sc} commentary for {month}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: T.heading, marginRight: "auto" }}>Writing {label || `${sc} commentary for ${month}`}</span>
             <span style={{ fontSize: 12, color: over || msg ? T.bad : T.textMuted }}>{msg || stateText}</span>
             {confirm === "discard"
               ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Discard unsaved changes?</span>
@@ -2435,7 +2435,7 @@ function CommentaryEditor({ T, sc, month, seedHtml }) {
             {tool("undo", "↶", "Undo (Ctrl+Z)")}
             {tool("redo", "↷", "Redo (Ctrl+Y)")}
           </div>
-          <div ref={ref} className="cm-doc cm-edit" contentEditable role="textbox" aria-multiline="true" aria-label={`${sc} commentary for ${month}`}
+          <div ref={ref} className="cm-doc cm-edit" contentEditable role="textbox" aria-multiline="true" aria-label={label || `${sc} commentary for ${month}`} style={docStyle}
             data-ph="Write it here" onInput={touch} onPaste={onPaste} onKeyDown={onKeyDown} />
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 6, fontSize: 11.5, color: over ? T.bad : T.textFaint }}>
             <span>{count.toLocaleString()} of {CM_LIMIT.toLocaleString()}</span>
@@ -2445,13 +2445,13 @@ function CommentaryEditor({ T, sc, month, seedHtml }) {
       ) : (
         <div>
           {isEmpty
-            ? <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>No commentary has been added for {month} yet.</p>
-            : <div className="cm-doc cm-cards" dangerouslySetInnerHTML={{ __html: viewHtml }} />}
+            ? <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>{label ? "Nothing has been added here yet." : `No commentary has been added for ${month} yet.`}</p>
+            : <div className="cm-doc cm-cards" style={docStyle} dangerouslySetInnerHTML={{ __html: viewHtml }} />}
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
-            <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? "Add commentary" : "Edit commentary"}</button>
+            <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? `Add ${noun}` : `Edit ${noun}`}</button>
             {saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>Edited in this browser · {new Date(saved.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>}
             {saved && seedHtml && (confirm === "reset"
-              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Replace your edits with the published commentary?</span>
+              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Replace your edits with the published text?</span>
                   <button type="button" style={btn(false)} onClick={() => setConfirm(null)}>Cancel</button>
                   <button type="button" style={{ ...btn(false), color: T.bad, borderColor: T.bad }} onClick={resetToOriginal}>Reset</button></>
               : <button type="button" onClick={() => setConfirm("reset")} style={{ background: "none", border: "none", padding: 0, fontFamily: FONT, fontSize: 11.5, fontWeight: 600, color: T.textMuted, textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Reset to published</button>)}
@@ -7812,6 +7812,16 @@ export default function ReliabilityScorecards() {
     const fastest = groups.map((g) => ({ name: g.name, g: pct(g.slow[iOct], g.slow[iYoY]) })).sort((a, b) => b.g - a.g)[0];
     const bigTickets = [...groups].sort((a, b) => Math.abs(b.tickets[iOct] - b.tickets[iYoY]) - Math.abs(a.tickets[iOct] - a.tickets[iYoY]))[0];
     const O = overall.reduce((m, x) => ({ ...m, [x.key]: x.vals }), {});
+    // In short: the text below is the published version; the editor on the page lets a viewer change it
+    // (saved in the viewer's browser, with a reset back to this text).
+    const shortItems = [
+      ["October eased on volume.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}), repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}) and estimated deacts ${num(O.deacts[iOct])} (${sp(mom(O.deacts))}, ${sp(yoy(O.deacts))}).`],
+      ["HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.", `West has ${num(groups[0].tickets[iOct])} tickets, ${sp(yoy(groups[0].tickets))} YoY; TQ ILEC ${sp(yoy(groups[1].tickets))} and PFE ${sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is ${bigTickets.name}.`],
+      ["Slow speeds are the root cause that keeps growing.", `${num(slowAll[iOct])} slow-speed tickets in October, ${sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and ${sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were ${share(0).toFixed(0)}% of tickets in January 2025 and are ${share(iOct).toFixed(0)}% now.`],
+      ["Slow speeds explain most of the ticket growth.", `Of the ${sn(totYoY)} rise in tickets on October 2025, slow speeds are ${sn(slowYoY)}${growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are ${sn(slowJan)} of ${sn(totJan)}. ${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY).`],
+      ["Calls and repairs for slow speeds are not split yet.", "The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source."]
+    ];
+    const shortSeed = `<ol>${shortItems.map(([h, t]) => `<li><strong>${cmEsc(h)}</strong> ${cmEsc(t)}</li>`).join("")}</ol>`;
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
     const mstat = (m) => dstat(num(m.vals[iOct]), `${m.label} · Oct`, `Sep ${num(m.vals[iSep])} · ${sp(mom(m.vals))} MoM · ${sp(yoy(m.vals))} YoY`);
@@ -7928,13 +7938,7 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="ho-short">
           <div className="hb-answer">
             <h3 id="ho-short" style={{ color: H }}>In short</h3>
-            <ol>
-              <li><strong>October eased on volume.</strong> Calls offered {num(O.calls[iOct])} ({sp(mom(O.calls))} MoM, {sp(yoy(O.calls))} YoY), tickets {num(O.tickets[iOct])} ({sp(mom(O.tickets))}, {sp(yoy(O.tickets))}), repairs {num(O.repairs[iOct])} ({sp(mom(O.repairs))}, {sp(yoy(O.repairs))}) and estimated deacts {num(O.deacts[iOct])} ({sp(mom(O.deacts))}, {sp(yoy(O.deacts))}).</li>
-              <li><strong>HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.</strong> West has {num(groups[0].tickets[iOct])} tickets, {sp(yoy(groups[0].tickets))} YoY; TQ ILEC {sp(yoy(groups[1].tickets))} and PFE {sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is {bigTickets.name}.</li>
-              <li><strong>Slow speeds are the root cause that keeps growing.</strong> {num(slowAll[iOct])} slow-speed tickets in October, {sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and {sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were {share(0).toFixed(0)}% of tickets in January 2025 and are {share(iOct).toFixed(0)}% now.</li>
-              <li><strong>Slow speeds explain most of the ticket growth.</strong> Of the {sn(totYoY)} rise in tickets on October 2025, slow speeds are {sn(slowYoY)}{growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are {sn(slowJan)} of {sn(totJan)}. {fastest.name} has grown fastest ({sp(fastest.g, 0)} YoY).</li>
-              <li><strong>Calls and repairs for slow speeds are not split yet.</strong> The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source.</li>
-            </ol>
+            <CommentaryEditor T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} />
           </div>
         </section>
 
