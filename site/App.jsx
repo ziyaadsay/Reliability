@@ -7971,7 +7971,7 @@ export default function ReliabilityScorecards() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 130, w: 520, marks: slowMarks }))}
-            {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 130, w: 520, fmt: (v) => v.toFixed(1) }))}
+            {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 130, w: 520, fmt: (v) => v.toFixed(1), marks: slowMarks }))}
           </div>
           <div className="dk-note amber"><h3>Nov 2025</h3>{slowNote}</div>
           <div className="dk-note" style={{ marginTop: 2 }}>
@@ -8099,7 +8099,7 @@ export default function ReliabilityScorecards() {
             </figure>
             <figure>
               <div className="hb-figtitle">Slow speeds as a share of HSIA tickets (%)</div>
-              <div className="hb-chart">{zplot("Slow speeds as a share of HSIA tickets (%)", [{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { fmt: (v) => v.toFixed(1) })}</div>
+              <div className="hb-chart">{zplot("Slow speeds as a share of HSIA tickets (%)", [{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { fmt: (v) => v.toFixed(1), marks: slowMarks }, `Nov 2025: ${slowNote}`)}</div>
             </figure>
           </div>
           <div className="hb-two">
