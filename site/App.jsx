@@ -2181,6 +2181,9 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-note.bad{border-color:${T.bad}} .dk-note.ok{border-color:${T.good}} .dk-note.amber{border-color:${isDark ? "#F0A55B" : "#B86E00"}}
 .dk-pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:${T.band};color:${T.heading};margin-left:8px;vertical-align:middle}
 .dk-cap{font-size:13px;color:${muted};line-height:1.45}
+.dk-banner{margin-top:12px;padding:11px 18px;border-radius:8px;background:${color};color:#fff;font-size:18px;font-weight:700;line-height:1.3}
+.dk-zoom{position:relative;transition:transform .18s ease,box-shadow .18s ease;transform-origin:var(--zo,right center);border-radius:8px;background:transparent}
+.dk-zoom:hover{transform:scale(1.7);z-index:30;background:${surface};box-shadow:0 12px 40px rgba(0,0,0,.3);padding:6px 8px 4px}
 .dk-callout{margin-top:26px;max-width:940px;font-size:21px;line-height:1.4;font-weight:600;border-left:4px solid rgba(255,255,255,.7);padding:4px 0 4px 18px;color:#fff}
 .dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:10px 12px} .dk-stats.tight .dk-stat-v{font-size:27px} .dk-stats.tight .dk-stat-l{font-size:12.5px} .dk-stats.tight .dk-stat-s{font-size:12px}
 .dk-inits{display:grid;grid-template-columns:1fr 1fr;gap:12px} .dk-init{background:${T.band};border:1px solid ${T.border};border-left:3px solid ${color};border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.4;color:${T.textSecondary}} .dk-init b{color:${ink};font-size:13px} .dk-init .dk-pill{margin-left:8px}
@@ -2212,6 +2215,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
       {sl.sub && <p className="dk-sub">{sl.sub}</p>}
       {sl.callout && <div className="dk-callout">{sl.callout}</div>}
       {content && <div className={`dk-body${sl.layout === "two-cols" ? " dk-two" : ""}`}>{content}</div>}
+      {sl.banner && <div className="dk-banner">{sl.banner}</div>}
       <div className="dk-foot"><span><b>{title}</b> · Reliability Strategy</span><span>{k + 1} / {n}</span></div>
     </div>
   );
@@ -8251,7 +8255,7 @@ export default function ReliabilityScorecards() {
     // monthly lines, October 2025 to October 2026
     const dline = (series, fmt, startK = iYoY, opts = {}) => {
       const lineMonths = []; for (let k = startK; k <= iOct; k++) lineMonths.push(k);
-      const W = opts.w || 520, Hh = opts.h || 270, l = 44, r = opts.hline ? 100 : 54, t = opts.mark != null ? 24 : 14, b = 28;
+      const W = opts.w || 520, Hh = opts.h || 270, l = 44, r = opts.hline ? 100 : 54, t = opts.mark != null ? 24 : opts.title ? 24 : 14, b = 28;
       const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k])).concat(opts.hline ? [opts.hline.value] : []);
       const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 0.1, lo = mn - pad, hi = mx + pad;
       const pw = W - l - r, ph = Hh - t - b;
@@ -8261,6 +8265,7 @@ export default function ReliabilityScorecards() {
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {ticks.map((g, q) => <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: 11 }}>{fmt(g)}</text></g>)}
           {lineMonths.map((k, j) => <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text>)}
+          {opts.title && <text x={l} y={12} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: T.heading }}>{opts.title}</text>}
           {opts.hline && <g><line x1={l} x2={W - r} y1={y(opts.hline.value)} y2={y(opts.hline.value)} stroke={MUTED} strokeWidth={1.4} strokeDasharray="2 4" /><text x={W - r + 8} y={y(opts.hline.value) + 4} textAnchor="start" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.hline.label}</text></g>}
           {opts.mark != null && <g><line x1={x(opts.mark - startK)} x2={x(opts.mark - startK)} y1={t - 6} y2={Hh - b} stroke={MUTED} strokeWidth={1.6} strokeDasharray="4 4" /><text x={x(opts.mark - startK) - 5} y={t - 10} textAnchor="end" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.markLabel}</text></g>}
           {series.map((sr) => {
@@ -8292,79 +8297,43 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "TV in October",
-        callout: <span style={{ fontWeight: 400 }}>Demand rose in October: calls offered rate {callsRateNow > callsRatePrev ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(callsRateNow - callsRatePrev).toFixed(2)} to {callsRateNow.toFixed(2)} per 100 subs</strong> and ticket rate {tr[iOct] > tr[iSep] ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to {fmtRate(tr[iOct])} per 100</strong>, driven by Mediaroom, mainly video quality issues.</span>,
+        callout: <span style={{ fontWeight: 400 }}>Demand rose in October, with calls offered rate {callsRateNow > callsRatePrev ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(callsRateNow - callsRatePrev).toFixed(2)} to {callsRateNow.toFixed(2)} per 100 subs</strong> and ticket rate {tr[iOct] > tr[iSep] ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to {fmtRate(tr[iOct])} per 100</strong>. The increase is driven by Mediaroom, mainly video quality issues.</span>,
         notes: "The one-line answer to what is driving the rise." },
       { layout: "default", dense: true, title: "October Demand",
+        banner: "Call rate has stabilized YoY, tickets increase on Mediaroom",
         body: () => {
-          const wAvg = (arr) => seg(arr, iYoY, iOct).reduce((a, b) => a + b, 0) / (iOct - iYoY + 1);
-          const my = (k) => `${mon(k)} ${MONTHS[k].slice(-2)}`;
-          const winMin = (arr, a, b) => { let m = a; for (let k = a; k <= b; k++) if (arr[k] < arr[m]) m = k; return m; };
-          const winMax = (arr, a, b) => { let m = a; for (let k = a; k <= b; k++) if (arr[k] > arr[m]) m = k; return m; };
-          const crW = DATA.callsRate.TV, crLow = winMin(crW, iYoY, iAug0), crHold = seg(crW, crLow + 1, iAug0);
-          const crAvg = wAvg(crW), mrAvgW = wAvg(legacy.tickets), mrLowW = winMin(legacy.tickets, iYoY, iOct);
-          const textCalls = `Calls offered rate was ${crW[iYoY].toFixed(2)} in ${my(iYoY)}, fell to a ${crW[crLow].toFixed(2)} low in ${my(crLow)}, held ${Math.min(...crHold).toFixed(1)} to ${Math.max(...crHold).toFixed(1)} through ${mon(iAug0)}, then stepped up to ${crW[iSep].toFixed(2)} in ${mon(iSep)} and ${crW[iOct].toFixed(2)} in ${mon(iOct)}, ${Math.abs(crW[iOct] - crW[iYoY]).toFixed(2)} ${crW[iOct] < crW[iYoY] ? "below" : "above"} ${my(iYoY)}.`;
-          const textMr = `Mediaroom tickets of ${num(legacy.tickets[iOct])} are ${mrSince != null ? `the highest since ${my(mrSince)} (${num(legacy.tickets[mrSince])}), ` : ""}${sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 1)} on ${my(iYoY)} (${num(legacy.tickets[iYoY])}) and ${sp(pct(legacy.tickets[iOct], mrAvgW), 1)} against the ${my(iYoY)} to ${my(iOct)} average of ${num(mrAvgW)}; the ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} follows ${sn(legacy.tickets[iSep] - legacy.tickets[iAug0])} in ${mon(iSep)}, off a ${num(legacy.tickets[mrLowW])} low in ${my(mrLowW)}.`;
-          const keys = (arr) => [...new Set([iYoY, winMin(arr, iYoY, iOct), winMax(arr, iYoY, iOct), iAug0, iSep])];
-          const cMk = { mark: iAug0, markLabel: "Rise from Aug", h: 235, allLabels: true };
+          const zc = (origin, node) => <div className="dk-zoom" style={{ "--zo": origin }}>{node}</div>;
+          const chart = (name, key, tot, origin) => zc(origin, dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY,
+            { w: 600, h: 100, startLabel: true, title: `${name} · Mediaroom ${fmtRate(legacy[key][iYoY])} to ${fmtRate(legacy[key][iOct])} · OPUS ${fmtRate(opus[key][iYoY])} to ${fmtRate(opus[key][iOct])} · TV ${fmtRate(tot[iYoY])} to ${fmtRate(tot[iOct])}` }));
           return <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
-              <div><h3 className="dk-ch">TV calls offered rate per 100 subs, Oct 25 to Oct 26</h3>{dline([{ name: "Calls offered rate", color: col, vals: crW }], (v) => v.toFixed(2), iYoY, { ...cMk, labelKs: keys(crW), hline: { value: crAvg, label: `Avg ${crAvg.toFixed(2)}` } })}</div>
-              <div><h3 className="dk-ch">Mediaroom (Optik TV Legacy) tickets, Oct 25 to Oct 26</h3>{dline([{ name: "Mediaroom tickets", color: col, vals: legacy.tickets }], (v) => num(v), iYoY, { ...cMk, labelKs: keys(legacy.tickets), hline: { value: mrAvgW, label: `Avg ${num(mrAvgW)}` } })}</div>
-            </div>
-            <div className="dk-two" style={{ flex: "none", fontSize: 13 }}>
-              <div className="dk-note"><h3>Calls offered rate</h3>{textCalls}</div>
-              <div className="dk-note"><h3>Mediaroom tickets</h3>{textMr}</div>
-            </div>
-          </>;
-        },
-        notes: "Both charts run October 2025 to October 2026. The dotted horizontal line is the average over those 13 months. The dashed vertical line marks where the rise starts, in August." },
-      { layout: "default", dense: true, title: "October at a glance", clicks: 2,
-        body: (step, C) => <>
-          {C(1, <>
-            <div className="dk-stats tight">
+            <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 8 }}>
+              {mstat(callsRateNow.toFixed(2), "Calls offered rate per 100", `Sep ${callsRatePrev.toFixed(2)}`, sd(callsRateNow - callsRatePrev), callsRateNow - callsRatePrev)}
               {mstat(num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
-              {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
-              {mstat(num(rv[iOct]), "Repairs / dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
-              {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
-              {mstat(fmtRate(ch[iOct]), "Churn rate per 100", `Sep ${fmtRate(ch[iSep])}`, sd(ch[iOct] - ch[iSep]), ch[iOct] - ch[iSep])}
               {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
+              {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
+              {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
+              {mstat(num(rv[iOct]), "Dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
+              {mstat(fmtRate(rr[iOct]), "Dispatch rate per 100", `Sep ${fmtRate(rr[iSep])}`, sd(rr[iOct] - rr[iSep]), rr[iOct] - rr[iSep])}
             </div>
-          </>)}
-          {C(2, <ul style={{ fontSize: 17, gap: 14 }}>
-            <li><strong>Demand rose a little, cost to serve rose more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} per 100 ({sd(tr[iOct] - tr[iSep])}) and dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}); calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}; churn {sd(ch[iOct] - ch[iSep])} per 100.</li>
-            <li><strong>Mediaroom is the upside.</strong> Legacy tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} per 100 on a shrinking base.</li>
-            <li><strong>OPUS is the downside, which is good news.</strong> TV Evolution tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}; {sp(pct(opus.tickets[iOct], opus.tickets[iYoY]), 0)} on Oct 2025.</li>
-            <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; one {O.area} outage is about a fifth, the rest a higher everyday level.</li>
-            <li><strong>STB No Boot eased.</strong> {num(R.categories[3][1])} to {num(R.categories[3][2])}; Stuck on Initializing held at {num(R.movers[5][2])}.</li>
-            <li><strong>Missing Channels rose {sn(mv[1][2] - mv[1][1])}</strong>, a provisioning problem on OPUS boxes.</li>
-          </ul>)}
-        </>,
-        notes: "Click 1: the six KPI cards together. Click 2: the six findings together." },
-      { layout: "default", dense: true, title: "Calls, ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
-        body: (step, C) => {
-          const cmp = (label, a, b) => <div key={label}>{label} {fmtRate(a)} to {fmtRate(b)} {Math.abs(b - a) < 0.005 ? chg("0.00", 0) : chg(sd(b - a), b - a)}</div>;
-          const mk = { h: 205, w: 400, startLabel: true };
-          const chart = (title, key, tot) => <div>
-            <h3 className="dk-ch">{title}</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY, mk)}
-            <div className="dk-cap" style={{ marginTop: 2, fontSize: 11.5 }}>Oct 2025 to Oct 2026{cmp("Mediaroom", legacy[key][iYoY], legacy[key][iOct])}{cmp("OPUS", opus[key][iYoY], opus[key][iOct])}{cmp("TV total", tot[iYoY], tot[iOct])}</div></div>;
-          return <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
-              {chart("Calls offered rate per 100 subs", "callsRate", DATA.callsRate.TV)}
-              {chart("Ticket rate per 100 subs", "ticketRate", tr)}
-              {chart("Dispatch rate per 100 subs", "repairRate", rr)}
+            <div style={{ display: "grid", gridTemplateColumns: "0.82fr 1.18fr", gap: 22, flex: 1, minHeight: 0 }}>
+              <ul style={{ fontSize: 12.8, gap: 9, margin: 0 }}>
+                <li><strong>Demand rose a little, cost to serve more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} ({sd(tr[iOct] - tr[iSep])}), dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}), calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}.</li>
+                <li><strong>Mediaroom is the upside.</strong> Tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} on a shrinking base. OPUS eased: tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}.</li>
+                <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; the {O.area} outage is about a fifth, the rest a higher everyday level.</li>
+                <li><strong>STB No Boot eased</strong> ({num(R.categories[3][1])} to {num(R.categories[3][2])}); <strong>Missing Channels rose</strong> {sn(mv[1][2] - mv[1][1])}, a provisioning problem on OPUS boxes.</li>
+                <li><strong>Since August,</strong> tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}), {Math.round((legAug / (legAug + opAug)) * 100)}% on Mediaroom; Video, Channel and STB No Boot issues are {Math.round((top3 / risePool) * 100)}% of the rise.</li>
+              </ul>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {chart("Calls offered rate per 100", "callsRate", DATA.callsRate.TV, "right top")}
+                {chart("Ticket rate per 100", "ticketRate", tr, "right center")}
+                {chart("Dispatch rate per 100", "repairRate", rr, "right bottom")}
+                {platLegend}
+              </div>
             </div>
-            {platLegend}
-            {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
-              <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
-                <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
-                <li><strong>Mediaroom drove about {Math.round((legAug / (legAug + opAug)) * 100)}% of it</strong>: Legacy tickets {sn(legAug)} against {sn(opAug)} on OPUS.</li>
-                <li>Video Issues {sn(cVid.all)}, Channel Issues {sn(cChn.all)} and STB No Boot {sn(cStb.all)} are {Math.round((top3 / risePool) * 100)}% of the {sn(risePool)} rise.</li>
-                <li>September was the step-up, led by STB No Boot ({sn(cStb.sep)}) and Channel Issues ({sn(cChn.sep)}). In October STB No Boot eased ({sn(cStb.oct)}) while Video Issues ({sn(cVid.oct)}) and Channel Issues ({sn(cChn.oct)}) kept rising.</li>
-              </ul></div>)}
           </>;
         },
-        notes: `The dotted line marks where the August to October rise starts. Ticket categories exclude Pik TV; the TV ticket total includes Pik TV (${num(pikOct)} in October). TV total dispatch rate is the KPI-tab series.` },
-      { layout: "two-cols", title: "October Tickets", clicks: 1,
+        notes: "Calls cards sit together, then tickets, then dispatches. Charts run October 2025 to October 2026, Mediaroom against OPUS; hover a chart to zoom it. Churn is not shown on this slide." },
+      { layout: "two-cols", title: "October Tickets", clicks: 1, banner: "Video issues have increased MoM, while STB No Boot has eased",
         body: (step, C) => <>
           <div><h3 className="dk-ch">By category, tickets</h3>{dpair(R.categories)}{pairLegend}</div>
           {C(1, <div><h3 className="dk-ch">Largest movers, Oct vs Sep (red up, green down)</h3>{ddelta(R.movers)}</div>)}
@@ -8380,7 +8349,7 @@ export default function ReliabilityScorecards() {
           </div>
         </>,
         notes: "About 100 of the roughly 430 extra stuttering tickets are the outage. The orange marker is the Calgary outage day." },
-      { layout: "default", dense: true, title: "Video quality: root causes cited and fixes applied", clicks: 1,
+      { layout: "default", dense: true, title: "Video quality: root causes cited and fixes applied", clicks: 1, banner: "Video issues driven by increased packet loss/discontinuities/multicast drops on Mediaroom",
         body: (step, C) => <>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             <div className="dk-sm"><h3 className="dk-ch">Root causes cited (% of tickets with a root-cause line)</h3>{dpair(R.causes, (v) => v + "%")}</div>
@@ -8390,11 +8359,11 @@ export default function ReliabilityScorecards() {
           {C(1, <div><h3 className="dk-ch">Initiatives</h3><div className="dk-inits">{dinit("Mediaroom OVQ Campaign Restart")}{dinit("IPv4 over Wi-Fi Slow Video Start Investigation")}</div></div>)}
         </>,
         notes: "Packet loss and discontinuities lead and are quoted more than in September. A box swap and a sequential reboot are each about 30% of fixes. Shares are keyword matches on free text." },
-      { layout: "two-cols", dense: true, title: "STB No Boot", clicks: 1,
+      { layout: "two-cols", dense: true, title: "STB No Boot", clicks: 1, banner: "STB No Boot issues have slightly eased from September to October and will continue to be monitored",
         body: (step, C) => <>
           <div>{dpair(nbRows)}{pairLegend}</div>
           {C(1, <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div className="dk-note"><h3>Findings</h3>Stuck on Initializing held its September level ({num(R.movers[5][2])} against {num(R.movers[5][1])} in Looker) and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased.</div>
+            <div className="dk-note"><h3>Findings</h3>Stuck on Initializing held its September level and is still above last year. All STBs Affected is {Math.round((dsum("oct", "all") / dsum("oct", "stuck")) * 100)}% of Stuck tickets, which points at the gateway. The rest of the family eased.</div>
             <div><h3 className="dk-ch">Investigating remediation</h3><div className="dk-inits" style={{ gridTemplateColumns: "1fr" }}>{dinit("Sequential Reboot for Stuck on Initializing")}</div>
               <div className="dk-note" style={{ marginTop: 8, fontSize: 12.5 }}><h3 style={{ fontSize: 12.5 }}>Proactive reboot, two streams</h3><ul style={{ margin: "2px 0 0", gap: 4 }}>
                 <li>The Q4 security firmware rollout reboots every gateway, so it is a first read on whether Stuck on Initializing improves (not a clean test, other firmware changes land with it).</li>
@@ -8407,7 +8376,7 @@ export default function ReliabilityScorecards() {
           </div>)}
         </>,
         notes: "The reboot initiative is On Hold until January 2027 on the register." },
-      { layout: "default", dense: true, title: "Missing Channels", clicks: 1,
+      { layout: "default", dense: true, title: "Missing Channels", clicks: 1, banner: "Missing channels continues to be an issue on TV+, driven by impacting defects/errors",
         body: (step, C) => <>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             <div className="dk-sm"><h3 className="dk-ch">Root cause cited</h3>{dpair(R.missing.causes, (v) => v + "%")}</div>
