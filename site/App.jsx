@@ -2185,7 +2185,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-zoom{position:relative;transition:transform .18s ease,box-shadow .18s ease;transform-origin:var(--zo,right center);border-radius:8px;background:transparent}
 .dk-zoom:hover{transform:scale(1.7);z-index:30;background:${surface};box-shadow:0 12px 40px rgba(0,0,0,.3);padding:6px 8px 4px}
 .dk-callout{margin-top:26px;max-width:940px;font-size:21px;line-height:1.4;font-weight:600;border-left:4px solid rgba(255,255,255,.7);padding:4px 0 4px 18px;color:#fff}
-.dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:7px 10px} .dk-stats.tight .dk-stat-v{font-size:22px} .dk-stats.tight .dk-stat-l{font-size:11.5px;margin-top:3px} .dk-stats.tight .dk-stat-s{font-size:11px;margin-top:2px}
+.dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:5px 9px;border-radius:8px} .dk-stats.tight .dk-stat-v{font-size:19px} .dk-stats.tight .dk-stat-l{font-size:11px;margin-top:2px} .dk-stats.tight .dk-stat-s{font-size:10.5px;margin-top:1px}
 .dk-inits{display:grid;grid-template-columns:1fr 1fr;gap:12px} .dk-init{background:${T.band};border:1px solid ${T.border};border-left:3px solid ${color};border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.4;color:${T.textSecondary}} .dk-init b{color:${ink};font-size:13px} .dk-init .dk-pill{margin-left:8px}
 .dk-sm .dk-bl{font-size:11.5px} .dk-sm .dk-brow{padding:3px 0}
 .dk-ch{margin:0 0 6px;font-size:14px;font-weight:700;color:${ink}}
@@ -8261,7 +8261,7 @@ export default function ReliabilityScorecards() {
     // monthly lines, October 2025 to October 2026
     const dline = (series, fmt, startK = iYoY, opts = {}) => {
       const lineMonths = []; for (let k = startK; k <= iOct; k++) lineMonths.push(k);
-      const W = opts.w || 520, Hh = opts.h || 270, l = 44, r = opts.hline ? 100 : 54, t = opts.mark != null ? 24 : opts.title ? 24 : 14, b = 28;
+      const W = opts.w || 520, Hh = opts.h || 270, l = 44, r = opts.hline ? 100 : 54, t = opts.title ? 36 : opts.mark != null ? 24 : 14, b = 28;
       const all = series.flatMap((x) => lineMonths.map((k) => x.vals[k])).concat(opts.hline ? [opts.hline.value] : []);
       const mn = Math.min(...all), mx = Math.max(...all), pad = (mx - mn) * 0.18 || 0.1, lo = mn - pad, hi = mx + pad;
       const pw = W - l - r, ph = Hh - t - b;
@@ -8310,7 +8310,7 @@ export default function ReliabilityScorecards() {
         body: () => {
           const zc = (origin, node) => <div className="dk-zoom" style={{ "--zo": origin }}>{node}</div>;
           const chart = (name, key, origin) => zc(origin, dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY,
-            { w: 420, h: 106, startLabel: true, title: name }));
+            { w: 420, h: 138, startLabel: true, title: name }));
           const ms = (i, ...args) => zc(i === 0 ? "left top" : i === 6 ? "right top" : "center top", mstat(...args));
           return <>
             <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 8 }}>
@@ -8322,15 +8322,15 @@ export default function ReliabilityScorecards() {
               {ms(5, num(rv[iOct]), "Dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
               {ms(6, fmtRate(rr[iOct]), "Dispatch rate per 100", `Sep ${fmtRate(rr[iSep])}`, sd(rr[iOct] - rr[iSep]), rr[iOct] - rr[iSep])}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 0.62fr", gap: 24, flex: 1, minHeight: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 0.46fr", gap: 28, flex: 1, minHeight: 0 }}>
               <ul style={{ fontSize: 14, gap: 12, margin: 0 }}>
-                <li><strong>Demand rose a little, cost to serve more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} ({sd(tr[iOct] - tr[iSep])}), dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}), calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}.</li>
+                <li><strong>Demand rose a little, cost to serve more.</strong> Calls offered rate {callsRatePrev.toFixed(2)} to {callsRateNow.toFixed(2)} ({sd(callsRateNow - callsRatePrev)}), ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} ({sd(tr[iOct] - tr[iSep])}), dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}).</li>
                 <li><strong>Mediaroom is the upside.</strong> Tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} on a shrinking base. OPUS eased: tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}.</li>
                 <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; the {O.area} outage is about a fifth, the rest a higher everyday level.</li>
                 <li><strong>STB No Boot eased</strong> ({num(R.categories[3][1])} to {num(R.categories[3][2])}); <strong>Missing Channels rose</strong> {sn(mv[1][2] - mv[1][1])}, a provisioning problem on OPUS boxes.</li>
                 <li><strong>Since August,</strong> tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}), {Math.round((legAug / (legAug + opAug)) * 100)}% on Mediaroom; Video, Channel and STB No Boot issues are {Math.round((top3 / risePool) * 100)}% of the rise.</li>
               </ul>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {chart("Calls offered rate per 100 subs", "callsRate", "right top")}
                 {chart("Ticket rate per 100 subs", "ticketRate", "right center")}
                 {chart("Dispatch rate per 100 subs", "repairRate", "right bottom")}
