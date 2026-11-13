@@ -103,3 +103,5 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   supplied by the user, written in `groupSlide`); the other group slide has none.
 - The slow-speeds slide of the HSIA Oct Review deck carries user-supplied commentary under its charts (what is known and not known about
   the root cause: 60% without poor telemetry, about 20% of the growth from speed plan and equipment remediation, remedy codes from Nov 2025).
+- The "Initiatives aimed at speed" table (page and slide) on the HSIA Oct Review is ordered Launched, In flight, Ideation, and shows DIY Revamp Live ONT
+  Check and How Speed Works Campaign in bold (`statusOrder`, `boldInit`).

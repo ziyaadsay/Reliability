@@ -7879,7 +7879,9 @@ export default function ReliabilityScorecards() {
     const share = (k) => (slowAll[k] / tot[k]) * 100;
     const slowYoY = slowAll[iOct] - slowAll[iYoY], totYoY = tot[iOct] - tot[iYoY], growthShare = totYoY > 0 ? (slowYoY / totYoY) * 100 : null;
     const slowJan = slowAll[iOct] - slowAll[0], totJan = tot[iOct] - tot[0];
-    const slowInit = INITIATIVES.filter((it) => it.p === "HSIA" && it.issues && it.issues.includes("Speed"));
+    const statusOrder = (st) => (/launch/i.test(st) ? 0 : /flight/i.test(st) ? 1 : /idea/i.test(st) ? 2 : 3); // Launched, In flight, Ideation, then anything else
+    const slowInit = INITIATIVES.filter((it) => it.p === "HSIA" && it.issues && it.issues.includes("Speed")).sort((x, y) => statusOrder(x.status) - statusOrder(y.status));
+    const boldInit = new Set(["DIY Revamp Live ONT Check", "How Speed Works Campaign"]); // called out in bold
     const fastest = groups.map((g) => ({ name: g.name, g: pct(g.slow[iOct], g.slow[iYoY]) })).sort((a, b) => b.g - a.g)[0];
     const bigTickets = [...groups].sort((a, b) => Math.abs(b.tickets[iOct] - b.tickets[iYoY]) - Math.abs(a.tickets[iOct] - a.tickets[iYoY]))[0];
     const O = overall.reduce((m, x) => ({ ...m, [x.key]: x.vals }), {});
@@ -7988,7 +7990,7 @@ export default function ReliabilityScorecards() {
       { layout: "default", dense: true, title: "Initiatives aimed at speed",
         body: <table>
           <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
-          <tbody>{slowInit.map((it) => <tr key={it.name}><td>{it.name}</td><td className="n">{it.status}</td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
+          <tbody>{slowInit.map((it) => <tr key={it.name} style={boldInit.has(it.name) ? { fontWeight: 700 } : undefined}><td>{it.name}</td><td className="n">{it.status}</td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
         </table>,
         notes: "From the HSIA initiatives register." },
       { layout: "end", title: "Sources and method",
@@ -8123,7 +8125,7 @@ export default function ReliabilityScorecards() {
           <h3 style={{ color: H, marginTop: 8 }}>Initiatives aimed at speed</h3>
           <div className="hb-tw"><table>
             <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
-            <tbody>{slowInit.map((it) => <tr key={it.name}><td>{it.name}</td><td style={{ textAlign: "right" }}><StatusChip status={it.status} T={T} /></td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
+            <tbody>{slowInit.map((it) => <tr key={it.name} style={boldInit.has(it.name) ? { fontWeight: 700 } : undefined}><td>{it.name}</td><td style={{ textAlign: "right" }}><StatusChip status={it.status} T={T} /></td><td className="n">{it.timeline}</td><td className="n">{it.prime}</td><td className="n">{it.impact || "—"}</td></tr>)}</tbody>
           </table></div>
         </section>
 
