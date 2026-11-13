@@ -99,3 +99,5 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - Speed & equipment initiatives follow the "Speed & Equipment compatibility" rows of the HSIA initiatives sheet. "CloudCheck Speed Test
   Server Capacity" is no longer a separate project there: it is merged into "Cloudcheck Server upgrades & Speed Test Improvements".
   "How Speed Works Campaign" is Wi-Fi theme in the sheet but is filed under Speed & equipment on the dashboard, at the user's request.
+- The TQ ILEC slide of the HSIA Oct Review deck carries a "Key Observations and Areas to further explore" section under its charts (four points
+  supplied by the user, written in `groupSlide`); the other group slide has none.

@@ -7906,14 +7906,26 @@ export default function ReliabilityScorecards() {
     );
     const groupSlide = (g) => {
       const ms = metricKeys.filter(([k]) => g[k]);
+      const hasObs = g.name === "TQ ILEC"; // the TQ ILEC slide carries a Key Observations section under the charts
       return {
         layout: "default", dense: true, title: `${g.name}: calls, tickets, repairs${g.deactRate ? " and deact rate" : ""}`,
         sub: g.deactRate ? "2025 and 2026 by month" : "2025 and 2026 by month. The deact rate is not split from HSIA West + TQ ILEC in the source.",
         body: <>
           <div style={{ display: "grid", gridTemplateColumns: ms.length >= 5 ? "1fr 1fr 1fr" : ms.length === 4 ? "1fr 1fr" : `repeat(${ms.length},1fr)`, gap: 18 }}>
-            {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${k === "deactRate" ? rateF(g[k][iOct]) : num(g[k][iOct])} (${k === "deactRate" ? dRate(g[k][iOct], g[k][iYoY]) : sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length >= 4 ? 150 : 210, w: ms.length >= 5 ? 400 : ms.length === 4 ? 520 : 380, years: true, c25: C25, fmt: k === "deactRate" ? rateF : undefined }), g.color))}
+            {ms.map(([k, lbl]) => chartCell(`${lbl} · Oct ${k === "deactRate" ? rateF(g[k][iOct]) : num(g[k][iOct])} (${k === "deactRate" ? dRate(g[k][iOct], g[k][iYoY]) : sp(yoy(g[k]), 0)} YoY)`, plot([{ name: g.name, color: g.color, vals: g[k] }], { h: ms.length >= 4 || hasObs ? 150 : 210, w: ms.length >= 5 ? 400 : ms.length === 4 ? 520 : 380, years: true, c25: C25, fmt: k === "deactRate" ? rateF : undefined }), g.color))}
           </div>
           <div className="dk-legend"><span><i style={{ background: C25 }} />2025</span><span><i style={{ background: g.color }} />2026</span></div>
+          {hasObs && (
+            <div className="dk-note amber">
+              <h3>Key Observations and Areas to further explore</h3>
+              <ul style={{ fontSize: 13.5, lineHeight: 1.4 }}>
+                <li>Volumes of TQ ILEC customers from Jan 2025 to Oct 2026 by month we have moved from Legacy Copper Voice (Atrium) to Fibre</li>
+                <li>Understand abandon rate in TQ tech support queues over 2026</li>
+                <li>In department repeat rate base in tech support ~12%, TQ tech support repeat rate in 19%</li>
+                <li>Comparison of 2025 resolution on tickets to 2026 to look for TQ, Product, equipment specific changes</li>
+              </ul>
+            </div>
+          )}
         </>,
         notes: `${g.name}: October against September and October 2025 for each measure.`
       };
