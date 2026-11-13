@@ -2181,11 +2181,11 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
 .dk-note.bad{border-color:${T.bad}} .dk-note.ok{border-color:${T.good}} .dk-note.amber{border-color:${isDark ? "#F0A55B" : "#B86E00"}}
 .dk-pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:${T.band};color:${T.heading};margin-left:8px;vertical-align:middle}
 .dk-cap{font-size:13px;color:${muted};line-height:1.45}
-.dk-banner{margin-top:12px;padding:11px 18px;border-radius:8px;background:${color};color:#fff;font-size:18px;font-weight:700;line-height:1.3}
+.dk-banner{margin-top:12px;padding:11px 18px;border-radius:8px;background:${color};color:#fff;font-size:18px;font-weight:700;line-height:1.3;text-align:center}
 .dk-zoom{position:relative;transition:transform .18s ease,box-shadow .18s ease;transform-origin:var(--zo,right center);border-radius:8px;background:transparent}
 .dk-zoom:hover{transform:scale(1.7);z-index:30;background:${surface};box-shadow:0 12px 40px rgba(0,0,0,.3);padding:6px 8px 4px}
 .dk-callout{margin-top:26px;max-width:940px;font-size:21px;line-height:1.4;font-weight:600;border-left:4px solid rgba(255,255,255,.7);padding:4px 0 4px 18px;color:#fff}
-.dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:10px 12px} .dk-stats.tight .dk-stat-v{font-size:27px} .dk-stats.tight .dk-stat-l{font-size:12.5px} .dk-stats.tight .dk-stat-s{font-size:12px}
+.dk-stats.tight{grid-template-columns:repeat(6,1fr);gap:10px} .dk-stats.tight .dk-stat{padding:7px 10px} .dk-stats.tight .dk-stat-v{font-size:22px} .dk-stats.tight .dk-stat-l{font-size:11.5px;margin-top:3px} .dk-stats.tight .dk-stat-s{font-size:11px;margin-top:2px}
 .dk-inits{display:grid;grid-template-columns:1fr 1fr;gap:12px} .dk-init{background:${T.band};border:1px solid ${T.border};border-left:3px solid ${color};border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.4;color:${T.textSecondary}} .dk-init b{color:${ink};font-size:13px} .dk-init .dk-pill{margin-left:8px}
 .dk-sm .dk-bl{font-size:11.5px} .dk-sm .dk-brow{padding:3px 0}
 .dk-ch{margin:0 0 6px;font-size:14px;font-weight:700;color:${ink}}
@@ -8269,7 +8269,7 @@ export default function ReliabilityScorecards() {
         <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" style={{ display: "block" }} role="img">
           {ticks.map((g, q) => <g key={q}><line x1={l} x2={W - r} y1={y(g)} y2={y(g)} stroke={RULE} /><text x={l - 6} y={y(g) + 4} textAnchor="end" style={{ ...svgText, fontSize: 11 }}>{fmt(g)}</text></g>)}
           {lineMonths.map((k, j) => <text key={k} x={x(j)} y={Hh - 8} textAnchor="middle" style={{ ...svgText, fontSize: 10.5 }}>{MONTHS[k].slice(0, 3)}</text>)}
-          {opts.title && <text x={l} y={12} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: T.heading }}>{opts.title}</text>}
+          {opts.title && <text x={l} y={12} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: T.text }}>{opts.title}</text>}
           {opts.hline && <g><line x1={l} x2={W - r} y1={y(opts.hline.value)} y2={y(opts.hline.value)} stroke={MUTED} strokeWidth={1.4} strokeDasharray="2 4" /><text x={W - r + 8} y={y(opts.hline.value) + 4} textAnchor="start" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.hline.label}</text></g>}
           {opts.mark != null && <g><line x1={x(opts.mark - startK)} x2={x(opts.mark - startK)} y1={t - 6} y2={Hh - b} stroke={MUTED} strokeWidth={1.6} strokeDasharray="4 4" /><text x={x(opts.mark - startK) - 5} y={t - 10} textAnchor="end" style={{ ...svgText, fontSize: 11, fontWeight: 700 }}>{opts.markLabel}</text></g>}
           {series.map((sr) => {
@@ -8301,26 +8301,27 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "TV in October",
-        callout: <span style={{ fontWeight: 400 }}>Demand rose in October, with calls offered rate {callsRateNow > callsRatePrev ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(callsRateNow - callsRatePrev).toFixed(2)} to {callsRateNow.toFixed(2)} per 100 subs</strong> and ticket rate {tr[iOct] > tr[iSep] ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to {fmtRate(tr[iOct])} per 100</strong>. The increase is driven by Mediaroom, mainly video quality issues.</span>,
+        callout: <span style={{ fontWeight: 400 }}>Calls offered rate is {callsRateNow > callsRatePrev ? "up to" : "down to"} <strong style={{ fontWeight: 700 }}>{callsRateNow.toFixed(2)} per 100 subs</strong> and ticket rate is {tr[iOct] > tr[iSep] ? "up to" : "down to"} <strong style={{ fontWeight: 700 }}>{fmtRate(tr[iOct])} per 100</strong>, driven by Mediaroom, mainly video quality issues.</span>,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", dense: true, title: "October Demand",
+      { layout: "default", dense: true, title: "October Performance",
         banner: "Call rate has stabilized YoY, tickets increase on Mediaroom",
         body: () => {
           const zc = (origin, node) => <div className="dk-zoom" style={{ "--zo": origin }}>{node}</div>;
-          const chart = (name, key, tot, origin) => zc(origin, dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY,
-            { w: 600, h: 100, startLabel: true, title: `${name} · Mediaroom ${fmtRate(legacy[key][iYoY])} to ${fmtRate(legacy[key][iOct])} · OPUS ${fmtRate(opus[key][iYoY])} to ${fmtRate(opus[key][iOct])} · TV ${fmtRate(tot[iYoY])} to ${fmtRate(tot[iOct])}` }));
+          const chart = (name, key, origin) => zc(origin, dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY,
+            { w: 400, h: 146, startLabel: true, title: name }));
+          const ms = (i, ...args) => zc(i === 0 ? "left top" : i === 6 ? "right top" : "center top", mstat(...args));
           return <>
             <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: 8 }}>
-              {mstat(callsRateNow.toFixed(2), "Calls offered rate per 100", `Sep ${callsRatePrev.toFixed(2)}`, sd(callsRateNow - callsRatePrev), callsRateNow - callsRatePrev)}
-              {mstat(num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
-              {mstat(ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
-              {mstat(num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
-              {mstat(fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
-              {mstat(num(rv[iOct]), "Dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
-              {mstat(fmtRate(rr[iOct]), "Dispatch rate per 100", `Sep ${fmtRate(rr[iSep])}`, sd(rr[iOct] - rr[iSep]), rr[iOct] - rr[iSep])}
+              {ms(0, callsRateNow.toFixed(2), "Calls offered rate", `Sep ${callsRatePrev.toFixed(2)}`, sd(callsRateNow - callsRatePrev), callsRateNow - callsRatePrev)}
+              {ms(1, num(callsOff[iOct]), "Calls offered", `Sep ${num(callsOff[iSep])}`, sp(pct(callsOff[iOct], callsOff[iSep]), 1), callsOff[iOct] - callsOff[iSep])}
+              {ms(2, ansRate(iOct).toFixed(1) + "%", "Calls answered share", `Sep ${ansRate(iSep).toFixed(1)}%`, sd(ansRate(iOct) - ansRate(iSep), 1) + " pts", ansRate(iOct) - ansRate(iSep), true)}
+              {ms(3, num(tk[iOct]), "Tickets", `Sep ${num(tk[iSep])}`, sp(pct(tk[iOct], tk[iSep]), 1), tk[iOct] - tk[iSep])}
+              {ms(4, fmtRate(tr[iOct]), "Ticket rate per 100", `Sep ${fmtRate(tr[iSep])}`, sd(tr[iOct] - tr[iSep]), tr[iOct] - tr[iSep])}
+              {ms(5, num(rv[iOct]), "Dispatches", `Sep ${num(rv[iSep])}`, sp(pct(rv[iOct], rv[iSep]), 1), rv[iOct] - rv[iSep])}
+              {ms(6, fmtRate(rr[iOct]), "Dispatch rate per 100", `Sep ${fmtRate(rr[iSep])}`, sd(rr[iOct] - rr[iSep]), rr[iOct] - rr[iSep])}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "0.82fr 1.18fr", gap: 22, flex: 1, minHeight: 0 }}>
-              <ul style={{ fontSize: 12.8, gap: 9, margin: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 0.42fr", gap: 24, flex: 1, minHeight: 0 }}>
+              <ul style={{ fontSize: 14, gap: 12, margin: 0 }}>
                 <li><strong>Demand rose a little, cost to serve more.</strong> Ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} ({sd(tr[iOct] - tr[iSep])}), dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}), calls offered {sp(pct(callsOff[iOct], callsOff[iSep]), 1)}.</li>
                 <li><strong>Mediaroom is the upside.</strong> Tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} on a shrinking base. OPUS eased: tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}.</li>
                 <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; the {O.area} outage is about a fifth, the rest a higher everyday level.</li>
@@ -8328,9 +8329,9 @@ export default function ReliabilityScorecards() {
                 <li><strong>Since August,</strong> tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}), {Math.round((legAug / (legAug + opAug)) * 100)}% on Mediaroom; Video, Channel and STB No Boot issues are {Math.round((top3 / risePool) * 100)}% of the rise.</li>
               </ul>
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {chart("Calls offered rate per 100", "callsRate", DATA.callsRate.TV, "right top")}
-                {chart("Ticket rate per 100", "ticketRate", tr, "right center")}
-                {chart("Dispatch rate per 100", "repairRate", rr, "right bottom")}
+                {chart("Calls offered rate per 100 subs", "callsRate", "right top")}
+                {chart("Ticket rate per 100 subs", "ticketRate", "right center")}
+                {chart("Dispatch rate per 100 subs", "repairRate", "right bottom")}
                 {platLegend}
               </div>
             </div>
