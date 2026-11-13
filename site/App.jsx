@@ -7938,9 +7938,6 @@ export default function ReliabilityScorecards() {
           <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
         </div>,
         notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, by month." },
-      { layout: "default", dense: true, title: "HSIA West, TQ ILEC and PFE: October against last year",
-        body: dkTable("Group · measure", groups.flatMap((g) => metricKeys.map(([k, lbl]) => (g[k] ? row(`${g.name} · ${lbl}`, g[k], k === "deactRate") : <tr key={g.name + k}><td>{g.name} · {lbl}</td><td className="n" colSpan={5} style={{ textAlign: "center", color: MUTED }}>not split in the source</td></tr>)))),
-        notes: "TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot." },
       groupSlide(groups[0]), groupSlide(groups[1]), groupSlide(groups[2]),
       { layout: "default", dense: true, title: "Growth since October 2025", sub: "Calls, tickets and repairs by group, October 2025 = 100",
         body: <>
