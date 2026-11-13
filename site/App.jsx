@@ -8050,8 +8050,9 @@ export default function ReliabilityScorecards() {
           <p className="hb-prose" style={{ fontSize: 13.5 }}>Calls offered are HSIA West + TQ ILEC - HSIA (TS Calls Offered by Product). Tickets, repairs and churn are the KPI-tab HSIA series. Churn starts in February 2025, so the deact rate does. The deact rate is the go/national Churn % from the Reliability/Deact KPIs tab, per 100 subscribers; its changes are absolute differences (for example −0.04), not percentages.</p>
         </section>
 
-        <section aria-labelledby="ho-groups">
-          <h2 id="ho-groups">HSIA West, TQ ILEC and PFE separately</h2>
+        <details className="hb-sec">
+          <summary><h2 id="ho-groups">HSIA West, TQ ILEC and PFE separately</h2></summary>
+          <div className="hb-body">
           <p className="hb-prose">The three groups, each against its own history. Each line is on its own scale, so read the shape and the change columns, not the heights. TQ ILEC and PFE are small, so a few hundred tickets move their percentages a lot.</p>
           <div className="hb-tw"><table>
             {head("Group · measure")}
@@ -8076,7 +8077,8 @@ export default function ReliabilityScorecards() {
               </figure>
             ))}
           </div>
-        </section>
+        </div>
+        </details>
 
         <section aria-labelledby="ho-slow">
           <h2 id="ho-slow">Slow speeds: the root cause that keeps growing</h2>
