@@ -7773,7 +7773,8 @@ export default function ReliabilityScorecards() {
     const col = colors.HSIA, S = HSIA_OCT_REVIEW;
     const H = T.heading, MUTED = T.textMuted, RULE = T.border;
     const AMBER = isDark ? "#F0A55B" : "#B86E00";
-    const css = briefCss(col, AMBER);
+    // more room between the In short bullets (page and slide); the editor's default is 2px
+    const css = briefCss(col, AMBER) + ".hb .hb-answer .cm-doc li{margin:0 0 14px;line-height:1.6} .hb .hb-answer .cm-doc li:last-child{margin-bottom:0}";
     const num = (v) => fmtBig(v); // large-number notation: 53.4K, 2.08M; counts under 10,000 keep their separators
     const pct = (a, b) => (a != null && b ? ((a - b) / b) * 100 : null);
     const sp = (x, d = 1) => (x == null ? "n/a" : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) + "%");
@@ -7934,7 +7935,7 @@ export default function ReliabilityScorecards() {
     const slides = [
       { layout: "cover", title: "HSIA in October and trends",
         body: <>
-          <style>{commentaryCss(T)}{`.dk-cover .cm-doc:not(.cm-edit),.dk-cover .cm-doc:not(.cm-edit) li,.dk-cover .cm-doc:not(.cm-edit) strong,.dk-cover .cm-doc:not(.cm-edit) b{color:#fff}.dk-cover .cm-actions button,.dk-cover .cm-actions span{color:#fff !important;border-color:rgba(255,255,255,.7) !important}`}</style>
+          <style>{commentaryCss(T)}{`.dk-cover .cm-doc:not(.cm-edit),.dk-cover .cm-doc:not(.cm-edit) li,.dk-cover .cm-doc:not(.cm-edit) strong,.dk-cover .cm-doc:not(.cm-edit) b{color:#fff}.dk-cover .cm-actions button,.dk-cover .cm-actions span{color:#fff !important;border-color:rgba(255,255,255,.7) !important}.dk-cover .cm-doc li{margin:0 0 12px}.dk-cover .cm-doc li:last-child{margin-bottom:0}`}</style>
           <div data-deck-noadvance="1" style={{ maxWidth: 1000 }}>
             <CommentaryEditor key={`slide${cmVer}`} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 17, lineHeight: 1.5 }} onSaved={() => setCmVer((v) => v + 1)} />
           </div>
