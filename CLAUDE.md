@@ -96,3 +96,6 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
 - The slow-speed tickets chart on the HSIA Oct Review has a Nov 2025 stage: "Process change & Ticket Code Introduced for Incompatible
   equipment" (`slowMarks` / `slowNote`; `plot` draws any `marks` as a dashed line with a label). It is on the page, the enlarged view and the slide.
 - On the HSIA Oct Review the "HSIA West, TQ ILEC and PFE separately" section is an accordion (`details.hb-sec`), closed until clicked.
+- Speed & equipment initiatives follow the "Speed & Equipment compatibility" rows of the HSIA initiatives sheet. "CloudCheck Speed Test
+  Server Capacity" is no longer a separate project there: it is merged into "Cloudcheck Server upgrades & Speed Test Improvements".
+  "How Speed Works Campaign" is Wi-Fi theme in the sheet but is filed under Speed & equipment on the dashboard, at the user's request.
