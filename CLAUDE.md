@@ -81,13 +81,12 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   from the "Looker Repairs (Kam/Jason's new view)" tab, HS QC ILEC row (Jan 2025 on).
   HSIA West + TQ ILEC base equals the scorecard HSIA base. Churn shows "n/a" (not split in the source).
 - HSIA › Oct Review (`hsiaoctreview`, `HsiaOctReviewPage`, `HSIA_OCT_REVIEW`) mirrors the TV Oct Review, with the same Present
-  slide mode (7 slides, with the four overall trend charts on "October at a glance" and no separate overall slide, no group-comparison table, PFE, growth-since-October, slow-speeds-by-group or slow-speeds source-needed slides; the first is the In short in the purple cover style, titled "HSIA in October and trends", and is editable in place (same `CommentaryEditor`, edits saved in the browser and shared with the page through `cmVer`); the old cover statement is a banner on "October at a glance"), and sits below Cross Analysis: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and the deact rate, plus slow speeds.
+  slide mode (7 slides, with the four overall trend charts on "October at a glance" and no separate overall slide, no group-comparison table, PFE, growth-since-October, slow-speeds-by-group or slow-speeds source-needed slides; the first is the In short in the purple cover style, titled "HSIA in October and trends", and is read-only (not editable); the old cover statement is a banner on "October at a glance"), and sits below Cross Analysis: HSIA overall and HSIA West, TQ ILEC and PFE separately for calls, tickets, repairs and the deact rate, plus slow speeds.
   The deact rate is the go/national Churn % (the page does not estimate deact volumes). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
-- The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary): the
-  text generated in `shortItems` is the published version; a viewer's edits are saved in their own browser (localStorage,
-  key "HSIA Oct Review: In short" / "Oct 2026") and can be reset to the published text. Edits are not shared between viewers.
+- The In short on the HSIA Oct Review (page and first slide) is read-only: the text generated in `shortItems` / `shortSeed`, with no
+  `CommentaryEditor`. Edit it in code.
 - The trend charts on the HSIA Oct Review page (not the slides) are click to enlarge: `zplot` wraps `plot` and opens a modal
   (state `zoomChart` in the main component, closed by Esc, a click outside or the Close button) that redraws the same series large,
   with every month labelled and every point valued.

@@ -7950,7 +7950,7 @@ export default function ReliabilityScorecards() {
         body: <>
           <style>{commentaryCss(T)}{`.dk-cover .cm-doc:not(.cm-edit),.dk-cover .cm-doc:not(.cm-edit) li,.dk-cover .cm-doc:not(.cm-edit) strong,.dk-cover .cm-doc:not(.cm-edit) b{color:#fff}.dk-cover .cm-actions button,.dk-cover .cm-actions span{color:#fff !important;border-color:rgba(255,255,255,.7) !important}.dk-cover .cm-doc li{margin:0 0 12px}.dk-cover .cm-doc li:last-child{margin-bottom:0}`}</style>
           <div data-deck-noadvance="1" style={{ maxWidth: 1000 }}>
-            <CommentaryEditor key={`slide${cmVer}`} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 17, lineHeight: 1.5 }} onSaved={() => setCmVer((v) => v + 1)} />
+            <div className="cm-doc" style={{ fontSize: 17, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: shortSeed }} />
           </div>
         </>,
         notes: "The In short section of the page, editable here: use Edit summary, then Save. Edits are kept in this browser and also show on the page." },
@@ -8032,7 +8032,7 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="ho-short">
           <div className="hb-answer">
             <h3 id="ho-short" style={{ color: H }}>In short</h3>
-            <CommentaryEditor key={cmVer} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} onSaved={() => setCmVer((v) => v + 1)} />
+            <><style>{commentaryCss(T)}</style><div className="cm-doc" style={{ fontSize: 15.5, lineHeight: 1.55 }} dangerouslySetInnerHTML={{ __html: shortSeed }} /></>
           </div>
         </section>
 
