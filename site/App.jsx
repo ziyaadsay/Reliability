@@ -8272,7 +8272,7 @@ export default function ReliabilityScorecards() {
             return <g key={sr.name}><path d={pts} fill="none" stroke={sr.color} strokeWidth={2.8} />
               {lineMonths.map((k, j) => <circle key={k} cx={x(j)} cy={y(sr.vals[k])} r={j === lastJ ? 4.5 : 2.2} fill={sr.color} />)}
               <text x={x(lastJ) + 8} y={y(lv) + 4 + nudge} style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(lv)}</text>
-              {opts.allLabels && lineMonths.slice(0, -1).map((k, j) => <text key={"al" + k} x={x(j)} y={y(sr.vals[k]) + (j > 0 && sr.vals[k] < sr.vals[lineMonths[j - 1]] && sr.vals[k] < sr.vals[lineMonths[j + 1]] ? 17 : -8)} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[k])}</text>)}
+              {opts.allLabels && lineMonths.slice(0, -1).filter((k) => !opts.labelKs || opts.labelKs.includes(k)).map((k) => { const j = lineMonths.indexOf(k); return <text key={"al" + k} x={x(j)} y={y(sr.vals[k]) + (j > 0 && sr.vals[k] < sr.vals[lineMonths[j - 1]] && sr.vals[k] < sr.vals[lineMonths[j + 1]] ? 17 : -8)} textAnchor="middle" style={{ ...svgText, fontSize: 10.5, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[k])}</text>; })}
               {opts.startLabel && <text x={x(0) + 2} y={y(sr.vals[startK]) - 8} textAnchor="start" style={{ ...svgText, fontSize: 12, fontWeight: 700, fill: sr.color }}>{fmt(sr.vals[startK])}</text>}</g>;
           })}
         </svg>
@@ -8293,24 +8293,32 @@ export default function ReliabilityScorecards() {
     };
     const slides = [
       { layout: "cover", title: "TV in October",
-        callout: headline,
+        callout: <span style={{ fontWeight: 400 }}>Demand rose in October: calls offered rate {callsRateNow > callsRatePrev ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(callsRateNow - callsRatePrev).toFixed(2)} to {callsRateNow.toFixed(2)} per 100 subs</strong> and ticket rate {tr[iOct] > tr[iSep] ? "up" : "down"} <strong style={{ fontWeight: 700 }}>{Math.abs(tr[iOct] - tr[iSep]).toFixed(2)} to {fmtRate(tr[iOct])} per 100</strong>, driven by Mediaroom, mainly video quality issues.</span>,
         notes: "The one-line answer to what is driving the rise." },
-      { layout: "default", dense: true, title: "October in the context of the year",
+      { layout: "default", dense: true, title: "October Demand",
         body: () => {
-          const ytdAvg = (arr) => seg(arr, iJan, iOct).reduce((a, b) => a + b, 0) / (iOct - iJan + 1);
+          const wAvg = (arr) => seg(arr, iYoY, iOct).reduce((a, b) => a + b, 0) / (iOct - iYoY + 1);
+          const my = (k) => `${mon(k)} ${MONTHS[k].slice(-2)}`;
+          const winMin = (arr, a, b) => { let m = a; for (let k = a; k <= b; k++) if (arr[k] < arr[m]) m = k; return m; };
+          const winMax = (arr, a, b) => { let m = a; for (let k = a; k <= b; k++) if (arr[k] > arr[m]) m = k; return m; };
+          const crW = DATA.callsRate.TV, crLow = winMin(crW, iYoY, iAug0), crHold = seg(crW, crLow + 1, iAug0);
+          const crAvg = wAvg(crW), mrAvgW = wAvg(legacy.tickets), mrLowW = winMin(legacy.tickets, iYoY, iOct);
+          const textCalls = `Calls offered rate was ${crW[iYoY].toFixed(2)} in ${my(iYoY)}, fell to a ${crW[crLow].toFixed(2)} low in ${my(crLow)}, held ${Math.min(...crHold).toFixed(1)} to ${Math.max(...crHold).toFixed(1)} through ${mon(iAug0)}, then stepped up to ${crW[iSep].toFixed(2)} in ${mon(iSep)} and ${crW[iOct].toFixed(2)} in ${mon(iOct)}, ${Math.abs(crW[iOct] - crW[iYoY]).toFixed(2)} ${crW[iOct] < crW[iYoY] ? "below" : "above"} ${my(iYoY)}.`;
+          const textMr = `Mediaroom tickets of ${num(legacy.tickets[iOct])} are ${mrSince != null ? `the highest since ${my(mrSince)} (${num(legacy.tickets[mrSince])}), ` : ""}${sp(pct(legacy.tickets[iOct], legacy.tickets[iYoY]), 1)} on ${my(iYoY)} (${num(legacy.tickets[iYoY])}) and ${sp(pct(legacy.tickets[iOct], mrAvgW), 1)} against the ${my(iYoY)} to ${my(iOct)} average of ${num(mrAvgW)}; the ${sn(legacy.tickets[iOct] - legacy.tickets[iSep])} follows ${sn(legacy.tickets[iSep] - legacy.tickets[iAug0])} in ${mon(iSep)}, off a ${num(legacy.tickets[mrLowW])} low in ${my(mrLowW)}.`;
+          const keys = (arr) => [...new Set([iYoY, winMin(arr, iYoY, iOct), winMax(arr, iYoY, iOct), iAug0, iSep])];
           const cMk = { mark: iAug0, markLabel: "Rise from Aug", h: 235, allLabels: true };
           return <>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
-              <div><h3 className="dk-ch">TV calls offered rate per 100 subs, 2026</h3>{dline([{ name: "Calls offered rate", color: col, vals: DATA.callsRate.TV }], (v) => v.toFixed(2), iJan, { ...cMk, hline: { value: ytdAvg(DATA.callsRate.TV), label: `2026 avg ${ytdAvg(DATA.callsRate.TV).toFixed(2)}` } })}</div>
-              <div><h3 className="dk-ch">Mediaroom (Optik TV Legacy) tickets, 2026</h3>{dline([{ name: "Mediaroom tickets", color: col, vals: legacy.tickets }], (v) => num(v), iJan, { ...cMk, hline: { value: ytdAvg(legacy.tickets), label: `2026 avg ${num(ytdAvg(legacy.tickets))}` } })}</div>
+              <div><h3 className="dk-ch">TV calls offered rate per 100 subs, Oct 25 to Oct 26</h3>{dline([{ name: "Calls offered rate", color: col, vals: crW }], (v) => v.toFixed(2), iYoY, { ...cMk, labelKs: keys(crW), hline: { value: crAvg, label: `Avg ${crAvg.toFixed(2)}` } })}</div>
+              <div><h3 className="dk-ch">Mediaroom (Optik TV Legacy) tickets, Oct 25 to Oct 26</h3>{dline([{ name: "Mediaroom tickets", color: col, vals: legacy.tickets }], (v) => num(v), iYoY, { ...cMk, labelKs: keys(legacy.tickets), hline: { value: mrAvgW, label: `Avg ${num(mrAvgW)}` } })}</div>
             </div>
             <div className="dk-two" style={{ flex: "none", fontSize: 13 }}>
-              <div className="dk-note"><h3>Calls offered rate</h3>{ctxCalls}</div>
-              <div className="dk-note"><h3>Mediaroom tickets</h3>{ctxMr}</div>
+              <div className="dk-note"><h3>Calls offered rate</h3>{textCalls}</div>
+              <div className="dk-note"><h3>Mediaroom tickets</h3>{textMr}</div>
             </div>
           </>;
         },
-        notes: "The dotted horizontal line is the 2026 average for the series. The dashed vertical line marks where the rise starts, in August." },
+        notes: "Both charts run October 2025 to October 2026. The dotted horizontal line is the average over those 13 months. The dashed vertical line marks where the rise starts, in August." },
       { layout: "default", dense: true, title: "October at a glance", clicks: 2,
         body: (step, C) => <>
           {C(1, <>
@@ -8336,7 +8344,7 @@ export default function ReliabilityScorecards() {
       { layout: "default", dense: true, title: "Calls, ticket and dispatch rate: October 2025 to October 2026", clicks: 1,
         body: (step, C) => {
           const cmp = (label, a, b) => <div key={label}>{label} {fmtRate(a)} to {fmtRate(b)} {Math.abs(b - a) < 0.005 ? chg("0.00", 0) : chg(sd(b - a), b - a)}</div>;
-          const mk = { mark: iAug, markLabel: "Rise from Aug", h: 205, w: 400, startLabel: true };
+          const mk = { h: 205, w: 400, startLabel: true };
           const chart = (title, key, tot) => <div>
             <h3 className="dk-ch">{title}</h3>{dline([{ name: "Mediaroom", color: col, vals: legacy[key] }, { name: "OPUS", color: AMBER, vals: opus[key] }], (v) => fmtRate(v), iYoY, mk)}
             <div className="dk-cap" style={{ marginTop: 2, fontSize: 11.5 }}>Oct 2025 to Oct 2026{cmp("Mediaroom", legacy[key][iYoY], legacy[key][iOct])}{cmp("OPUS", opus[key][iYoY], opus[key][iOct])}{cmp("TV total", tot[iYoY], tot[iOct])}</div></div>;
@@ -8347,7 +8355,6 @@ export default function ReliabilityScorecards() {
               {chart("Dispatch rate per 100 subs", "repairRate", rr)}
             </div>
             {platLegend}
-            <p className="dk-cap" style={{ margin: 0 }}>Calls offered by platform: Mediaroom is IPTV West and OPUS is TV+ (OPUS) in the TS Calls Offered by Product workbook; TQ ILEC IPTV, PIK and PFE IPTV are in the TV total but in neither platform.</p>
             {C(1, <div className="dk-note"><h3>What drove the rise from August to October</h3>
               <ul style={{ fontSize: 13.5, gap: 5, margin: "4px 0 0" }}>
                 <li>Tickets {sn(tk[iOct] - tk[iAug])} ({sp(pct(tk[iOct], tk[iAug]), 1)}) and the ticket rate {fmtRate(tr[iAug])} to {fmtRate(tr[iOct])} per 100; calls offered {sp(pct(callsOff[iOct], callsOff[iAug]), 1)}.</li>
