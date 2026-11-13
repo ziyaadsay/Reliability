@@ -7939,14 +7939,6 @@ export default function ReliabilityScorecards() {
         </div>,
         notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, by month." },
       groupSlide(groups[0]), groupSlide(groups[1]),
-      { layout: "default", dense: true, title: "Growth since October 2025", sub: "Calls, tickets and repairs by group, October 2025 = 100",
-        body: <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
-            {[["calls", "Calls offered"], ["tickets", "Tickets"], ["repairs", "Repairs / dispatches"]].map(([k, lbl]) => chartCell(lbl, plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g[k] })), { start: iYoY, index: iYoY, fmt: (v) => Math.round(v), h: 220, w: 420 })))}
-          </div>
-          <div className="dk-legend">{groups.map((g) => <span key={g.name}><i style={{ background: g.color }} />{g.name}</span>)}</div>
-        </>,
-        notes: "Indexing to October 2025 puts the three groups on one scale." },
       { layout: "default", dense: true, title: "Slow speeds: the root cause that keeps growing", sub: "Slow-speed tickets, HSIA",
         body: <>
           <div className="dk-stats tight" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
