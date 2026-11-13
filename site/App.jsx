@@ -379,7 +379,7 @@ const INITIATIVES = [
     desc: "Improves the CloudCheck Wi-Fi QoE score's ability to accurately detect customers experiencing Wi-Fi degradation." },
   { p: "HSIA", pillar: 1, theme: "Speed & equipment", name: "Cloudcheck Server Upgrades & Speed Test Improvements", status: "In flight", timeline: "Oct 2026", prime: "J. Thompson", impact: "L", issues: ["Speed", "WiFi"],
     desc: "Major and minor CloudCheck server upgrades improving the accuracy of speed tests. Raises speed-test server capacity so customers can test up to 1.5 Gbps, and improves speed-test accuracy in the SmartHome+ app and the agent test tools." },
-  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Severely Degraded from the OLT", status: "In flight", timeline: "Sep 2026", prime: "Z. Sayhebolay", impact: "L", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "Fibre Check — Severely Degraded from the OLT", status: "In flight", timeline: "Oct 2026", prime: "Z. Sayhebolay", impact: "L", issues: ["Connectivity"],
     desc: "Integrates 24-hour OLT severely-degraded status into Fibre Check to resolve chronic line drops." },
   { p: "HSIA", pillar: 1, theme: "GPON degraded fibre", name: "HSIA Churn Prediction (LLM Model)", status: "In flight", timeline: "Feb 2026", prime: "I. Kochergin", impact: "M", issues: ["Connectivity"],
     desc: "LLM-powered predictive churn scoring combining network telemetry and customer ticket patterns." },
@@ -419,12 +419,12 @@ const INITIATIVES = [
     desc: "Automatic cellular failover backup during fibre outages, restoring seamlessly on recovery." },
 
   { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "GPON/XGSPON Mis-tagging", status: "In flight", timeline: "Oct 2026", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
-    desc: "Defect fix for connectivity tagged as GPON when it is actually XGSPON, which triggered the incorrect Disconnect WSIR flow on cancelled upgrade orders." },
+    desc: "Defect fix for connectivity tagged as GPON when it is actually XGSPON, which triggered the incorrect Disconnect WSIR flow on cancelled upgrade orders. OF-10870." },
 
   { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "No Internet after Release Activation", status: "In flight", timeline: "—", prime: "A. Broten", impact: "L", issues: ["Connectivity"],
-    desc: "Defect fix for locations left marked as 'warm home' after the previous customer's service ceased, where the new order failed to recreate the WSIR." },
+    desc: "Defect fix for locations left marked as 'warm home' after the previous customer's service ceased, where the new order failed to recreate the WSIR. OF-11048." },
 
-  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", status: "In flight", timeline: "Nov 2026", prime: "S. Di", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 2, theme: "No dataflow provisioning", name: "Restore Orders Profile Rebuild (after Suspend and Resume Order Fails)", status: "In flight", timeline: "Dec 2026", prime: "S. Di", issues: ["Connectivity"],
     desc: "For resume orders submitted in FIFA NC, gets the associated Option 82, checks whether the suspend redirect flag is removed from the WSIR and, if it is still present, applies the fix directly to the WSIR." },
   { p: "HSIA", pillar: 3, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA Pilot Proactive Campaign", status: "Launched", timeline: "Jul 2026", prime: "F. Ahmed", impact: "L", issues: ["WiFi"],
     desc: "Scales the proactive program using RouteThis RAVA diagnostics to resolve home Wi-Fi issues before contact." },
@@ -439,7 +439,7 @@ const INITIATIVES = [
 
   { p: "HSIA", pillar: 3, theme: "Speed & equipment", name: "Gigabit Speed & Equipment Compatibility Proactive Campaign", status: "In flight", timeline: "Nov 2026", prime: "A. Broten / B. Weir / J. Silva", impact: "L", issues: ["Speed"],
     desc: "Works through the 2026 backlog of customers whose speed plans and equipment do not support 1.5 gig, 3 gig and 5 gig plans." },
-  { p: "HSIA", pillar: 3, theme: "Copper strategy", name: "Proactive Intervention C2F Migration", status: "Launched", timeline: "Feb 2027", prime: "A. Tirthani", impact: "L", issues: ["Connectivity"],
+  { p: "HSIA", pillar: 3, theme: "Copper strategy", name: "Proactive Intervention C2F Migration", status: "Launched", timeline: "Feb 2026", prime: "J. Silva", impact: "L", issues: ["Connectivity"],
     desc: "Proactive migration campaign converting chronic trouble-ticket copper lines to pure fibre." },
   { p: "HSIA", pillar: 3, theme: "Outage", name: "Pulse Cluster GUI for Outages", status: "Launched", timeline: "Feb 2026", prime: "Errol / C. Neuman", impact: "M", issues: ["Connectivity"],
     desc: "Outage-clustering interface grouping 5–10 customer disconnect events for proactive manual triage." },
@@ -447,7 +447,7 @@ const INITIATIVES = [
     desc: "Grows use and quality of the mobile field app guiding access-point placement, coverage mapping and Wi-Fi certification." },
   { p: "HSIA", pillar: 4, theme: "GPON degraded fibre", name: "Auto Test Tools", status: "Ideation", timeline: "2027 capital", prime: "M. Webber", impact: "H", issues: ["Connectivity"],
     desc: "Automated test tool run on every job to prove quality before the technician leaves, reducing repeat truck rolls." },
-  { p: "HSIA", pillar: 4, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA on TELUS.com", status: "Ideation", timeline: "Q4 2026", prime: "A. Broten", issues: ["WiFi", "Support"],
+  { p: "HSIA", pillar: 4, theme: "Wi-Fi", name: "Wi-Fi RouteThis RAVA on TELUS.com", status: "In flight", timeline: "Q4 2026", prime: "A. Broten", issues: ["WiFi", "Support"],
     desc: "Exposes the RouteThis RAVA Wi-Fi AI diagnostics in the support pages on TELUS.com." },
   { p: "HSIA", pillar: 4, theme: "Speed & equipment", name: "Improve Provisioning Checks for 3 Gig in InSight", status: "In flight", timeline: "In planning", prime: "A. Broten", impact: "L", issues: ["Speed", "Support"],
     desc: "Consolidates six provisioning checks into a single clear validation flag in the agent InSight portal." },
