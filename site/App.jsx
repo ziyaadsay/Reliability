@@ -7900,6 +7900,13 @@ export default function ReliabilityScorecards() {
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
     const mstat = (m) => dstat(fv(m, m.vals[iOct]), `${m.label} · Oct`, `Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`);
+    const cstat = (m) => (
+      <div className="dk-stat" style={{ padding: "6px 11px" }}>
+        <div className="dk-stat-v" style={{ fontSize: 20 }}>{fv(m, m.vals[iOct])}</div>
+        <div className="dk-stat-l" style={{ fontSize: 11, marginTop: 2, lineHeight: 1.25 }}>{m.label} · Oct</div>
+        <div className="dk-stat-s" style={{ fontSize: 10, marginTop: 1, lineHeight: 1.3 }}>{`Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`}</div>
+      </div>
+    );
     const cell = (v, extra) => <td className="n" style={extra}>{v}</td>;
     const dkTable = (first, rows) => (
       <table>
@@ -7945,12 +7952,12 @@ export default function ReliabilityScorecards() {
           </div>
         </>,
         notes: "The In short section of the page, editable here: use Edit summary, then Save. Edits are kept in this browser and also show on the page." },
-      { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
+      { layout: "default", dense: true, title: "October at a glance",
         body: <>
-          <div style={{ background: col, color: "#fff", borderRadius: 8, padding: "10px 16px", fontSize: 15, fontWeight: 600, lineHeight: 1.4 }}>{`Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`}</div>
-          <div className="dk-stats" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>{overall.map((m) => mstat(m))}</div>
+          <div style={{ background: col, color: "#fff", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, lineHeight: 1.35 }}>{`Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`}</div>
+          <div className="dk-stats" style={{ gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>{overall.map((m) => cstat(m))}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 125, w: 520, years: true, c25: C25, fmt: m.rate ? rateF : undefined })))}
+            {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 135, w: 520, years: true, c25: C25, fmt: m.rate ? rateF : undefined })))}
             <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
           </div>
         </>,
