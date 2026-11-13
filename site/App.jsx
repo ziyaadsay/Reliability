@@ -2327,27 +2327,6 @@ function commentarySeedHtml(sc) {
   });
   return html;
 }
-// Shared text kept by the dashboard worker (/api/commentary). Anyone can read it; only editors of the Gizmos app can write.
-// Every call resolves (never throws), so the editor falls back to browser-only saving when the endpoint is unavailable.
-const cmShared = {
-  async get(key) {
-    try {
-      const r = await fetch(`/api/commentary?key=${encodeURIComponent(key)}`, { headers: { accept: "application/json" } });
-      if (!r.ok) return null;
-      const j = await r.json();
-      return j && typeof j === "object" && "canEdit" in j ? j : null;
-    } catch (e) { return null; }
-  },
-  async send(method, body) {
-    try {
-      const r = await fetch("/api/commentary", { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-      const j = await r.json().catch(() => ({}));
-      return r.ok ? { ok: true, ...j } : { ok: false, error: j.error || "Could not update the shared text" };
-    } catch (e) { return { ok: false, error: "Could not reach the server" }; }
-  },
-  put(key, html) { return cmShared.send("PUT", { key, html }); },
-  clear(key) { return cmShared.send("DELETE", { key }); }
-};
 const cmStore = {
   k: (sc, m) => `relstrat.commentary.v1|${sc}|${m}`,
   get(sc, m) { try { const r = window.localStorage.getItem(cmStore.k(sc, m)); const o = r ? JSON.parse(r) : null; return o && typeof o.html === "string" ? o : null; } catch (e) { return null; } },
@@ -2388,33 +2367,15 @@ function commentaryCss(T) {
 .cm-edit:empty::before{content:attr(data-ph);color:${T.textFaint};font-style:italic}
 `;
 }
-function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", docStyle, onSaved, shareKey }) {
+function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", docStyle, onSaved }) {
   const [saved, setSaved] = useState(() => cmStore.get(sc, month));
   const [mode, setMode] = useState("view");
   const [dirty, setDirty] = useState(false);
   const [count, setCount] = useState(0);
   const [msg, setMsg] = useState("");
   const [confirm, setConfirm] = useState(null); // "discard" | "reset"
-  // With a shareKey the text can be published for everyone: `shared` is the published version, `canPublish` says whether this
-  // viewer is an editor of the app. Order of precedence: this browser's own edit, then the published text, then the generated text.
-  const [shared, setShared] = useState(null); // { html, at, by }
-  const [canPublish, setCanPublish] = useState(false);
-  const [role, setRole] = useState("");
-  const [sharedState, setSharedState] = useState(shareKey ? "loading" : "off"); // off | loading | ready | unavailable
   const ref = useRef(null);
-  useEffect(() => {
-    if (!shareKey) return undefined;
-    let live = true;
-    cmShared.get(shareKey).then((r) => {
-      if (!live) return;
-      if (!r) { setSharedState("unavailable"); return; }
-      setShared(r.html ? { html: r.html, at: r.updated_at, by: r.updated_by } : null);
-      setCanPublish(!!r.canEdit); setRole(r.role || ""); setSharedState("ready");
-    });
-    return () => { live = false; };
-  }, [shareKey]);
-  const publishing = !!shareKey && canPublish;
-  const baseHtml = saved ? saved.html : shared ? shared.html : seedHtml;
+  const baseHtml = saved ? saved.html : seedHtml;
   const viewHtml = sanitizeHtml(baseHtml);
   const isEmpty = !viewHtml.replace(/<[^>]*>/g, "").trim();
   const over = count > CM_LIMIT;
@@ -2442,19 +2403,10 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
     try { document.execCommand("insertHTML", false, html ? sanitizeHtml(html) : cmEsc(text).replace(/\r?\n/g, "<br>")); } catch (er) { /* ignore */ }
     touch();
   };
-  const save = async () => {
+  const save = () => {
     const el = ref.current; if (!el) return;
     if (el.innerText.trim().length > CM_LIMIT) { setMsg(`Over the ${CM_LIMIT.toLocaleString()} character limit`); return; }
     const html = sanitizeHtml(el.innerHTML);
-    if (publishing) {
-      setMsg("Publishing for everyone…");
-      const r = await cmShared.put(shareKey, html);
-      if (!r.ok) { setMsg(r.error); return; }
-      cmStore.clear(sc, month); setSaved(null); setShared({ html, at: r.updated_at, by: r.updated_by });
-      setMode("view"); setDirty(false); setConfirm(null); setMsg("");
-      if (onSaved) onSaved();
-      return;
-    }
     if (!cmStore.set(sc, month, html)) { setMsg("Could not save: this browser is blocking storage"); return; }
     setSaved({ html, at: Date.now() }); setMode("view"); setDirty(false); setConfirm(null); setMsg("");
     if (onSaved) onSaved();
@@ -2467,15 +2419,7 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); save(); }
     else if (e.key === "Escape") { e.preventDefault(); close(); }
   };
-  const resetToOriginal = async () => {
-    if (publishing && shared) {
-      const r = await cmShared.clear(shareKey);
-      if (!r.ok) { setMsg(r.error); setConfirm(null); return; }
-      setShared(null);
-    }
-    cmStore.clear(sc, month); setSaved(null); setConfirm(null); setMsg("");
-    if (onSaved) onSaved();
-  };
+  const resetToOriginal = () => { cmStore.clear(sc, month); setSaved(null); setConfirm(null); if (onSaved) onSaved(); };
 
   const btn = (primary) => ({ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, borderRadius: 8, padding: "5px 14px", cursor: "pointer",
     border: `1px solid ${primary ? "transparent" : T.borderStrong}`, background: primary ? T.heading : "transparent", color: primary ? T.surface : T.textSecondary });
@@ -2513,7 +2457,7 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
             data-ph="Write it here" onInput={touch} onPaste={onPaste} onKeyDown={onKeyDown} />
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 6, fontSize: 11.5, color: over ? T.bad : T.textFaint }}>
             <span>{count.toLocaleString()} of {CM_LIMIT.toLocaleString()}</span>
-            <span>Ctrl+Enter to save · Esc to close · {publishing ? "saving publishes it for everyone" : "saved in this browser"}</span>
+            <span>Ctrl+Enter to save · Esc to close · saved in this browser</span>
           </div>
         </div>
       ) : (
@@ -2522,16 +2466,13 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
             ? <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>{label ? "Nothing has been added here yet." : `No commentary has been added for ${month} yet.`}</p>
             : <div className="cm-doc cm-cards" style={docStyle} dangerouslySetInnerHTML={{ __html: viewHtml }} />}
           <div className="cm-actions" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
-            <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? `Add ${noun}` : `Edit ${noun}`}{publishing ? " (for everyone)" : ""}</button>
-            {shared && !saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>Published for everyone{shared.at ? ` · ${new Date(shared.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}` : ""}{shared.by ? ` · ${shared.by}` : ""}</span>}
-            {saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>{publishing ? "Edited in this browser, not yet published" : "Edited in this browser"} · {new Date(saved.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}{publishing ? " · edit and save to publish it" : ""}</span>}
-            {sharedState === "ready" && !canPublish && <span style={{ fontSize: 11.5, color: T.textFaint }}>Your edits stay in this browser (view only{role ? `, role: ${role}` : ""})</span>}
-            {msg && <span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>{msg}</span>}
-            {(saved || (publishing && shared)) && seedHtml && (confirm === "reset"
-              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>{publishing && shared ? "Replace the published text, for everyone, with the generated text?" : "Replace your edits with the published text?"}</span>
+            <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? `Add ${noun}` : `Edit ${noun}`}</button>
+            {saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>Edited in this browser · {new Date(saved.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>}
+            {saved && seedHtml && (confirm === "reset"
+              ? <><span style={{ fontSize: 12, color: T.bad, fontWeight: 600 }}>Replace your edits with the published text?</span>
                   <button type="button" style={btn(false)} onClick={() => setConfirm(null)}>Cancel</button>
                   <button type="button" style={{ ...btn(false), color: T.bad, borderColor: T.bad }} onClick={resetToOriginal}>Reset</button></>
-              : <button type="button" onClick={() => setConfirm("reset")} style={{ background: "none", border: "none", padding: 0, fontFamily: FONT, fontSize: 11.5, fontWeight: 600, color: T.textMuted, textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>{publishing && shared ? "Reset to generated text" : "Reset to published"}</button>)}
+              : <button type="button" onClick={() => setConfirm("reset")} style={{ background: "none", border: "none", padding: 0, fontFamily: FONT, fontSize: 11.5, fontWeight: 600, color: T.textMuted, textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Reset to published</button>)}
           </div>
         </div>
       )}
@@ -8009,7 +7950,7 @@ export default function ReliabilityScorecards() {
         body: <>
           <style>{commentaryCss(T)}{`.dk-cover .cm-doc:not(.cm-edit),.dk-cover .cm-doc:not(.cm-edit) li,.dk-cover .cm-doc:not(.cm-edit) strong,.dk-cover .cm-doc:not(.cm-edit) b{color:#fff}.dk-cover .cm-actions button,.dk-cover .cm-actions span{color:#fff !important;border-color:rgba(255,255,255,.7) !important}.dk-cover .cm-doc li{margin:0 0 12px}.dk-cover .cm-doc li:last-child{margin-bottom:0}`}</style>
           <div data-deck-noadvance="1" style={{ maxWidth: 1000 }}>
-            <CommentaryEditor key={`slide${cmVer}`} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" shareKey="hsia-oct-review-in-short|Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 17, lineHeight: 1.5 }} onSaved={() => setCmVer((v) => v + 1)} />
+            <CommentaryEditor key={`slide${cmVer}`} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 17, lineHeight: 1.5 }} onSaved={() => setCmVer((v) => v + 1)} />
           </div>
         </>,
         notes: "The In short section of the page, editable here: use Edit summary, then Save. Edits are kept in this browser and also show on the page." },
@@ -8091,7 +8032,7 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="ho-short">
           <div className="hb-answer">
             <h3 id="ho-short" style={{ color: H }}>In short</h3>
-            <CommentaryEditor key={cmVer} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" shareKey="hsia-oct-review-in-short|Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} onSaved={() => setCmVer((v) => v + 1)} />
+            <CommentaryEditor key={cmVer} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} onSaved={() => setCmVer((v) => v + 1)} />
           </div>
         </section>
 
