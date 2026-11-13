@@ -7919,17 +7919,15 @@ export default function ReliabilityScorecards() {
       };
     };
     const slides = [
-      { layout: "cover", title: "HSIA in October",
-        callout: `Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`,
-        notes: "The one-line answer: volume eased in October, and slow speeds are the root cause that keeps growing." },
-      { layout: "default", dense: true, title: "In short",
+      { layout: "cover", title: "HSIA in October and trends",
         body: <>
-          <style>{commentaryCss(T)}</style>
-          <div className="cm-doc" style={{ fontSize: 17, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(shortSaved ? shortSaved.html : shortSeed) }} />
+          <style>{commentaryCss(T)}{`.dk-cover .cm-doc,.dk-cover .cm-doc li,.dk-cover .cm-doc strong,.dk-cover .cm-doc b{color:#fff}.dk-cover .cm-doc{font-size:17px;line-height:1.5;max-width:1000px}`}</style>
+          <div className="cm-doc" dangerouslySetInnerHTML={{ __html: sanitizeHtml(shortSaved ? shortSaved.html : shortSeed) }} />
         </>,
         notes: "The In short section of the page. If the page text was edited in this browser, the slide shows the edited version." },
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
+          <div style={{ background: col, color: "#fff", borderRadius: 8, padding: "10px 16px", fontSize: 15, fontWeight: 600, lineHeight: 1.4 }}>{`Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`}</div>
           <div className="dk-stats">{overall.map((m) => mstat(m))}</div>
           {dkTable("Measure", overall.map((m) => row(m.label, m.vals, m.rate)))}
         </>,
