@@ -85,8 +85,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   The deact rate is the go/national Churn % (the page does not estimate deact volumes). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
-- The In short on the HSIA Oct Review (page and first slide) is read-only: the text generated in `shortItems` / `shortSeed`, with no
-  `CommentaryEditor`. Edit it in code.
+- The In short on the HSIA Oct Review (page and first slide) is read-only: fixed text supplied by the user, written in `shortItems` / `shortSeed`
+  (not generated from the data, so update it by hand each month), with no `CommentaryEditor`.
 - The trend charts on the HSIA Oct Review page (not the slides) are click to enlarge: `zplot` wraps `plot` and opens a modal
   (state `zoomChart` in the main component, closed by Esc, a click outside or the Close button) that redraws the same series large,
   with every month labelled and every point valued.

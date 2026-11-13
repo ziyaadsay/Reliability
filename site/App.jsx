@@ -7889,16 +7889,14 @@ export default function ReliabilityScorecards() {
     const k1 = (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}K` : `${Math.round(v)}`);
     const callsDelta = O.calls[iOct] - O.calls[iSep], callsDir = callsDelta >= 0 ? "up" : "down";
     const callsDriver = [...groups].sort((x, y) => Math.abs(y.calls[iOct] - y.calls[iSep]) - Math.abs(x.calls[iOct] - x.calls[iSep]))[0].name;
-    // In short: the text below is the published version; the editor on the page lets a viewer change it
-    // (saved in the viewer's browser, with a reset back to this text).
+    // In short: fixed text supplied by the user (read-only on the page and the slide).
     const shortItems = [
-      ["Calls offered rose while tickets and repairs eased.", `Calls offered ${num(O.calls[iOct])} (${sp(mom(O.calls))} MoM, ${sp(yoy(O.calls))} YoY), tickets ${num(O.tickets[iOct])} (${sp(mom(O.tickets))}, ${sp(yoy(O.tickets))}) and repairs ${num(O.repairs[iOct])} (${sp(mom(O.repairs))}, ${sp(yoy(O.repairs))}). The deact rate (go/national churn) is ${rateF(churn[iOct])} per 100, ${dRate(churn[iOct], churn[iSep])} on September and ${dRate(churn[iOct], churn[iYoY])} on October 2025.`],
-      ["HSIA West carries the volume, TQ ILEC and PFE carry the growth rate.", `West has ${num(groups[0].tickets[iOct])} tickets, ${sp(yoy(groups[0].tickets))} YoY; TQ ILEC ${sp(yoy(groups[1].tickets))} and PFE ${sp(yoy(groups[2].tickets))} on much smaller bases. The biggest absolute mover is ${bigTickets.name}.`],
-      ["Slow speeds are the root cause that keeps growing.", `${num(slowAll[iOct])} slow-speed tickets in October, ${sp(pct(slowAll[iOct], slowAll[iYoY]), 0)} on October 2025 and ${sp(pct(slowAll[iOct], slowAll[0]), 0)} on January 2025. They were ${share(0).toFixed(0)}% of tickets in January 2025 and are ${share(iOct).toFixed(0)}% now.`],
-      ["Slow speeds explain most of the ticket growth.", `Of the ${sn(totYoY)} rise in tickets on October 2025, slow speeds are ${sn(slowYoY)}${growthShare == null ? "" : ` (${growthShare.toFixed(0)}%)`}; since January 2025 they are ${sn(slowJan)} of ${sn(totJan)}. ${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY).`],
-      ["Calls and repairs for slow speeds are not split yet.", "The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source."]
+      ["Overall calls were on an upward trend until August and are showing a downward trend from August.", ""],
+      ["HSIA West has the majority of the volume, TQ ILEC and PFE carry the growth rate on much smaller bases.", "The biggest mover is TQ ILEC."],
+      ["Slow speeds are the root cause that keeps growing.", "Slow speeds are 24% of tickets in October and have been trending up."],
+      ["There is a portion of slow speeds root cause we know and a portion we don't.", "60% of slow speeds tickets don't show poor telemetry so we know we have an education route to go. The portion we do know about is that approximately 20% of slow speeds growth in tickets is due to reactive (1.7K) and proactive (0.3K) Speed Plan & Equipment Remediation activities. Remedy codes for this started in November 2025, making YoY growth difficult to leverage."]
     ];
-    const shortSeed = `<ol>${shortItems.map(([h, t]) => `<li><strong>${cmEsc(h)}</strong> ${cmEsc(t)}</li>`).join("")}</ol>`;
+    const shortSeed = `<ol>${shortItems.map(([h, t]) => `<li><strong>${cmEsc(h)}</strong>${t ? " " + cmEsc(t) : ""}</li>`).join("")}</ol>`;
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
     const mstat = (m) => dstat(fv(m, m.vals[iOct]), `${m.label} · Oct`, `Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`);
