@@ -101,3 +101,5 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   "How Speed Works Campaign" is Wi-Fi theme in the sheet but is filed under Speed & equipment on the dashboard, at the user's request.
 - The TQ ILEC slide of the HSIA Oct Review deck carries a "Key Observations and Areas to further explore" section under its charts (four points
   supplied by the user, written in `groupSlide`); the other group slide has none.
+- The slow-speeds slide of the HSIA Oct Review deck carries user-supplied commentary under its charts (what is known and not known about
+  the root cause: 60% without poor telemetry, about 20% of the growth from speed plan and equipment remediation, remedy codes from Nov 2025).

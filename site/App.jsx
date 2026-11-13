@@ -7962,10 +7962,19 @@ export default function ReliabilityScorecards() {
             {dstat(`${share(iOct).toFixed(1)}%`, "Share of tickets", `${share(0).toFixed(1)}% in Jan 2025`)}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 170, w: 520, marks: slowMarks }))}
-            {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 170, w: 520, fmt: (v) => v.toFixed(1) }))}
+            {chartCell("Slow-speed tickets", plot([{ name: "Slow speeds", color: col, vals: slowAll }], { h: 130, w: 520, marks: slowMarks }))}
+            {chartCell("Share of HSIA tickets (%)", plot([{ name: "Share", color: AMBER, vals: slowAll.map((v, k) => (tot[k] ? (v / tot[k]) * 100 : null)) }], { h: 130, w: 520, fmt: (v) => v.toFixed(1) }))}
           </div>
           <div className="dk-note amber"><h3>Nov 2025</h3>{slowNote}</div>
+          <div className="dk-note" style={{ marginTop: 2 }}>
+            <h3>Slow speeds are the root cause that keeps growing.</h3>
+            <p style={{ margin: "0 0 4px", fontSize: 13.5 }}>Slow speeds are {share(iOct).toFixed(0)}% of tickets in October and have been trending up.</p>
+            <ul style={{ fontSize: 13, lineHeight: 1.4, gap: 4 }}>
+              <li>There is a portion of slow speeds root cause we know and a portion we don't</li>
+              <li>60% of slow speeds tickets don't show poor telemetry so we know we have an education route to go.</li>
+              <li>The portion we do know about is that approximately 20% of slow speeds growth in tickets is due to reactive (1.7K) and proactive (0.3K) Speed Plan &amp; Equipment Remediation activities. Remedy codes for this started in November 2025, making YoY growth difficult to leverage.</li>
+            </ul>
+          </div>
         </>,
         notes: `Slow speeds are the wired and wireless slow-speed tickets plus incompatible equipment, from the HSIA Recategorization Looker tab. Nov 2025: ${slowNote}.` },
       { layout: "default", dense: true, title: "Initiatives aimed at speed",
