@@ -7938,7 +7938,7 @@ export default function ReliabilityScorecards() {
           <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
         </div>,
         notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, by month." },
-      groupSlide(groups[0]), groupSlide(groups[1]), groupSlide(groups[2]),
+      groupSlide(groups[0]), groupSlide(groups[1]),
       { layout: "default", dense: true, title: "Growth since October 2025", sub: "Calls, tickets and repairs by group, October 2025 = 100",
         body: <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
