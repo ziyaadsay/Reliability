@@ -7962,16 +7962,6 @@ export default function ReliabilityScorecards() {
           </table>
         </div>,
         notes: `${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY). The three groups do not add up exactly to HSIA All.` },
-      { layout: "default", dense: true, title: "Slow speeds for calls and repairs: source needed",
-        body: <>
-          <div className="dk-note amber"><h3>Not in the workbook yet</h3>The workbook reports slow speeds by month for tickets only. Calls are split Connectivity and Wireless, and repairs have no reason split, so the slow-speed growth for calls and repairs cannot be shown. A Looker look or tab with calls and repairs by reason adds those two views.</div>
-          <div className="dk-stats" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
-            {dstat(num(slowAll[iOct]), "Tickets", "available, by month")}
-            {dstat("—", "Calls", "source needed")}
-            {dstat("—", "Repairs", "source needed")}
-          </div>
-        </>,
-        notes: "Ask for a calls-by-reason and repairs-by-reason look." },
       { layout: "default", dense: true, title: "Initiatives aimed at speed",
         body: <table>
           <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
