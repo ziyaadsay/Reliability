@@ -8324,7 +8324,7 @@ export default function ReliabilityScorecards() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 0.46fr", gap: 28, flex: 1, minHeight: 0 }}>
               <ul style={{ fontSize: 14, gap: 12, margin: 0 }}>
-                <li><strong>Demand rose a little, cost to serve more.</strong> Calls offered rate {callsRatePrev.toFixed(2)} to {callsRateNow.toFixed(2)} ({sd(callsRateNow - callsRatePrev)}), ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])} ({sd(tr[iOct] - tr[iSep])}), dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])} ({sd(rr[iOct] - rr[iSep])}).</li>
+                <li><strong>Demand rose a little, cost to serve more.</strong> Calls offered rate {callsRatePrev.toFixed(2)} to {callsRateNow.toFixed(2)}, ticket rate {fmtRate(tr[iSep])} to {fmtRate(tr[iOct])}, dispatch rate {fmtRate(rr[iSep])} to {fmtRate(rr[iOct])}.</li>
                 <li><strong>Mediaroom is the upside.</strong> Tickets {sn(legacy.tickets[iOct] - legacy.tickets[iSep])}, rate {fmtRate(legacy.ticketRate[iSep])} to {fmtRate(legacy.ticketRate[iOct])} on a shrinking base. OPUS eased: tickets {sn(opus.tickets[iOct] - opus.tickets[iSep])}, rate {fmtRate(opus.ticketRate[iOct])}.</li>
                 <li><strong>Video quality moved Mediaroom.</strong> Video Issues {sn(vid[2] - vid[1])}; the {O.area} outage is about a fifth, the rest a higher everyday level.</li>
                 <li><strong>STB No Boot eased</strong> ({num(R.categories[3][1])} to {num(R.categories[3][2])}); <strong>Missing Channels rose</strong> {sn(mv[1][2] - mv[1][1])}, a provisioning problem on OPUS boxes.</li>
