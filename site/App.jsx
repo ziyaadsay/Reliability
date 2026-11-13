@@ -585,11 +585,11 @@ const SWEEPR = {
     t: [null,null,null,null,null,null,null,null,null,null,null,null,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.50,-0.5]
   },
   churn: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.67,1.85,1.76,1.88,1.85,1.78,1.93,2.17,2.06,2.06],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,1.67,1.85,1.76,1.88,1.85,1.78,1.93,2.17,2.07,1.82],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   },
   deacts: {
-    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,426,476],
+    a: [null,null,null,null,null,null,null,null,null,null,null,null,541,403,484,543,494,547,600,457,424,380],
     t: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]
   }
 };
@@ -4348,7 +4348,7 @@ export default function ReliabilityScorecards() {
           </span>
         </a>
         <p style={{ fontSize: 12.5, color: T.textFaint, margin: "12px 2px 0", lineHeight: 1.6 }}>
-          Self-serve customer workflows are powered by the Sweepr platform. Source: Self Assure metrics (current deterministic workflows), latest month October 2026 (Sweepr-involved churn and deacts saved for October are estimates in the source; churn is on the 15 Oct snapshot, pending sign-off). Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
+          Self-serve customer workflows are powered by the Sweepr platform. Source: Self Assure metrics (current deterministic workflows), latest month October 2026 (Sweepr-involved churn and deacts saved are on the 11 Nov refresh, pending sign-off, and on a reporting-month basis, so October covers September contacts). Targets are set in the source for 2026 only; churn impact and deacts saved carry no target.
         </p>
 
         <Section num="01" eyebrow="Self-serve" title="Resolved sessions vs target" icon="selfserve" T={T} collapsible>
