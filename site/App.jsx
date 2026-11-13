@@ -7948,16 +7948,13 @@ export default function ReliabilityScorecards() {
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
           <div style={{ background: col, color: "#fff", borderRadius: 8, padding: "10px 16px", fontSize: 15, fontWeight: 600, lineHeight: 1.4 }}>{`Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`}</div>
-          <div className="dk-stats">{overall.map((m) => mstat(m))}</div>
-          {dkTable("Measure", overall.map((m) => row(m.label, m.vals, m.rate)))}
+          <div className="dk-stats" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>{overall.map((m) => mstat(m))}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 125, w: 520, years: true, c25: C25, fmt: m.rate ? rateF : undefined })))}
+            <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
+          </div>
         </>,
-        notes: "Deact rate is the go/national Churn % from the KPI tab, per 100 subscribers." },
-      { layout: "default", dense: true, title: "HSIA overall: calls, tickets, repairs and deact rate", sub: "2025 and 2026 by month",
-        body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-          {overall.map((m) => chartCell(m.label, plot([{ name: m.label, color: col, vals: m.vals }], { h: 150, w: 400, years: true, c25: C25, fmt: m.rate ? rateF : undefined })))}
-          <div className="dk-legend" style={{ gridColumn: "1 / -1" }}>{YEARS.map((y) => <span key={y.name}><i style={{ background: y.color }} />{y.name}</span>)}</div>
-        </div>,
-        notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, by month." },
+        notes: "Calls offered, tickets, repairs and the deact rate for HSIA West + TQ ILEC, 2025 against 2026 by month. Deact rate is the go/national Churn % from the KPI tab, per 100 subscribers." },
       groupSlide(groups[0]), groupSlide(groups[1]),
       { layout: "default", dense: true, title: "Slow speeds: the root cause that keeps growing", sub: "Slow-speed tickets, HSIA",
         body: <>
