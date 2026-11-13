@@ -7952,16 +7952,6 @@ export default function ReliabilityScorecards() {
           <div className="dk-note amber"><h3>Nov 2025</h3>{slowNote}</div>
         </>,
         notes: `Slow speeds are the wired and wireless slow-speed tickets plus incompatible equipment, from the HSIA Recategorization Looker tab. Nov 2025: ${slowNote}.` },
-      { layout: "default", dense: true, title: "Slow speeds by group", sub: "Growth since January 2025 and October against last year",
-        body: <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-          <div>{chartCell("Jan 2025 = 100", plot(groups.map((g) => ({ name: g.name, color: g.color, vals: g.slow })), { index: 0, fmt: (v) => Math.round(v), h: 230, w: 520 }))}
-            <div className="dk-legend">{groups.map((g) => <span key={g.name}><i style={{ background: g.color }} />{g.name}</span>)}</div></div>
-          <table>
-            <thead><tr><th>Group</th><th>Oct 2025</th><th>Oct 2026</th><th>YoY</th><th>Share of its tickets</th></tr></thead>
-            <tbody>{groups.map((g) => <tr key={g.name}><td>{g.name}</td>{cell(num(g.slow[iYoY]))}{cell(num(g.slow[iOct]))}{cell(sp(pct(g.slow[iOct], g.slow[iYoY]), 0))}{cell(`${((g.slow[iYoY] / g.tickets[iYoY]) * 100).toFixed(0)}% → ${((g.slow[iOct] / g.tickets[iOct]) * 100).toFixed(0)}%`)}</tr>)}</tbody>
-          </table>
-        </div>,
-        notes: `${fastest.name} has grown fastest (${sp(fastest.g, 0)} YoY). The three groups do not add up exactly to HSIA All.` },
       { layout: "default", dense: true, title: "Initiatives aimed at speed",
         body: <table>
           <thead><tr><th>Initiative</th><th>Status</th><th>Timeline</th><th>Prime</th><th>Impact</th></tr></thead>
