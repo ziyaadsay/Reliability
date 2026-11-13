@@ -1,6 +1,6 @@
 // Packages the built dashboard (site/dist) as a Gizmos worker with the /api/ask endpoint.
 //   node worker/build.mjs <dist dir> <out dir>
-// Output: worker.js (assets embedded), wrangler.toml with the AI binding, favicon.ico.
+// Output: worker.js (assets embedded), wrangler.toml with the AI and D1 bindings, migrations/, favicon.ico.
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,6 +38,18 @@ compatibility_date = "2025-01-01"
 binding = "AI"
 model = "gpt-4o-mini"
 description = "Answers questions about the Reliability Strategy dashboard data"
+
+# Shared storage for editable text (the HSIA Oct Review In short): the table is created by migrations/.
+[[d1_databases]]
+binding = "DB"
+`);
+mkdirSync(join(out, "migrations"), { recursive: true });
+writeFileSync(join(out, "migrations", "0001_commentary.sql"), `CREATE TABLE IF NOT EXISTS commentary (
+  key TEXT PRIMARY KEY,
+  html TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  updated_by TEXT
+);
 `);
 if (assets["/favicon.ico"]) copyFileSync(join(dist, "favicon.ico"), join(out, "favicon.ico"));
 console.log(`worker: ${Object.keys(assets).length} assets, ${(readFileSync(join(out, "worker.js")).length / 1024).toFixed(0)} KB`);

@@ -85,9 +85,14 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   The deact rate is the go/national Churn % (the page does not estimate deact volumes). Slow-speed tickets come from the
   "Slow Speeds" rows of the HSIA All / West / TQ ILEC / PFE blocks of the HSIA Recategorization Looker tab. Slow-speed
   calls and repairs are not in the workbook yet; the page says so. Like the TV Oct Review, it is a current review.
-- The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary): the
-  text generated in `shortItems` is the published version; a viewer's edits are saved in their own browser (localStorage,
-  key "HSIA Oct Review: In short" / "Oct 2026") and can be reset to the published text. Edits are not shared between viewers.
+- The In short on the HSIA Oct Review is editable (`CommentaryEditor`, the same editor as the Health Read commentary). Precedence:
+  the viewer's own browser edit (localStorage, key "HSIA Oct Review: In short" / "Oct 2026"), then the text published for everyone,
+  then the text generated in `shortItems`. Publishing for everyone: the editor gets `shareKey` and talks to the worker's
+  `/api/commentary` (D1 table `commentary`, binding `DB`, migration `migrations/0001_commentary.sql`, both written by
+  `site/worker/build.mjs`). Only Gizmos app owners, admins and editors (`x-gizmos-role`) can write; saving as one of them publishes
+  for everyone and clears their local copy, and "Reset to generated text" deletes the published row. Other viewers see the published
+  text and their own edits stay in their browser (the editor shows the role it saw). If the endpoint is unavailable the editor falls
+  back to browser-only saving. No edit history is kept. The deck slide uses the same shared text.
 - The trend charts on the HSIA Oct Review page (not the slides) are click to enlarge: `zplot` wraps `plot` and opens a modal
   (state `zoomChart` in the main component, closed by Esc, a click outside or the Close button) that redraws the same series large,
   with every month labelled and every point valued.
