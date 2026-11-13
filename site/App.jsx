@@ -2108,7 +2108,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
   const jump = (k) => { dirRef.current = k >= i ? 1 : -1; onIndex(k); setOverview(false); };
   useEffect(() => {
     const onKey = (e) => {
-      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.target && (e.target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName))) return;
       const k = e.key;
       if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) { e.preventDefault(); overview ? jump(Math.min(n - 1, i + 1)) : go(1); }
       else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(k)) { e.preventDefault(); overview ? jump(Math.max(0, i - 1)) : go(-1); }
@@ -2226,7 +2226,7 @@ function Deck({ slides, index, onIndex, onExit, T, color, isDark, title }) {
         <button onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen && document.documentElement.requestFullscreen())} title="F">Fullscreen</button>
         <button onClick={onExit} title="Esc">Exit ✕</button>
       </div>
-      <div className="dk-stage" onClick={(e) => { if (e.target.closest("button, a, table")) return; go(1); }}>
+      <div className="dk-stage" onClick={(e) => { if (e.target.closest("button, a, table, [contenteditable], [data-deck-noadvance]")) return; go(1); }}>
         <div key={i} className={`dk-slide-wrap`} style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {renderSlide(s, i, dirRef.current < 0 ? "dk-in-l" : "dk-in-r", body)}
         </div>
@@ -2363,7 +2363,7 @@ function commentaryCss(T) {
 .cm-edit:empty::before{content:attr(data-ph);color:${T.textFaint};font-style:italic}
 `;
 }
-function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", docStyle }) {
+function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", docStyle, onSaved }) {
   const [saved, setSaved] = useState(() => cmStore.get(sc, month));
   const [mode, setMode] = useState("view");
   const [dirty, setDirty] = useState(false);
@@ -2405,6 +2405,7 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
     const html = sanitizeHtml(el.innerHTML);
     if (!cmStore.set(sc, month, html)) { setMsg("Could not save: this browser is blocking storage"); return; }
     setSaved({ html, at: Date.now() }); setMode("view"); setDirty(false); setConfirm(null); setMsg("");
+    if (onSaved) onSaved();
   };
   const close = () => {
     if (dirty && confirm !== "discard") { setConfirm("discard"); return; }
@@ -2414,7 +2415,7 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); save(); }
     else if (e.key === "Escape") { e.preventDefault(); close(); }
   };
-  const resetToOriginal = () => { cmStore.clear(sc, month); setSaved(null); setConfirm(null); };
+  const resetToOriginal = () => { cmStore.clear(sc, month); setSaved(null); setConfirm(null); if (onSaved) onSaved(); };
 
   const btn = (primary) => ({ fontFamily: FONT, fontSize: 12.5, fontWeight: 700, borderRadius: 8, padding: "5px 14px", cursor: "pointer",
     border: `1px solid ${primary ? "transparent" : T.borderStrong}`, background: primary ? T.heading : "transparent", color: primary ? T.surface : T.textSecondary });
@@ -2460,7 +2461,7 @@ function CommentaryEditor({ T, sc, month, seedHtml, label, noun = "commentary", 
           {isEmpty
             ? <p style={{ margin: 0, fontSize: 13, fontStyle: "italic", color: T.textFaint }}>{label ? "Nothing has been added here yet." : `No commentary has been added for ${month} yet.`}</p>
             : <div className="cm-doc cm-cards" style={docStyle} dangerouslySetInnerHTML={{ __html: viewHtml }} />}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+          <div className="cm-actions" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
             <button type="button" style={btn(false)} onClick={() => { setMode("edit"); setDirty(false); setMsg(""); }}>{isEmpty ? `Add ${noun}` : `Edit ${noun}`}</button>
             {saved && <span style={{ fontSize: 11.5, color: T.textFaint }}>Edited in this browser · {new Date(saved.at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>}
             {saved && seedHtml && (confirm === "reset"
@@ -2882,6 +2883,7 @@ export default function ReliabilityScorecards() {
   const hashPage = () => parseHash().id;
   const [page, setPage] = useState(hashPage);
   const [deckSlide, setDeckSlide] = useState(() => parseHash().slide); // 1-based slide while presenting, else null
+  const [cmVer, setCmVer] = useState(0); // bumped when an In short edit is saved or reset, so the page and slide editors reload it
   const [zoomChart, setZoomChart] = useState(null); // chart enlarged from a review page: { title, series, opts }
   useEffect(() => { setZoomChart(null); }, [page]);
   useEffect(() => {
@@ -7890,7 +7892,6 @@ export default function ReliabilityScorecards() {
       ["Calls and repairs for slow speeds are not split yet.", "The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source."]
     ];
     const shortSeed = `<ol>${shortItems.map(([h, t]) => `<li><strong>${cmEsc(h)}</strong> ${cmEsc(t)}</li>`).join("")}</ol>`;
-    const shortSaved = cmStore.get("HSIA Oct Review: In short", "Oct 2026");
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
     const mstat = (m) => dstat(fv(m, m.vals[iOct]), `${m.label} · Oct`, `Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`);
@@ -7933,10 +7934,12 @@ export default function ReliabilityScorecards() {
     const slides = [
       { layout: "cover", title: "HSIA in October and trends",
         body: <>
-          <style>{commentaryCss(T)}{`.dk-cover .cm-doc,.dk-cover .cm-doc li,.dk-cover .cm-doc strong,.dk-cover .cm-doc b{color:#fff}.dk-cover .cm-doc{font-size:17px;line-height:1.5;max-width:1000px}`}</style>
-          <div className="cm-doc" dangerouslySetInnerHTML={{ __html: sanitizeHtml(shortSaved ? shortSaved.html : shortSeed) }} />
+          <style>{commentaryCss(T)}{`.dk-cover .cm-doc:not(.cm-edit),.dk-cover .cm-doc:not(.cm-edit) li,.dk-cover .cm-doc:not(.cm-edit) strong,.dk-cover .cm-doc:not(.cm-edit) b{color:#fff}.dk-cover .cm-actions button,.dk-cover .cm-actions span{color:#fff !important;border-color:rgba(255,255,255,.7) !important}`}</style>
+          <div data-deck-noadvance="1" style={{ maxWidth: 1000 }}>
+            <CommentaryEditor key={`slide${cmVer}`} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 17, lineHeight: 1.5 }} onSaved={() => setCmVer((v) => v + 1)} />
+          </div>
         </>,
-        notes: "The In short section of the page. If the page text was edited in this browser, the slide shows the edited version." },
+        notes: "The In short section of the page, editable here: use Edit summary, then Save. Edits are kept in this browser and also show on the page." },
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
           <div style={{ background: col, color: "#fff", borderRadius: 8, padding: "10px 16px", fontSize: 15, fontWeight: 600, lineHeight: 1.4 }}>{`Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`}</div>
@@ -8009,7 +8012,7 @@ export default function ReliabilityScorecards() {
         <section aria-labelledby="ho-short">
           <div className="hb-answer">
             <h3 id="ho-short" style={{ color: H }}>In short</h3>
-            <CommentaryEditor T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} />
+            <CommentaryEditor key={cmVer} T={T} sc="HSIA Oct Review: In short" month="Oct 2026" label="the In short summary" noun="summary" seedHtml={shortSeed} docStyle={{ fontSize: 15.5, lineHeight: 1.55 }} onSaved={() => setCmVer((v) => v + 1)} />
           </div>
         </section>
 
