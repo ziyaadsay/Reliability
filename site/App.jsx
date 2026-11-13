@@ -7890,6 +7890,7 @@ export default function ReliabilityScorecards() {
       ["Calls and repairs for slow speeds are not split yet.", "The workbook carries slow speeds for tickets only; the calls and repairs views are marked as needing a source."]
     ];
     const shortSeed = `<ol>${shortItems.map(([h, t]) => `<li><strong>${cmEsc(h)}</strong> ${cmEsc(t)}</li>`).join("")}</ol>`;
+    const shortSaved = cmStore.get("HSIA Oct Review: In short", "Oct 2026");
     // ---- presentation mode (Deck) ----
     const dstat = (v, label, sub) => <div className="dk-stat"><div className="dk-stat-v">{v}</div><div className="dk-stat-l">{label}</div>{sub && <div className="dk-stat-s">{sub}</div>}</div>;
     const mstat = (m) => dstat(fv(m, m.vals[iOct]), `${m.label} · Oct`, `Sep ${fv(m, m.vals[iSep])} · ${chgm(m, iOct, iSep)} MoM · ${chgm(m, iOct, iYoY)} YoY`);
@@ -7921,6 +7922,12 @@ export default function ReliabilityScorecards() {
       { layout: "cover", title: "HSIA in October",
         callout: `Calls offered are ${callsDir} ${k1(Math.abs(callsDelta))} in volume and ${sp(mom(O.calls))}, primarily driven by ${callsDriver}. HSIA West is showing stable volume and rate. Slow speeds tickets are ${share(iOct).toFixed(0)}% of ticket volume.`,
         notes: "The one-line answer: volume eased in October, and slow speeds are the root cause that keeps growing." },
+      { layout: "default", dense: true, title: "In short",
+        body: <>
+          <style>{commentaryCss(T)}</style>
+          <div className="cm-doc" style={{ fontSize: 17, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(shortSaved ? shortSaved.html : shortSeed) }} />
+        </>,
+        notes: "The In short section of the page. If the page text was edited in this browser, the slide shows the edited version." },
       { layout: "default", dense: true, title: "October at a glance", sub: "HSIA overall, October against September and October 2025",
         body: <>
           <div className="dk-stats">{overall.map((m) => mstat(m))}</div>
