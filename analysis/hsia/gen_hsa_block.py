@@ -1,6 +1,8 @@
 """Turns hsia_notes_analysis.json (from analyze_hsia_notes.py) into the HSA constant for
 site/App.jsx (hsa_block.js). Month-agnostic: the window comes from the analysis file."""
-import json
+import json, os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+from insight_report import to_block
 d = json.load(open('hsia_notes_analysis.json'))
 M = d['months']                       # e.g. ['2026-08', '2026-09', '2026-10']
 MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -47,6 +49,8 @@ HSA = {
     'devices': rows(d['devices']),
     'access': rows(d['access_mentions']),
     'domainMix': domainMix, 'closureDomains': TD,
+    # InSight payload vs what the agent called out (analysis/common/notes_parse.py, insight_report.py)
+    'insight': to_block(d, M, ['ont_down', 'outage', 'pending_order', 'no_sync', 'losing_sync', 'low_train_rate', 'loop_disqualified', 'rx_out_of_range', 'rx_marginal', 'gw_fw_outdated']),
   }
 }
 js = 'const HSA = ' + json.dumps(HSA, separators=(',', ':'), ensure_ascii=False) + ';\n'

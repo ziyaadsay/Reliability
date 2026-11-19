@@ -32,3 +32,16 @@ the TVA currently in App.jsx).
   "Root cause analysis" line and a "Resolution" line (about one in ten tickets) and classifies each
   line to one theme, the one mentioned first. Set `MONTHS` at the top for the months to show.
   HSIA has the same script with HSIA themes in `analysis/hsia/resolution_flows.py`.
+
+## Agent text vs InSight payload
+
+The Agent Notes column is a log of worklog entries (`*** CREATED DATE: ... WORKLOG_TYPE ... WORKLOG_SUMMARY ...
+WORKLOG_DETAILS ...`). `analysis/common/notes_parse.py` splits it by entry: "[InSight Case Data]" entries are the InSight
+(agent service assurance tool) payload, "[Agent Notes]" entries and dispatch "Customer Comments" are what the agent wrote, and
+everything else (WFM, SWT, reassignment, closure, repair templates) is system text. InSight check phrases an agent quotes inside
+their own text are removed from it and read as findings. The themes, devices and platform or access mentions use the agent text
+only (a negated mention such as "no outage" does not count). `analysis/common/insight_report.py` reads the payload into findings
+(outage, ONT state, pending order, copper sync, optical Rx level, xVu STB errors, ...) and cross-checks each agent theme against the
+InSight check that would show it (`theme_vs_insight`); `gen_*_block.py` writes that as `insight` in the page constant. The optical Rx
+window (`RX_FLOOR`, `RX_CEIL`, `RX_MARGINAL` in `notes_parse.py`) is a working assumption. Before this, devices and access were counted
+on the whole note, so the payload inflated ONT, fibre, 4K STB and TV+ mentions several times over.

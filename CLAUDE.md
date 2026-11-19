@@ -106,3 +106,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   the root cause: 60% without poor telemetry, about 20% of the growth from speed plan and equipment remediation, remedy codes from Nov 2025).
 - The "Initiatives aimed at speed" table (page and slide) on the HSIA Oct Review is ordered Launched, In flight, Ideation, and shows DIY Revamp Live ONT
   Check and How Speed Works Campaign in bold (`statusOrder`, `boldInit`).
+- Notes Analysis (HSIA and TV) separates what the agent wrote from the InSight payload (`analysis/common/notes_parse.py`, `insight_report.py`).
+  The themes, equipment, platform and access tables use the agent's own text only; the "InSight checks vs what agents called out"
+  section (`insightSection`, `insight` in `HSA` and `TVA`) shows what InSight showed and compares it with each agent theme. The Aug 2026
+  series in those tables are blank (not re-parsed); roll the window forward from the next export with `analyze_*notes.py` then
+  `gen_*_block.py`, which fill the whole window.

@@ -3,7 +3,9 @@ analyze_survey.py) into the TVA constant for site/App.jsx (tva_block.js).
 The ticket window comes from the analysis file. If survey_analysis.json is absent the
 survey block is carried over from tva_prev.json (the TVA currently in App.jsx), since the
 survey verbatims are rolled forward separately."""
-import json, os
+import json, os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+from insight_report import to_block
 N = json.load(open('notes_analysis.json'))
 M = N['months']
 MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -26,6 +28,8 @@ tickets = {'total': [N['total'][m] for m in M],
    'themes': [{'name':k,'v':v,'pct':pct(v[1],v[2])} for k,v in N['agent_themes'].items()],
    'devices': [{'name':k,'v':v,'pct':pct(v[1],v[2])} for k,v in N['devices'].items() if sum(v)>0],
    'platform': [{'name':k,'v':v,'pct':pct(v[1],v[2])} for k,v in N['platform_mentions'].items()],
+   # InSight payload vs what the agent called out (analysis/common/notes_parse.py, insight_report.py)
+   'insight': to_block(N, M, ['outage','stb_errors','stb_unregistered','pending_order','gw_fw_outdated','ont_down']),
 }
 if os.path.exists('survey_analysis.json'):
     S = json.load(open('survey_analysis.json'))

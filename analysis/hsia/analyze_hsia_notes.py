@@ -7,7 +7,11 @@ Only aggregates leave this script; the raw exports contain customer details and
 are never committed.
 """
 import glob, json, collections, re, sys
+import os
 import openpyxl
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+from notes_parse import parse_note
+from insight_report import build_report, theme_hit as _theme_hit
 
 MONTHS = ['2026-08', '2026-09', '2026-10']
 FILES = sorted(glob.glob('raw/hsia_notes_*.xlsx'))
@@ -227,19 +231,11 @@ out['tech_fix_themes'] = {t: [fixes[m][t] for m in MONTHS] for t in FIX_THEMES}
 out['structured_tech_notes'] = {m: sum(det[m].values()) for m in MONTHS}
 
 # ---------------- agent notes text mining ----------------
-def agent_comment(t):
-    i = t.find('Agent Comments:')
-    if i < 0: i = t.find('Issue Reported')
-    if i < 0: i = t.find('Customer Comments - WORKLOG_DETAILS:')
-    if i < 0: i = t.find('#CopilotNotes')
-    if i < 0: i = t.find('ISSUE:')
-    if i < 0: return ''
-    seg = t[i:i + 1500]
-    for stop in ['InSight Processes:', 'InSight Case:', 'Chat URL', 'INSIGHT CHECKS', 'TELUS Products:', 'Fuel IEx',
-                 'Route this', 'WORKLOG_TYPE: Additional', 'SWT API', 'Created WFM', '*** CREATED DATE']:
-        j = seg.find(stop)
-        if j > 0: seg = seg[:j]
-    return seg.lower()
+# What the agent wrote vs what InSight pasted: see ../common/notes_parse.py. The agent text is the worklog entries the
+# agent authored with InSight payload and quoted InSight checks removed; the payload is read separately as structured
+# findings (outage, ONT / STB state, sync, optical levels, ...).
+for r in rows:
+    r['_p'] = parse_note(r['Agent Notes'])
 
 THEMES = {
     'No internet / all devices down': [r'no internet', r'no connection', r'internet (is )?(down|not working|out)', r'all devices', r'no service', r'nothing (is )?working'],
@@ -265,19 +261,21 @@ DEVICES = {
     'Boost Wi-Fi 7 (BV3)': r'boost wi-?fi 7|\bbv3\b', 'Boost Lite (BLite)': r'\bblite\b|boost lite', 'Wi-Fi Hub / WFH': r'wi-?fi hub|\bwfh\b',
     'ONT (Nokia / Huawei / Calix)': r'\bont\b', 'Actiontec / legacy modem': r'actiontec|t1200|t2200|v1000',
 }
+NEGATED = ('Outage / active network event', 'Red / alarm light / LOS on ONT or modem')
+def theme_hit(t, seg): return _theme_hit(THEMES, t, seg, NEGATED)
 theme_m = {t: [0, 0, 0] for t in THEMES}
 dev_m = {d: [0, 0, 0] for d in DEVICES}
 theme_by_cat = collections.defaultdict(collections.Counter)
 access_m = {'Fibre (PureFibre / ONT)': [0, 0, 0], 'Copper (DSL / bonded)': [0, 0, 0]}
 comment_cov = [0, 0, 0]
 for r in rows:
-    seg = agent_comment(r['Agent Notes'])
-    full = r['Agent Notes'].lower()
+    seg = r['_p']['agent'].lower()
+    full = seg  # devices and access are mentions in what the agent wrote, not in the InSight payload
     mi = MONTHS.index(r['_m'])
     if seg:
         comment_cov[mi] += 1
-        for t, pats in THEMES.items():
-            if any(re.search(p, seg) for p in pats):
+        for t in THEMES:
+            if theme_hit(t, seg):
                 theme_m[t][mi] += 1; theme_by_cat[f"{r['c1']} › {r['c2']}"][t] += 1
     for d, p in DEVICES.items():
         if re.search(p, full): dev_m[d][mi] += 1
@@ -286,6 +284,14 @@ for r in rows:
     if fib: access_m['Fibre (PureFibre / ONT)'][mi] += 1
     if cop: access_m['Copper (DSL / bonded)'][mi] += 1
 out['comment_coverage'] = comment_cov
+
+# InSight payload vs what the agent called out. Theme -> InSight check that would show it. Counts are tickets where the
+# agent raised the theme AND the payload carries the check.
+CONFIRM = {
+    'Outage / active network event': 'outage', 'No internet / all devices down': 'ont_down', 'Red / alarm light / LOS on ONT or modem': 'ont_down',
+    'ONT / fibre / light level': 'ont_down', 'No power / dead equipment': 'ont_down', 'DSL / copper line': 'no_sync', 'Intermittent drops / disconnects': 'losing_sync',
+}
+out.update(build_report(rows, MONTHS, THEMES, CONFIRM, NEGATED, cat_key=lambda r: f"{r['c1']} › {r['c2']}"))
 out['agent_themes'] = dict(sorted(theme_m.items(), key=lambda kv: -sum(kv[1])))
 out['agent_theme_movers'] = movers(theme_m, floor=300)
 out['devices'] = dict(sorted(dev_m.items(), key=lambda kv: -sum(kv[1])))
@@ -332,6 +338,9 @@ print('\nDOMAIN MIX', MONTHS[2], json.dumps(out['domain_mix'][MONTHS[2]], indent
 print('\nDETERMINATION', out['tech_determination'])
 print('\nFIX THEMES'); [print(f'  {k:52s} {v}') for k, v in out['tech_fix_themes'].items()]
 print('\nCOMMENT COVERAGE', comment_cov)
+print('\nINSIGHT COVERAGE', json.dumps(out['insight_coverage']))
+print('INSIGHT FINDINGS', json.dumps(out['insight_findings']))
+print('THEME VS INSIGHT', json.dumps(out['theme_vs_insight']))
 print('\nAGENT THEMES'); [print(f'  {k:52s} {v}') for k, v in out['agent_themes'].items()]
 print('\nDEVICES'); [print(f'  {k:36s} {v}') for k, v in out['devices'].items()]
 print('ACCESS', access_m)
