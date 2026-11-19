@@ -111,3 +111,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   section (`insightSection`, `insight` in `HSA` and `TVA`) shows what InSight showed and compares it with each agent theme. The Aug 2026
   series in those tables are blank (not re-parsed); roll the window forward from the next export with `analyze_*notes.py` then
   `gen_*_block.py`, which fill the whole window.
+- The Health Read has no "Additional Monthly Context" section. That context (headline, main reason, tickets, repairs, calls, top issues) opens in a
+  pop-up when a KPI card is clicked (`TileRow` with `sc`, `popup` state kind "kpi", `MonthlyNarrative({ sc, contextOnly: true })`); calls cards show the
+  calls context, ticket cards the main reason, tickets and top issues, repair cards the repairs context, and churn, base and B2B cards the headline only. The MCP
+  carries it as `context` on each KPI card (`withContext` in `mcp/src/pages.js`). The initiative coverage cell in the ticket issues tables opens a pop-up
+  listing the initiatives (`popup` kind "coverage"), not a hover tooltip.

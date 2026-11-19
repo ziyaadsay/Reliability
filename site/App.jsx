@@ -1597,14 +1597,16 @@ function Eyebrow({ children, T, style }) {
   return <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: T.heading, ...style }}>{children}</div>;
 }
 
-function StatCard({ icon, label, sub, value, deltas, color, T }) {
+function StatCard({ icon, label, sub, value, deltas, color, T, onClick, hint }) {
   // Hover: the card lifts, takes the metric colour on its border and a faint
   // tint of it as background, and the label switches to the metric colour.
   const [hover, setHover] = useState(false);
   const tint = /^#[0-9a-f]{6}$/i.test(color || "") ? `${color}14` : T.band;
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      {...(onClick ? { role: "button", tabIndex: 0, onClick, onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }, "aria-haspopup": "dialog" } : {})}
       style={{
+        cursor: onClick ? "pointer" : "default",
         background: hover ? tint : T.surface, border: `1px solid ${hover ? color : T.border}`, borderRadius: 12, padding: "16px 18px",
         boxShadow: hover ? "0 6px 18px rgba(0,0,0,.10)" : "none", transform: hover ? "translateY(-2px)" : "none",
         transition: "background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease"
@@ -1616,6 +1618,7 @@ function StatCard({ icon, label, sub, value, deltas, color, T }) {
       <div style={{ fontSize: 28, fontWeight: 700, color: T.heading, lineHeight: 1.05 }}>{value}</div>
       {sub && <div style={{ fontSize: 11.5, color: T.textFaint, marginTop: 4 }}>{sub}</div>}
       {deltas && deltas.map((d, i) => <div key={i} style={{ fontSize: 12.5, marginTop: i === 0 ? 7 : 3 }}>{d}</div>)}
+      {hint && <div style={{ fontSize: 11, fontWeight: 600, color: hover ? color : T.textFaint, marginTop: 9, transition: "color .15s ease" }}>{hint} ›</div>}
     </div>
   );
 }
@@ -2914,6 +2917,13 @@ export default function ReliabilityScorecards() {
   const [issueFilter, setIssueFilter] = useState({});
   const [healthMetric, setHealthMetric] = useState({}); // Health Read metric switcher, per product
   const [archSlide, setArchSlide] = useState(null); // slide the Architecture page asked the Supporting deck to open on
+  const [popup, setPopup] = useState(null); // { kind: "kpi", sc, label } KPI card monthly context, or { kind: "coverage", product, issue, items } initiative list
+  useEffect(() => {
+    if (!popup) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") setPopup(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [popup]);
   const [expandedChart, setExpandedChart] = useState(null); // { title, labels, seriesDefs, fmt } shown in an overlay
   const [openPillars, setOpenPillars] = useState({}); // pillar sections default collapsed
   const [navOpen, setNavOpen] = useState({}); // per-product nav subsections, collapsed by default
@@ -3029,7 +3039,7 @@ export default function ReliabilityScorecards() {
     ];
   }
 
-  function TileRow({ tiles, deltaMode, columns, extras }) {
+  function TileRow({ tiles, deltaMode, columns, extras, sc }) {
     return (
       <div style={{ display: "grid", gridTemplateColumns: columns ? `repeat(${columns}, 1fr)` : "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {tiles.map((tile, i) => {
@@ -3044,7 +3054,8 @@ export default function ReliabilityScorecards() {
           return (
             <StatCard key={i} T={T} color={tile.color} icon={tile.icon}
               label={tile.label} value={tile.fmt(f.latest)} sub={f.latestMonth}
-              deltas={deltas} />
+              deltas={deltas}
+              {...(sc ? { onClick: () => setPopup({ kind: "kpi", sc, label: tile.label, deltaMode }), hint: "Monthly context" } : {})} />
           );
         })}
         {extras}
@@ -3193,7 +3204,8 @@ export default function ReliabilityScorecards() {
     if (t === 0 && (r == null || r === 0)) return { label: "Steady", tone: "flat" };
     return { label: "Mixed", tone: "flat" };
   }
-  function MonthlyNarrative({ sc }) {
+  // contextOnly returns the month's context (headline, main reason, tickets, repairs, calls, top issues) for the KPI card popup.
+  function MonthlyNarrative({ sc, contextOnly }) {
     const f = narrativeFacts(sc);
     if (f.tv.now == null || f.tr.now == null) {
       return <p style={{ fontSize: 13, color: T.textFaint, margin: 0 }}>{sc} has no reported tickets for {f.month}, so there is no narrative for this month.</p>;
@@ -3295,14 +3307,7 @@ export default function ReliabilityScorecards() {
       return L.topIssues.slice(0, 3).map((t, idx) => `${idx + 1}. ${t.issue} — ${t.a26.toLocaleString()} tickets${yoy(t.a26, t.a25) ? ` (${yoy(t.a26, t.a25)} YoY)` : ""}.`).join(" ");
     })();
 
-    const block = (icon, title, text) => text ? (
-      <div style={{ flex: 1, minWidth: 240, background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>
-          <span style={{ color: T.heading, display: "inline-flex" }}><Icon name={icon} size={14} /></span>{title}
-        </div>
-        <p style={{ margin: 0, fontSize: 12.8, lineHeight: 1.6, color: T.textSecondary }}>{text}</p>
-      </div>
-    ) : null;
+    if (contextOnly) return { headline, driverText, tickets, repairs, calls, topIssuesText, month: f.month, prevMonth: f.prevMonth };
 
     // ----- metric switcher (hero statement + chart) -----
     const callsSrc = CALLS_SPLIT[sc] ? CALLS_SPLIT[sc].offered : DATA.callsOffered[sc];
@@ -3415,20 +3420,6 @@ export default function ReliabilityScorecards() {
           </Disclosure>
         )}
 
-        <Disclosure label="Additional Monthly Context" variant="button" T={T} style={{ marginTop: 14 }}>
-          <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{headline}</p>
-          {driverText && (
-            <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.6, color: T.textSecondary }}>
-              <b style={{ color: T.heading }}>Main reason · </b>{driverText}
-            </p>
-          )}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            {block("tickets", "Tickets", tickets)}
-            {block("repairs", "Repairs / dispatches", repairs)}
-            {block("calls", "Calls", calls)}
-            {block("issues", `Top issues — ${LOOKER_SHORT}`, topIssuesText)}
-          </div>
-        </Disclosure>
         <AskPanel T={T} sc={sc} month={f.month} />
         <p style={{ margin: "12px 0 0", fontSize: 12, color: T.textFaint, lineHeight: 1.5 }}>
           Month-over-month against {f.prevMonth}; rate movements are per 100 subscribers. Churn is excluded from this read until the churn model refresh lands (last reported {CHURN_THRU}).
@@ -3843,9 +3834,10 @@ export default function ReliabilityScorecards() {
                     </td>}
                     {product !== "SH+" && <td style={{ ...tdBase, whiteSpace: "normal", minWidth: 190, fontSize: 12 }}>
                       {cov.length ? (
-                        <span title={cov.map((c) => c.name).join("\n")} style={{ color: T.textSecondary, cursor: "help", borderBottom: `1px dotted ${T.textFaint}` }}>
+                        <button type="button" aria-haspopup="dialog" onClick={() => setPopup({ kind: "coverage", product, issue: r.issue, items: cov })}
+                          style={{ background: "transparent", border: "none", padding: 0, textAlign: "left", fontFamily: FONT, fontSize: 12, color: T.textSecondary, cursor: "pointer", borderBottom: `1px dotted ${T.textFaint}` }}>
                           <b style={{ color: T.heading }}>{cov.length}</b> — {cov.slice(0, 2).map((c) => c.name).join("; ")}{cov.length > 2 ? ` +${cov.length - 2} more` : ""}
-                        </span>
+                        </button>
                       ) : (
                         <span style={{ color: T.textFaint }}>— no mapped initiative</span>
                       )}
@@ -4731,7 +4723,7 @@ export default function ReliabilityScorecards() {
                 sub={`${dea.latestMonth} · Sweepr workflows`}
                 deltas={[<DeltaText key="m" d={dea.mom} T={T} suffix="MoM" />]} />
             ] : null;
-            return <TileRow tiles={scopeTiles(scope)} deltaMode="both" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
+            return <TileRow tiles={scopeTiles(scope)} sc={scope} deltaMode="both" columns={scope === "All" ? 4 : undefined} extras={selfServeCards} />;
           })()}
           <TopIssueFlags prods={scope === "All" ? PRODUCTS : [scope]} />
           <div style={{ marginTop: 12 }}>
@@ -4828,7 +4820,7 @@ export default function ReliabilityScorecards() {
 
     return (
       <>
-        <TileRow tiles={scopeTiles(product)} deltaMode="both" />
+        <TileRow tiles={scopeTiles(product)} sc={product} deltaMode="both" />
         {yoyChurn && (
           <div style={{ fontSize: 12.5, color: yoyChurn.yoyPts <= 0 ? T.good : T.bad, fontWeight: 600, margin: "10px 2px 0" }}>
             Annual churn (go/national RGU): {yoyChurn.yoyPts <= 0 ? "▼" : "▲"} {Math.abs(yoyChurn.yoyPts).toFixed(2)} per 100 subs YoY — 2026 YTD {yoyChurn.y2026.toFixed(2)} vs 2025 {yoyChurn.y2025.toFixed(2)} per 100 subs
@@ -8927,6 +8919,74 @@ export default function ReliabilityScorecards() {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg, color: T.text, fontFamily: FONT }}>
+      {popup && (() => {
+        const shell = (title, sub, body) => (
+          <div onClick={() => setPopup(null)} role="dialog" aria-modal="true" aria-label={title}
+            style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(20,16,26,.62)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ width: "min(760px, 100%)", maxHeight: "88vh", overflowY: "auto", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16, padding: "20px 24px 22px", boxShadow: "0 24px 64px rgba(0,0,0,.35)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 14, marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: T.heading, lineHeight: 1.3 }}>{title}</div>
+                  {sub && <div style={{ fontSize: 12, color: T.textFaint, marginTop: 2 }}>{sub}</div>}
+                </div>
+                <button autoFocus onClick={() => setPopup(null)} aria-label="Close"
+                  style={{ flexShrink: 0, background: "transparent", border: `1px solid ${T.borderStrong}`, borderRadius: 8, color: T.textSecondary, fontFamily: FONT, fontSize: 12.5, fontWeight: 600, padding: "5px 12px", cursor: "pointer" }}>Close ✕</button>
+              </div>
+              {body}
+            </div>
+          </div>
+        );
+        if (popup.kind === "coverage") {
+          const stCol = (st) => (st === "Launched" ? T.good : st === "In flight" ? colors[popup.product] || T.heading : T.textMuted);
+          return shell(`Initiative coverage · ${popup.issue}`, `${popup.items.length} initiative${popup.items.length === 1 ? "" : "s"} mapped to this issue (${popup.product})`, (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {popup.items.map((it) => (
+                <div key={it.name} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "11px 14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 13.5, fontWeight: 700, color: T.text }}>{it.name}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: stCol(it.status) }}>{it.status}{it.timeline && it.timeline !== "—" ? ` · ${it.timeline}` : ""}</span>
+                  </div>
+                  <div style={{ fontSize: 11.5, color: T.textMuted, marginTop: 2 }}>{it.theme}{it.prime ? ` · ${it.prime}` : ""}</div>
+                  {it.desc && <p style={{ margin: "6px 0 0", fontSize: 12.5, lineHeight: 1.55, color: T.textSecondary }}>{it.desc}</p>}
+                </div>
+              ))}
+            </div>
+          ));
+        }
+        // KPI card: the month's context for the metric that was clicked
+        const tile = scopeTiles(popup.sc).find((t) => t.label === popup.label);
+        if (!tile) return null;
+        const fg = rowFigures(tile.data, tile.dec, tile.goodDown, tile.fmt === fmtPct ? true : tile.fmt === fmtRate ? "rate" : false);
+        const ctx = MonthlyNarrative({ sc: popup.sc, contextOnly: true });
+        const scLabel = popup.sc === "All" ? "All products" : popup.sc;
+        const blk = (icon, title, text) => text ? (
+          <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "12px 14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", color: T.textMuted, marginBottom: 6 }}>
+              <span style={{ color: T.heading, display: "inline-flex" }}><Icon name={icon} size={14} /></span>{title}
+            </div>
+            <p style={{ margin: 0, fontSize: 12.8, lineHeight: 1.6, color: T.textSecondary }}>{text}</p>
+          </div>
+        ) : null;
+        const own = tile.icon === "calls" ? [blk("calls", "Calls", ctx.calls)]
+          : tile.icon === "tickets" ? [ctx.driverText ? blk("tickets", "Main reason", ctx.driverText) : null, blk("tickets", "Tickets", ctx.tickets), blk("issues", `Top issues, ${LOOKER_SHORT}`, ctx.topIssuesText)]
+          : tile.icon === "repairs" ? [blk("repairs", "Repairs / dispatches", ctx.repairs)]
+          : [];
+        return shell(`${scLabel} · ${tile.label}`, `${fg.latestMonth} · month over month against ${ctx.prevMonth || "the prior month"}`, (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 16, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 32, fontWeight: 700, color: T.heading, lineHeight: 1.05 }}>{tile.fmt(fg.latest)}</span>
+              <DeltaText d={fg.mom} T={T} suffix="MoM" />
+              <DeltaText d={fg.yoy} T={T} suffix="YoY" />
+            </div>
+            {React.isValidElement(ctx) ? ctx : (
+              <>
+                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: T.text, fontWeight: 600 }}>{ctx.headline}</p>
+                {own.filter(Boolean).length ? own : <p style={{ margin: 0, fontSize: 12.5, color: T.textFaint, lineHeight: 1.55 }}>There is no separate monthly context for this metric; the headline above is the overall read for {scLabel}.</p>}
+              </>
+            )}
+          </div>
+        ));
+      })()}
       {expandedChart && (
         <div onClick={() => setExpandedChart(null)} role="dialog" aria-label={`${expandedChart.title} expanded`}
           style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(20,16,26,.62)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>

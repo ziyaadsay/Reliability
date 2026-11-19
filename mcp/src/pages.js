@@ -283,12 +283,23 @@ function healthSections(sc, i, a, b, prefix = "health") {
     ];
     out.push(listSec(`${prefix}-commentary`, "Commentary", items, `Published commentary for ${LATEST}; edits made in the dashboard are browser-local and not served here.`));
   }
-  out.push(textSec(`${prefix}-context`, "Additional Monthly Context", [h.headline, h.driverText ? `Main reason · ${h.driverText}` : null, `Tickets · ${h.tickets}`, `Repairs / dispatches · ${h.repairs}`, `Calls · ${h.calls}`], h.verdict, h.footnote));
-  if (h.topIssues.length) out.push(listSec(`${prefix}-top-issues`, `Top issues — ${LATEST_SHORT}`, h.topIssues));
   return out;
 }
 
 // ---- KPI cards (mirrors scopeTiles) ----
+// The dashboard opens the month's context in a pop-up when a KPI card is clicked. Here the same context rides on the card:
+// the headline plus the part that applies to the metric (calls, tickets with the main reason and top issues, or repairs).
+function withContext(cards, sc, upTo) {
+  const h = healthRead(sc, upTo, upTo);
+  if (h.empty) return cards;
+  return cards.map((c) => {
+    const parts = [{ title: "Headline", body: h.headline }];
+    if (/^Calls offered/.test(c.label)) parts.push({ title: "Calls", body: h.calls });
+    else if (/^Ticket/.test(c.label)) { if (h.driverText) parts.push({ title: "Main reason", body: h.driverText }); parts.push({ title: "Tickets", body: h.tickets }); h.topIssues.forEach((t, k) => parts.push({ title: k === 0 ? `Top issues, ${LATEST_SHORT} · ${t.title}` : t.title, body: t.body })); }
+    else if (/^Repair/.test(c.label)) parts.push({ title: "Repairs / dispatches", body: h.repairs });
+    return { ...c, context: parts.filter((x) => x.body) };
+  });
+}
 function kpiCards(sc, upTo) {
   if (sc === "SH+") return [
     cardFromSeries("Calls offered rate per 100 subs", DATA.callsRate["SH+"], { unit: "per 100 subscribers", isRate: true, upTo }),
@@ -370,7 +381,7 @@ function ticketIssueSections(product, prefix, n) {
 function overviewPage(product, a, b) {
   const upTo = b, latestLabel = MONTHS[b];
   const S = [];
-  S.push(sec("cards", "KPI cards", "cards", kpiCards(product, upTo), "Latest value as of the `to` month with MoM and YoY; rates per 100 subscribers, B2B in points."));
+  S.push(sec("cards", "KPI cards", "cards", withContext(kpiCards(product, upTo), product, upTo), "Latest value as of the `to` month with MoM and YoY; rates per 100 subscribers, B2B in points. Each card carries `context`, the monthly context the dashboard shows in a pop-up when the card is clicked."));
   const ac = annualChurnText(product);
   if (ac) S.push(textSec("annual-churn", "Annual churn", [ac], DATA.annualChurn[product].yoyPts <= 0 ? "favourable" : "unfavourable"));
   if (CHILD_PAGES[product]) S.push(listSec("sub-pages", "Sub-pages", CHILD_PAGES[product].map((id) => ({ title: CHILD_LABEL[id], meta: { url: `${DASHBOARD_URL}#${id}` } }))));
