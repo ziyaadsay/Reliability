@@ -2546,7 +2546,7 @@ const INIT_FILTER_KEYS = ["theme", "status", "timeline", "prime"];
 
 // TV sub-pages (nested under TV in the nav, collapsed by default)
 // Sub-menu pages nested under a product in the left nav (collapsed by default)
-const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaoctreview", "hsiaarch"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
+const CHILD_PAGES = { home: ["execsummary"], HSIA: ["hsiawest", "hsiatq", "hsiapfe", "hsiatickets", "hsiasentiment", "hsiacross", "hsiaoctreview"], "SH+": ["shplustickets"], archive: ["hsiabrief", "tvbrief", "hsiaarch"], hsiaarch: ["hsiaarchdeck"], TV: ["tvplatforms", "tvtickets", "tvsentiment", "tvcross", "tvoctreview"] };
 const CHILD_LABEL = {
   execsummary: "Executive Summary",
   shplustickets: "Notes Analysis",
@@ -2558,8 +2558,9 @@ const PARENT_LABEL = { home: "Overview", archive: "Archive", hsiaarch: "HSIA · 
 const ARCHITECTURE_URL = "https://claude.ai/artifact/A1ZcUPDQ119QdFpa36edPX?sk=w28b8ZTHHIB5SiZM_L_SDA";
 // Previously completed reviews and miscellaneous pages. Frozen: not refreshed with each month's update.
 const ARCHIVE_ITEMS = [
-  { id: "hsiabrief", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." },
-  { id: "tvbrief", title: "TV Review (Stuck on Initializing)", period: "Aug to Oct 2026 (agent exports to 30 Oct 2026)", desc: "STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight. Final; superseded by the Oct Review." }
+  { id: "hsiabrief", date: "3 Nov 2026", title: "HSIA Review", period: "Q3 2026 (data to Sep 2026)", desc: "Why HSIA tickets rose year over year in Jan to Sep 2026, read against the latest quarter, agent and technician notes, customer sentiment, and the initiatives in flight. Final; not updated after the September data." },
+  { id: "hsiaarch", date: "19 Nov 2026", title: "HSIA Architecture", period: "Snapshot of 6 Nov 2026", desc: "The HSIA Reliability Ecosystem North Star layered architecture: five layers, each rated and tied to a reliability pillar, with the North Star goals, TELUS enablers and the supporting use-case deck. Final; not updated after the 6 Nov snapshot." },
+  { id: "tvbrief", date: "9 Nov 2026", title: "TV Review (Stuck on Initializing)", period: "Aug to Oct 2026 (agent exports to 30 Oct 2026)", desc: "STB No Boot › Stuck on Initializing against its baseline with the All STBs / One STB split, root causes and the fixes in flight. Final; superseded by the Oct Review." }
 ];
 
 // Initiatives covering a recurring-issue group, product-scoped
@@ -2974,8 +2975,6 @@ export default function ReliabilityScorecards() {
     { id: "hsiasentiment", label: "Customer Sentiment Analysis", icon: "sentiment", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiacross", label: "Cross Analysis", icon: "cross", color: colors.HSIA, child: true, parent: "HSIA" },
     { id: "hsiaoctreview", label: "Oct Review", icon: "brief", color: colors.HSIA, child: true, parent: "HSIA" },
-    { id: "hsiaarch", label: "Architecture", icon: "program", color: colors.HSIA, child: true, parent: "HSIA" },
-    { id: "hsiaarchdeck", label: "Supporting deck", icon: "slides", color: colors.HSIA, child: true, grand: true, parent: "hsiaarch" },
     { id: "TV", label: "TV", icon: "tv", color: colors.TV },
     { id: "tvplatforms", label: "By Platform", icon: "tv", color: colors.TV, child: true, parent: "TV" },
     { id: "tvtickets", label: "Notes Analysis", icon: "notes", color: colors.TV, child: true, parent: "TV" },
@@ -2988,9 +2987,8 @@ export default function ReliabilityScorecards() {
     { id: "selfserve", label: "Self-serve", icon: "selfserve", color: colors.SWEEPR },
     { id: "ffps", label: "Friction Free Program", icon: "program", color: colors.FFPS },
     // Archive is always the last menu option, set off by a divider.
-    { id: "archive", label: "Archive", icon: "archive", color: T.textMuted, divider: true },
-    { id: "hsiabrief", label: "HSIA Review", icon: "brief", color: colors.HSIA, child: true, parent: "archive" },
-    { id: "tvbrief", label: "TV Review (Sep 2026)", icon: "brief", color: colors.TV, child: true, parent: "archive" }
+    // Archived pages are not listed in the menu: they are reached from the Archive index only.
+    { id: "archive", label: "Archive", icon: "archive", color: T.textMuted, divider: true }
   ];
 
   const selectStyle = {
@@ -6606,7 +6604,8 @@ export default function ReliabilityScorecards() {
             <button key={it.id} onClick={() => { setPage(it.id); setDeckSlide(null); }}
               style={{ textAlign: "left", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 18px", cursor: "pointer", fontFamily: FONT, color: T.text }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em" }}>{it.period}</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: T.heading, margin: "4px 0 6px" }}>{it.title} →</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: T.heading, margin: "4px 0 2px" }}>{it.title} →</div>
+              <div style={{ fontSize: 11.5, color: T.textMuted, margin: "0 0 6px" }}>Archived {it.date}</div>
               <div style={{ fontSize: 12.5, color: T.textSecondary, lineHeight: 1.55 }}>{it.desc}</div>
             </button>
           ))}
@@ -8883,7 +8882,7 @@ export default function ReliabilityScorecards() {
         </div>
         <nav style={{ padding: "14px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
           {navItems.map((item) => {
-            const active = page === item.id;
+            const active = page === item.id || (item.id === "archive" && CHILD_PARENT[page] === "archive") || (item.id === "archive" && CHILD_PARENT[CHILD_PARENT[page]] === "archive");
             // Sub-pages stay hidden until their product is expanded (or one of
             // them is open, so the active state is always visible).
             if (item.child) {
@@ -8893,7 +8892,7 @@ export default function ReliabilityScorecards() {
                 : navOpen[item.parent] || CHILD_PARENT[page] === item.parent || CHILD_PARENT[CHILD_PARENT[page]] === item.parent || (item.parent === "archive" && page === "archive");
               if (!show) return null;
             }
-            const hasKids = !!CHILD_PAGES[item.id];
+            const hasKids = navItems.some((n) => n.parent === item.id);
             const kidsOpen = hasKids && (navOpen[item.id] || CHILD_PARENT[page] === item.id || (item.id === "archive" && page === "archive"));
             return (
               <React.Fragment key={item.id}>

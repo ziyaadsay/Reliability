@@ -44,7 +44,9 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   Re-pull from it into `INITIATIVES` in `site/App.jsx`: map "Launched monitoring" to "Launched",
   and keep the Health Read and HSIA Review initiative lists in step with any new or renamed projects.
 - The **Archive** menu item is always the last menu option, set off by a divider, and hosts completed
-  reviews and miscellaneous pages (`ARCHIVE_ITEMS`, `CHILD_PAGES.archive` in `site/App.jsx`). Archived
+  reviews and miscellaneous pages (`ARCHIVE_ITEMS`, `CHILD_PAGES.archive` in `site/App.jsx`). Archived pages
+  (HSIA Review, TV Review, HSIA Architecture and its Supporting deck) have no menu links: they are listed only as cards on the
+  Archive index, each showing its archived date (`date` in `ARCHIVE_ITEMS`). Archived
   pages are frozen: do not roll them forward with the monthly update. The HSIA Review (`hsiabrief`) is
   archived and pinned to Q3 2026 via `HSIA_REVIEW_LATEST`; it ignores `LATEST`. The TV Review
   (`tvbrief`, Stuck on Initializing) is archived too, pinned via `TV_REVIEW_LATEST`; TV › Oct Review
