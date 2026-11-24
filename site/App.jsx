@@ -884,8 +884,9 @@ const HSIA_OCT_REVIEW = {
 //   2025), and the platform total sits within about 15 of the KPI-tab TV repairs for Aug to Dec 2025.
 // swaps2026: monthly 2026 repair swap volumes from the Tableau Swapped Orders
 //   Combined View dashboard, Repair Swap Orders Volumes (Total TV = Legacy,
-//   Total OPUS = OPUS; all technologies). Jan – Aug 2026; the September and October pulls were not yet available from the
-//   dashboard at the time of this update.
+//   Total OPUS = OPUS; all technologies, summed over Fibre, Copper and OTT; Actuals + Add Workaround). Jan – Jul from the earlier pull;
+//   Aug – Oct from the 24 Nov 2026 pull (the August figures were restated, 596 to 2,068 Legacy and 226 to 733 OPUS, so the Jan – Jul
+//   figures may be understated the same way and are worth re-pulling). November is not reported (partial month).
 // ---------------------------------------------------------------------------
 const TV_PLATFORMS = [
   {
@@ -893,14 +894,14 @@ const TV_PLATFORMS = [
     tickets: [28724,28040,30652,30984,31535,26336,26637,24474,22010,26284,25560,24547,26833,23176,23159,23715,20858,20917,21489,22122,24775,25441],
     repairs: [2023,1643,2137,1925,1722,1495,1521,1487,1480,1777,1685,1586,1581,1418,1590,1663,1605,1105,1263,1240,1468,1457],
     base: [877573,867858,858767,850265,842199,834348,823476,813912,806087,798957,789090,778873,770803,765185,758690,750717,738234,727030,717565,707751,678167,664799],
-    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,596,null,null]
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,2003,1686,1764,1443,1178,977,698,2068,1982,2232]
   },
   {
     id: "opus", name: "TV Evolution", sub: "OPUS",
     tickets: [9480,9810,10722,10734,10003,10097,10007,10731,12168,15164,15504,13886,12128,9920,9441,10894,9879,11257,9867,10678,12760,12501],
     repairs: [105,104,113,78,80,69,69,73,89,110,94,88,307,310,329,330,336,307,309,305,390,353],
     base: [320847,326151,333102,338402,345329,350171,359165,367025,372162,379770,388243,396919,402912,407233,411592,415896,420596,423901,436417,442630,453664,469398],
-    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,226,null,null]
+    swaps2026: [null,null,null,null,null,null,null,null,null,null,null,null,1352,1141,1080,954,701,727,231,733,948,1285]
   }
 ];
 // Mixed usage: customers provisioned on both Mediaroom and TTV+ (same source as the
@@ -4287,7 +4288,7 @@ export default function ReliabilityScorecards() {
         )}
 
         {sec("Repair swaps", "repairs",
-          platChart("tvp-sw", "Repair swap volume by platform", "swaps2026", fmtNum, "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026 only; September and October are not yet pulled.")
+          platChart("tvp-sw", "Repair swap volume by platform", "swaps2026", fmtNum, "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026 only. August to October are from the 24 Nov pull (August was restated upward); January to July are from the earlier pull and may be understated.")
         )}
 
         {sec("Mixed usage", "base",

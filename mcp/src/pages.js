@@ -515,7 +515,7 @@ function platformsPage(a, b) {
   S.push(seriesSec("s02-ticket-rate", "03 · Tickets · Ticket rate by platform (per 100 platform subs)", a, b, plat("ticketRate", "per 100 subscribers"), "Platform tickets over the platform's provisioned subscriber base (Customer Base - Provisioned)."));
   S.push(seriesSec("s03-repairs", "04 · Repairs / Dispatches · Repair volume by platform", a, b, plat("repairs"), "Platform repair split: 2026 from the 2026 Redwood Scorecard, 2025 from the 2025 Redwood Scorecard, Weekly Repair Projections tab, month-end columns (Mediaroom = IPTV + QC ILEC IPTV, OPUS = OPUS)."));
   S.push(seriesSec("s03-repair-rate", "04 · Repairs / Dispatches · Repair rate by platform (per 100 platform subs)", a, b, plat("repairRate", "per 100 subscribers")));
-  S.push(seriesSec("s04-swaps", "05 · Repair swaps · Repair swap volume by platform", a, b, plat("swaps2026"), "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026; September is not yet pulled."));
+  S.push(seriesSec("s04-swaps", "05 · Repair swaps · Repair swap volume by platform", a, b, plat("swaps2026"), "Repair swap orders across all technologies, Tableau Swapped Orders Combined View. Reported for 2026. August to October are from the 24 Nov pull (August was restated upward); January to July are from the earlier pull and may be understated."));
   S.push(seriesSec("s05-mixed", "06 · Mixed usage · Mixed-usage subscribers (MR + TTV+)", a, b, [{ key: "mixed", label: TV_MIXED.name, values: TV_MIXED.base }], "Customers provisioned on both Mediaroom and TTV+ at month end (Customer Base - Provisioned). Subscriber count only; tickets and repairs are not yet split for this group."));
   return S;
 }
