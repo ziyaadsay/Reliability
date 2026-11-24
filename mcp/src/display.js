@@ -11,7 +11,7 @@ const DISPLAY_AS = ["cards", "text", "quotes", "list", "table", "matrix", "bars"
 const GANTT_STATUS_ORDER = ["Launched", "In flight", "Ideation", "Stalled", "On Hold"];
 
 // ---- display rules ----
-const T3 = HSA.months, SV = ["Jun", "Jul", "Aug"];
+const T3 = HSA.months, SV = HSS.months.map((m) => m.slice(0, 3)), SV_MOD = HSS_REVIEW_FROZEN.months.map((m) => m.slice(0, 3));
 const seriesKeys = (s) => Object.keys(s.data.series);
 const tbl = (s, extra) => ({ as: "table", ...(extra || {}) });
 const wide = { wide: true };
@@ -51,9 +51,11 @@ function tableDisplay(page, product, s) {
       return tbl(s);
     case "sentiment":
       if (id === "polarity") return { as: "stacked-bars", orient: "months", label: "polarity", stack: SV, alsoAs: "table" };
-      if (id === "by-contact") return { as: "bars", label: "group", value: "Aug", sort: "as-is", alsoAs: "table" };
+      if (id === "by-contact") return { as: "bars", label: "group", value: SV[2], sort: "as-is", alsoAs: "table" };
       if (id === "attributes") return { as: "bars", label: "attribute", value: "fairOrPoor", sort: "as-is", alsoAs: "table" };
-      if (id === "drivers") return trendTable("driver", SV, "changeBps");
+      if (id === "reasons") return trendTable("reason", SV, "changeBps");
+      if (id === "drivers") return trendTable("driver", SV_MOD, null);
+      if (id === "one-thing" || id === "resolution" || id === "switching") return trendTable("measure", SV, "changeBps");
       if (id === "themes") return trendTable("name", SV, "changeBps");
       if (id === "issue-themes") return trendTable("name", SV, "change");
       if (id === "issues") return trendTable("name", SV, "changeBps");
@@ -76,7 +78,7 @@ function tableDisplay(page, product, s) {
       if (s.id === "s5-agent-categories") return { as: "bars", label: "category", value: "tickets", sort: "as-is", alsoAs: "table" };
       if (s.id === "s6-lifts") return { as: "paired-bars", label: "trait", pair: ["lift2025", "lift2026"], reference: 1, alsoAs: "table" };
       if (s.id === "s7-alignment") return { as: "stacked-bars", label: "category", stack: ["aligned", "noFault", "reattributed"], alsoAs: "table" };
-      if (s.id === "s7-survey") return { as: "paired-bars", label: "driver", pair: ["Jun", "Aug"], alsoAs: "table" };
+      if (s.id === "s7-survey") return { as: "paired-bars", label: "driver", pair: [SV_MOD[0], SV_MOD[2]], alsoAs: "table" };
       return tbl(s);
     case "ffps":
       if (id === "crs" && s.id.startsWith("s02")) return { as: "stacked-bars", label: "quarter", stack: ["churn", "calls", "sbc"], total: "total", alsoAs: "table" };
@@ -105,7 +107,7 @@ function displayFor(page, product, s) {
 // ---- groups: the dashboard's collapsible sections, in page order ----
 const PRODUCT_GROUP_TITLE = (month) => ({ health: `Health Read — ${month}`, calls: "Calls", tickets: "Tickets", categories: "Tickets", "biggest-riser": "Tickets", issues: "Ticket issues & movers", repairs: "Repairs / Dispatches", "fibre-spotlight": "Repairs / Dispatches", churn: "Churn", b2b: "Voice of Customer (B2B)", initiatives: "Initiatives", timeline: "Initiative timeline" });
 const NOTES_GROUPS = { 1: "Top issues by agent categorisation", 2: "Agent vs technician categorisation", 3: "Technician closures and fixes", 4: "What agents are writing", 5: "Recommendations" };
-const SENTIMENT_GROUPS = { HSIA: { 1: "Perceived reliability", 2: "What drives a poor reliability rating", 3: "Performance against importance", 4: "Verbatim sentiment and themes", 5: "Issue descriptions and digital support", 6: "What customers said", 7: "Recommendations" }, TV: { 1: "Verbatim sentiment", 2: "Themes in customer verbatims", 3: "TV-specific issue verbatims", 4: "Digital support (chatbot) verbatims", 5: "Recommendations" } };
+const SENTIMENT_GROUPS = { HSIA: { 1: "Perceived reliability", 2: "What drives a poor reliability rating", 3: "Performance against importance", 4: "Experience in the past month, resolution and switching", 5: "Verbatim sentiment and themes", 6: "Issue descriptions and digital support", 7: "What customers said", 8: "Recommendations" }, TV: { 1: "Verbatim sentiment", 2: "Themes in customer verbatims", 3: "TV issues customers describe", 4: "Digital support (chatbot) verbatims", 5: "Recommendations" } };
 const CROSS_GROUPS = { 1: "Signal alignment matrix", 2: "Consolidated rising and falling drivers", 3: "Prioritised recommendations" };
 const PLATFORM_GROUPS = { 1: "Subscriber base", 2: "Tickets", 3: "Repairs / Dispatches", 4: "Repair swaps", 5: "Mixed usage" };
 const SELFSERVE_GROUPS = { 1: "Resolved sessions vs target", 2: "Resolution rates", 3: "Customer experience", 4: "Churn impact" };

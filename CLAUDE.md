@@ -116,3 +116,13 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   calls context, ticket cards the main reason, tickets and top issues, repair cards the repairs context, and churn, base and B2B cards the headline only. The MCP
   carries it as `context` on each KPI card (`withContext` in `mcp/src/pages.js`). The initiative coverage cell in the ticket issues tables opens a pop-up
   listing the initiatives (`popup` kind "coverage"), not a hover tooltip.
+- Customer Sentiment (HSIA `HSS`, TV `TVA.survey`) comes from the combined CF&R Core Products survey files
+  ("CF&R_Core Products_Data_YYYYMM.xlsx", Drive folder 1ylO54NRczqWHOI1zP2fNAzuWOUFGm21Y): `ServProduct` 1 = TELUS Internet,
+  2 = Optik TV. Run `analysis/hsia/analyze_hsia_survey.py` and `analysis/tv/analyze_survey.py` then `gen_tva_block.py`; the survey
+  window is Aug to Oct 2026, the same as the notes window, and the page labels follow `HSS.months` (`SV_*` in `site/App.jsx`). The
+  combined files carry the core questionnaire only: the HSIA structured drivers and performance / importance batteries keep their
+  Jun to Aug reading in `HSS_REVIEW_FROZEN` (also the survey snapshot of the archived HSIA Review), and TV issues are classified
+  from the CONTA and V3 verbatims. The TV page stays verbatims only (scores excluded).
+- The Cross Analysis matrices (HSIA and TV) compare the last two months of the notes and survey window (Oct vs Sep 2026) and are
+  hand-written from `HSA`, `TVA`, `HSS` and the Looker issue rows; HSIA has the customer survey as a fifth lens (`voice`). The
+  notes recommendations (`TV_RECS`, `HSIA_RECS`) still carry Jul to Aug evidence, apart from their survey statements.

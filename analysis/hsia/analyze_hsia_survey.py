@@ -1,45 +1,45 @@
 """HSIA customer sentiment analysis.
 
-Reads the monthly CF&R TELUS Internet survey exports (raw/hsia_survey_2026-0{6,7,8}.xlsx)
-and writes hsia_survey_analysis.json: the aggregated figures behind the HSIA
-"Customer Sentiment" sub-page. Unweighted respondent counts throughout (the file
-carries a `wt` column, which is not applied so the counts match the raw base).
+Reads the monthly combined CF&R Core Products survey exports
+(raw/cfr_2026-MM.xlsx, "CF&R_Core Products_Data_YYYYMM.xlsx": one sheet of coded
+responses for every product plus the Variable Labels and Value Labels sheets),
+keeps the TELUS Internet respondents (ServProduct = 1) and writes
+hsia_survey_analysis.json: the aggregated figures behind the HSIA "Customer
+Sentiment" sub-page. Unweighted respondent counts throughout (the file carries a
+`wt` column, which is not applied so the counts match the raw base).
+
+The combined export carries the core questionnaire only. The TELUS Internet
+product module (Q1C_INT reliability drivers, the iqpf1 / iqim1 performance and
+importance batteries and the dd* deep-dive verbatims) is not in it, so the reasons
+behind a fair or poor reliability rating are read from the V3 verbatim instead.
 
 Raw exports carry customer name, email, phone and address and are never committed.
 """
 import openpyxl, collections, json, re
 
-MONTHS = ['Jun', 'Jul', 'Aug']
-FILES = {'Jun': 'raw/hsia_survey_2026-06.xlsx', 'Jul': 'raw/hsia_survey_2026-07.xlsx', 'Aug': 'raw/hsia_survey_2026-08.xlsx'}
+MONTHS = ['Aug', 'Sep', 'Oct']
+YEAR = 2026
+FILES = {'Aug': 'raw/cfr_2026-08.xlsx', 'Sep': 'raw/cfr_2026-09.xlsx', 'Oct': 'raw/cfr_2026-10.xlsx'}
+PRODUCT = 1                              # ServProduct: 1 = TELUS Internet, 2 = TELUS Optik TV
 
 # ---- verbatim fields -------------------------------------------------------
 GENERAL = ['v1', 'v2', 'v3', 'v6']      # reason-for-rating (customers-first, NPS, reliability, cancel intent)
-ISSUE = {                                # issue descriptions and reliability deep-dives
-    'conta': 'Issue described at contact',
-    'iddos1': 'Other TELUS service issue',
-    'ddw1': 'Home Wi-Fi',
-    'ddcp1': 'Connection / speed',
-    'ddvs1': 'Video streaming interrupted',
-    'iddcs1': 'Customer service / tech support',
-    'qwfp5': 'Wi-Fi Plus impact',
+ISSUE = {                                # issue descriptions
+    'conta': 'Issue described (had an issue in the past month)',
     'nq8b': 'Why never contacted',
+    'qwfp5': 'Wi-Fi Plus impact',
 }
 SUPPORT = ['v5b']                        # chatbot / digital support
 
 # ---- structured fields -----------------------------------------------------
 RATING = {1: 'Excellent', 2: 'Very good', 3: 'Good', 4: 'Fair', 5: 'Poor', 6: 'Unsure', 7: 'N/A'}
-ATTRS = {
-    'iqpf1_1': 'Connection stability', 'iqpf1_2': 'Speed consistency', 'iqpf1_3': 'Max download speed',
-    'iqpf1_4': 'Max upload speed', 'iqpf1_5': 'Wi-Fi coverage at home', 'iqpf1_6': 'Wi-Fi performance at home',
-    'iqpf1_7': 'Online gaming', 'iqpf1_8': 'Customer service / tech support', 'iqpf1_9': 'Data-usage allowance',
-}
-IMPORT = {k.replace('iqpf1_', 'iqim1_'): v for k, v in ATTRS.items()}
-DRIVERS = {
-    1: 'Home Wi-Fi', 2: 'TELUS email problems', 3: 'TELUS customer service', 4: 'TELUS technical support',
-    5: 'Other TELUS services', 6: 'Frequent loss of connection', 7: 'Slow Internet speeds',
-    8: 'Inconsistent Internet speeds', 9: 'Interrupted video streaming', 95: 'Other',
-}
-DRIVER_COLS = [f'Q1C_INTm{c}' for c in list(DRIVERS) + [96, 97]]
+ONE_THING = {1: 'No issues in the past month', 2: 'Service outage(s)', 6: 'Network issues', 5: 'Unresolved product issue(s)',
+             4: 'Price increase', 3: 'Billing issues', 7: 'Poor experience with customer service / support rep',
+             8: 'Poor My TELUS app experience', 9: 'Poor TELUS Assist / chatbot experience', 95: 'Other'}
+RESOLVE = {1: 'Resolved immediately', 2: 'Resolved, but not immediately', 3: 'Not resolved yet, TELUS working on it', 4: 'Not resolved', 5: 'Unsure'}
+TIMES = {1: 'Once', 2: '2-3 times', 3: '4-5 times', 4: 'More than 5 times', 5: 'Unsure'}
+SWITCH_TO = {11: 'Rogers', 7: 'Bell Internet', 15: 'Novus', 8: 'Videotron', 9: 'Cogeco', 1: 'Eastlink', 14: 'Koodo', 13: 'SaskTel', 95: 'Other', 97: "Don't know"}
+SWITCH_COLS = {f'P5b_Intm{c}': c for c in (1, 7, 8, 9, 11, 13, 14, 15, 95, 96, 97)}
 
 THEMES = {
     # "down" and "drop" are scoped to service words: "bring my fees down" and
@@ -80,9 +80,37 @@ def classify(text):
     return [th for th, pats in THEMES.items() if any(re.search(p, t) for p in pats)]
 
 
+# The V3 verbatim answers "why did you rate reliability fair or poor", so short connection
+# complaints ("bad connection", "drops on and off", "down several times") are read as
+# connection problems there. These extra patterns apply to the reasons table only; the
+# reason-for-rating themes keep the stricter lexicon above.
+REASON_EXTRA = {
+    'Connection drops & outages': [r'drop', r'\bdown\b', r'not stable', r'in and out', r'on and off', r'cuts? (in and )?out', r'no service',
+                                   r'(bad|poor|weak|spotty|terrible|horrible|lousy|unstable)\s+(internet\s+)?(connection|connectivity|signal|reception)',
+                                   r'(connection|connectivity|signal|reception)[^.]{0,30}(not (good|great)|weak|poor|bad|issue|problem|trouble|lost|los[et])',
+                                   r'los[et]\w*\s+(my\s+|our\s+)?(connection|internet|reception|signal|service)',
+                                   r"(doesn.?t|does not|won.?t|not)\s+(always\s+)?(work|connect)", r'stutter', r'freez', r'glitch', r'wonky', r'spotty', r'crash',
+                                   r'd[eé]connect', r'instable'],
+}
+
+
+def classify_reason(text):
+    t = text.lower()
+    ths = set(classify(text))
+    ths.update(th for th, pats in REASON_EXTRA.items() if any(re.search(p, t) for p in pats))
+    return [th for th in ths if not th.startswith('Positive')]
+
+
 # "few outages", "rarely any issues" and similar read as negative to the bag-of-words
 # scorer; quotes need a stricter test than the aggregate polarity split.
-NOT_A_PROBLEM = re.compile(r'\b(few|no|not many|rarely|hardly any|without any|zero)\s+\w{0,12}?(outage|issue|problem|drop|complaint)', re.I)
+NOT_A_PROBLEM = re.compile(r'\b(few|no|not many|rarely|hardly any|without any|zero)\s+\w{0,12}?(outage|issue|problem|drop|complaint)|\b(not|never) had (any )?(buffering|drop|issue|problem|outage)', re.I)
+
+
+# quotes must not carry contact details
+PII = re.compile(r'@|\d{3}[\s.-]?\d{3}[\s.-]?\d{4}|\d{6,}')
+
+# profanity, and comments about the mobile network rather than home Internet
+UNQUOTABLE = re.compile(r'fuck|shit|\bcalls? (drop|are)|\btowers?\b|out of network', re.I)
 
 
 def clearly_negative(text):
@@ -101,23 +129,14 @@ def polarity(text):
     return 'positive' if p > n else 'negative' if n > p else 'neutral'
 
 
+
+
 def z():
     return [0, 0, 0]
 
 
 resp = z()
-nps_counts = [collections.Counter() for _ in MONTHS]
-p1a_counts = [collections.Counter() for _ in MONTHS]
-q8_counts = [collections.Counter() for _ in MONTHS]
-q12_counts = [collections.Counter() for _ in MONTHS]
-q15_counts = [collections.Counter() for _ in MONTHS]
-p5_counts = [collections.Counter() for _ in MONTHS]
-attr_bad = {k: z() for k in ATTRS}          # Fair/Poor count
-attr_base = {k: z() for k in ATTRS}         # answered, excluding Unsure/NA
-imp_top = {k: z() for k in IMPORT}          # "very/extremely important" proxy: codes 1-2
-imp_base = {k: z() for k in IMPORT}
-driver_counts = {v: z() for v in DRIVERS.values()}
-driver_base = z()                            # respondents asked the driver question
+cnt = {c: [collections.Counter() for _ in MONTHS] for c in ('qnps', 'p1a', 'p2', 'q8', 'q12', 'q15', 'p5', 'q16t', 'q10', 'q10_2', 'q5a1', 'q5a2')}
 theme_tbl = {t: z() for t in THEMES}
 theme_neg = {t: z() for t in THEMES}
 pol_tbl = {p: z() for p in ('positive', 'neutral', 'negative')}
@@ -125,10 +144,18 @@ verb_base = z()
 issue_tbl = {v: z() for v in ISSUE.values()}
 issue_theme = {t: z() for t in THEMES}
 sup_pol = {p: z() for p in ('positive', 'neutral', 'negative')}
+# why reliability was rated fair or poor: V3 verbatim of the bottom-two-box raters
+reason_tbl = {t: z() for t in THEMES if not t.startswith('Positive')}
+reason_base = z()
+reason_none = z()                      # usable comment, no theme matched
+switch_tbl = {v: z() for v in SWITCH_TO.values()}
+switch_base = z()
 # reliability rating split by whether the respondent had an issue
 bad_by_contact = {'contacted': z(), 'issue_no_contact': z(), 'no_issue': z()}
 base_by_contact = {'contacted': z(), 'issue_no_contact': z(), 'no_issue': z()}
 quotes = collections.defaultdict(list)
+quoted = set()
+LAST = len(MONTHS) - 1
 
 for mi, m in enumerate(MONTHS):
     wb = openpyxl.load_workbook(FILES[m], read_only=True, data_only=True)
@@ -139,37 +166,22 @@ for mi, m in enumerate(MONTHS):
     g = lambda r, c: r[idx[c]] if c in idx else None
 
     for r in it:
-        if not any(v not in (None, '') for v in r):
+        if g(r, 'ServProduct') != PRODUCT:
             continue
         resp[mi] += 1
 
         # ---- structured ----
-        for col, tbl in (('qnps', nps_counts), ('p1a', p1a_counts), ('q8', q8_counts),
-                         ('q12', q12_counts), ('q15', q15_counts), ('p5', p5_counts)):
+        for col, tbl in cnt.items():
             v = g(r, col)
             if v is not None:
                 tbl[mi][v] += 1
 
-        for k in ATTRS:
-            v = g(r, k)
-            if isinstance(v, (int, float)) and v in (1, 2, 3, 4, 5):
-                attr_base[k][mi] += 1
-                if v in (4, 5):
-                    attr_bad[k][mi] += 1
-        for k in IMPORT:
-            v = g(r, k)
-            if isinstance(v, (int, float)) and 1 <= v <= 5:
-                imp_base[k][mi] += 1
-                if v in (1, 2):
-                    imp_top[k][mi] += 1
-
-        picked = [g(r, c) for c in DRIVER_COLS if c in idx]
-        picked = [p for p in picked if p is not None]
+        picked = [code for col, code in SWITCH_COLS.items() if g(r, col) is not None]
         if picked:
-            driver_base[mi] += 1
+            switch_base[mi] += 1
             for code in picked:
-                if code in DRIVERS:
-                    driver_counts[DRIVERS[code]][mi] += 1
+                if code in SWITCH_TO:
+                    switch_tbl[SWITCH_TO[code]][mi] += 1
 
         # reliability bottom-2 by contact status
         p1a, q8 = g(r, 'p1a'), g(r, 'q8')
@@ -178,6 +190,16 @@ for mi, m in enumerate(MONTHS):
             base_by_contact[bucket][mi] += 1
             if p1a in (4, 5):
                 bad_by_contact[bucket][mi] += 1
+
+        # reasons behind a fair or poor reliability rating
+        v3 = clean(g(r, 'v3'))
+        if p1a in (4, 5) and v3:
+            reason_base[mi] += 1
+            ths = classify_reason(v3)
+            if not ths:
+                reason_none[mi] += 1
+            for th in ths:
+                reason_tbl[th][mi] += 1
 
         # ---- general verbatims: one classification per respondent ----
         texts = [clean(g(r, c)) for c in GENERAL]
@@ -196,13 +218,15 @@ for mi, m in enumerate(MONTHS):
                     theme_neg[th][mi] += 1
                     # quote must match THIS theme, not merely come from a respondent
                     # who mentioned it somewhere across their four verbatims
-                    if mi == 2 and len(quotes[th]) < 4 and th != 'Positive: satisfied / no issues':
+                    if mi == LAST and len(quotes[th]) < 4 and th != 'Positive: satisfied / no issues':
                         cand = [t for t in texts if th in classify(t) and 25 <= len(t) <= 180
-                                and clearly_negative(t)]
+                                and clearly_negative(t) and not PII.search(t) and not UNQUOTABLE.search(t)
+                                and t not in quoted]
                         # prefer the verbatim that is most specific to this theme
                         cand.sort(key=lambda t: (len(classify(t)), -len(t)))
                         if cand:
                             quotes[th].append(cand[0])
+                            quoted.add(cand[0])        # a verbatim is quoted once, under its first theme
 
         # ---- issue verbatims ----
         for col, label in ISSUE.items():
@@ -220,14 +244,10 @@ for mi, m in enumerate(MONTHS):
 
 pct = lambda num, den: [round(num[i] / den[i] * 100, 1) if den[i] else 0 for i in range(3)]
 
-# rotating modules: find the single month each battery was asked in
-_perf_mi = next((i for i in range(3) if sum(attr_base[k][i] for k in ATTRS)), None)
-_imp_mi = next((i for i in range(3) if sum(imp_base[k][i] for k in IMPORT)), None)
 
-
-def nps(cnt):
+def nps(c3):
     out = []
-    for c in cnt:
+    for c in c3:
         tot = sum(c.values())
         pro = sum(v for k, v in c.items() if k in (9, 10))
         det = sum(v for k, v in c.items() if isinstance(k, (int, float)) and k <= 6)
@@ -235,82 +255,97 @@ def nps(cnt):
     return out
 
 
-def share(cnt, codes):
-    return [round(sum(v for k, v in c.items() if k in codes) / max(1, sum(c.values())) * 100, 1) for c in cnt]
+def share(c3, codes):
+    return [round(sum(v for k, v in c.items() if k in codes) / max(1, sum(c.values())) * 100, 1) for c in c3]
 
 
-def counts(cnt, codes):
-    return [sum(v for k, v in c.items() if k in codes) for c in cnt]
+def counts(c3, codes):
+    return [sum(v for k, v in c.items() if k in codes) for c in c3]
+
+
+def dist(c3, labels):
+    """Rows of {name, v, pct} for a single-choice question, in the order of `labels`."""
+    return [{'name': lab, 'v': counts(c3, (code,)), 'pct': share(c3, (code,))} for code, lab in labels.items()]
 
 
 out = {
-    'months': [f'{m} 2026' for m in MONTHS],
+    'months': [f'{m} {YEAR}' for m in MONTHS],
     'respondents': resp,
-    'nps': {'score': nps(nps_counts),
-            'promoters': share(nps_counts, (9, 10)),
-            'passives': share(nps_counts, (7, 8)),
-            'detractors': share(nps_counts, tuple(range(0, 7)))},
-    'reliability': {'top2': share(p1a_counts, (1, 2)), 'good': share(p1a_counts, (3,)),
-                    'bottom2': share(p1a_counts, (4, 5)), 'bottom2N': counts(p1a_counts, (4, 5)),
-                    'dist': {RATING[k]: [c.get(k, 0) for c in p1a_counts] for k in (1, 2, 3, 4, 5)}},
-    'service': {'top2': share(q15_counts, (1, 2)), 'bottom2': share(q15_counts, (4, 5))},
-    'easy': {'agree': share(q12_counts, (1, 2)), 'disagree': share(q12_counts, (4, 5)),
-             'base': [sum(c.values()) for c in q12_counts]},
-    'contact': {'contacted': share(q8_counts, (1,)), 'issue_no_contact': share(q8_counts, (4,)),
-                'no_issue': share(q8_counts, (5,)),
-                'contactedN': counts(q8_counts, (1,)), 'issue_no_contactN': counts(q8_counts, (4,))},
-    'churn': {'at_risk': share(p5_counts, (4, 5)), 'downgrade': share(p5_counts, (3,)),
-              'stay': share(p5_counts, (2,)), 'upgrade': share(p5_counts, (1,)),
-              'at_riskN': counts(p5_counts, (4, 5))},
-    'drivers': sorted(
-        [{'name': n, 'v': driver_counts[n], 'pct': pct(driver_counts[n], driver_base)} for n in driver_counts if sum(driver_counts[n])],
-        key=lambda d: -d['v'][2]),
-    'driverBase': driver_base,
-    # The performance and importance batteries are rotating modules: performance is
-    # asked in Aug only and importance in Jul only, so they are reported as
-    # point-in-time readings rather than a three-month trend.
-    'attributes': {
-        'perfMonth': MONTHS[_perf_mi] + ' 2026' if _perf_mi is not None else None,
-        'impMonth': MONTHS[_imp_mi] + ' 2026' if _imp_mi is not None else None,
-        'rows': sorted(
-            [{'name': ATTRS[k],
-              'bad': attr_bad[k][_perf_mi] if _perf_mi is not None else 0,
-              'base': attr_base[k][_perf_mi] if _perf_mi is not None else 0,
-              'pct': round(attr_bad[k][_perf_mi] / attr_base[k][_perf_mi] * 100, 1) if _perf_mi is not None and attr_base[k][_perf_mi] else 0,
-              'imp': round(imp_top['iqim1_' + k.split('_')[1]][_imp_mi] / imp_base['iqim1_' + k.split('_')[1]][_imp_mi] * 100, 1) if _imp_mi is not None and imp_base['iqim1_' + k.split('_')[1]][_imp_mi] else None}
-             for k in ATTRS],
-            key=lambda d: -d['pct'])},
+    'nps': {'score': nps(cnt['qnps']),
+            'promoters': share(cnt['qnps'], (9, 10)),
+            'passives': share(cnt['qnps'], (7, 8)),
+            'detractors': share(cnt['qnps'], tuple(range(0, 7)))},
+    'reliability': {'top2': share(cnt['p1a'], (1, 2)), 'good': share(cnt['p1a'], (3,)),
+                    'bottom2': share(cnt['p1a'], (4, 5)), 'bottom2N': counts(cnt['p1a'], (4, 5)),
+                    'dist': {RATING[k]: [c.get(k, 0) for c in cnt['p1a']] for k in (1, 2, 3, 4, 5)}},
+    'value': {'top2': share(cnt['p2'], (1, 2)), 'bottom2': share(cnt['p2'], (4, 5))},
+    'service': {'top2': share(cnt['q15'], (1, 2)), 'bottom2': share(cnt['q15'], (4, 5))},
+    'easy': {'agree': share(cnt['q12'], (1, 2)), 'disagree': share(cnt['q12'], (4, 5)),
+             'base': [sum(c.values()) for c in cnt['q12']]},
+    'contact': {'contacted': share(cnt['q8'], (1,)), 'issue_no_contact': share(cnt['q8'], (4,)),
+                'no_issue': share(cnt['q8'], (5,)),
+                'contactedN': counts(cnt['q8'], (1,)), 'issue_no_contactN': counts(cnt['q8'], (4,))},
+    'churn': {'at_risk': share(cnt['p5'], (4, 5)), 'downgrade': share(cnt['p5'], (3,)),
+              'stay': share(cnt['p5'], (2,)), 'upgrade': share(cnt['p5'], (1,)),
+              'at_riskN': counts(cnt['p5'], (4, 5))},
+    # Q5a1 / Q5a2: how close to switching, and how TELUS compares with other providers
+    'consider': {'wouldnt': share(cnt['q5a1'], (1, 2)), 'easily': share(cnt['q5a1'], (3,)), 'already': share(cnt['q5a1'], (4,)),
+                 'better': share(cnt['q5a2'], (1, 2)), 'worse': share(cnt['q5a2'], (4, 5))},
+    'switchTo': sorted([{'name': n, 'v': switch_tbl[n], 'pct': pct(switch_tbl[n], switch_base)} for n in switch_tbl if sum(switch_tbl[n])],
+                       key=lambda d: -d['v'][LAST]),
+    'switchBase': switch_base,
+    # Q16T: the one thing that defined the month, single choice, all respondents
+    'oneThing': dist(cnt['q16t'], ONE_THING),
+    # Q10 / Q10_2: asked of those who contacted TELUS about an issue in the past month
+    'resolution': {'rows': dist(cnt['q10'], RESOLVE), 'base': [sum(c.values()) for c in cnt['q10']],
+                   'unresolved': share(cnt['q10'], (3, 4)), 'immediate': share(cnt['q10'], (1,))},
+    'contacts': {'rows': dist(cnt['q10_2'], TIMES), 'base': [sum(c.values()) for c in cnt['q10_2']],
+                 'repeat': share(cnt['q10_2'], (2, 3, 4)), 'four_plus': share(cnt['q10_2'], (3, 4))},
+    # V3 verbatims of respondents rating reliability fair or poor, keyword-classified
+    'reasons': sorted(
+        [{'name': n, 'v': reason_tbl[n], 'pct': pct(reason_tbl[n], reason_base)} for n in reason_tbl if sum(reason_tbl[n])],
+        key=lambda d: -d['v'][LAST]),
+    'reasonBase': reason_base,
+    'reasonNone': reason_none,
     'verbatimBase': verb_base,
     'polarity': {p: pct(pol_tbl[p], verb_base) for p in pol_tbl},
     'polarityN': pol_tbl,
     'themes': sorted(
         [{'name': t, 'v': theme_tbl[t], 'pct': pct(theme_tbl[t], verb_base), 'neg': theme_neg[t]} for t in theme_tbl if sum(theme_tbl[t])],
-        key=lambda d: -d['v'][2]),
+        key=lambda d: -d['v'][LAST]),
     'issueVerbatims': sorted(
-        [{'name': n, 'v': issue_tbl[n]} for n in issue_tbl if sum(issue_tbl[n])], key=lambda d: -d['v'][2]),
+        [{'name': n, 'v': issue_tbl[n]} for n in issue_tbl if sum(issue_tbl[n])], key=lambda d: -d['v'][LAST]),
     'issueThemes': sorted(
-        [{'name': t, 'v': issue_theme[t]} for t in issue_theme if sum(issue_theme[t])], key=lambda d: -d['v'][2]),
+        [{'name': t, 'v': issue_theme[t]} for t in issue_theme if sum(issue_theme[t])], key=lambda d: -d['v'][LAST]),
     'chatbot': {p: sup_pol[p] for p in sup_pol},
     'reliabilityByContact': {k: {'bad': bad_by_contact[k], 'base': base_by_contact[k],
                                  'pct': pct(bad_by_contact[k], base_by_contact[k])} for k in bad_by_contact},
     'quotes': {k: v for k, v in quotes.items() if v},
 }
-json.dump(out, open('hsia_survey_analysis.json', 'w'), indent=1)
+json.dump(out, open('hsia_survey_analysis.json', 'w'), indent=1, ensure_ascii=False)
 
 print('respondents', resp)
 print('NPS', out['nps'])
-print('reliability', out['reliability']['top2'], out['reliability']['bottom2'])
-print('drivers base', driver_base)
-for d in out['drivers'][:10]:
-    print('  driver', d['name'], d['v'], d['pct'])
-print('attributes perf month', out['attributes']['perfMonth'], 'imp month', out['attributes']['impMonth'])
-for a in out['attributes']['rows']:
-    print(f"  attr {a['name']:34s} fair/poor {a['pct']:5.1f}%  (n={a['base']})  importance {a['imp']}")
-print('polarity', out['polarity'], 'base', verb_base)
-for t in out['themes'][:8]:
-    print('  theme', t['name'], t['pct'])
+print('reliability', out['reliability']['top2'], out['reliability']['good'], out['reliability']['bottom2'], out['reliability']['bottom2N'])
+print('value', out['value'], 'service', out['service'], 'easy', out['easy'])
+print('reasons base', reason_base, 'no theme', reason_none)
+for d in out['reasons']:
+    print('  reason', d['name'], d['v'], d['pct'])
+print('oneThing')
+for d in out['oneThing']:
+    print('  ', d['name'], d['v'], d['pct'])
+print('resolution', out['resolution'])
+print('contacts', out['contacts'])
+print('consider', out['consider'], 'switchBase', switch_base)
+for d in out['switchTo']:
+    print('  switch', d['name'], d['v'], d['pct'])
+print('polarity', out['polarity'], out['polarityN'], 'base', verb_base)
+for t in out['themes']:
+    print('  theme', t['name'], t['v'], t['pct'], t['neg'])
 print('churn', out['churn'])
 print('contact', out['contact'])
-print('reliabilityByContact', {k: v['pct'] for k, v in out['reliabilityByContact'].items()})
+print('reliabilityByContact', out['reliabilityByContact'])
 print('chatbot', out['chatbot'])
 print('issueVerbatims', out['issueVerbatims'])
+for t in out['issueThemes']:
+    print('  issueTheme', t['name'], t['v'])

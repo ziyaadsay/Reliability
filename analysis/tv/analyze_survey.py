@@ -1,19 +1,47 @@
+"""TV customer sentiment (verbatim) analysis.
+
+Reads the monthly combined CF&R Core Products survey exports (raw/cfr_2026-MM.xlsx,
+"CF&R_Core Products_Data_YYYYMM.xlsx": one sheet of coded responses for every product),
+keeps the TELUS Optik TV respondents (ServProduct = 2) and writes survey_analysis.json:
+verbatim theme classification, text sentiment, TV issue mention rates and sample quotes.
+Score columns are ignored.
+
+The combined export carries the core questionnaire only: the Optik TV product module
+(the dd* issue deep-dive verbatims) is not in it. TV issues are therefore read from the
+issue description (CONTA, asked of respondents who had an issue in the past month) and
+the reliability reason (V3) of respondents who rated TV reliability fair or poor.
+
+Raw exports carry customer name, email, phone and address and are never committed.
+"""
 import openpyxl, collections, json, re
-MONTHS = ['Jun', 'Jul', 'Aug']
+MONTHS = ['Aug', 'Sep', 'Oct']
+FILES = {'Aug': 'raw/cfr_2026-08.xlsx', 'Sep': 'raw/cfr_2026-09.xlsx', 'Oct': 'raw/cfr_2026-10.xlsx'}
+PRODUCT = 2                                    # ServProduct: 1 = TELUS Internet, 2 = TELUS Optik TV
 GENERAL = ['v1', 'v2', 'v3', 'v6']            # reason-for-rating verbatims (overall TELUS relationship)
-TV_ISSUE = {                                   # TV-specific issue verbatims (asked only when respondent flagged the issue)
-    'ddpq1': 'Picture quality', 'ddis1': 'Interruptions / freezing / restarts', 'ddrec1': 'Recording / PVR',
-    'ddrc1': 'Remote control', 'ddsq1': 'Sound quality', 'ddcg1': 'Channel guide / navigation',
-    'ddvd1': 'On-demand / VOD', 'ddf1': 'TV features', 'ddapp1': 'Apps / streaming', 'ddos1': 'Outages / service loss',
-    'ddcs1': 'Customer service experience',
-}
-TV_OTHER = ['q1c_tv_95_other', 'qtvpa']        # TV "other, specify" verbatims
 SUPPORT = ['v5b']                              # chatbot / digital support verbatims
+
+# TV issue described: keyword classes over CONTA and the fair-or-poor V3 reason.
+TV_ISSUE = {
+    'Interruptions / freezing / restarts': [r'freez', r'frozen', r'buffer', r'glitch', r'cut(s|ting)? out', r'restart', r'reboot', r'reset', r'unplug', r'stutter', r'\blag', r'crash', r'interrup', r'\bgel', r'\bfige', r'keeps? (stopping|dropping)', r'drops?\b', r'spinning', r'loading', r'initializ'],
+    'Picture quality': [r'(?<!profit )picture', r'pixel', r'(low|poor|bad|high|screen|picture) resolution', r'blurr', r'\bimage', r'black screen', r'blank screen', r'screen goes', r'fuzzy', r'grainy'],
+    'Recording / PVR': [r'record', r'\bpvr\b', r'\bdvr\b', r'enregistr'],
+    'Remote control': [r'remote', r't[eé]l[eé]commande', r'voice (command|control|search)'],
+    'Sound quality': [r'\bsound', r'audio', r'volume', r'(pas|perte|sans) de son\b', r'out of sync', r'lip.?sync'],
+    'Channel guide / navigation': [r'\bguide\b', r'\bmenu', r'navigat', r'interface', r'\bsearch', r'user.?friendly', r'clunky', r'hard to (find|use)'],
+    'On-demand / VOD': [r'\bon.?demand\b', r'\bvod\b', r'rental', r'pay.?per.?view'],
+    'Apps / streaming': [r'netflix', r'\bapps?\b', r'stream', r'youtube', r'prime', r'disney', r'crave', r'apple ?tv'],
+    'Outages / service loss': [r'outage', r'no signal', r'no service', r'\bdown\b', r'not working', r"(doesn.?t|does not|won.?t|stopped|not) work", r'offline', r'\bpanne', r'los[et]\w*\s+(the\s+|my\s+|our\s+)?(signal|service|connection|tv)', r'no tv'],
+    'Set-top box / equipment': [r'\bbox(es)?\b', r'\bstb\b', r'receiver', r'equipment', r'd[eé]codeur', r'bo[iî]tier', r'hardware'],
+    'Channels & content': [r'channel', r'package', r'content', r'programs?\b', r'cha[iî]ne', r'canaux', r'sports', r'line-?up'],
+    'Internet & Wi-Fi': [r'internet', r'wi-?fi', r'\bspeed', r'router', r'modem'],
+    'Customer service experience': [r'customer service', r'\bagent', r'on hold', r'\bhold\b', r'\bwait', r'call(ed|ing)? (in|back|centre|center)', r'transferr?', r'representative', r'\brep\b', r'technician', r'\btech\b', r'appointment', r'support', r'no ?one (help|care|know)', r'unresolved', r'never (resolved|fixed)'],
+    'Billing & price': [r'\bbill', r'\bpric', r'charg', r'\bcost', r'expensive', r'increas', r'credit', r'refund', r'\bcher'],
+}
 
 THEMES = {
     'Price, value & contract increases': [r'\bpric', r'\bcost', r'expensive', r'increas', r'contract', r'renew', r'loyalty', r'\bdeal\b', r'promotion', r'discount', r'\bprix\b', r'\bcher', r'augment', r'co[uû]t'],
     'Reliability: freezing, outages & drop-outs': [r'freez', r'glitch', r'unreliab', r'cut(s)? out', r'drop', r'outage', r'offline', r'buffer', r'reboot', r'restart', r'reliab', r'\bpanne', r'\bgel', r'coupure', r'interrup', r'goes? out', r'lose (the )?(signal|connection)', r'no signal'],
-    'Picture & sound quality': [r'picture', r'pixel', r'resolution', r'\bhd\b', r'\bsound\b', r'audio', r'volume', r'image', r'qualit[eé] (d.)?image', r'\bson\b'],
+    'Picture & sound quality': [r'(?<!profit )picture', r'pixel', r'(low|poor|bad|high|screen|picture) resolution', r'\bhd\b', r'\bsound\b', r'audio', r'volume', r'image', r'qualit[eé] (d.)?image', r'\bson\b'],
     'Recording / PVR': [r'record', r'\bpvr\b', r'enregistr'],
     'Remote, guide & navigation': [r'remote', r'\bguide\b', r'navigat', r'\bmenu', r'interface', r'slow to (react|respond)', r't[eé]l[eé]commande', r'clunky', r'user.?friendly'],
     'Set-top box / equipment': [r'\bbox(es)?\b', r'digital box', r'\bstb\b', r'equipment', r'd[eé]codeur', r'bo[iî]te', r'receiver', r'hardware', r'devices?\b'],
@@ -46,26 +74,39 @@ def clean(v):
         return None
     return s
 
-out = {'months': MONTHS, 'respondents': {}, 'general_theme': {}, 'general_polarity': {}, 'tv_issue_mentions': {}, 'tv_issue_pct': {},
-       'tv_issue_themes': {}, 'support_polarity': {}, 'quotes': {}}
+
+# quotes must not carry contact details
+PII = re.compile(r'@|\d{3}[\s.-]?\d{3}[\s.-]?\d{4}|\d{6,}')
+
+
+PRAISE = re.compile(r'exceptional|excellent|amazing|wonderful', re.I)
+
+
+def tv_issues(text):
+    t = text.lower()
+    return [k for k, pats in TV_ISSUE.items() if any(re.search(p, t) for p in pats)]
+
+
+out = {'months': MONTHS, 'respondents': {}}
 theme_tbl = {t: [0, 0, 0] for t in THEMES}
 pol_tbl = {p: [0, 0, 0] for p in ('positive', 'neutral', 'negative')}
-tv_tbl = {v: [0, 0, 0] for v in TV_ISSUE.values()}
-tv_theme_tbl = {t: [0, 0, 0] for t in THEMES}
+tv_tbl = {k: [0, 0, 0] for k in TV_ISSUE}
+tv_desc = [0, 0, 0]                            # respondents with a usable issue description
+tv_none = [0, 0, 0]                            # ...whose description matched no TV issue class
 sup_pol = {p: [0, 0, 0] for p in ('positive', 'neutral', 'negative')}
-quotes = collections.defaultdict(list)
 tv_quotes = collections.defaultdict(list)
 neg_general_by_theme = {t: [0, 0, 0] for t in THEMES}
+LAST = len(MONTHS) - 1
 
 for mi, m in enumerate(MONTHS):
-    wb = openpyxl.load_workbook(f'raw/survey_{m}.xlsx', read_only=True, data_only=True)
+    wb = openpyxl.load_workbook(FILES[m], read_only=True, data_only=True)
     ws = wb.worksheets[0]
     it = ws.iter_rows(values_only=True)
     hdr = [str(h) if h is not None else '' for h in next(it)]
     idx = {h: i for i, h in enumerate(hdr)}
     n = 0
     for r in it:
-        if not any(v not in (None, '') for v in r): continue
+        if r[idx['ServProduct']] != PRODUCT: continue
         n += 1
         # general verbatims: one classification per respondent (union of themes across fields)
         texts = [clean(r[idx[c]]) for c in GENERAL if c in idx]
@@ -77,48 +118,46 @@ for mi, m in enumerate(MONTHS):
             pol = polarity(joined); pol_tbl[pol][mi] += 1
             if pol == 'negative':
                 for th in ths: neg_general_by_theme[th][mi] += 1
-            if len(quotes['__' + pol]) < 30 and 50 < len(texts[0]) < 240 and 'Reliability: freezing, outages & drop-outs' in ths:
-                quotes['__' + pol].append((m, texts[0]))
-            for th in ths:
-                if len(quotes[th]) < 40 and 40 < len(texts[0]) < 260: quotes[th].append((m, texts[0]))
-        # TV-specific issue verbatims
-        for col, label in TV_ISSUE.items():
-            if col in idx:
-                v = clean(r[idx[col]])
-                if v:
-                    tv_tbl[label][mi] += 1
-                    for th in classify(v): tv_theme_tbl[th][mi] += 1
-                    if len(tv_quotes[label]) < 30 and 25 < len(v) < 220: tv_quotes[label].append((m, v))
-        for col in TV_OTHER:
-            if col in idx:
-                v = clean(r[idx[col]])
-                if v:
-                    for th in classify(v): tv_theme_tbl[th][mi] += 1
+        # TV issue descriptions: CONTA, plus the V3 reason of those rating reliability fair or poor
+        desc = [clean(r[idx['conta']])]
+        if r[idx['p1a']] in (4, 5): desc.append(clean(r[idx['v3']]))
+        desc = [d for d in desc if d]
+        if desc:
+            tv_desc[mi] += 1
+            found = set()
+            for d in desc: found.update(tv_issues(d))
+            if not found: tv_none[mi] += 1
+            for k in found: tv_tbl[k][mi] += 1
+            if mi == LAST:
+                for d in desc:
+                    ks = tv_issues(d)
+                    if len(ks) == 1 and 35 < len(d) < 200 and not PII.search(d) and polarity(d) != 'positive' and not PRAISE.search(d) and len(tv_quotes[ks[0]]) < 12:
+                        tv_quotes[ks[0]].append((m, d))
         for col in SUPPORT:
             if col in idx:
                 v = clean(r[idx[col]])
                 if v: sup_pol[polarity(v)][mi] += 1
     out['respondents'][m] = n
 
+R = [out['respondents'][m] for m in MONTHS]
 out['general_theme'] = dict(sorted(theme_tbl.items(), key=lambda kv: -sum(kv[1])))
-out['general_theme_pct'] = {t: [round(v[i] / out['respondents'][MONTHS[i]] * 100, 1) for i in range(3)] for t, v in theme_tbl.items()}
+out['general_theme_pct'] = {t: [round(v[i] / R[i] * 100, 1) for i in range(3)] for t, v in theme_tbl.items()}
 out['general_polarity'] = pol_tbl
 out['general_polarity_pct'] = {p: [round(v[i] / sum(pol_tbl[q][i] for q in pol_tbl) * 100, 1) for i in range(3)] for p, v in pol_tbl.items()}
 out['neg_general_by_theme'] = neg_general_by_theme
-out['tv_issue_mentions'] = dict(sorted(tv_tbl.items(), key=lambda kv: -sum(kv[1])))
-out['tv_issue_pct'] = {t: [round(v[i] / out['respondents'][MONTHS[i]] * 100, 2) for i in range(3)] for t, v in tv_tbl.items()}
-out['tv_issue_themes'] = dict(sorted(tv_theme_tbl.items(), key=lambda kv: -sum(kv[1])))
+out['tv_issue_mentions'] = dict(sorted(tv_tbl.items(), key=lambda kv: -kv[1][LAST]))
+out['tv_issue_pct'] = {t: [round(v[i] / R[i] * 100, 2) for i in range(3)] for t, v in tv_tbl.items()}
+out['tv_issue_base'] = tv_desc
+out['tv_issue_none'] = tv_none
 out['support_polarity'] = sup_pol
-out['quotes'] = {k: v[:12] for k, v in quotes.items()}
 out['tv_quotes'] = {k: v[:10] for k, v in tv_quotes.items()}
-json.dump(out, open('survey_analysis.json', 'w'), indent=1)
+json.dump(out, open('survey_analysis.json', 'w'), indent=1, ensure_ascii=False)
 
 print('RESPONDENTS', out['respondents'])
 print('\nGENERAL THEMES (respondents mentioning)'); [print(f'  {k:44s} {v}  pct {out["general_theme_pct"][k]}') for k, v in out['general_theme'].items()]
 print('\nGENERAL POLARITY', pol_tbl, out['general_polarity_pct'])
 print('\nNEGATIVE-ONLY BY THEME'); [print(f'  {k:44s} {v}') for k, v in sorted(neg_general_by_theme.items(), key=lambda kv: -sum(kv[1]))]
-print('\nTV ISSUE VERBATIM MENTIONS'); [print(f'  {k:40s} {v}  pct {out["tv_issue_pct"][k]}') for k, v in out['tv_issue_mentions'].items()]
-print('\nTV ISSUE THEMES'); [print(f'  {k:44s} {v}') for k, v in out['tv_issue_themes'].items()]
+print('\nTV ISSUE DESCRIPTIONS base', tv_desc, 'no class', tv_none); [print(f'  {k:40s} {v}  pct {out["tv_issue_pct"][k]}') for k, v in out['tv_issue_mentions'].items()]
 print('\nCHATBOT/SUPPORT POLARITY', sup_pol)
-for k, v in list(out['tv_quotes'].items())[:6]:
-    print(f'\n[{k}]'); [print('   -', q) for q in v[:4]]
+for k, v in out['tv_quotes'].items():
+    print(f'\n[{k}]'); [print('   -', q[1]) for q in v[:8]]

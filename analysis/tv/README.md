@@ -10,10 +10,14 @@ Scripts that produce the aggregated data behind the TV "Notes Analysis",
   monthly volumes by agent category and closure code, sub-category movers,
   agent-vs-technician categorisation divergence (all closures and field visits),
   technician determinations and fix themes, and agent-comment themes.
-- `analyze_survey.py` reads the monthly Optik TV survey workbooks
-  (`raw/survey_{Jun,Jul,Aug}.xlsx`) and writes `survey_analysis.json`:
+- `analyze_survey.py` reads the monthly combined CF&R Core Products survey exports
+  (`raw/cfr_2026-MM.xlsx`, the "CF&R_Core Products_Data_YYYYMM.xlsx" files), keeps the
+  TELUS Optik TV respondents (`ServProduct` = 2) and writes `survey_analysis.json`:
   verbatim theme classification, text sentiment, TV issue mention rates and
-  sample quotes. Score columns are ignored.
+  sample quotes. Score columns are ignored. The Optik TV product module (the dd*
+  issue deep-dive verbatims) is not in the combined export, so TV issues are
+  keyword-classified from the issue description (CONTA) and the reliability reason
+  (V3) of respondents rating TV reliability fair or poor, as respondents per 100.
 
 Raw exports are not committed because they contain customer details.
 
@@ -21,10 +25,10 @@ The notes-analysis window is the `MONTHS` list at the top of `analyze_notes.py`
 (Aug-Sep-Oct 2026 at the moment; the October export runs to 30 Oct). Movers and
 month-over-month movements compare the last month of the window with the one
 before it, and `gen_tva_block.py` labels the output from the same list. The
-survey side (`analyze_survey.py` / `survey_analysis.json`) still covers
-Jun-Jul-Aug 2026 and is carried over unchanged when `survey_analysis.json` is
-absent (`gen_tva_block.py` then reads the survey block from `tva_prev.json`,
-the TVA currently in App.jsx).
+survey side (`analyze_survey.py` / `survey_analysis.json`) has its own `MONTHS`
+list (also Aug-Sep-Oct 2026 at the moment). `gen_tva_block.py` carries over
+whichever of the two analysis files is absent from `tva_prev.json` (the TVA
+currently in App.jsx), so the ticket and survey sides can be rolled separately.
 
 - `resolution_flows.py` reads the same `notes_all.json` and writes `resolution_flows.json`, the
   root cause identified to fix applied counts behind the TV Notes Analysis "Resolution Analysis"

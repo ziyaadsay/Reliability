@@ -125,7 +125,7 @@ sec(notes, "s02-domain-mix").display;
 
 const sentiment = await env.RELIABILITY.get_page({ product: "HSIA", page: "sentiment" });
 sec(sentiment, "s03-attributes").display;  // { as: "bars", label: "attribute", value: "fairOrPoor", sort: "as-is", alsoAs: "table" }
-sec(sentiment, "s04-polarity").display;    // { as: "stacked-bars", orient: "months", label: "polarity", stack: ["Jun","Jul","Aug"], alsoAs: "table" }
+sec(sentiment, "s05-polarity").display;    // { as: "stacked-bars", orient: "months", label: "polarity", stack: ["Aug","Sep","Oct"], alsoAs: "table" }
 
 const cross = await env.RELIABILITY.get_page({ product: "HSIA", page: "cross" });
 sec(cross, "s01-matrix").display;          // { as: "matrix", wide: true }

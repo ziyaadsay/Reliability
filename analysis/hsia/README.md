@@ -22,23 +22,30 @@ Wi-Fi, Equipment compatibility. Closure domains: Access line / fibre / ONT,
 Modem / gateway, Wi-Fi / extenders, Provisioning / back office, Outage,
 Customer / non-TELUS equipment, Education / no fault, Other product.
 
-- `analyze_hsia_survey.py` reads the monthly CF&R TELUS Internet survey exports
-  (`raw/hsia_survey_2026-0{6,7,8}.xlsx`, one sheet of coded responses plus the
-  Variable Labels and Value Labels sheets) and writes
-  `hsia_survey_analysis.json`: respondents, NPS, the reliability rating split,
-  the reliability drivers (Q1C_INT, asked only of those rating reliability fair
-  or poor), the performance and importance batteries, contact behaviour, churn
-  intention, verbatim sentiment and themes, issue-description themes, chatbot
-  sentiment and example quotes. Comparisons are Aug vs Jul 2026.
+- `analyze_hsia_survey.py` reads the monthly combined CF&R Core Products survey exports
+  (`raw/cfr_2026-MM.xlsx`, the "CF&R_Core Products_Data_YYYYMM.xlsx" files: one sheet of coded
+  responses for every product plus the Variable Labels and Value Labels sheets), keeps the
+  TELUS Internet respondents (`ServProduct` = 1) and writes `hsia_survey_analysis.json`:
+  respondents, NPS, the reliability rating split, the reasons behind a fair or poor
+  reliability rating (V3 verbatim, keyword-classified), the one thing that defined the month
+  (Q16T), issue resolution and repeat contacts (Q10, Q10_2), contact behaviour, churn
+  intention and switching (P5, Q5a1, Q5a2, P5b), verbatim sentiment and themes,
+  issue-description themes, chatbot sentiment and example quotes. The window is the `MONTHS`
+  list (Aug-Sep-Oct 2026 at the moment); comparisons are the last month against the one before.
 
-  Two things to know about the source. The performance (iqpf1_*) and importance
-  (iqim1_*) batteries are rotating modules: performance is asked in August only
-  and importance in July only, so they are reported as point-in-time readings
-  rather than a trend. Counts are unweighted; the export carries a `wt` column
-  that is not applied, so figures match the raw base.
+  Things to know about the source. The combined export carries the core questionnaire only:
+  the TELUS Internet product module (the Q1C_INT structured reliability drivers, the iqpf1 /
+  iqim1 performance and importance batteries and the dd* deep-dive verbatims) is not in it.
+  Their last reading (Jun to Aug 2026, from the earlier product export) is kept in
+  `HSS_REVIEW_FROZEN` in `site/App.jsx`, which is also the survey snapshot of the archived HSIA
+  Review. The July 2026 combined file is a cut-down extract without the verbatims, so the
+  window cannot start before August. Counts are unweighted; the export carries a `wt` column
+  that is not applied, so figures match the raw base. August from the combined file reproduces
+  the August figures of the earlier product export exactly.
 
-  Verbatim themes and polarity are keyword-classified with the lexicons at the
-  top of the script, so they indicate direction rather than precise measurement.
+  Verbatim themes and polarity are keyword-classified with the lexicons at the top of the
+  script, so they indicate direction rather than precise measurement. Quotes exclude comments
+  carrying contact details and are each used once.
 
 Raw exports are not committed because they contain customer details: the survey
 files carry customer name, email, phone number, address and account identifiers.
