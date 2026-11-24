@@ -106,7 +106,7 @@ function displayFor(page, product, s) {
 
 // ---- groups: the dashboard's collapsible sections, in page order ----
 const PRODUCT_GROUP_TITLE = (month) => ({ health: `Health Read — ${month}`, calls: "Calls", tickets: "Tickets", categories: "Tickets", "biggest-riser": "Tickets", issues: "Ticket issues & movers", repairs: "Repairs / Dispatches", "fibre-spotlight": "Repairs / Dispatches", churn: "Churn", b2b: "Voice of Customer (B2B)", initiatives: "Initiatives", timeline: "Initiative timeline" });
-const NOTES_GROUPS = { 1: "Top issues by agent categorisation", 2: "Agent vs technician categorisation", 3: "Technician closures and fixes", 4: "What agents are writing", 5: "Recommendations" };
+const NOTES_GROUPS = (product) => ({ 1: "Top issues by agent categorisation", 2: "Agent vs technician categorisation", 3: "Technician closures and fixes", 4: "What agents are writing", 5: "InSight checks vs what agents called out", ...(product === "HSIA" ? { 6: "Outside plant and ONT health", 7: "Resolution Analysis", 8: "Recommendations" } : { 6: "Resolution Analysis", 7: "Recommendations" }) });
 const SENTIMENT_GROUPS = { HSIA: { 1: "Perceived reliability", 2: "What drives a poor reliability rating", 3: "Performance against importance", 4: "Experience in the past month, resolution and switching", 5: "Verbatim sentiment and themes", 6: "Issue descriptions and digital support", 7: "What customers said", 8: "Recommendations" }, TV: { 1: "Verbatim sentiment", 2: "Themes in customer verbatims", 3: "TV issues customers describe", 4: "Digital support (chatbot) verbatims", 5: "Recommendations" } };
 const CROSS_GROUPS = { 1: "Signal alignment matrix", 2: "Consolidated rising and falling drivers", 3: "Prioritised recommendations" };
 const PLATFORM_GROUPS = { 1: "Subscriber base", 2: "Tickets", 3: "Repairs / Dispatches", 4: "Repair swaps", 5: "Mixed usage" };
@@ -139,7 +139,7 @@ function groupDefs(page, product, sections, asOfMonth) {
       return [[1, `KPI scorecard · ${month}`], [2, `Top ticket issues and movers · ${asOf}`], [3, `Initiative milestones · ${month}`], [4, `Self-serve workflows (Sweepr) · ${month}`]].map(([n, t]) => ({ id: `slide${n}`, title: `Slide ${n} · ${t}`, open: true, test: (id) => id.startsWith(`slide${n}-`) }));
     }
     case "platforms": return byNumber(PLATFORM_GROUPS, (n) => n <= 1);
-    case "notes": return byNumber(NOTES_GROUPS, () => false);
+    case "notes": return byNumber(NOTES_GROUPS(product), () => false);
     case "sentiment": return byNumber(SENTIMENT_GROUPS[product], () => false);
     case "cross": return byNumber(CROSS_GROUPS, () => false);
     case "selfserve": return byNumber(SELFSERVE_GROUPS, (n) => n <= 1);

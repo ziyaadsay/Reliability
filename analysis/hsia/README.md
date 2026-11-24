@@ -68,3 +68,12 @@ only (a negated mention such as "no outage" does not count). `analysis/common/in
 InSight check that would show it (`theme_vs_insight`); `gen_*_block.py` writes that as `insight` in the page constant. The optical Rx
 window (`RX_FLOOR`, `RX_CEIL`, `RX_MARGINAL` in `notes_parse.py`) is a working assumption. Before this, devices and access were counted
 on the whole note, so the payload inflated ONT, fibre, 4K STB and TV+ mentions several times over.
+
+## Outside plant and ONT health
+
+`osp_health.py` reads the same weekly HSIA notes exports (`raw/hsia_notes_*.xlsx`, three months) and writes `osp_health.json`:
+what was reported (ONT Not Ranged, Historical Data, No Sync, Losing Sync), what InSight showed (ONT state, active network events,
+optical levels, FDH) and what the technician fixed (GPON, Network Service Wire and Outside Plant closures). Months are compared per
+day, and closures on tickets created on days 1 to 25 (`CLOSE_DAYS`), because the last tickets of an export have not closed yet.
+`gen_osp_block.py` turns it into the `HSIA_OSP` constant in `site/App.jsx`; the "Worth flagging" read (`HSIA_OSP_FLAGS`) is
+hand-written from those figures each window. Aggregates and FDH identifiers only; no customer fields leave the script.

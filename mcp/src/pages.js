@@ -647,17 +647,38 @@ function notesPage(product) {
       I.themeVs.map((t) => { const a = t.v[1], b = t.v[2]; return { name: t.theme, check: t.check, tickets: b ? b[0] : null, showsPrior: a ? sh(a[1], a[0]) : null, shows: b ? sh(b[1], b[0]) : null, clear: b ? sh(b[2], b[0]) : null }; }),
       `Tickets where the agent's own text raises the theme and the payload carries the matching check. "InSight shows it" is the share where the check is raised; "InSight clear" is the share where the check ran and found nothing. A high clear share means the agent called out an issue the tool did not flag: the agent is describing the customer's symptom, or the cause sits outside what InSight checks. The optical Rx window is -27 to -8 dBm with marginal below -25 dBm, a working assumption to confirm with the access team.`));
   }
+  // 06 outside plant and ONT health (HSIA only; mirrors the dashboard section)
+  if (product === "HSIA") {
+    const O = HSIA_OSP, D = O.days, N = O.network, pdv = (v, n = D) => v.map((x, i) => round(x / n[i], 1));
+    const sym = (n) => O.symptoms.find((x) => x.name === n);
+    const mcols = (first, unit) => [col("name", first), ...months.map((m) => col(m, m, unit)), col("vsPrior", `${months[2].slice(0, 3)} vs ${months[1].slice(0, 3)}`, unit === "%" ? "pts" : "%"), col("vsFirst", `${months[2].slice(0, 3)} vs ${months[0].slice(0, 3)}`, unit === "%" ? "pts" : "%")];
+    const mrow = (name, v, pts) => { const r = { name }; months.forEach((m, i) => { r[m] = v[i]; }); r.vsPrior = pts ? round(v[2] - v[1], 2) : v[1] ? round((v[2] / v[1] - 1) * 100, 1) : null; r.vsFirst = pts ? round(v[2] - v[0], 2) : v[0] ? round((v[2] / v[0] - 1) * 100, 1) : null; return r; };
+    S.push(textSec("s06-osp", "06 · Outside plant and ONT health", [`Scope is everything up to and including the ONT: feeder and distribution fibre, FDH and splitter, drop, light level and the ONT, with the copper plant and the drop wire alongside. It reads the same ${fmtNum(O.tickets.reduce((a, b) => a + b, 0))} tickets three ways: what the agent reported, what InSight showed (ONT state, network events, optical levels) and what the technician fixed. Months are compared per day because the notes export ends on ${O.lastDate}; closures are compared on tickets created on days 1 to ${O.closeDays}, because the latest tickets have not closed yet.`]));
+    S.push(listSec("s06-osp-flags", "06 · Worth flagging", HSIA_OSP_FLAGS.map((f) => ({ title: `${f.sev} · ${f.title}`, body: f.body })), "Hand-written read of the figures below for the latest window."));
+    S.push(tableSec("s06-osp-network", "06 · How the network performed (tickets per day unless stated)", mcols("Measure"), [
+      mrow("ONT Not Ranged", pdv(sym("ONT Not Ranged").v)), mrow("  Alarm Light", pdv(sym("ONT Not Ranged › Alarm Light").v)), mrow("  No Power", pdv(sym("ONT Not Ranged › No Power").v)), mrow("  Outage", pdv(sym("ONT Not Ranged › Outage").v)),
+      mrow("Historical Data › Severe Line Issues", pdv(sym("Historical Data › Severe Line Issues").v)), mrow("No Sync (copper)", pdv(sym("No Sync (copper)").v)), mrow("  No DSL Light", pdv(sym("No Sync › No DSL Light").v)), mrow("Losing Sync", pdv(sym("Losing Sync").v)),
+      mrow("InSight: tickets with the ONT down (per day)", O.ontDownPerDay),
+      mrow("InSight: ONT down, % of tickets with the ONT check", N.map((n) => round(n.ontDownShare * 100, 1)), true), mrow("InSight: active network event, % of tickets", N.map((n) => round(n.outageShare * 100, 1)), true),
+      mrow("InSight: ONT optical Rx below -25 dBm, % of readings", N.map((n) => round(n.rxBelow25 * 100, 2)), true), mrow("InSight: OLT receive below -24 dBm, % of readings", N.map((n) => round(n.oltBelow24 * 100, 1)), true)],
+      "Lower is better on every row. Year over year (Looker, full months): ONT Not Ranged 5,892 in October against 7,312 a year earlier (-19%)."));
+    S.push(tableSec("s06-osp-closures", `06 · What technicians fixed (tickets per day, created on days 1 to ${O.closeDays})`, mcols("Closure"), O.closures.map((c) => mrow(c.name.trim(), pdv(c.v, [O.closeDays, O.closeDays, O.closeDays])))));
+    S.push(tableSec("s06-osp-weekly", "06 · Weekly trend (weeks with five or more days of data)", [col("week", "Week starting"), col("days", "Days", "count"), col("ontNotRangedPerDay", "ONT Not Ranged per day", "count"), col("ontDownShare", "ONT down, % of ONT-checked tickets", "%")], O.weekly.map((w) => ({ week: w.week, days: w.days, ontNotRangedPerDay: w.ontNotRangedPerDay, ontDownShare: w.ontDownShare }))));
+    S.push(tableSec("s06-osp-events", `06 · Network events (8 or more ONT-down tickets on one FDH in a day). Events per month: ${months.map((m, i) => `${m} ${O.eventCount[i]}`).join(", ")}`, [col("date", "Date"), col("fdh", "FDH"), col("tickets", "ONT-down tickets", "count"), col("flagged", "With an event flag", "count")], O.topEvents));
+    S.push(tableSec("s06-osp-chronic", `06 · Chronic FDHs (${O.chronic.count} FDHs, ${round(O.chronic.share * 100, 0)}% of ONT-down tickets)`, [col("fdh", "FDH"), ...months.map((m) => col(m, m, "count")), col("vsFirst", "Last vs first month, per day", "%")], O.chronic.top.map((c) => { const r = { fdh: c.fdh }; months.forEach((m, i) => { r[m] = c.v[i]; }); r.vsFirst = c.v[0] ? round((c.v[2] / D[2] / (c.v[0] / D[0]) - 1) * 100, 1) : null; return r; }), "Twelve or more ONT-down tickets in every month, event days excluded."));
+    S.push(tableSec("s06-osp-models", "06 · ONT model: % of ONT-checked tickets with the ONT down", [col("model", "ONT"), ...months.map((m) => col(m, m, "%")), col("n", `Tickets · ${months[2]}`, "count")], O.models.map((m) => { const r = { model: m.model }; months.forEach((mm, i) => { r[mm] = m.v[i]; }); r.n = m.n; return r; })));
+  }
   // 05 resolution analysis: root cause identified -> fix applied
   {
     const RA = product === "TV" ? TV_RESOLUTION : HSIA_RESOLUTION;
     const mo = RA.months[RA.months.length - 1], D = RA[mo];
-    S.push(textSec("s05-resolution", "06 · Resolution Analysis", [`Root cause identified to fix applied for ${mo}: ${D.covered.toLocaleString()} of ${D.tickets.toLocaleString()} ${product} tickets (${Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution in the agent notes. Each line is keyword-classified to one theme (the one mentioned first), so shares are indicative.`]));
-    S.push(tableSec("s05-flows", "06 · Largest root cause to fix flows", [col("cause", "Root cause"), col("fix", "Fix applied"), col("tickets", "Tickets")],
+    S.push(textSec(`s${product === "HSIA" ? "07" : "06"}-resolution`, `${product === "HSIA" ? "07" : "06"} · Resolution Analysis`, [`Root cause identified to fix applied for ${mo}: ${D.covered.toLocaleString()} of ${D.tickets.toLocaleString()} ${product} tickets (${Math.round((D.covered / D.tickets) * 100)}%) name both a root cause and a resolution in the agent notes. Each line is keyword-classified to one theme (the one mentioned first), so shares are indicative.`]));
+    S.push(tableSec(`s${product === "HSIA" ? "07" : "06"}-flows`, `${product === "HSIA" ? "07" : "06"} · Largest root cause to fix flows`, [col("cause", "Root cause"), col("fix", "Fix applied"), col("tickets", "Tickets")],
       [...D.links].sort((a, b) => b[2] - a[2]).slice(0, 15).map((k) => ({ cause: D.causes[k[0]][0], fix: D.fixes[k[1]][0], tickets: k[2] })), `The dashboard shows these flows as a Sankey diagram on ${product} › Notes Analysis › Resolution Analysis, with a September and October toggle.`));
   }
   // recommendations
   const recs = product === "HSIA" ? HSIA_RECS.filter((r) => ["P1", "P3"].includes(r.pri)) : TV_RECS.filter((r) => ["P1", "P3"].includes(r.pri) || r.tag === "Emerging");
-  S.push(listSec("s05-recommendations", "07 · Recommendations", recItems(recs, product)));
+  S.push(listSec(`s${product === "HSIA" ? "08" : "07"}-recommendations`, `${product === "HSIA" ? "08" : "07"} · Recommendations`, recItems(recs, product)));
   return S;
 }
 
