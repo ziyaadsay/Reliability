@@ -38,9 +38,9 @@ const shortM = (m) => (m ? m.replace(/ \d{2}(\d{2})$/, "'$1") : m);
 const LATEST_IDX = MONTHS.length - 1;
 
 // ---- page registry ----
-const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", octreview: "Oct Review", selfserve: "Self-serve", ffps: "Friction Free Program" };
+const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", octreview: "Oct Review", selfserve: "Self-serve", ffps: "Friction Free Program", governance: "Reliability Program Governance" };
 const PAGE_HASH = {
-  "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps",
+  "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps", "All|governance": "governance",
   "HSIA|overview": "HSIA", "HSIA|notes": "hsiatickets", "HSIA|sentiment": "hsiasentiment", "HSIA|cross": "hsiacross", "HSIA|review": "hsiabrief",
   "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross", "TV|review": "tvbrief", "TV|octreview": "tvoctreview",
   "SHS|overview": "SHS", "SH+|overview": "SH+"
@@ -62,6 +62,7 @@ const PAGES = [
   { product: "SH+", id: "overview", nav: "SH+" },
   { product: "All", id: "selfserve", nav: "Self-serve" },
   { product: "All", id: "ffps", nav: "Friction Free Program" },
+  { product: "All", id: "governance", nav: "Reliability Program Governance" },
   { product: "HSIA", id: "review", nav: "Archive › HSIA Review" },
   { product: "TV", id: "review", nav: "Archive › TV Review (Stuck on Initializing)" }
 ];
@@ -682,6 +683,27 @@ function notesPage(product) {
   return S;
 }
 
+// ---- Reliability Program Governance (mirrors GovernancePage): the weekly VP Deacts call ----
+// Topics are the workbook's; the dashboard lets viewers edit a topic in their own browser, and those edits are not served here.
+function governancePage() {
+  const G = GOVERNANCE, S = [], today = new Date().toISOString().slice(0, 10);
+  const items = G.meetings.flatMap((m) => m.i.map((it) => ({ ...it, d: m.d })));
+  const state = (m) => (m.s === "cancelled" ? "Cancelled" : m.d < today ? (m.s === "none" && !m.topic ? "No call recorded" : m.i.length ? "Held" : "Held, no takeaways recorded") : m.topic ? "Upcoming" : "No topic yet");
+  const held = G.meetings.filter((m) => m.d < today && /^Held/.test(state(m))), upcoming = G.meetings.filter((m) => m.d >= today && m.s !== "cancelled");
+  const areas = G.areas.filter((a) => items.some((i) => i.a === a)), types = G.types.filter((t) => items.some((i) => i.y === t));
+  S.push(textSec("about", "About", [`The weekly VP Deacts call, from the "${G.source.split(",")[0]}" tab of the Churn Measurement 2026 workbook (snapshot of ${G.snapshot}). ${held.length} meetings held and ${items.length} takeaways logged so far; ${upcoming.length} upcoming weeks, ${upcoming.filter((m) => !m.topic).length} without a topic. Each takeaway is classified by area and by the kind of action it asks for from its wording. On the dashboard the weekly topics are editable and saved in the viewer's browser; those edits are not served here.`]));
+  S.push(tableSec("s01-calendar", "01 · Weekly calendar (one row per Friday call)", [col("date", "Date"), col("status", "Status"), col("topic", "Weekly topic"), col("takeaways", "Takeaways", "count"), col("out", "Out")],
+    G.meetings.map((m) => ({ date: m.d, status: state(m), topic: m.topic.replace(/\n/g, " · "), takeaways: m.i.length, out: m.ooo.join("; ") })), "Every Friday from 6 Feb 2026 to 19 Feb 2027."));
+  S.push(tableSec("s02-matrix", "02 · Takeaways by category (area × action type)", [col("area", "Area"), ...types.map((t, k) => col(`t${k}`, t, "count")), col("total", "Total", "count")],
+    areas.map((a) => { const r = { area: a, total: items.filter((i) => i.a === a).length }; types.forEach((t, k) => { r[`t${k}`] = items.filter((i) => i.a === a && i.y === t).length; }); return r; })));
+  const own = {}; items.forEach((i) => i.o.forEach((o) => { own[o] = (own[o] || 0) + 1; }));
+  S.push(tableSec("s02-owners", "02 · Owners named in the takeaways", [col("owner", "Owner"), col("takeaways", "Takeaways", "count")], Object.entries(own).sort((a, b) => b[1] - a[1]).map(([o, n]) => ({ owner: o, takeaways: n }))));
+  S.push(tableSec("s03-takeaways", "03 · All takeaways (latest week first)", [col("date", "Week"), col("area", "Area"), col("type", "Action type"), col("owner", "Owner"), col("takeaway", "Takeaway")],
+    [...items].sort((a, b) => b.d.localeCompare(a.d)).map((i) => ({ date: i.d, area: i.a, type: i.y, owner: i.o.join(", "), takeaway: (i.t ? `${i.t}: ` : "") + i.x }))));
+  S.push(listSec("s04-backlog", "04 · Topics backlog", G.backlog.map((b) => ({ title: b })), "Topics waiting for a slot, from the backlog cell of the tab."));
+  return S;
+}
+
 // ---- Customer Sentiment (mirrors HsiaSentimentPage / TvSentimentPage) ----
 const bpsMove = (arr) => (arr[2] != null && arr[1] != null ? Math.round((arr[2] - arr[1]) * 100) : null);
 const pctRows = (items, months, extra) => items.map((t) => { const r = { name: t.name }; months.forEach((m, i) => { r[m] = t.pct[i]; }); r.changeBps = bpsMove(t.pct); if (extra) Object.assign(r, extra(t)); return r; });
@@ -1147,6 +1169,7 @@ const PAGE_SCOPE = {
   "All|executive": `Executive summary · slide view of the overview: KPIs, top ticket issues, initiative milestones, self-serve`,
   "All|selfserve": "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact",
   "All|ffps": `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`,
+  "All|governance": "Weekly VP Deacts call · calendar of topics, takeaways by category and the topics backlog · from the Churn Measurement 2026 workbook",
   "HSIA|overview": "HSIA: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "HSIA|notes": `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`,
   "HSIA|sentiment": `CF&R survey, TELUS Internet respondents · ${SV_MOM} ${SV_LAST.slice(-4)} · reliability perception, reasons, resolution, verbatim themes and sentiment`,
@@ -1162,7 +1185,7 @@ const PAGE_SCOPE = {
   "SHS|overview": "SHS: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "SH+|overview": "SH+: calls, tickets, repairs/dispatches, base"
 };
-const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "octreview", "ffps"]);
+const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "octreview", "ffps", "governance"]);
 function buildPage(product, id, a, b) {
   switch (id) {
     case "overview": return product === "All" ? homePage(a, b) : overviewPage(product, a, b);
@@ -1175,6 +1198,7 @@ function buildPage(product, id, a, b) {
     case "octreview": return tvOctReviewPage();
     case "selfserve": return selfServePage(a, b);
     case "ffps": return ffpsPage();
+    case "governance": return governancePage();
     default: throw new Error(`page not available for ${product}`);
   }
 }
