@@ -4576,9 +4576,6 @@ export default function ReliabilityScorecards() {
     for (let d = 1; d <= dim; d++) cells.push(`${gy}-${String(gm).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
     while (cells.length % 7) cells.push(null);
     const items = G.meetings.flatMap((m) => m.i.map((it) => ({ ...it, d: m.d })));
-    const held = G.meetings.filter((m) => m.d < today && ["held", "heldnone"].includes(stOf(m).key));
-    const upcoming = G.meetings.filter((m) => m.d >= today && m.s !== "cancelled");
-    const next = upcoming[0], openWeeks = upcoming.filter((m) => !topicOf(m)).length;
     const areas = G.areas.filter((a) => items.some((i) => i.a === a)), types = G.types.filter((t) => items.some((i) => i.y === t));
     const cnt = (a, t) => items.filter((i) => (a == null || i.a === a) && (t == null || i.y === t)).length;
     const maxCell = Math.max(1, ...areas.flatMap((a) => types.map((t) => cnt(a, t))));
@@ -4596,18 +4593,8 @@ export default function ReliabilityScorecards() {
     const sec = (n, title, icon, children, defaultOpen = true) => <Section key={`gov-${n}`} num={n} eyebrow="Reliability Program Governance" title={title} icon={icon} T={T} collapsible defaultOpen={defaultOpen}>{children}</Section>;
     return (
       <>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 14, margin: "16px 0 4px" }}>
-          <StatCard T={T} color={col} icon="calendar" label="Meetings held" value={String(held.length)} sub={`${govShort(G.meetings[0].d)} to ${govShort(held.length ? held[held.length - 1].d : G.meetings[0].d)} · weekly, Fridays`} />
-          <StatCard T={T} color={col} icon="notes" label="Takeaways logged" value={String(items.length)} sub={`${new Set(items.flatMap((i) => i.o)).size} owners named`} />
-          <StatCard T={T} color={col} icon="program" label="Next meeting" value={next ? govShort(next.d) : "None"} sub={next ? (topicOf(next).split("\n")[0] || "No topic yet") : "No upcoming meeting"} />
-          <StatCard T={T} color={col} icon="initiatives" label="Upcoming weeks without a topic" value={String(openWeeks)} sub={`of ${upcoming.length} upcoming weeks`} />
-        </div>
-
         {sec("01", "Weekly calendar", "calendar", (
           <>
-            <p style={{ fontSize: 12.5, color: T.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
-              The weekly VP Deacts call from the "{G.source.split(",")[0]}" tab of the Churn Measurement 2026 workbook (snapshot of {govShort(G.snapshot)} {G.snapshot.slice(0, 4)}). Click a meeting to see its topic and takeaways. Weekly topics are editable here: your edits are saved in this browser only, are marked with ✎, and can be reset to the workbook topic.
-            </p>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
               {navBtn("‹", -1, mIdx <= 0)}
               <div style={{ fontSize: 16, fontWeight: 700, color: T.heading, minWidth: 150, textAlign: "center" }}>{monthLabel}</div>
@@ -9667,7 +9654,7 @@ export default function ReliabilityScorecards() {
           <Eyebrow T={T}>Product Health · Reliability{page !== "home" ? ` · ${CHILD_LABEL[page] ? `${PARENT_LABEL[CHILD_PARENT[page]] || CHILD_PARENT[page]} · ${CHILD_LABEL[page]}` : page === "ffps" ? "Friction Free Program" : page === "governance" ? "Reliability Program Governance" : page}` : ""}</Eyebrow>
           <h1 style={{ fontSize: 27, fontWeight: 700, margin: "8px 0 0", color: T.heading, letterSpacing: "-.01em" }}>{pageTitle}</h1>
           <div style={{ height: 3, width: 96, background: `linear-gradient(90deg, ${T.heading}, #66CC02)`, borderRadius: 2, margin: "12px 0 14px" }} />
-          <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
+          {page !== "governance" && <div style={{ display: "flex", gap: 22, flexWrap: "wrap", fontSize: 12.5, color: T.textMuted, borderBottom: `1px solid ${T.border}`, paddingBottom: 16, marginBottom: 6 }}>
             <span><b style={{ color: T.textSecondary }}>Scope</b> · {page === "selfserve"
               ? "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact"
               : page === "governance"
@@ -9717,7 +9704,8 @@ export default function ReliabilityScorecards() {
                   : `${page === "home" ? (scope === "All" ? "All products" : scope) : page}: calls, tickets, repairs/dispatches, churn, base, initiatives${page === "HSIA" || (page === "home" && scope === "HSIA") ? " · Includes HSIA West & TQ ILEC - HSIA" : ""}`}</span>
             {!ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>{CHILD_PARENT[page] === "archive" || page === "archive" ? "Archived" : "Reviewing"}</b> · {page === "hsiabrief" ? `final, data to ${HSIA_REVIEW_LATEST}` : page === "tvbrief" ? `final, dashboard KPIs to ${TV_REVIEW_LATEST}` : page === "archive" ? "not refreshed monthly" : latestLabel}</span>}
             {page !== "archive" && CHILD_PARENT[page] !== "archive" && !ARCH_PAGE && <span><b style={{ color: T.textSecondary }}>Operational thru</b> · {MONTHS[MONTHS.length - 1]} (churn: {CHURN_THRU})</span>}
-          </div>
+          </div>}
+          {page === "governance" && <div style={{ borderBottom: `1px solid ${T.border}`, marginBottom: 6 }} />}
 
           {/* filters */}
           <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 14, flexWrap: "wrap", margin: "14px 0 4px" }}>
