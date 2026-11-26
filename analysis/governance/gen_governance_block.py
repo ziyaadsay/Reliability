@@ -1,10 +1,14 @@
 """Turns the "VP Deacts call Weekly Topics & Takeaways" tab (Churn Measurement 2026 workbook) into the GOVERNANCE
 constant for site/App.jsx.
 
-  python gen_governance_block.py <rows.json> [out.js]
+  python gen_governance_block.py <rows.json> [out.js] [decks.json]
 
 rows.json is {"backlog": "<B1 text>", "rows": [[date, weekly topic, takeaways], ...]}: the tab's values from row 4 down
 (columns A to C) plus the Topics Backlog cell. Writes governance_block.js (or out.js).
+
+decks.json (optional) is [{"title", "id"}, ...]: the weekly presentation decks in the Drive folder, titled "<Month D, YYYY> ... VP ...".
+A deck is linked to the meeting on its date, or failing that to the meeting one day either side that has no deck of its own
+(some weeks are held a day early or late). Only 2026 meetings are matched; weeks without a deck get no link.
 
 Each meeting gets a clean topic, who was out (OOO lines), a status (held / cancelled / no call / open) and its takeaways
 split into items. Items are classified by keyword into an area (what it is about) and an action type (what has to happen),
@@ -14,6 +18,7 @@ import json, re, sys, datetime, collections
 
 src = json.load(open(sys.argv[1]))
 OUT = sys.argv[2] if len(sys.argv) > 2 else 'governance_block.js'
+DECKS = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else []
 
 AREAS = [  # (area, keywords) first match on the item text wins, then the meeting topic
     ('Sweepr and self-serve', r'sweepr|ivr|jarvis|\bsdk\b|plume|self-serve|gemini'),
@@ -136,12 +141,31 @@ for date, topic, take in src['rows']:
         out_items.append(row)
     meetings.append({'d': d, 'topic': clean, 'raw': topic.replace('\r', ''), 'ooo': ooo, 's': status, 'i': out_items})
 
+# link the weekly decks to the 2026 meetings
+by_date = {m['d']: m for m in meetings}
+def deck_date(t):
+    try: return datetime.datetime.strptime(re.match(r'^([A-Z][a-z]+ \d{1,2}, \d{4})', t).group(1), '%B %d, %Y').date()
+    except Exception: return None
+pending = []
+for dk in DECKS:
+    dd = deck_date(dk['title'])
+    if not dd or dd.year != 2026: continue
+    m = by_date.get(dd.isoformat())
+    if m is not None and 'k' not in m: m['k'] = {'t': dk['title'], 'u': 'https://docs.google.com/presentation/d/' + dk['id'] + '/edit'}
+    elif m is None: pending.append((dd, dk))
+for dd, dk in pending:
+    for off in (-1, 1):
+        m = by_date.get((dd + datetime.timedelta(days=off)).isoformat())
+        if m is not None and 'k' not in m and m['d'].startswith('2026'):
+            m['k'] = {'t': dk['title'], 'u': 'https://docs.google.com/presentation/d/' + dk['id'] + '/edit'}; print('deck matched a day off:', dk['title'], '->', m['d']); break
+
 backlog = [l.strip() for l in src['backlog'].split('\n') if l.strip()]
 G = {'source': 'VP Deacts call Weekly Topics & Takeaways, Churn Measurement 2026 workbook', 'snapshot': datetime.date.today().isoformat(), 'backlog': backlog,
      'areas': [a for a, _ in AREAS] + ['General'], 'types': [t for t, _ in TYPES] + ['Note'], 'meetings': meetings}
 open(OUT, 'w').write('const GOVERNANCE = ' + json.dumps(G, separators=(',', ':'), ensure_ascii=False) + ';\n')
 n = sum(len(m['i']) for m in meetings)
-print(len(meetings), 'meetings', n, 'takeaways', collections.Counter(m['s'] for m in meetings))
+print(len(meetings), 'meetings', n, 'takeaways', collections.Counter(m['s'] for m in meetings), sum(1 for m in meetings if 'k' in m), 'decks linked')
+print('2026 meetings without a deck:', [m['d'] for m in meetings if m['d'].startswith('2026') and 'k' not in m])
 for m in meetings:
     for it in m['i']:
         print(f"{m['d']} | {it['a'][:14]:14s} | {it['y'][:12]:12s} | {','.join(it['o'])[:26]:26s} | {(it['t']+': ' if it['t'] else '')+it['x']:.78}")

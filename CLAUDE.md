@@ -135,4 +135,8 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   tabulated by area and action type (keyword rules plus reviewed `OVERRIDES` in `analysis/governance/gen_governance_block.py`), and the topics backlog. Clicking a
   meeting opens a pop-up (`GovMeetingPopup`) with its topic and takeaways. Weekly topics are editable per viewer and saved in the browser only (localStorage, like the
   Health Read commentary): they are not shared and not written back to the sheet. Refresh by re-reading the tab and re-running the generator; the page and MCP show the snapshot.
+- The Governance pop-up links the weekly presentation deck (`k` on a meeting in `GOVERNANCE`) when the Drive folder
+  (https://drive.google.com/drive/folders/14qpNlO0fwV_YLUQ29tzrvbPEkMQIW2k6) has one titled "<Month D, YYYY> ... VP ...": 2026 meetings only, matched on the date or the
+  day either side when that week has no deck of its own (26 Mar and 4 Jun decks sit on the 27 Mar and 5 Jun meetings). Weeks without a deck show no link and no placeholder.
+  Re-list the folder and pass `decks.json` to `gen_governance_block.py` to refresh.
 
