@@ -139,4 +139,11 @@ Changes that touch neither `site/` nor `mcp/` (docs, this file) don't need a dep
   (https://drive.google.com/drive/folders/14qpNlO0fwV_YLUQ29tzrvbPEkMQIW2k6) has one titled "<Month D, YYYY> ... VP ...": 2026 meetings only, matched on the date or the
   day either side when that week has no deck of its own (26 Mar and 4 Jun decks sit on the 27 Mar and 5 Jun meetings). Weeks without a deck show no link and no placeholder.
   Re-list the folder and pass `decks.json` to `gen_governance_block.py` to refresh.
-
+- **Reliability by Design** (`rbd`, `RbdPage`, `RBD` in `site/App.jsx`; MCP page `rbd`) sits between Friction Free Program and Reliability Program Governance in the menu. It is the weekly
+  RbD forum (Thursdays), 2026 only: past meetings from the "RBD Summary Notes - Master" Google Doc
+  (https://docs.google.com/document/d/1Pc7xXq_1hlpXPyizXrPQnXMywECw7KvtqPkVtxUA9tI, 2026 section only), upcoming meetings from the RbD "Weekly Agenda" sheet
+  (https://docs.google.com/spreadsheets/d/1L07NApabMDJjknX8Xypv1RVqUkUAIpLaUWpDBxiUxxk). A month calendar lists each day's topics; clicking a day opens a pop-up
+  (`RbdMeetingPopup`) with topics, presenter, ask, JIRA and MVP links, sign-off, action items and the full meeting notes. Section 02 is the action item register
+  (owners parsed from the wording, presenter shown when none is named; the Done tick is browser-local, key `relstrat:rbd:actions:v1`), section 03 the approvals log.
+  Refresh by reading the doc (Drive `read_file_content` saves it to a file) and the sheet, writing the sheet as `agenda.json` (list of `{d, x, note, t:[{n, ask, j, p, ab, bc}]}`), then
+  `python3 analysis/rbd/gen_rbd_block.py notes.txt agenda.json` and replacing the `const RBD = ` line. The doc marks 10 Dec as canceled while the sheet lists an agenda; the page shows the sheet's items with a note.

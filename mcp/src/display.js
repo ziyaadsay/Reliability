@@ -111,6 +111,7 @@ const SENTIMENT_GROUPS = { HSIA: { 1: "Perceived reliability", 2: "What drives a
 const CROSS_GROUPS = { 1: "Signal alignment matrix", 2: "Consolidated rising and falling drivers", 3: "Prioritised recommendations" };
 const PLATFORM_GROUPS = { 1: "Subscriber base", 2: "Tickets", 3: "Repairs / Dispatches", 4: "Repair swaps", 5: "Mixed usage" };
 const SELFSERVE_GROUPS = { 1: "Resolved sessions vs target", 2: "Resolution rates", 3: "Customer experience", 4: "Churn impact" };
+const RBD_GROUPS = { 1: "Weekly calendar and topics", 2: "Action item register", 3: "Meeting notes" };
 const GOV_GROUPS = { 1: "Weekly calendar", 2: "Takeaways by category", 3: "All takeaways", 4: "Topics backlog" };
 const FFPS_GROUPS = { 1: "Burndown", 2: "Benefits", 3: "Billing tickets", 4: "CR delivery timeline (Sep – Dec 2026)", 5: "Finance" };
 const HOME_GROUPS = (month) => [
@@ -146,6 +147,7 @@ function groupDefs(page, product, sections, asOfMonth) {
     case "selfserve": return byNumber(SELFSERVE_GROUPS, (n) => n <= 1);
     case "ffps": return byNumber(FFPS_GROUPS, (n) => ![3, 5].includes(n));
     case "governance": return byNumber(GOV_GROUPS, (n) => n <= 2);
+    case "rbd": return byNumber(RBD_GROUPS, (n) => n <= 2);
     case "review": {
       const first = (re) => (sections.find((s) => re.test(s.id)) || {}).title;
       // TV review: six numbered sections, each titled by its first section; the HSIA review keeps its explicit titles.

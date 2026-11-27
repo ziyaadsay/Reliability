@@ -38,9 +38,9 @@ const shortM = (m) => (m ? m.replace(/ \d{2}(\d{2})$/, "'$1") : m);
 const LATEST_IDX = MONTHS.length - 1;
 
 // ---- page registry ----
-const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", octreview: "Oct Review", selfserve: "Self-serve", ffps: "Friction Free Program", governance: "Reliability Program Governance" };
+const PAGE_LABEL = { executive: "Executive Summary", overview: "Overview", platforms: "By Platform", notes: "Notes Analysis", sentiment: "Customer Sentiment Analysis", cross: "Cross Analysis", review: "Review", octreview: "Oct Review", selfserve: "Self-serve", ffps: "Friction Free Program", governance: "Reliability Program Governance", rbd: "Reliability by Design" };
 const PAGE_HASH = {
-  "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps", "All|governance": "governance",
+  "All|executive": "execsummary", "All|overview": "home", "All|selfserve": "selfserve", "All|ffps": "ffps", "All|governance": "governance", "All|rbd": "rbd",
   "HSIA|overview": "HSIA", "HSIA|notes": "hsiatickets", "HSIA|sentiment": "hsiasentiment", "HSIA|cross": "hsiacross", "HSIA|review": "hsiabrief",
   "TV|overview": "TV", "TV|platforms": "tvplatforms", "TV|notes": "tvtickets", "TV|sentiment": "tvsentiment", "TV|cross": "tvcross", "TV|review": "tvbrief", "TV|octreview": "tvoctreview",
   "SHS|overview": "SHS", "SH+|overview": "SH+"
@@ -62,6 +62,7 @@ const PAGES = [
   { product: "SH+", id: "overview", nav: "SH+" },
   { product: "All", id: "selfserve", nav: "Self-serve" },
   { product: "All", id: "ffps", nav: "Friction Free Program" },
+  { product: "All", id: "rbd", nav: "Reliability by Design" },
   { product: "All", id: "governance", nav: "Reliability Program Governance" },
   { product: "HSIA", id: "review", nav: "Archive › HSIA Review" },
   { product: "TV", id: "review", nav: "Archive › TV Review (Stuck on Initializing)" }
@@ -704,6 +705,25 @@ function governancePage() {
   return S;
 }
 
+function rbdPage() {
+  const S = [], today = new Date().toISOString().slice(0, 10);
+  const SO = { ok: "Approved", cond: "Conditionally approved", no: "Not approved", na: "No sign-off needed", "": "Sign-off not recorded" };
+  const all = [...RBD.meetings, ...RBD.upcoming].sort((a, b) => a.d.localeCompare(b.d));
+  const held = RBD.meetings.filter((m) => !m.x), topics = RBD.meetings.flatMap((m) => m.t.map((t, ti) => ({ d: m.d, ti, ...t })));
+  const acts = RBD.meetings.flatMap((m) => m.t.flatMap((t) => t.acts.map((a) => ({ d: m.d, topic: t.n, p: t.p, ...a }))));
+  const state = (m) => (m.x ? "Cancelled" : m.d < today ? "Held" : "Upcoming");
+  S.push(textSec("about", "About", [`The weekly Reliability by Design (RbD) forum, 2026 only. Past meetings come from the "RBD Summary Notes - Master" Google Doc: ${held.length} meetings held, ${topics.length} topics reviewed and ${acts.length} action items recorded. Upcoming meetings come from the RbD "Weekly Agenda" sheet (${RBD.upcoming.length} dates listed). Action owners are read from the wording of the notes; completion is not tracked in the source.`]));
+  S.push(tableSec("s01-calendar", "01 · Weekly calendar (one row per meeting)", [col("date", "Date"), col("status", "Status"), col("topics", "Topics"), col("actions", "Actions", "count"), col("note", "Note")],
+    all.map((m) => ({ date: m.d, status: state(m), topics: m.t.map((t) => t.n).join(" · "), actions: m.t.reduce((n, t) => n + (t.acts ? t.acts.length : 0), 0), note: m.note || "" })), "Thursdays. Dates after the notes end are from the agenda sheet; the notes doc marks 10 Dec as canceled while the sheet lists an agenda."));
+  S.push(tableSec("s01-topics", "01 · Topics, asks and sign-offs (latest first)", [col("date", "Meeting"), col("topic", "Topic"), col("presenter", "Presenter"), col("ask", "Ask"), col("signoff", "Sign-off"), col("jira", "JIRA"), col("mvp", "MVP document")],
+    [...topics].sort((a, b) => b.d.localeCompare(a.d)).map((t) => ({ date: t.d, topic: t.n, presenter: t.p, ask: t.ask, signoff: t.st ? `${SO[t.so || ""]}: ${t.st}` : SO[t.so || ""], jira: t.j, mvp: t.m || null }))));
+  S.push(tableSec("s02-actions", "02 · Action item register (latest meeting first)", [col("date", "Meeting"), col("topic", "Topic"), col("action", "Action"), col("owner", "Owner"), col("due", "Due")],
+    [...acts].sort((a, b) => b.d.localeCompare(a.d)).map((a) => ({ date: a.d, topic: a.topic, action: a.a, owner: a.o || (a.p ? `${a.p} (presenter)` : ""), due: a.due || "" })), "Completion is not tracked in the source notes."));
+  S.push(tableSec("s03-notes", "03 · Meeting notes by topic (latest first)", [col("date", "Meeting"), col("topic", "Topic"), col("notes", "Notes")],
+    [...topics].sort((a, b) => b.d.localeCompare(a.d)).map((t) => ({ date: t.d, topic: t.n, notes: t.notes.map(([, x]) => x).join(" | ") }))));
+  return S;
+}
+
 // ---- Customer Sentiment (mirrors HsiaSentimentPage / TvSentimentPage) ----
 const bpsMove = (arr) => (arr[2] != null && arr[1] != null ? Math.round((arr[2] - arr[1]) * 100) : null);
 const pctRows = (items, months, extra) => items.map((t) => { const r = { name: t.name }; months.forEach((m, i) => { r[m] = t.pct[i]; }); r.changeBps = bpsMove(t.pct); if (extra) Object.assign(r, extra(t)); return r; });
@@ -1169,6 +1189,7 @@ const PAGE_SCOPE = {
   "All|executive": `Executive summary · slide view of the overview: KPIs, top ticket issues, initiative milestones, self-serve`,
   "All|selfserve": "Self-serve workflows (Sweepr): resolved sessions, resolution rates, CX, churn impact",
   "All|ffps": `Friction Free Product Systems (FFPS) · ${FFPS.period} · CR and ticket burndown, benefits, billing tickets, CR delivery, finance`,
+  "All|rbd": "Weekly Reliability by Design forum (Thursdays) · launch approvals, meeting notes, sign-offs and the action item register · from the RbD summary notes and agenda sheet",
   "All|governance": "Weekly VP Deacts call · calendar of topics, takeaways by category and the topics backlog · from the Churn Measurement 2026 workbook",
   "HSIA|overview": "HSIA: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "HSIA|notes": `HSIA notes analysis · ${HSA.months[2]} vs ${HSA.months[1]} · agent and technician notes: top issues, movers, categorisation divergence, recommendations`,
@@ -1185,7 +1206,7 @@ const PAGE_SCOPE = {
   "SHS|overview": "SHS: calls, tickets, repairs/dispatches, churn, base, initiatives, ticket issues and movers, B2B VoC",
   "SH+|overview": "SH+: calls, tickets, repairs/dispatches, base"
 };
-const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "octreview", "ffps", "governance"]);
+const FIXED_WINDOW = new Set(["notes", "sentiment", "cross", "review", "octreview", "ffps", "governance", "rbd"]);
 function buildPage(product, id, a, b) {
   switch (id) {
     case "overview": return product === "All" ? homePage(a, b) : overviewPage(product, a, b);
@@ -1199,6 +1220,7 @@ function buildPage(product, id, a, b) {
     case "selfserve": return selfServePage(a, b);
     case "ffps": return ffpsPage();
     case "governance": return governancePage();
+    case "rbd": return rbdPage();
     default: throw new Error(`page not available for ${product}`);
   }
 }
